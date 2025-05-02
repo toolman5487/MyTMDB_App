@@ -6,6 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA7E2DC4B6D1005E972C /* SDWebImage */; };
+		1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA812DC4B6DF005E972C /* SnapKit */; };
+		1598AA852DC4B6F8005E972C /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA842DC4B6F8005E972C /* CombineCocoa */; };
+		1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA8F2DC4B93E005E972C /* LoginViewController.swift */; };
+		1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */; };
+		1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */; };
+		1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA962DC4BF57005E972C /* LoginViewModel.swift */; };
+		1598AB082DC4C2E0005E972C /* ThemeFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB072DC4C2E0005E972C /* ThemeFont.swift */; };
+		1598AB0B2DC4C708005E972C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB0A2DC4C708005E972C /* MainTabBarController.swift */; };
+		1598AB0E2DC4C78D005E972C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB0D2DC4C78D005E972C /* HomeView.swift */; };
+		1598AB112DC4C7FA005E972C /* MovieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB102DC4C7FA005E972C /* MovieView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1598AA602DC4B6A1005E972C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +41,14 @@
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1598AA8F2DC4B93E005E972C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBAuthService.swift; sourceTree = "<group>"; };
+		1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBAuthModels.swift; sourceTree = "<group>"; };
+		1598AA962DC4BF57005E972C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		1598AB072DC4C2E0005E972C /* ThemeFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeFont.swift; sourceTree = "<group>"; };
+		1598AB0A2DC4C708005E972C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		1598AB0D2DC4C78D005E972C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		1598AB102DC4C7FA005E972C /* MovieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +87,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */,
+				1598AA852DC4B6F8005E972C /* CombineCocoa in Frameworks */,
+				1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +113,12 @@
 		1598AA402DC4B69F005E972C = {
 			isa = PBXGroup;
 			children = (
+				1598AB092DC4C6E9005E972C /* Controller */,
+				1598AA982DC4C29C005E972C /* Config */,
+				1598AA912DC4BB8E005E972C /* Service */,
+				1598AA8D2DC4B912005E972C /* Model */,
+				1598AA8C2DC4B90C005E972C /* View */,
+				1598AA8B2DC4B8F3005E972C /* ViewModel */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
 				1598AA6C2DC4B6A1005E972C /* MyTMDB_AppUITests */,
@@ -103,6 +134,80 @@
 				1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1598AA8B2DC4B8F3005E972C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				1598AA962DC4BF57005E972C /* LoginViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		1598AA8C2DC4B90C005E972C /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1598AB0F2DC4C7D5005E972C /* Movie_View */,
+				1598AB0C2DC4C773005E972C /* Home_View */,
+				1598AA8E2DC4B91F005E972C /* Login_View */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		1598AA8D2DC4B912005E972C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1598AA8E2DC4B91F005E972C /* Login_View */ = {
+			isa = PBXGroup;
+			children = (
+				1598AA8F2DC4B93E005E972C /* LoginViewController.swift */,
+			);
+			path = Login_View;
+			sourceTree = "<group>";
+		};
+		1598AA912DC4BB8E005E972C /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		1598AA982DC4C29C005E972C /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				1598AB072DC4C2E0005E972C /* ThemeFont.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		1598AB092DC4C6E9005E972C /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				1598AB0A2DC4C708005E972C /* MainTabBarController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		1598AB0C2DC4C773005E972C /* Home_View */ = {
+			isa = PBXGroup;
+			children = (
+				1598AB0D2DC4C78D005E972C /* HomeView.swift */,
+			);
+			path = Home_View;
+			sourceTree = "<group>";
+		};
+		1598AB0F2DC4C7D5005E972C /* Movie_View */ = {
+			isa = PBXGroup;
+			children = (
+				1598AB102DC4C7FA005E972C /* MovieView.swift */,
+			);
+			path = Movie_View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +230,9 @@
 			);
 			name = MyTMDB_App;
 			packageProductDependencies = (
+				1598AA7E2DC4B6D1005E972C /* SDWebImage */,
+				1598AA812DC4B6DF005E972C /* SnapKit */,
+				1598AA842DC4B6F8005E972C /* CombineCocoa */,
 			);
 			productName = MyTMDB_App;
 			productReference = 1598AA492DC4B69F005E972C /* MyTMDB_App.app */;
@@ -208,6 +316,11 @@
 			);
 			mainGroup = 1598AA402DC4B69F005E972C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1598AA7D2DC4B6D1005E972C /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				1598AA802DC4B6DF005E972C /* XCRemoteSwiftPackageReference "SnapKit" */,
+				1598AA832DC4B6F8005E972C /* XCRemoteSwiftPackageReference "CombineCocoa" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1598AA4A2DC4B69F005E972C /* Products */;
 			projectDirPath = "";
@@ -249,6 +362,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
+				1598AB0B2DC4C708005E972C /* MainTabBarController.swift in Sources */,
+				1598AB0E2DC4C78D005E972C /* HomeView.swift in Sources */,
+				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
+				1598AB082DC4C2E0005E972C /* ThemeFont.swift in Sources */,
+				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
+				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
+				1598AB112DC4C7FA005E972C /* MovieView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,9 +415,9 @@
 				INFOPLIST_FILE = MyTMDB_App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -322,9 +443,9 @@
 				INFOPLIST_FILE = MyTMDB_App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -571,6 +692,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1598AA7D2DC4B6D1005E972C /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.21.0;
+			};
+		};
+		1598AA802DC4B6DF005E972C /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		1598AA832DC4B6F8005E972C /* XCRemoteSwiftPackageReference "CombineCocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CombineCommunity/CombineCocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1598AA7E2DC4B6D1005E972C /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1598AA7D2DC4B6D1005E972C /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		1598AA812DC4B6DF005E972C /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1598AA802DC4B6DF005E972C /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		1598AA842DC4B6F8005E972C /* CombineCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1598AA832DC4B6F8005E972C /* XCRemoteSwiftPackageReference "CombineCocoa" */;
+			productName = CombineCocoa;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1598AA412DC4B69F005E972C /* Project object */;
 }
