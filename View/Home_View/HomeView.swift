@@ -10,11 +10,17 @@ import UIKit
 
 class HomeView: UIViewController{
     
-    
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.title = "首頁"
+        definesPresentationContext = true
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .orange
+        setupNavigationBar()
+
     }
 }

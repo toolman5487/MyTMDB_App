@@ -20,8 +20,8 @@ class MainTabBarController:UITabBarController{
         let movieVC = MovieView()
         let movieNav = UINavigationController(rootViewController: movieVC)
         movieNav.tabBarItem = UITabBarItem(title: "電影",
-                                                   image: UIImage(systemName: "movieclapper.fill"),
-                                                   tag: 1)
+                                           image: UIImage(systemName: "movieclapper.fill"),
+                                           tag: 1)
         viewControllers = [homeNav, movieNav]
     }
 }

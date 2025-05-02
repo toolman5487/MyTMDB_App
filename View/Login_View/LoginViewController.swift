@@ -30,12 +30,14 @@ class LoginViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "UserID"
         textField.borderStyle = .roundedRect
+        textField.text = "WillyHsu"
         return textField
     }()
     
     private let passField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Password"
+        textField.text = "548798willy"
         textField.isSecureTextEntry = true
         textField.borderStyle = .roundedRect
         return textField
@@ -86,7 +88,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    private func bind() {
+    private func viewmodelBind() {
         userField.textPublisher
             .compactMap { $0 }
             .assign(to: \.username, on: viewModel)
@@ -142,6 +144,6 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         layout()
-        bind()
+        viewmodelBind()
     }
 }
