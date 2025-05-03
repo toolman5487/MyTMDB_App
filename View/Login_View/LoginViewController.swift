@@ -19,6 +19,14 @@ class LoginViewController: UIViewController {
     
     private let indicator = UIActivityIndicatorView(style: .medium)
     
+    private let logoImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "tmdb_icon")
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .clear
+        return imageView
+    }()
+    
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "登入"
@@ -67,7 +75,22 @@ class LoginViewController: UIViewController {
         return stack
     }()
     
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.title = "TMDB"
+        definesPresentationContext = true
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
     private func layout(){
+        view.addSubview(logoImage)
+        logoImage.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(32)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(100)
+        }
+        
         view.addSubview(loginStack)
         loginStack.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -137,12 +160,15 @@ class LoginViewController: UIViewController {
                 let alert = UIAlertController(title: "Login Failed", message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 self?.present(alert, animated: true)
+                self?.loginBotton.isEnabled = true
+                self?.indicator.stopAnimating()
             }
             .store(in: &cancellables)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         layout()
         viewmodelBind()
     }
