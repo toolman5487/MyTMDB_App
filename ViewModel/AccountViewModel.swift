@@ -22,8 +22,8 @@ final class AccountViewModel {
     func loadAccount(sessionId: String) {
         service.fetchAccount(sessionId: sessionId)
           .sink { completion in
-            if case .failure(let err) = completion {
-              self.errorMessage = err.localizedDescription
+            if case .failure(let error) = completion {
+              self.errorMessage = error.localizedDescription
             }
           } receiveValue: { account in
             self.account = account

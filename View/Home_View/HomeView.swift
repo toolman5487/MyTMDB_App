@@ -16,6 +16,15 @@ class HomeView: UIViewController{
     private let accountVM = AccountViewModel()
     private var cancellables = Set<AnyCancellable>()
     
+    private let searchResultsView = SearchResultsView()
+    private lazy var searchController: UISearchController = {
+        let search = UISearchController(searchResultsController: searchResultsView)
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = "Search Movies, TV, People"
+        search.searchResultsUpdater = searchResultsView
+        return search
+    }()
+    
     private let avatarImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
@@ -58,8 +67,8 @@ class HomeView: UIViewController{
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.title = "首頁"
+        navigationItem.searchController = searchController
         definesPresentationContext = true
-        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     private func layout() {

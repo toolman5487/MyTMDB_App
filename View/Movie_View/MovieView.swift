@@ -7,15 +7,16 @@
 
 import Foundation
 import UIKit
+import Combine
 
 class MovieView:UIViewController{
+    
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.title = "探索"
         definesPresentationContext = true
-        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     override func viewDidLoad() {
