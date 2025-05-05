@@ -13,7 +13,7 @@ class MovieView:UIViewController{
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        navigationItem.title = "電影"
+        navigationItem.title = "探索"
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
     }
