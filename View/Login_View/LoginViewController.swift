@@ -13,7 +13,8 @@ import CombineCocoa
 
 class LoginViewController: UIViewController {
     
-    private let viewModel = LoginViewModel()
+    private let loginVM = LoginViewModel()
+    let accountVM = AccountViewModel()
     private var cancellables = Set<AnyCancellable>()
     
     
@@ -114,21 +115,21 @@ class LoginViewController: UIViewController {
     private func viewmodelBind() {
         userField.textPublisher
             .compactMap { $0 }
-            .assign(to: \.username, on: viewModel)
+            .assign(to: \.username, on: loginVM)
             .store(in: &cancellables)
         
         passField.textPublisher
             .compactMap { $0 }
-            .assign(to: \.password, on: viewModel)
+            .assign(to: \.password, on: loginVM)
             .store(in: &cancellables)
         
         loginBotton.tapPublisher
-            .sink { [weak viewModel] in
-                viewModel?.loginTap.send()
+            .sink { [weak self] in
+                self?.loginVM.loginTap.send()
             }
             .store(in: &cancellables)
         
-        viewModel.$isLoading
+        loginVM.$isLoading
             .sink { [weak self] loading in
                 if loading {
                     self?.indicator.startAnimating()
@@ -139,9 +140,10 @@ class LoginViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.$sessionId
+        loginVM.$sessionId
             .compactMap { $0 }
             .sink { [weak self] sessionId in
+                print("Logged in session ID:", sessionId)
                 UserDefaults.standard.set(sessionId, forKey: "TMDBSessionID")
                 guard let windowScene = self?.view.window?.windowScene,
                       let sceneDelegate = windowScene.delegate as? SceneDelegate,
@@ -154,7 +156,7 @@ class LoginViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.$errorMessage
+        loginVM.$errorMessage
             .compactMap { $0 }
             .sink { [weak self] message in
                 let alert = UIAlertController(title: "Login Failed", message: message, preferredStyle: .alert)

@@ -18,6 +18,9 @@
 		1598AB0B2DC4C708005E972C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB0A2DC4C708005E972C /* MainTabBarController.swift */; };
 		1598AB0E2DC4C78D005E972C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB0D2DC4C78D005E972C /* HomeView.swift */; };
 		1598AB112DC4C7FA005E972C /* MovieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB102DC4C7FA005E972C /* MovieView.swift */; };
+		1598AB262DC867DA005E972C /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB252DC867DA005E972C /* AccountModel.swift */; };
+		1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB272DC88D98005E972C /* AccountViewModel.swift */; };
+		1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB2B2DC88DED005E972C /* AccountService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,9 @@
 		1598AB0A2DC4C708005E972C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		1598AB0D2DC4C78D005E972C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		1598AB102DC4C7FA005E972C /* MovieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieView.swift; sourceTree = "<group>"; };
+		1598AB252DC867DA005E972C /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
+		1598AB272DC88D98005E972C /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
+		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -140,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				1598AA962DC4BF57005E972C /* LoginViewModel.swift */,
+				1598AB272DC88D98005E972C /* AccountViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -158,6 +165,7 @@
 			isa = PBXGroup;
 			children = (
 				1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */,
+				1598AB252DC867DA005E972C /* AccountModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -174,6 +182,7 @@
 			isa = PBXGroup;
 			children = (
 				1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */,
+				1598AB2B2DC88DED005E972C /* AccountService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -367,8 +376,11 @@
 				1598AB0E2DC4C78D005E972C /* HomeView.swift in Sources */,
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				1598AB082DC4C2E0005E972C /* ThemeFont.swift in Sources */,
+				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
+				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
+				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				1598AB112DC4C7FA005E972C /* MovieView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
