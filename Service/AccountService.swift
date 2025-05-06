@@ -13,10 +13,9 @@ protocol AccountServiceProtocol {
 }
 
 final class AccountService: AccountServiceProtocol {
-    private let apiKey = ""
+    private let apiKey = TMDB.apiKey
     func fetchAccount(sessionId: String) -> AnyPublisher<Account, Error> {
-        let url = URL(string:
-          "https://api.themoviedb.org/3/account?api_key=\(apiKey)&session_id=\(sessionId)")!
+        let url = URL(string: "\(TMDB.baseURL)/account?api_key=\(TMDB.apiKey)&session_id=\(sessionId)")!
         return URLSession.shared.dataTaskPublisher(for: url)
           .map(\.data)
           .decode(type: Account.self, decoder: JSONDecoder())

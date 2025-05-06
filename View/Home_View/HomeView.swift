@@ -71,6 +71,14 @@ class HomeView: UIViewController{
         definesPresentationContext = true
     }
     
+    private func configureSearchSelection() {
+        searchResultsView.didSelectMovie = { [weak self] movieId in
+            let detailVM = MovieDetailViewModel(movieId: movieId)
+            let detailVC = MovieDetailView(viewModel: detailVM)
+            self?.navigationController?.pushViewController(detailVC, animated: true)
+        }
+    }
+    
     private func layout() {
         view.addSubview(avatarImageView)
         view.addSubview(usernameLabel)
@@ -92,6 +100,7 @@ class HomeView: UIViewController{
         super.viewDidLoad()
         bindAccountVM()
         setupNavigationBar()
+        configureSearchSelection()
         layout()
     }
 }

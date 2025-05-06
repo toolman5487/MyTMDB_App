@@ -6,9 +6,10 @@ import SDWebImage
 
 class SearchResultsView: UIViewController, UISearchResultsUpdating{
     
-    private var results: [MultiSearchResult] = []
     private let viewModel = MultiSearchViewModel()
+    private var results: [MultiSearchResult] = []
     private var cancellables = Set<AnyCancellable>()
+    var didSelectMovie: ((Int) -> Void)?
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -46,6 +47,12 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
         tableView.delegate   = self
         layout()
         bindViewModel()
+    }
+
+    private func showMovieDetail(with id: Int) {
+        let detailViewModel = MovieDetailViewModel(movieId: id)
+        let detailVC = MovieDetailView(viewModel: detailViewModel)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
     
 }
@@ -92,5 +99,13 @@ extension SearchResultsView: UITableViewDataSource, UITableViewDelegate{
         cell.contentConfiguration = config
         cell.accessoryType = .disclosureIndicator
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let result = results[indexPath.row]
+        guard result.mediaType == .movie, let id = result.id else { return }
+        didSelectMovie?(id)
+        showMovieDetail(with: id)
     }
 }

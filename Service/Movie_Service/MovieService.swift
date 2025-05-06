@@ -13,9 +13,9 @@ protocol MovieServiceProtocol {
 }
 
 final class MovieService: MovieServiceProtocol {
-    private let apiKey = "a704c1ee4f1214cebbb5a43c01986dbb"
+    private let apiKey = TMDB.apiKey
     func fetchMovieDetail(id: Int) -> AnyPublisher<MovieDetailModel, Error> {
-        guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(id)?api_key=\(apiKey)&language=zh-TW") else {
+        guard let url = URL(string: "\(TMDB.baseURL)/movie/\(id)?api_key=\(TMDB.apiKey)&language=zh-TW") else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
         return URLSession.shared.dataTaskPublisher(for: url)

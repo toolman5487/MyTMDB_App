@@ -10,8 +10,8 @@ import Foundation
 import Combine
 
 final class TMDBAuthService {
-    private let apiKey = ""
-    private let baseURL = "https://api.themoviedb.org/3/authentication"
+    private let apiKey = TMDB.apiKey
+    private let baseURL = "\(TMDB.baseURL)/authentication"
     private let decoder = JSONDecoder()
 
     private func request<T: Decodable>(path: String,method: String = "GET",body: Data? = nil) -> AnyPublisher<T, Error> {

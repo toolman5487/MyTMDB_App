@@ -13,8 +13,8 @@ protocol MultiSearchServiceProtocol {
 }
 
 final class MultiSearchService: MultiSearchServiceProtocol {
-    private let apiKey = ""
-    private let baseURL = "https://api.themoviedb.org/3/search/multi"
+    private let apiKey = TMDB.apiKey
+    private let baseURL = "\(TMDB.baseURL)/search/multi"
     private let decoder = JSONDecoder()
 
     func search(query: String) -> AnyPublisher<MultiSearchResponse, Error> {

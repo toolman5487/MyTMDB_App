@@ -29,6 +29,8 @@
 		1598AC1B2DC9B968005E972C /* MovieService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AC1A2DC9B968005E972C /* MovieService.swift */; };
 		1598AC1E2DC9E086005E972C /* MovieDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AC1D2DC9E086005E972C /* MovieDetailViewModel.swift */; };
 		1598AC202DC9E966005E972C /* MovieDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AC1F2DC9E966005E972C /* MovieDetailView.swift */; };
+		1598AC3A2DCA026E005E972C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AC392DCA026E005E972C /* Constants.swift */; };
+		1598AC3D2DCA0D1C005E972C /* TVDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AC3C2DCA0D1C005E972C /* TVDetailModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +73,8 @@
 		1598AC1A2DC9B968005E972C /* MovieService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieService.swift; sourceTree = "<group>"; };
 		1598AC1D2DC9E086005E972C /* MovieDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewModel.swift; sourceTree = "<group>"; };
 		1598AC1F2DC9E966005E972C /* MovieDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailView.swift; sourceTree = "<group>"; };
+		1598AC392DCA026E005E972C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		1598AC3C2DCA0D1C005E972C /* TVDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -138,7 +142,7 @@
 				1598AB092DC4C6E9005E972C /* Controller */,
 				1598AA982DC4C29C005E972C /* Config */,
 				1598AA912DC4BB8E005E972C /* Service */,
-				1598AA8D2DC4B912005E972C /* Model */,
+				1598AA8D2DC4B912005E972C /* Models */,
 				1598AA8C2DC4B90C005E972C /* View */,
 				1598AA8B2DC4B8F3005E972C /* ViewModel */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
@@ -179,15 +183,16 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		1598AA8D2DC4B912005E972C /* Model */ = {
+		1598AA8D2DC4B912005E972C /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				1598AC162DC9B5EA005E972C /* Movie_Model */,
+				1598AC3B2DCA0CD0005E972C /* TV_Models */,
+				1598AC162DC9B5EA005E972C /* Movie_Models */,
 				1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */,
 				1598AB252DC867DA005E972C /* AccountModel.swift */,
 				1598AB9B2DC8B0B6005E972C /* MultiSearchResultModel.swift */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		1598AA8E2DC4B91F005E972C /* Login_View */ = {
@@ -205,6 +210,7 @@
 				1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */,
 				1598AB2B2DC88DED005E972C /* AccountService.swift */,
 				1598AB9D2DC8B2C2005E972C /* MultiSearchService.swift */,
+				1598AC392DCA026E005E972C /* Constants.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -251,12 +257,12 @@
 			path = SearchResults_View;
 			sourceTree = "<group>";
 		};
-		1598AC162DC9B5EA005E972C /* Movie_Model */ = {
+		1598AC162DC9B5EA005E972C /* Movie_Models */ = {
 			isa = PBXGroup;
 			children = (
 				1598AC172DC9B5FC005E972C /* MovieDetailModel.swift */,
 			);
-			path = Movie_Model;
+			path = Movie_Models;
 			sourceTree = "<group>";
 		};
 		1598AC192DC9B939005E972C /* Movie_Service */ = {
@@ -273,6 +279,14 @@
 				1598AC1D2DC9E086005E972C /* MovieDetailViewModel.swift */,
 			);
 			path = Movie_ViewModel;
+			sourceTree = "<group>";
+		};
+		1598AC3B2DCA0CD0005E972C /* TV_Models */ = {
+			isa = PBXGroup;
+			children = (
+				1598AC3C2DCA0D1C005E972C /* TVDetailModel.swift */,
+			);
+			path = TV_Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -428,8 +442,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
+				1598AC3D2DCA0D1C005E972C /* TVDetailModel.swift in Sources */,
 				1598ABA22DC8B7F5005E972C /* SearchResultsView.swift in Sources */,
 				1598AB9C2DC8B0B6005E972C /* MultiSearchResultModel.swift in Sources */,
+				1598AC3A2DCA026E005E972C /* Constants.swift in Sources */,
 				1598AC182DC9B5FC005E972C /* MovieDetailModel.swift in Sources */,
 				1598AB0B2DC4C708005E972C /* MainTabBarController.swift in Sources */,
 				1598AC1E2DC9E086005E972C /* MovieDetailViewModel.swift in Sources */,

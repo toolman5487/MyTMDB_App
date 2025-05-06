@@ -11,7 +11,7 @@ struct MultiSearchResult: Decodable {
         case movie, tv, person
     }
 
-    let id: Int
+    let id: Int?
     let mediaType: MediaType
     let title: String?
     let name: String?

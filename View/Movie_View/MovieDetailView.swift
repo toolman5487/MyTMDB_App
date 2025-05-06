@@ -225,6 +225,8 @@ class MovieDetailView:UIViewController{
         ])
         stack.axis = .vertical
         stack.spacing = 8
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 32, right: 0)
         return stack
     }()
     
@@ -258,15 +260,15 @@ class MovieDetailView:UIViewController{
         voteStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalTo(titleStack.snp.bottom).offset(32)
-            
-            overviewStack.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(16)
-                make.top.equalTo(voteStack.snp.bottom).offset(32)
-            }
-            posterImageView.snp.makeConstraints { make in
-                make.height.equalTo(300)
-                make.width.equalTo(200)
-            }
+        }
+
+        overviewStack.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(voteStack.snp.bottom).offset(32)
+        }
+        posterImageView.snp.makeConstraints { make in
+            make.height.equalTo(300)
+            make.width.equalTo(200)
         }
         
         productionStack.snp.makeConstraints { make in
@@ -356,5 +358,6 @@ class MovieDetailView:UIViewController{
         super.viewDidLoad()
         layoutUI()
         bindViewModel()
+        viewModel.loadDetail()
     }
 }
