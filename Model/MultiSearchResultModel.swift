@@ -23,9 +23,8 @@ struct MultiSearchResult: Decodable {
     let firstAirDate: String?
 
     private enum CodingKeys: String, CodingKey {
-        case id, overview
+        case id, overview, title, name
         case mediaType     = "media_type"
-        case title, name
         case posterPath    = "poster_path"
         case backdropPath  = "backdrop_path"
         case profilePath   = "profile_path"

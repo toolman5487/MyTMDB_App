@@ -13,6 +13,7 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         return tableView
     }()
     
@@ -55,20 +56,41 @@ extension SearchResultsView: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        var config = UIListContentConfiguration.subtitleCell()
         let result = results[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")
-            ?? UITableViewCell(style: .subtitle, reuseIdentifier: "Cell")
+        config.text = (result.mediaType == .movie ? result.title : result.name) ?? ""
         switch result.mediaType {
         case .movie:
-            cell.textLabel?.text = result.title
-            cell.detailTextLabel?.text = result.releaseDate
+            config.secondaryText = result.releaseDate
         case .tv:
-            cell.textLabel?.text = result.name
-            cell.detailTextLabel?.text = result.firstAirDate
+            config.secondaryText = result.firstAirDate
         case .person:
-            cell.textLabel?.text = result.name
+            config.secondaryText = result.overview
         }
+        
+        if let path = result.posterPath ?? result.profilePath,
+           let url = URL(string: "https://image.tmdb.org/t/p/w92\(path)") {
+            config.image = UIImage(systemName: "photo")
+            SDWebImageManager.shared.loadImage(
+                with: url,
+                options: [.highPriority],
+                progress: nil
+            ) { image, _, _, _, _, _ in
+                DispatchQueue.main.async {
+                    var updated = config
+                    updated.image = image
+                    cell.contentConfiguration = updated
+                }
+            }
+        } else {
+            config.image = UIImage(systemName: "photo")
+        }
+        config.imageProperties.maximumSize = CGSize(width: 60, height: 90)
+        config.imageProperties.cornerRadius = 4
+    
+        cell.contentConfiguration = config
+        cell.accessoryType = .disclosureIndicator
         return cell
     }
-    
 }
