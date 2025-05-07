@@ -86,7 +86,7 @@ struct Network: Decodable {
     let id: Int
     let name: String
     let logoPath: String?
-    let originCountry: String
+    let originCountry: String?
 
     enum CodingKeys: String, CodingKey {
         case id, name
@@ -99,9 +99,9 @@ struct TVProductionCompany: Decodable {
     let id: Int
     let name: String
     let logoPath: String?
-    let originCountry: String
+    let originCountry: String?
 
-    enum TVProductionCompanyCodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case id, name
         case logoPath     = "logo_path"
         case originCountry = "origin_country"

@@ -18,12 +18,12 @@ final class MovieDetailViewModel{
     private let movieId: Int
     private var cancellables = Set<AnyCancellable>()
     
-    init(movieId: Int, service: MovieServiceProtocol = MovieService()) {
+    init(movieId: Int, service: MovieServiceProtocol = MovieDetailService()) {
         self.movieId = movieId
         self.service = service
     }
     
-    func loadDetail() {
+    func fetchDetail() {
             isLoading = true
             errorMessage = nil
             service.fetchMovieDetail(id: movieId)

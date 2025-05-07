@@ -10,6 +10,7 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
     private var results: [MultiSearchResult] = []
     private var cancellables = Set<AnyCancellable>()
     var didSelectMovie: ((Int) -> Void)?
+    var didSelectTV: ((Int) -> Void)?
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -47,12 +48,6 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
         tableView.delegate   = self
         layout()
         bindViewModel()
-    }
-
-    private func showMovieDetail(with id: Int) {
-        let detailViewModel = MovieDetailViewModel(movieId: id)
-        let detailVC = MovieDetailView(viewModel: detailViewModel)
-        navigationController?.pushViewController(detailVC, animated: true)
     }
     
 }
@@ -95,17 +90,24 @@ extension SearchResultsView: UITableViewDataSource, UITableViewDelegate{
         }
         config.imageProperties.maximumSize = CGSize(width: 60, height: 90)
         config.imageProperties.cornerRadius = 4
-    
+        
         cell.contentConfiguration = config
         cell.accessoryType = .disclosureIndicator
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let result = results[indexPath.row]
-        guard result.mediaType == .movie, let id = result.id else { return }
-        didSelectMovie?(id)
-        showMovieDetail(with: id)
+        guard let id = result.id else { return }
+        switch result.mediaType {
+        case .movie:
+            didSelectMovie?(id)
+        case .tv:
+            print("tap tv id:", id)
+            didSelectTV?(id)
+        default:
+            break
+        }
     }
 }

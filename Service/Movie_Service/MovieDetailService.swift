@@ -12,7 +12,7 @@ protocol MovieServiceProtocol {
     func fetchMovieDetail(id: Int) -> AnyPublisher<MovieDetailModel, Error>
 }
 
-final class MovieService: MovieServiceProtocol {
+final class MovieDetailService: MovieServiceProtocol {
     private let apiKey = TMDB.apiKey
     func fetchMovieDetail(id: Int) -> AnyPublisher<MovieDetailModel, Error> {
         guard let url = URL(string: "\(TMDB.baseURL)/movie/\(id)?api_key=\(TMDB.apiKey)&language=zh-TW") else {

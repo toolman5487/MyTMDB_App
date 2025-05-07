@@ -253,7 +253,7 @@ class MovieDetailView:UIViewController{
         }
         
         titleStack.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(12)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalTo(backdropImageView.snp.bottom).offset(16)
         }
         
@@ -358,6 +358,6 @@ class MovieDetailView:UIViewController{
         super.viewDidLoad()
         layoutUI()
         bindViewModel()
-        viewModel.loadDetail()
+        viewModel.fetchDetail()
     }
 }

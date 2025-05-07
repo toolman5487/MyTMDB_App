@@ -71,13 +71,19 @@ class HomeView: UIViewController{
         definesPresentationContext = true
     }
     
-    private func configureSearchSelection() {
-        searchResultsView.didSelectMovie = { [weak self] movieId in
-            let detailVM = MovieDetailViewModel(movieId: movieId)
-            let detailVC = MovieDetailView(viewModel: detailVM)
-            self?.navigationController?.pushViewController(detailVC, animated: true)
-        }
+private func configureSearchSelection() {
+    searchResultsView.didSelectMovie = { [weak self] movieId in
+        let detailVM = MovieDetailViewModel(movieId: movieId)
+        let detailVC = MovieDetailView(viewModel: detailVM)
+        self?.navigationController?.pushViewController(detailVC, animated: true)
     }
+    searchResultsView.didSelectTV = { [weak self] tvId in
+        print("callback id:", tvId)
+        let tvVM = TVDetailViewModel(tvId: tvId)
+        let tvVC = TVDetailView(viewModel: tvVM)
+        self?.navigationController?.pushViewController(tvVC, animated: true)
+    }
+}
     
     private func layout() {
         view.addSubview(avatarImageView)
