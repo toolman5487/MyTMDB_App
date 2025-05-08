@@ -24,10 +24,12 @@ class MovieDetailView:UIViewController{
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let scrollView:UIScrollView = {
+    private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.contentInset.bottom = 40
+        scrollView.contentInset.bottom = 36
+        scrollView.alwaysBounceVertical = false
+        scrollView.bounces = false
         return scrollView
     }()
     
@@ -217,7 +219,6 @@ class MovieDetailView:UIViewController{
     
     private lazy var wholeStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [
-            backdropImageView,
             titleStack,
             voteStack,
             overviewStack,
@@ -226,7 +227,7 @@ class MovieDetailView:UIViewController{
         stack.axis = .vertical
         stack.spacing = 8
         stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 32, right: 0)
+        stack.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 32, right: 0)
         return stack
     }()
     
@@ -237,24 +238,23 @@ class MovieDetailView:UIViewController{
             make.edges.equalToSuperview()
         }
         
-        scrollView.addSubview(wholeStack)
+        scrollView.addSubview(backdropImageView)
+        backdropImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(300)
+        }
         
+        scrollView.addSubview(wholeStack)
         wholeStack.snp.makeConstraints { make in
-            make.top.equalTo(scrollView.contentLayoutGuide.snp.top)
+            make.top.equalTo(backdropImageView.snp.bottom).offset(-16)
             make.leading.trailing.equalTo(scrollView.contentLayoutGuide)
             make.bottom.equalTo(scrollView.contentLayoutGuide.snp.bottom)
             make.width.equalTo(scrollView.frameLayoutGuide)
         }
         
-        backdropImageView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview()
-            make.height.equalTo(300)
-        }
-        
         titleStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(backdropImageView.snp.bottom).offset(16)
         }
         
         voteStack.snp.makeConstraints { make in
@@ -358,6 +358,6 @@ class MovieDetailView:UIViewController{
         super.viewDidLoad()
         layoutUI()
         bindViewModel()
-        viewModel.fetchDetail()
+        viewModel.fetchMovieDetail()
     }
 }

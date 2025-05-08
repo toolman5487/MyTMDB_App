@@ -24,6 +24,15 @@ class TVDetailView: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private let tv_ScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.contentInset.bottom = 40
+        scrollView.alwaysBounceVertical = false
+        scrollView.bounces = false
+        return scrollView
+    }()
+    
     private let tvBackdropImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
@@ -35,26 +44,52 @@ class TVDetailView: UIViewController {
 
     private let tvTitleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 24)
-        label.numberOfLines = 2
+        label.font = ThemeFont.bold(ofSize: 32)
+        label.numberOfLines = 1
         label.text = "節目標題"
         return label
     }()
+    
+    private let tvFirstAirDateLabel: UILabel = {
+        let label = UILabel()
+        label.font = ThemeFont.regular(ofSize: 16)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    
+    private let tvOverviewLabel: UILabel = {
+       let label = UILabel()
+        label.font = ThemeFont.regular(ofSize: 12)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .left
+        label.numberOfLines = 3
+        label.text = "劇情簡介"
+        return label
+    }()
+    
+    
+    
 
     private func layoutUI() {
         view.backgroundColor = .systemBackground
-        view.addSubview(tvBackdropImageView)
-        view.addSubview(tvTitleLabel)
+        view.addSubview(tv_ScrollView)
+        tv_ScrollView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        tv_ScrollView.addSubview(tvBackdropImageView)
         tvBackdropImageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.height.equalTo(300)
         }
         
+        tv_ScrollView.addSubview(tvTitleLabel)
         tvTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(tvBackdropImageView.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
         }
-        
         
     }
     
@@ -78,6 +113,6 @@ class TVDetailView: UIViewController {
         super.viewDidLoad()
         layoutUI()
         bindViewModel()
-        viewModel.fetchDetail()
+        viewModel.fetchTVDetail()
     }
 }

@@ -23,7 +23,7 @@ final class MovieDetailViewModel{
         self.service = service
     }
     
-    func fetchDetail() {
+    func fetchMovieDetail() {
             isLoading = true
             errorMessage = nil
             service.fetchMovieDetail(id: movieId)

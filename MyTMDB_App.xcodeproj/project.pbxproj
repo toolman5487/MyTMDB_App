@@ -34,6 +34,10 @@
 		15C37E432DCB04E400BAE42F /* TVDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E422DCB04E400BAE42F /* TVDetailService.swift */; };
 		15C37E462DCB088400BAE42F /* TVDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E452DCB088400BAE42F /* TVDetailViewModel.swift */; };
 		15C37E492DCB389900BAE42F /* TVDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E482DCB389900BAE42F /* TVDetailView.swift */; };
+		15C37E4D2DCC85E600BAE42F /* PersonDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E4C2DCC85E600BAE42F /* PersonDetailModel.swift */; };
+		15C37E502DCC8B5A00BAE42F /* PersonService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E4F2DCC8B5A00BAE42F /* PersonService.swift */; };
+		15C37E532DCC8D2400BAE42F /* PersonDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E522DCC8D2400BAE42F /* PersonDetailViewModel.swift */; };
+		15C37E552DCC939000BAE42F /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C37E542DCC939000BAE42F /* PersonDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +85,10 @@
 		15C37E422DCB04E400BAE42F /* TVDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailService.swift; sourceTree = "<group>"; };
 		15C37E452DCB088400BAE42F /* TVDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailViewModel.swift; sourceTree = "<group>"; };
 		15C37E482DCB389900BAE42F /* TVDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailView.swift; sourceTree = "<group>"; };
+		15C37E4C2DCC85E600BAE42F /* PersonDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailModel.swift; sourceTree = "<group>"; };
+		15C37E4F2DCC8B5A00BAE42F /* PersonService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonService.swift; sourceTree = "<group>"; };
+		15C37E522DCC8D2400BAE42F /* PersonDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailViewModel.swift; sourceTree = "<group>"; };
+		15C37E542DCC939000BAE42F /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -171,6 +179,7 @@
 		1598AA8B2DC4B8F3005E972C /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				15C37E512DCC8D0800BAE42F /* Person_ViewModel */,
 				15C37E442DCB086500BAE42F /* TV_ViewModel */,
 				1598AC1C2DC9E05A005E972C /* Movie_ViewModel */,
 				1598AA962DC4BF57005E972C /* LoginViewModel.swift */,
@@ -183,6 +192,7 @@
 		1598AA8C2DC4B90C005E972C /* View */ = {
 			isa = PBXGroup;
 			children = (
+				15C37E562DCC939800BAE42F /* Person_View */,
 				15C37E472DCB388900BAE42F /* TV_View */,
 				1598AB0F2DC4C7D5005E972C /* Movie_View */,
 				1598AB0C2DC4C773005E972C /* Home_View */,
@@ -194,6 +204,7 @@
 		1598AA8D2DC4B912005E972C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				15C37E4A2DCC845900BAE42F /* Person_Models */,
 				1598AC3B2DCA0CD0005E972C /* TV_Models */,
 				1598AC162DC9B5EA005E972C /* Movie_Models */,
 				1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */,
@@ -214,6 +225,7 @@
 		1598AA912DC4BB8E005E972C /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				15C37E4E2DCC8B3E00BAE42F /* Person_Service */,
 				15C37E412DCB048C00BAE42F /* TV_Service */,
 				1598AC192DC9B939005E972C /* Movie_Service */,
 				1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */,
@@ -320,6 +332,38 @@
 				15C37E482DCB389900BAE42F /* TVDetailView.swift */,
 			);
 			path = TV_View;
+			sourceTree = "<group>";
+		};
+		15C37E4A2DCC845900BAE42F /* Person_Models */ = {
+			isa = PBXGroup;
+			children = (
+				15C37E4C2DCC85E600BAE42F /* PersonDetailModel.swift */,
+			);
+			path = Person_Models;
+			sourceTree = "<group>";
+		};
+		15C37E4E2DCC8B3E00BAE42F /* Person_Service */ = {
+			isa = PBXGroup;
+			children = (
+				15C37E4F2DCC8B5A00BAE42F /* PersonService.swift */,
+			);
+			path = Person_Service;
+			sourceTree = "<group>";
+		};
+		15C37E512DCC8D0800BAE42F /* Person_ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				15C37E522DCC8D2400BAE42F /* PersonDetailViewModel.swift */,
+			);
+			path = Person_ViewModel;
+			sourceTree = "<group>";
+		};
+		15C37E562DCC939800BAE42F /* Person_View */ = {
+			isa = PBXGroup;
+			children = (
+				15C37E542DCC939000BAE42F /* PersonDetailView.swift */,
+			);
+			path = Person_View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -474,10 +518,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15C37E502DCC8B5A00BAE42F /* PersonService.swift in Sources */,
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
 				1598AC3D2DCA0D1C005E972C /* TVDetailModel.swift in Sources */,
 				1598ABA22DC8B7F5005E972C /* SearchResultsView.swift in Sources */,
 				1598AB9C2DC8B0B6005E972C /* MultiSearchResultModel.swift in Sources */,
+				15C37E552DCC939000BAE42F /* PersonDetailView.swift in Sources */,
 				1598AC3A2DCA026E005E972C /* Constants.swift in Sources */,
 				1598AC182DC9B5FC005E972C /* MovieDetailModel.swift in Sources */,
 				15C37E432DCB04E400BAE42F /* TVDetailService.swift in Sources */,
@@ -487,6 +533,7 @@
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				1598AB9E2DC8B2C2005E972C /* MultiSearchService.swift in Sources */,
 				1598AB082DC4C2E0005E972C /* ThemeFont.swift in Sources */,
+				15C37E4D2DCC85E600BAE42F /* PersonDetailModel.swift in Sources */,
 				1598AC202DC9E966005E972C /* MovieDetailView.swift in Sources */,
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
@@ -497,6 +544,7 @@
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				15C37E462DCB088400BAE42F /* TVDetailViewModel.swift in Sources */,
 				1598AB112DC4C7FA005E972C /* MovieView.swift in Sources */,
+				15C37E532DCC8D2400BAE42F /* PersonDetailViewModel.swift in Sources */,
 				1598ABA02DC8B4A1005E972C /* MultiSearchViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

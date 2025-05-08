@@ -21,11 +21,12 @@ class LoginViewController: UIViewController {
     private let indicator = UIActivityIndicatorView(style: .medium)
     
     private let logoImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "tmdb_icon")
-        imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = .clear
-        return imageView
+        let image = UIImageView()
+        image.image = UIImage(named: "tmdb_icon_long")
+        image.contentMode = .scaleAspectFill
+        image.clipsToBounds = true
+        image.layer.cornerRadius = 10
+        return image
     }()
     
     private let headerLabel: UILabel = {
@@ -39,14 +40,14 @@ class LoginViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "UserID"
         textField.borderStyle = .roundedRect
-        textField.text = "WillyHsu"
+        textField.text = ""
         return textField
     }()
     
     private let passField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Password"
-        textField.text = "548798willy"
+        textField.text = ""
         textField.isSecureTextEntry = true
         textField.borderStyle = .roundedRect
         return textField
@@ -79,7 +80,7 @@ class LoginViewController: UIViewController {
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        navigationItem.title = "TMDB"
+        navigationItem.title = "登入"
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
     }
@@ -87,7 +88,8 @@ class LoginViewController: UIViewController {
     private func layout(){
         view.addSubview(logoImage)
         logoImage.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(32)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(92)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(100)
         }

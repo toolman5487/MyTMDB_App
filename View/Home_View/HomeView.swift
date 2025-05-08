@@ -83,6 +83,13 @@ private func configureSearchSelection() {
         let tvVC = TVDetailView(viewModel: tvVM)
         self?.navigationController?.pushViewController(tvVC, animated: true)
     }
+    
+    searchResultsView.didSelectPerson = { [weak self] personId in
+        let personVM = PersonDetailViewModel(personId: personId)
+        let personVC = PersonDetailView(viewModel: personVM)
+        self?.navigationController?.pushViewController(personVC, animated: true)
+    }
+    
 }
     
     private func layout() {

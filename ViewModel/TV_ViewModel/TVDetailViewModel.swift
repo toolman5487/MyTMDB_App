@@ -21,10 +21,10 @@ class TVDetailViewModel {
         self.tvId = tvId
         self.service = service
         print("VM got id:", tvId)
-        fetchDetail()
+        fetchTVDetail()
     }
 
-    func fetchDetail() {
+    func fetchTVDetail() {
         isLoading = true
         service.fetchTVDetail(id: tvId)
             .receive(on: DispatchQueue.main)

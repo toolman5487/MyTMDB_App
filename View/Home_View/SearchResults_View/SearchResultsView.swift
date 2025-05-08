@@ -11,6 +11,7 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
     private var cancellables = Set<AnyCancellable>()
     var didSelectMovie: ((Int) -> Void)?
     var didSelectTV: ((Int) -> Void)?
+    var didSelectPerson: ((Int) -> Void)?
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -48,6 +49,13 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
         tableView.delegate   = self
         layout()
         bindViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
     
 }
@@ -97,17 +105,16 @@ extension SearchResultsView: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
         let result = results[indexPath.row]
         guard let id = result.id else { return }
         switch result.mediaType {
-        case .movie:
-            didSelectMovie?(id)
+        case .person:
+            didSelectPerson?(id)
         case .tv:
             print("tap tv id:", id)
             didSelectTV?(id)
         default:
-            break
+            didSelectMovie?(id)
         }
     }
 }
