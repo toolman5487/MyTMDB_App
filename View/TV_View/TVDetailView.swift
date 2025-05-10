@@ -8,12 +8,12 @@ class TVDetailView: UITableViewController{
     private var tvSeries: TVDetailModel?
     
     private let posterImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        iv.clipsToBounds = true
-        iv.backgroundColor = .tertiarySystemFill
-        iv.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 200)
-        return iv
+        let image = UIImageView()
+        image.contentMode = .scaleAspectFill
+        image.clipsToBounds = true
+        image.backgroundColor = .tertiarySystemFill
+        image.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 200)
+        return image
     }()
 
     init(viewModel: TVDetailViewModel) {
@@ -74,8 +74,7 @@ class TVDetailView: UITableViewController{
 
     override func tableView(_ tableView: UITableView,cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        guard let tvseries = tvSeries,
-              let section = Section(rawValue: indexPath.section) else { return cell }
+        guard let tvseries = tvSeries, let section = Section(rawValue: indexPath.section) else { return cell }
         var config = UIListContentConfiguration.cell()
 
         switch section {

@@ -53,4 +53,3 @@ struct ProductionCompany: Codable {
         case originCountry = "origin_country"
     }
 }
-

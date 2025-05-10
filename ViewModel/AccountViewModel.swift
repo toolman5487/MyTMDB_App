@@ -11,6 +11,9 @@ import Combine
 final class AccountViewModel {
     @Published private(set) var account: Account?
     @Published private(set) var errorMessage: String?
+    
+    @Published private(set) var favoriteMovies: [FavoriteMovieItem] = []
+    @Published private(set) var favoriteTV: [TVDetailModel] = []
 
     private let service: AccountServiceProtocol
     private var cancellables = Set<AnyCancellable>()
@@ -29,5 +32,30 @@ final class AccountViewModel {
             self.account = account
           }
           .store(in: &cancellables)
+    }
+
+    func loadFavorites(accountId: Int, sessionId: String) {
+        service.fetchFavoriteMovies(accountId: accountId, sessionId: sessionId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] movies in
+                print("VM recevie number of favoriteMovies ：", movies.count)
+                self?.favoriteMovies = movies
+            }
+            .store(in: &cancellables)
+
+        service.fetchFavoriteTV(accountId: accountId, sessionId: sessionId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] tv in
+                self?.favoriteTV = tv
+            }
+            .store(in: &cancellables)
     }
 }

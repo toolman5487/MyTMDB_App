@@ -23,8 +23,8 @@ class LoginViewController: UIViewController {
     private let logoImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "tmdb_icon_long")
-        image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
+        image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 10
         return image
     }()
@@ -91,7 +91,7 @@ class LoginViewController: UIViewController {
             make.top.equalTo(view.safeAreaLayoutGuide).offset(92)
             make.leading.trailing.equalToSuperview().inset(16)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(100)
+            make.height.equalTo(100)
         }
         
         view.addSubview(loginStack)
@@ -145,16 +145,9 @@ class LoginViewController: UIViewController {
         loginVM.$sessionId
             .compactMap { $0 }
             .sink { [weak self] sessionId in
-                print("Logged in session ID:", sessionId)
                 UserDefaults.standard.set(sessionId, forKey: "TMDBSessionID")
-                guard let windowScene = self?.view.window?.windowScene,
-                      let sceneDelegate = windowScene.delegate as? SceneDelegate,
-                      let window = sceneDelegate.window else {
-                    return
-                }
-                let tabBar = MainTabBarController()
-                window.rootViewController = tabBar
-                window.makeKeyAndVisible()
+                print("Session ID:", sessionId)
+                self?.accountVM.loadAccount(sessionId: sessionId)
             }
             .store(in: &cancellables)
         
@@ -166,6 +159,22 @@ class LoginViewController: UIViewController {
                 self?.present(alert, animated: true)
                 self?.loginBotton.isEnabled = true
                 self?.indicator.stopAnimating()
+            }
+            .store(in: &cancellables)
+        
+        accountVM.$account
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] account in
+                print("Account ID:", account.id)
+                guard let windowScene = self?.view.window?.windowScene,
+                      let sceneDelegate = windowScene.delegate as? SceneDelegate,
+                      let window = sceneDelegate.window else {
+                  return
+                }
+                let tabBar = MainTabBarController()
+                window.rootViewController = tabBar
+                window.makeKeyAndVisible()
             }
             .store(in: &cancellables)
     }
