@@ -15,7 +15,8 @@ class HomeView: UIViewController{
     
     private let accountVM = AccountViewModel()
     private var cancellables = Set<AnyCancellable>()
-    private let favoritesCarousel = FavoriteMoviesCarouselView()
+    private let favoriteMoviesCarousel = FavoriteMoviesCarouselView()
+    private let favoriteTVCarousel = FavoriteTVCarouselView()
     
     private let searchResultsView = SearchResultsView()
     private lazy var searchController: UISearchController = {
@@ -44,7 +45,6 @@ class HomeView: UIViewController{
         return label
     }()
     
-    /// Header container for avatar and username
     private lazy var headerStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [
             avatarImageView,
@@ -59,6 +59,17 @@ class HomeView: UIViewController{
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         return stack
+    }()
+    
+    private let scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.showsVerticalScrollIndicator = true
+        return scroll
+    }()
+    
+    private let contentView: UIView = {
+        let view = UIView()
+        return view
     }()
     
     private func bindAccountVM() {
@@ -89,8 +100,15 @@ class HomeView: UIViewController{
         accountVM.$favoriteMovies
             .receive(on: DispatchQueue.main)
             .sink { [weak self] movies in
-                print("Loaded favoriteMovies count:", movies.count)
-                self?.favoritesCarousel.update(with: movies)
+                self?.favoriteMoviesCarousel.update(with: movies)
+            }
+            .store(in: &cancellables)
+        
+        accountVM.$favoriteTV
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] tv in
+                print("Loaded favoriteTV count:", tv.count)
+                self?.favoriteTVCarousel.update(with: tv)
             }
             .store(in: &cancellables)
     }
@@ -121,32 +139,55 @@ class HomeView: UIViewController{
             let personVC = PersonDetailView(viewModel: personVM)
             self?.navigationController?.pushViewController(personVC, animated: true)
         }
+    }
+    
+    private func configureFavoritesSelection() {
+        favoriteMoviesCarousel.didSelectMovie = { [weak self] movie in
+            let vm = MovieDetailViewModel(movieId: movie.id)
+            let vc = MovieDetailView(viewModel: vm)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
         
+        favoriteTVCarousel.didSelectTV = { [weak self] tv in
+            let vm = TVDetailViewModel(tvId: tv.id)
+            let vc  = TVDetailView(viewModel: vm)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
     private func layout() {
-        view.addSubview(headerStack)
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        scrollView.addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
+        }
+
+        contentView.addSubview(headerStack)
         headerStack.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(8)
         }
         avatarImageView.snp.makeConstraints { make in
             make.height.width.equalTo(60)
         }
         
-        view.addSubview(favoritesCarousel)
-        favoritesCarousel.snp.makeConstraints { make in
-            make.top.equalTo(headerStack.snp.bottom).offset(16)
+        contentView.addSubview(favoriteMoviesCarousel)
+        favoriteMoviesCarousel.snp.makeConstraints { make in
+            make.top.equalTo(headerStack.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(180)
+            make.height.equalTo(300)
         }
-    }
-    
-    private func configureFavoritesSelection() {
-        favoritesCarousel.didSelectMovie = { [weak self] movie in
-            let vm = MovieDetailViewModel(movieId: movie.id)
-            let vc = MovieDetailView(viewModel: vm)
-            self?.navigationController?.pushViewController(vc, animated: true)
+        
+        contentView.addSubview(favoriteTVCarousel)
+        favoriteTVCarousel.snp.makeConstraints { make in
+            make.top.equalTo(favoriteMoviesCarousel.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(300)
+            make.bottom.equalToSuperview().offset(-16)
         }
     }
     

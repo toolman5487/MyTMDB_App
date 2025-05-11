@@ -13,7 +13,7 @@ final class AccountViewModel {
     @Published private(set) var errorMessage: String?
     
     @Published private(set) var favoriteMovies: [FavoriteMovieItem] = []
-    @Published private(set) var favoriteTV: [TVDetailModel] = []
+    @Published private(set) var favoriteTV: [FavoriteTVItem] = []
 
     private let service: AccountServiceProtocol
     private var cancellables = Set<AnyCancellable>()
@@ -42,7 +42,6 @@ final class AccountViewModel {
                     self?.errorMessage = error.localizedDescription
                 }
             } receiveValue: { [weak self] movies in
-                print("VM recevie number of favoriteMovies ：", movies.count)
                 self?.favoriteMovies = movies
             }
             .store(in: &cancellables)
@@ -54,6 +53,7 @@ final class AccountViewModel {
                     self?.errorMessage = error.localizedDescription
                 }
             } receiveValue: { [weak self] tv in
+                print("VM recevie ：", tv.count)
                 self?.favoriteTV = tv
             }
             .store(in: &cancellables)

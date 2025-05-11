@@ -1,19 +1,20 @@
 //
-//  FavoriteMoviesCarouselView.swift
+//  FavoriteTVCarouselView.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2025/05/10.
+//  Created by Willy Hsu on 2025/5/11.
 //
 
+import Foundation
 import UIKit
 import SnapKit
 import SDWebImage
+import Combine
 
-
-class FavoriteMoviesCarouselView: UIView {
+class FavoriteTVCarouselView:UIView{
     
-    private var movies: [FavoriteMovieItem] = []
-    var didSelectMovie: ((FavoriteMovieItem) -> Void)?
+    private var tvItems:[FavoriteTVItem] = []
+    var didSelectTV: ((FavoriteTVItem) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,11 +27,11 @@ class FavoriteMoviesCarouselView: UIView {
         backgroundColor = .secondarySystemBackground
     }
     
-    private let headerLabel: UILabel = {
+    private let tvHeaderLabel: UILabel = {
         let label = UILabel()
         label.font = ThemeFont.bold(ofSize: 24)
         label.textColor = .label
-        label.text = "我的最愛電影"
+        label.text = "我的最愛影集"
         return label
     }()
     
@@ -44,48 +45,51 @@ class FavoriteMoviesCarouselView: UIView {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.showsHorizontalScrollIndicator = false
         collection.backgroundColor = .clear
-        collection.register(FavoriteMovieCardCell.self, forCellWithReuseIdentifier: "FavoriteMovieCardCell")
+        collection.register(FavoriteTVCardCell.self, forCellWithReuseIdentifier: "FavoriteTVCardCell")
         
         collection.dataSource = self
         collection.delegate = self
         return collection
     }()
     
-    
     private func setupLayout() {
-        addSubview(headerLabel)
+        addSubview(tvHeaderLabel)
         addSubview(collectionView)
-        headerLabel.snp.makeConstraints { make in
+        tvHeaderLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(16)
             make.leading.equalToSuperview().inset(16)
             make.trailing.equalToSuperview().inset(16)
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(headerLabel.snp.bottom).offset(8)
+            make.top.equalTo(tvHeaderLabel.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(300)
         }
     }
     
-    func update(with movies: [FavoriteMovieItem]) {
-        self.movies = movies
+    func update(with items: [FavoriteTVItem]) {
+        self.tvItems = items
+        print("Carousel update：", items.map(\.name))
         collectionView.reloadData()
     }
 }
 
-extension FavoriteMoviesCarouselView: UICollectionViewDataSource, UICollectionViewDelegate{
+extension FavoriteTVCarouselView: UICollectionViewDataSource, UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movies.count
+        print("numberOfItemsInSection:", tvItems.count)
+        return tvItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteMovieCardCell", for: indexPath) as! FavoriteMovieCardCell
-        let movie = movies[indexPath.item]
-        cell.favoriteMovievConfigure(with: movie)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteTVCardCell", for: indexPath) as! FavoriteTVCardCell
+        let tv = tvItems[indexPath.item]
+        cell.favoriteTVConfigure(with: tv)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        didSelectMovie?(movies[indexPath.item])
+        didSelectTV?(tvItems[indexPath.item])
     }
+    
 }
+

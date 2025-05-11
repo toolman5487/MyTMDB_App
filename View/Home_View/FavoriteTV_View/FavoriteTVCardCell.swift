@@ -1,16 +1,17 @@
 //
-//  FavoriteMovieCardCell.swift
+//  FavoriteTVCardCell.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2025/5/10.
+//  Created by Willy Hsu on 2025/5/11.
 //
 
+import Foundation
 import Foundation
 import UIKit
 import SnapKit
 import SDWebImage
 
-class FavoriteMovieCardCell: UICollectionViewCell {
+class FavoriteTVCardCell:UICollectionViewCell{
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -62,10 +63,10 @@ class FavoriteMovieCardCell: UICollectionViewCell {
             make.bottom.lessThanOrEqualToSuperview().inset(4)
         }
     }
-
-    func favoriteMovievConfigure(with item: FavoriteMovieItem) {
-        titleLabel.text = item.title
-        subtitleLabel.text = item.releaseDate?
+    
+    func favoriteTVConfigure(with item: FavoriteTVItem){
+        titleLabel.text = item.name
+        subtitleLabel.text = item.firstAirDate?
             .split(separator: "-")
             .first
             .map(String.init)
