@@ -10,13 +10,25 @@ import SnapKit
 import Combine
 import SDWebImage
 
+
 class MovieDetailView: UITableViewController {
     private let viewModel: MovieDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     private var movie: MovieDetailModel?
+    private var creditsViewModel: MovieCreditsViewModel!
+    private var castMembers: [CastMember] = []
+    
+    private let posterImageView: UIImageView = {
+        let image = UIImageView()
+        image.contentMode = .scaleAspectFit
+        image.clipsToBounds = true
+        image.frame = CGRect(x: 0,y: 0,width: UIScreen.main.bounds.width,height: 250)
+        return image
+    }()
     
     init(viewModel: MovieDetailViewModel) {
         self.viewModel = viewModel
+        self.creditsViewModel = MovieCreditsViewModel(movieId: viewModel.movieId)
         super.init(style: .insetGrouped)
         navigationItem.largeTitleDisplayMode = .always
         title = "電影詳情"
@@ -40,28 +52,26 @@ class MovieDetailView: UITableViewController {
                 if let path = model.backdropPath ?? model.posterPath,
                    let url = URL(string: "https://image.tmdb.org/t/p/w500\(path)"),
                    let strongSelf = self {
-                    let headerContainer = UIView()
-                    let headerImageView = UIImageView()
-                    headerContainer.addSubview(headerImageView)
-                    headerImageView.sd_setImage(with: url)
-                    headerImageView.contentMode = .scaleAspectFill
-                    headerImageView.clipsToBounds = true
-                    headerImageView.snp.makeConstraints { make in
-                        make.edges.equalToSuperview()
-                        make.height.equalTo(strongSelf.tableView.bounds.width / 2)
-                    }
-                    headerContainer.frame = CGRect(x: 0,y: 0,
-                                                   width: strongSelf.tableView.bounds.width,
-                                                   height: strongSelf.tableView.bounds.width / 2)
-                    strongSelf.tableView.tableHeaderView = headerContainer
+                    strongSelf.posterImageView.sd_setImage(with: url)
+                    strongSelf.tableView.tableHeaderView = strongSelf.posterImageView
                 }
                 self?.tableView.reloadData()
             }
             .store(in: &cancellables)
     }
     
+    private func bindCredits() {
+        creditsViewModel.$cast
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] cast in
+                self?.castMembers = cast
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
+    }
+    
     enum Section: Int, CaseIterable {
-        case info, review, overview, production
+        case info, review, overview, cast, production
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -77,6 +87,8 @@ class MovieDetailView: UITableViewController {
             return m.overview.isEmpty ? 0 : 1
         case .review:
             return 4
+        case .cast:
+            return castMembers.count
         case .production:
             return m.productionCompanies.count
         }
@@ -91,6 +103,8 @@ class MovieDetailView: UITableViewController {
             return "劇情簡介"
         case .review:
             return "電影評價"
+        case .cast:
+            return "演員"
         case .production:
             return "製作公司"
         }
@@ -98,6 +112,7 @@ class MovieDetailView: UITableViewController {
     
     override func tableView(_ tableView: UITableView,cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.accessoryType = .none
         guard let movie = movie,
               let section = Section(rawValue: indexPath.section) else { return cell }
         var config = UIListContentConfiguration.cell()
@@ -147,6 +162,17 @@ class MovieDetailView: UITableViewController {
             cell.contentConfiguration = config
             cell.selectionStyle = .none
             
+        case .cast:
+            var config = UIListContentConfiguration.subtitleCell()
+            let member = castMembers[indexPath.row]
+            config.text = member.name
+            config.secondaryText = member.character ?? "未提供角色"
+            config.secondaryTextProperties.color = .secondaryLabel
+            cell.contentConfiguration = config
+            cell.selectionStyle = .default
+            cell.accessoryType = .disclosureIndicator
+            return cell
+            
         case .production:
             let company = movie.productionCompanies[indexPath.row].name
             config.text = company
@@ -157,10 +183,22 @@ class MovieDetailView: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if let section = Section(rawValue: indexPath.section), section == .cast {
+            let member = castMembers[indexPath.row]
+            let viewModel = PersonDetailViewModel(personId: member.id)
+            let vc = PersonDetailView(viewModel: viewModel)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableView()
         bindViewModel()
+        bindCredits()
+        creditsViewModel.loadCredits()
         viewModel.fetchMovieDetail()
     }
 }

@@ -15,7 +15,7 @@ final class MovieDetailViewModel{
     @Published private(set) var errorMessage: String?
     
     private let service: MovieServiceProtocol
-    private let movieId: Int
+    let movieId: Int
     private var cancellables = Set<AnyCancellable>()
     
     init(movieId: Int, service: MovieServiceProtocol = MovieDetailService()) {

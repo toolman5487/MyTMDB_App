@@ -83,6 +83,8 @@ class HomeView: UIViewController{
             .sink { [weak self] account in
                 self?.usernameLabel.text = account.username
                 UserDefaults.standard.set(account.id, forKey: "TMDBAccountID")
+                print(UserDefaults.standard.string(forKey: "TMDBSessionID"))
+                print(UserDefaults.standard.integer(forKey: "TMDBAccountID"))
                 if let path = account.avatar.tmdb.avatar_path {
                     let url = URL(string: "https://image.tmdb.org/t/p/w200\(path)")
                     self?.avatarImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.circle"))

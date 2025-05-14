@@ -9,10 +9,9 @@ class TVDetailView: UITableViewController{
     
     private let posterImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleAspectFill
+        image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
-        image.backgroundColor = .tertiarySystemFill
-        image.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 200)
+        image.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 250)
         return image
     }()
 
@@ -22,8 +21,6 @@ class TVDetailView: UITableViewController{
         navigationItem.largeTitleDisplayMode = .always
         title = "影集詳情"
     }
-
-    @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func bindViewModel() {
@@ -48,7 +45,7 @@ class TVDetailView: UITableViewController{
     
 
     enum Section: Int, CaseIterable {
-        case info, overview, production
+        case info, overview, seasons, production
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -56,11 +53,12 @@ class TVDetailView: UITableViewController{
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let s = tvSeries else { return 0 }
+        guard let series = tvSeries else { return 0 }
         switch Section(rawValue: section)! {
         case .info:       return 3
-        case .overview:   return s.overview.isEmpty ? 0 : 1
-        case .production: return s.productionCompanies.count ?? 0
+        case .overview:   return series.overview.isEmpty ? 0 : 1
+        case .seasons:    return series.seasons.count
+        case .production: return series.productionCompanies.count ?? 0
         }
     }
 
@@ -68,6 +66,7 @@ class TVDetailView: UITableViewController{
         switch Section(rawValue: section)! {
         case .info:     return "基本資訊"
         case .overview: return "劇情簡介"
+        case .seasons:  return "季別"
         case .production: return "製作公司"
         }
     }
@@ -106,14 +105,30 @@ class TVDetailView: UITableViewController{
             overviewCell.selectionStyle = .none
             return overviewCell
 
+        case .seasons:
+            let season = tvseries.seasons[indexPath.row]
+            config.text = season.name
+            config.secondaryText = "\(season.episodeCount) 集"
+            cell.selectionStyle = .default
+            cell.accessoryType = .disclosureIndicator
+        
         case .production:
-            let prod = tvseries.productionCompanies[indexPath.row].name ?? ""
-            config.text = prod
+            let company = tvseries.productionCompanies[indexPath.row]
+            config.text = company.name ?? "未知公司"
             cell.selectionStyle = .none
         }
 
         cell.contentConfiguration = config
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let section = Section(rawValue: indexPath.section),section == .seasons,
+              let series = tvSeries else { return }
+        let season = series.seasons[indexPath.row]
+        let seasonVC = SeasonDetailView(tvId: series.id, seasonNumber: season.seasonNumber)
+        navigationController?.pushViewController(seasonVC, animated: true)
     }
     
     private func configureTVTableView(){

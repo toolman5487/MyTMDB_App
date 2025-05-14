@@ -19,7 +19,7 @@ final class MultiSearchService: MultiSearchServiceProtocol {
 
     func search(query: String) -> AnyPublisher<MultiSearchResponse, Error> {
         guard let esc = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-            let url = URL(string: "\(baseURL)?api_key=\(apiKey)&query=\(esc)")
+            let url = URL(string: "\(baseURL)?api_key=\(apiKey)&query=\(esc)&language=zh-TW")
         else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }

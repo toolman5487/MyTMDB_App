@@ -1,43 +1,44 @@
 //
-//  TVDetailViewModel.swift
+//  SeasonDetailViewModel.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2025/5/7.
+//  Created by Willy Hsu on 2025/5/12.
 //
 
 import Foundation
 import Combine
 
-class TVDetailViewModel {
-    @Published private(set) var tvSeries: TVDetailModel?
+class SeasonDetailViewModel {
+    @Published private(set) var episodes: [EpisodeModel] = []
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String?
 
     private let service: TVDetailServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     private let tvId: Int
+    private let seasonNumber: Int
 
-    init(tvId: Int, service: TVDetailServiceProtocol = TVDetailService()) {
+    init(tvId: Int, seasonNumber: Int, service: TVDetailServiceProtocol = TVDetailService()) {
         self.tvId = tvId
+        self.seasonNumber = seasonNumber
         self.service = service
-        print("VM got id:", tvId)
-        fetchTVDetail()
     }
 
-    func fetchTVDetail() {
+    func fetchEpisodes() {
         isLoading = true
-        service.fetchTVDetail(id: tvId)
+        service.fetchSeasonDetail(tvId: tvId, seasonNumber: seasonNumber)
+            .map(\.episodes)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
+                self?.isLoading = false
                 switch completion {
                 case .finished:
                     break
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription
                 }
-            } receiveValue: { [weak self] model in
-                print("got model:", model.name)
-                self?.tvSeries = model
+            } receiveValue: { [weak self] episodes in
+                self?.episodes = episodes
             }
             .store(in: &cancellables)
     }
