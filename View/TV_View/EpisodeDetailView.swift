@@ -36,8 +36,8 @@ class EpisodeDetailView: UITableViewController {
         case basicInfo = 0
         case playbackInfo
         case ratingInfo
-        case cast
         case overview
+        case cast
     }
     
     private func configureSections() {
@@ -71,8 +71,8 @@ class EpisodeDetailView: UITableViewController {
             DetailSection(title: "基本資訊", items: basicInfoItems),
             DetailSection(title: "播放資訊", items: playbackInfoItems),
             DetailSection(title: "評分資訊", items: ratingInfoItems),
-            DetailSection(title: "演員", items: castItems),
-            DetailSection(title: "劇情概要", items: overviewItems)
+            DetailSection(title: "劇情概要", items: overviewItems),
+            DetailSection(title: "演員", items: castItems)
         ]
     }
     

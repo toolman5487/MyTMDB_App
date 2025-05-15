@@ -24,7 +24,7 @@ struct FavoriteMovieItem: Decodable {
     }
 }
 
-struct FavoriteMoviesResponseModel: Decodable {
+struct FavoriteMoviesResponse: Decodable {
     let page: Int
        let results: [FavoriteMovieItem]
        let totalPages: Int

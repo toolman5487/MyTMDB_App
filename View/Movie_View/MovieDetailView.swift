@@ -17,6 +17,9 @@ class MovieDetailView: UITableViewController {
     private var movie: MovieDetailModel?
     private var creditsViewModel: MovieCreditsViewModel!
     private var castMembers: [CastMember] = []
+    private var favoriteViewModel: FavoriteViewModel!
+    private let accountId: Int
+    private let sessionId: String
     
     private let posterImageView: UIImageView = {
         let image = UIImageView()
@@ -26,9 +29,11 @@ class MovieDetailView: UITableViewController {
         return image
     }()
     
-    init(viewModel: MovieDetailViewModel) {
+    init(viewModel: MovieDetailViewModel, accountId: Int, sessionId: String) {
         self.viewModel = viewModel
         self.creditsViewModel = MovieCreditsViewModel(movieId: viewModel.movieId)
+        self.accountId = accountId
+        self.sessionId = sessionId
         super.init(style: .insetGrouped)
         navigationItem.largeTitleDisplayMode = .always
         title = "電影詳情"
@@ -40,6 +45,17 @@ class MovieDetailView: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+    }
+
+    private func configureNavigationBarItems() {
+        let imageName = favoriteViewModel.isFavorite ? "heart.fill" : "heart"
+        let heartItem = UIBarButtonItem(
+            image: UIImage(systemName: imageName),
+            style: .plain,
+            target: self,
+            action: #selector(toggleFavorite)
+        )
+        navigationItem.rightBarButtonItem = heartItem
     }
     
     private func bindViewModel() {
@@ -58,14 +74,19 @@ class MovieDetailView: UITableViewController {
                 self?.tableView.reloadData()
             }
             .store(in: &cancellables)
-    }
-    
-    private func bindCredits() {
+        
         creditsViewModel.$cast
             .receive(on: DispatchQueue.main)
             .sink { [weak self] cast in
                 self?.castMembers = cast
                 self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
+        
+        favoriteViewModel.$isFavorite
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.configureNavigationBarItems()
             }
             .store(in: &cancellables)
     }
@@ -115,7 +136,7 @@ class MovieDetailView: UITableViewController {
         cell.accessoryType = .none
         guard let movie = movie,
               let section = Section(rawValue: indexPath.section) else { return cell }
-        var config = UIListContentConfiguration.cell()
+        var config = cell.defaultContentConfiguration()
         
         switch section {
         case .info:
@@ -179,7 +200,6 @@ class MovieDetailView: UITableViewController {
             cell.contentConfiguration = config
             cell.selectionStyle = .none
         }
-        
         return cell
     }
     
@@ -193,11 +213,23 @@ class MovieDetailView: UITableViewController {
         }
     }
 
+    @objc private func toggleFavorite() {
+        favoriteViewModel.toggleFavorite()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureTableView()
+        favoriteViewModel = FavoriteViewModel(
+            mediaType: "movie",
+            mediaId: viewModel.movieId,
+            accountId: accountId,
+            sessionId: sessionId
+        )
+       
+        configureNavigationBarItems()
         bindViewModel()
-        bindCredits()
+        favoriteViewModel.fetchFavoriteState()
+        configureTableView()
         creditsViewModel.loadCredits()
         viewModel.fetchMovieDetail()
     }

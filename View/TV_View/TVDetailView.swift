@@ -1,10 +1,13 @@
 import UIKit
 import Combine
 import SDWebImage
+import Combine
+import Foundation
 
 class TVDetailView: UITableViewController{
     private let viewModel: TVDetailViewModel
     private var cancellables = Set<AnyCancellable>()
+    private var favoriteViewModel: FavoriteViewModel!
     private var tvSeries: TVDetailModel?
     
     private let posterImageView: UIImageView = {
@@ -39,10 +42,31 @@ class TVDetailView: UITableViewController{
                     }
                 }
                 self?.tableView.reloadData()
+                if self?.favoriteViewModel == nil {
+                    let sid = UserDefaults.standard.string(forKey: "TMDBSessionID") ?? ""
+                    let aid = UserDefaults.standard.integer(forKey: "TMDBAccountID")
+                    let favoriteVM = FavoriteViewModel(mediaType: "tv",
+                                                  mediaId: model.id,
+                                                  accountId: aid,
+                                                  sessionId: sid)
+                    self?.favoriteViewModel = favoriteVM
+                    favoriteVM.$isFavorite
+                        .receive(on: DispatchQueue.main)
+                        .sink { [weak self] _ in
+                            self?.configureNavigationBarItems()
+                        }
+                        .store(in: &self!.cancellables)
+                  
+                    self?.configureNavigationBarItems()
+                    favoriteVM.fetchFavoriteState()
+                }
             }
             .store(in: &cancellables)
     }
     
+    @objc private func toggleFavorite() {
+        favoriteViewModel.toggleFavorite()
+    }
 
     enum Section: Int, CaseIterable {
         case info, overview, seasons, production
@@ -136,12 +160,27 @@ class TVDetailView: UITableViewController{
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.tableHeaderView = posterImageView
+    }
+    
+
+    private func configureNavigationBarItems() {
+        guard let favVM = favoriteViewModel else { return }
+        let imageName = favVM.isFavorite ? "heart.fill" : "heart"
+        let heartItem = UIBarButtonItem(
+            image: UIImage(systemName: imageName),
+            style: .plain,
+            target: self,
+            action: #selector(toggleFavorite)
+        )
+        heartItem.tintColor = .systemPink
+        navigationItem.rightBarButtonItem = heartItem
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTVTableView()
-        tableView.tableHeaderView = posterImageView
+        configureNavigationBarItems()
         bindViewModel()
         viewModel.fetchTVDetail()
     }

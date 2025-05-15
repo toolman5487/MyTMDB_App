@@ -125,8 +125,10 @@ class HomeView: UIViewController{
     
     private func configureSearchSelection() {
         searchResultsView.didSelectMovie = { [weak self] movieId in
+            guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
+                  let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int else { return }
             let detailVM = MovieDetailViewModel(movieId: movieId)
-            let detailVC = MovieDetailView(viewModel: detailVM)
+            let detailVC = MovieDetailView(viewModel: detailVM, accountId: accountId, sessionId: sessionId)
             self?.navigationController?.pushViewController(detailVC, animated: true)
         }
         searchResultsView.didSelectTV = { [weak self] tvId in
@@ -145,8 +147,10 @@ class HomeView: UIViewController{
     
     private func configureFavoritesSelection() {
         favoriteMoviesCarousel.didSelectMovie = { [weak self] movie in
+            guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
+                  let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int else { return }
             let vm = MovieDetailViewModel(movieId: movie.id)
-            let vc = MovieDetailView(viewModel: vm)
+            let vc = MovieDetailView(viewModel: vm, accountId: accountId, sessionId: sessionId)
             self?.navigationController?.pushViewController(vc, animated: true)
         }
         
@@ -190,6 +194,14 @@ class HomeView: UIViewController{
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(300)
             make.bottom.equalToSuperview().offset(-16)
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
+           let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int {
+            accountVM.loadFavorites(accountId: accountId, sessionId: sessionId)
         }
     }
     
