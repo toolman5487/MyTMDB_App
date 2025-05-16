@@ -109,7 +109,6 @@ class HomeView: UIViewController{
         accountVM.$favoriteTV
             .receive(on: DispatchQueue.main)
             .sink { [weak self] tv in
-                print("Loaded favoriteTV count:", tv.count)
                 self?.favoriteTVCarousel.update(with: tv)
             }
             .store(in: &cancellables)
@@ -120,6 +119,7 @@ class HomeView: UIViewController{
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.title = "首頁"
         navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
     }
     
@@ -132,9 +132,10 @@ class HomeView: UIViewController{
             self?.navigationController?.pushViewController(detailVC, animated: true)
         }
         searchResultsView.didSelectTV = { [weak self] tvId in
-            print("callback id:", tvId)
+            guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
+                  let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int else { return }
             let tvVM = TVDetailViewModel(tvId: tvId)
-            let tvVC = TVDetailView(viewModel: tvVM)
+            let tvVC = TVDetailView(viewModel: tvVM, accountId: accountId, sessionId: sessionId)
             self?.navigationController?.pushViewController(tvVC, animated: true)
         }
         
@@ -149,14 +150,16 @@ class HomeView: UIViewController{
         favoriteMoviesCarousel.didSelectMovie = { [weak self] movie in
             guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
                   let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int else { return }
-            let vm = MovieDetailViewModel(movieId: movie.id)
-            let vc = MovieDetailView(viewModel: vm, accountId: accountId, sessionId: sessionId)
+            let movieVM = MovieDetailViewModel(movieId: movie.id)
+            let vc = MovieDetailView(viewModel: movieVM, accountId: accountId, sessionId: sessionId)
             self?.navigationController?.pushViewController(vc, animated: true)
         }
         
         favoriteTVCarousel.didSelectTV = { [weak self] tv in
-            let vm = TVDetailViewModel(tvId: tv.id)
-            let vc  = TVDetailView(viewModel: vm)
+            guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
+                  let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int else { return }
+            let tvVM = TVDetailViewModel(tvId: tv.id)
+            let vc  = TVDetailView(viewModel: tvVM, accountId: accountId, sessionId: sessionId)
             self?.navigationController?.pushViewController(vc, animated: true)
         }
     }

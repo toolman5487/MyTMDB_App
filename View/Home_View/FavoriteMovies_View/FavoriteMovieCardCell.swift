@@ -76,4 +76,12 @@ class FavoriteMovieCardCell: UICollectionViewCell {
             posterImageView.image = UIImage(systemName: "film")
         }
     }
+
+    func configureEmptyState() {
+        titleLabel.text = ""
+        subtitleLabel.text = ""
+        posterImageView.image = UIImage(systemName: "plus")
+        posterImageView.tintColor = .label
+        posterImageView.contentMode = .center
+    }
 }

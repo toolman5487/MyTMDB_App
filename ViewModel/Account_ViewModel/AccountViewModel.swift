@@ -53,7 +53,6 @@ final class AccountViewModel {
                     self?.errorMessage = error.localizedDescription
                 }
             } receiveValue: { [weak self] tv in
-                print("VM recevie ：", tv.count)
                 self?.favoriteTV = tv
             }
             .store(in: &cancellables)

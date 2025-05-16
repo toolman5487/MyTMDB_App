@@ -69,14 +69,12 @@ class FavoriteTVCarouselView:UIView{
     
     func update(with items: [FavoriteTVItem]) {
         self.tvItems = items
-        print("Carousel update：", items.map(\.name))
         collectionView.reloadData()
     }
 }
 
 extension FavoriteTVCarouselView: UICollectionViewDataSource, UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("numberOfItemsInSection:", tvItems.count)
         return tvItems.count
     }
     

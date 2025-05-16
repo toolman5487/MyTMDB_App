@@ -15,7 +15,7 @@ class TVDetailViewModel {
 
     private let service: TVDetailServiceProtocol
     private var cancellables = Set<AnyCancellable>()
-    private let tvId: Int
+    let tvId: Int
 
     init(tvId: Int, service: TVDetailServiceProtocol = TVDetailService()) {
         self.tvId = tvId

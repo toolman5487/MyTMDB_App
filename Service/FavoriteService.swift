@@ -25,16 +25,22 @@ final class FavoriteService: FavoriteServiceProtocol {
         guard let url = URL(string: urlString) else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
         let body: [String: Any] = [
             "media_type": mediaType,
             "media_id": mediaId,
             "favorite": favorite
         ]
-        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        return URLSession.shared.dataTaskPublisher(for: req)
+        do {
+            let data = try JSONSerialization.data(withJSONObject: body)
+            urlRequest.httpBody = data
+            print("HTTP Body:", String(data: data, encoding: .utf8) ?? "")
+        } catch {
+            print("Serialization error:", error)
+        }
+        return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .map(\.data)
             .decode(type: FavoriteResponse.self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)

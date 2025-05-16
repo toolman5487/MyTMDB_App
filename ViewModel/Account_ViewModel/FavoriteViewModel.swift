@@ -9,6 +9,11 @@ import Foundation
 import Combine
 
 class FavoriteViewModel {
+  
+    private var favoriteKey: String {
+        return "\(mediaType)_\(mediaId)_favorite"
+    }
+
     @Published private(set) var isFavorite: Bool = false
     @Published private(set) var errorMessage: String?
 
@@ -29,6 +34,8 @@ class FavoriteViewModel {
         self.accountId = accountId
         self.sessionId = sessionId
         self.service = service
+        // Load cached favorite state if available
+        self.isFavorite = UserDefaults.standard.bool(forKey: favoriteKey)
         fetchFavoriteState()
     }
 
@@ -46,6 +53,7 @@ class FavoriteViewModel {
                 }
             } receiveValue: { [weak self] state in
                 self?.isFavorite = state.favorite
+                print("Fetched favorite state for \(self?.mediaType ?? "") id \(self?.mediaId ?? 0): isFavorite = \(state.favorite)")
             }
             .store(in: &cancellables)
     }
@@ -68,6 +76,7 @@ class FavoriteViewModel {
                 }
             } receiveValue: { [weak self] _ in
                 self?.isFavorite = newValue
+                UserDefaults.standard.set(newValue, forKey: self?.favoriteKey ?? "")
                 print("toggleFavorite succeeded for \(self?.mediaType ?? "") id: \(self?.mediaId ?? 0)")
             }
             .store(in: &cancellables)

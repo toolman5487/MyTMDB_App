@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct FavoriteResponse: Decodable {
+struct FavoriteResponse: Codable {
     let status_code: Int
     let status_message: String
 }
 
-struct AccountState: Decodable {
+struct AccountState: Codable {
     let id: Int
     let favorite: Bool
     let rated: Rated?
     let watchlist: Bool
 
-    struct Rated: Decodable {
+    struct Rated: Codable {
         let value: Double?
     }
 }

@@ -75,17 +75,25 @@ class FavoriteMoviesCarouselView: UIView {
 
 extension FavoriteMoviesCarouselView: UICollectionViewDataSource, UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movies.count
+        return movies.isEmpty ? 1 : movies.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteMovieCardCell", for: indexPath) as! FavoriteMovieCardCell
-        let movie = movies[indexPath.item]
-        cell.favoriteMovievConfigure(with: movie)
+        if movies.isEmpty {
+            cell.configureEmptyState()
+        } else {
+            let movie = movies[indexPath.item]
+            cell.favoriteMovievConfigure(with: movie)
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        didSelectMovie?(movies[indexPath.item])
+
+        let maybeMovie = movies.indices.contains(indexPath.item) ? movies[indexPath.item] : nil
+        if let movie = maybeMovie {
+            didSelectMovie?(movie)
+        }
     }
 }

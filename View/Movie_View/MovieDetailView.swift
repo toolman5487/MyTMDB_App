@@ -46,17 +46,6 @@ class MovieDetailView: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
     }
-
-    private func configureNavigationBarItems() {
-        let imageName = favoriteViewModel.isFavorite ? "heart.fill" : "heart"
-        let heartItem = UIBarButtonItem(
-            image: UIImage(systemName: imageName),
-            style: .plain,
-            target: self,
-            action: #selector(toggleFavorite)
-        )
-        navigationItem.rightBarButtonItem = heartItem
-    }
     
     private func bindViewModel() {
         viewModel.$movie
@@ -85,7 +74,8 @@ class MovieDetailView: UITableViewController {
         
         favoriteViewModel.$isFavorite
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] isFav in
+                print("MovieDetailView: isFavorite =", isFav)
                 self?.configureNavigationBarItems()
             }
             .store(in: &cancellables)
@@ -115,8 +105,7 @@ class MovieDetailView: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView,
-                            titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section)! {
         case .info:
             return "基本資訊"
@@ -217,6 +206,58 @@ class MovieDetailView: UITableViewController {
         favoriteViewModel.toggleFavorite()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureNavigationBarItems()
+    }
+    
+    private func configureNavigationBarItems() {
+        let imageName = favoriteViewModel.isFavorite ? "heart.fill" : "heart"
+        let heartItem = UIBarButtonItem(
+            image: UIImage(systemName: imageName),
+            style: .plain,
+            target: self,
+            action: #selector(toggleFavorite)
+        )
+        heartItem.tintColor = .systemPink
+        navigationItem.rightBarButtonItem = heartItem
+    }
+    
+    private func configureReviewButton() {
+        let reviewButton = UIButton(type: .system)
+        reviewButton.setTitle("查看評論", for: .normal)
+        reviewButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        reviewButton.backgroundColor = .systemBlue
+        reviewButton.setTitleColor(.white, for: .normal)
+        reviewButton.layer.cornerRadius = 20
+        reviewButton.addTarget(self, action: #selector(showReview), for: .touchUpInside)
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 80))
+        
+        footerView.addSubview(reviewButton)
+        reviewButton.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.height.equalTo(60)
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+        tableView.tableFooterView = footerView
+    }
+
+    @objc private func showReview() {
+
+        let reviewVC = MovieReviewTableView(movieId: viewModel.movieId)
+        reviewVC.modalPresentationStyle = .pageSheet
+        if let sheet = reviewVC.sheetPresentationController {
+            sheet.detents = [
+              .medium(),
+              .large()
+            ]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.largestUndimmedDetentIdentifier = .medium
+        }
+        present(reviewVC, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         favoriteViewModel = FavoriteViewModel(
@@ -225,12 +266,11 @@ class MovieDetailView: UITableViewController {
             accountId: accountId,
             sessionId: sessionId
         )
-       
         configureNavigationBarItems()
         bindViewModel()
-        favoriteViewModel.fetchFavoriteState()
         configureTableView()
         creditsViewModel.loadCredits()
         viewModel.fetchMovieDetail()
+        configureReviewButton()
     }
 }

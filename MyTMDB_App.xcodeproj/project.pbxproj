@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1535F9942DD7554D0090E25A /* MovieReviewTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1535F9932DD7554D0090E25A /* MovieReviewTableView.swift */; };
+		1535FA052DD77F490090E25A /* MovieReviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1535FA042DD77F490090E25A /* MovieReviewModel.swift */; };
+		1535FA072DD783020090E25A /* MovieReviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1535FA062DD783020090E25A /* MovieReviewService.swift */; };
+		1535FA0A2DD787660090E25A /* MovieReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1535FA092DD787660090E25A /* MovieReviewViewModel.swift */; };
+		1535FA0C2DD78A340090E25A /* MovieReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1535FA0B2DD78A340090E25A /* MovieReviewTableViewCell.swift */; };
 		158BFB452DCDE79300ABBA52 /* FavoriteMoviesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158BFB442DCDE79300ABBA52 /* FavoriteMoviesModel.swift */; };
 		158BFB472DCDF8D500ABBA52 /* FavoriteTVResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158BFB462DCDF8D500ABBA52 /* FavoriteTVResponseModel.swift */; };
 		158BFB4A2DCF26F800ABBA52 /* FavoriteMoviesCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158BFB492DCF26F800ABBA52 /* FavoriteMoviesCarouselView.swift */; };
@@ -75,6 +80,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1535F9932DD7554D0090E25A /* MovieReviewTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieReviewTableView.swift; sourceTree = "<group>"; };
+		1535FA042DD77F490090E25A /* MovieReviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieReviewModel.swift; sourceTree = "<group>"; };
+		1535FA062DD783020090E25A /* MovieReviewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieReviewService.swift; sourceTree = "<group>"; };
+		1535FA092DD787660090E25A /* MovieReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieReviewViewModel.swift; sourceTree = "<group>"; };
+		1535FA0B2DD78A340090E25A /* MovieReviewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieReviewTableViewCell.swift; sourceTree = "<group>"; };
 		158BFB442DCDE79300ABBA52 /* FavoriteMoviesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteMoviesModel.swift; sourceTree = "<group>"; };
 		158BFB462DCDF8D500ABBA52 /* FavoriteTVResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteTVResponseModel.swift; sourceTree = "<group>"; };
 		158BFB492DCF26F800ABBA52 /* FavoriteMoviesCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteMoviesCarouselView.swift; sourceTree = "<group>"; };
@@ -184,6 +194,53 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1535F9902DD743E70090E25A /* Account_Model */ = {
+			isa = PBXGroup;
+			children = (
+				1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */,
+				1598AB252DC867DA005E972C /* AccountModel.swift */,
+				1598AB9B2DC8B0B6005E972C /* MultiSearchResultModel.swift */,
+				158BFBD02DD5CD5600ABBA52 /* FavoriteResponseModel.swift */,
+			);
+			path = Account_Model;
+			sourceTree = "<group>";
+		};
+		1535F9912DD744200090E25A /* Account_ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				1598AA962DC4BF57005E972C /* LoginViewModel.swift */,
+				1598AB272DC88D98005E972C /* AccountViewModel.swift */,
+				1598AB9F2DC8B4A1005E972C /* MultiSearchViewModel.swift */,
+				158BFBD42DD5DB8E00ABBA52 /* FavoriteViewModel.swift */,
+			);
+			path = Account_ViewModel;
+			sourceTree = "<group>";
+		};
+		1535F9922DD7553A0090E25A /* Review_View */ = {
+			isa = PBXGroup;
+			children = (
+				1535F9932DD7554D0090E25A /* MovieReviewTableView.swift */,
+				1535FA0B2DD78A340090E25A /* MovieReviewTableViewCell.swift */,
+			);
+			path = Review_View;
+			sourceTree = "<group>";
+		};
+		1535F9952DD77CC20090E25A /* Review_Model */ = {
+			isa = PBXGroup;
+			children = (
+				1535FA042DD77F490090E25A /* MovieReviewModel.swift */,
+			);
+			path = Review_Model;
+			sourceTree = "<group>";
+		};
+		1535FA082DD787440090E25A /* Review_ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				1535FA092DD787660090E25A /* MovieReviewViewModel.swift */,
+			);
+			path = Review_ViewModel;
+			sourceTree = "<group>";
+		};
 		158BFB482DCF267400ABBA52 /* FavoriteMovies_View */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,13 +288,11 @@
 		1598AA8B2DC4B8F3005E972C /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				1535FA082DD787440090E25A /* Review_ViewModel */,
+				1535F9912DD744200090E25A /* Account_ViewModel */,
 				15C37E512DCC8D0800BAE42F /* Person_ViewModel */,
 				15C37E442DCB086500BAE42F /* TV_ViewModel */,
 				1598AC1C2DC9E05A005E972C /* Movie_ViewModel */,
-				1598AA962DC4BF57005E972C /* LoginViewModel.swift */,
-				1598AB272DC88D98005E972C /* AccountViewModel.swift */,
-				1598AB9F2DC8B4A1005E972C /* MultiSearchViewModel.swift */,
-				158BFBD42DD5DB8E00ABBA52 /* FavoriteViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -245,6 +300,7 @@
 		1598AA8C2DC4B90C005E972C /* View */ = {
 			isa = PBXGroup;
 			children = (
+				1535F9922DD7553A0090E25A /* Review_View */,
 				15C37E562DCC939800BAE42F /* Person_View */,
 				15C37E472DCB388900BAE42F /* TV_View */,
 				1598AB0F2DC4C7D5005E972C /* Movie_View */,
@@ -257,13 +313,11 @@
 		1598AA8D2DC4B912005E972C /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				15C37E4A2DCC845900BAE42F /* Person_Models */,
-				1598AC3B2DCA0CD0005E972C /* TV_Models */,
-				1598AC162DC9B5EA005E972C /* Movie_Models */,
-				1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */,
-				1598AB252DC867DA005E972C /* AccountModel.swift */,
-				1598AB9B2DC8B0B6005E972C /* MultiSearchResultModel.swift */,
-				158BFBD02DD5CD5600ABBA52 /* FavoriteResponseModel.swift */,
+				1535F9952DD77CC20090E25A /* Review_Model */,
+				1535F9902DD743E70090E25A /* Account_Model */,
+				15C37E4A2DCC845900BAE42F /* Person_Model */,
+				1598AC3B2DCA0CD0005E972C /* TV_Model */,
+				1598AC162DC9B5EA005E972C /* Movie_Model */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -335,14 +389,14 @@
 			path = SearchResults_View;
 			sourceTree = "<group>";
 		};
-		1598AC162DC9B5EA005E972C /* Movie_Models */ = {
+		1598AC162DC9B5EA005E972C /* Movie_Model */ = {
 			isa = PBXGroup;
 			children = (
 				1598AC172DC9B5FC005E972C /* MovieDetailModel.swift */,
 				158BFB442DCDE79300ABBA52 /* FavoriteMoviesModel.swift */,
 				158BFBCA2DD48A3200ABBA52 /* MovieCreditsResponse.swift */,
 			);
-			path = Movie_Models;
+			path = Movie_Model;
 			sourceTree = "<group>";
 		};
 		1598AC192DC9B939005E972C /* Movie_Service */ = {
@@ -350,6 +404,7 @@
 			children = (
 				1598AC1A2DC9B968005E972C /* MovieDetailService.swift */,
 				158BFBCC2DD48AC100ABBA52 /* MovieCreditsService.swift */,
+				1535FA062DD783020090E25A /* MovieReviewService.swift */,
 			);
 			path = Movie_Service;
 			sourceTree = "<group>";
@@ -363,14 +418,14 @@
 			path = Movie_ViewModel;
 			sourceTree = "<group>";
 		};
-		1598AC3B2DCA0CD0005E972C /* TV_Models */ = {
+		1598AC3B2DCA0CD0005E972C /* TV_Model */ = {
 			isa = PBXGroup;
 			children = (
 				1598AC3C2DCA0D1C005E972C /* TVDetailModel.swift */,
 				158BFB462DCDF8D500ABBA52 /* FavoriteTVResponseModel.swift */,
 				158BFB542DD1C66600ABBA52 /* EpisodeModel.swift */,
 			);
-			path = TV_Models;
+			path = TV_Model;
 			sourceTree = "<group>";
 		};
 		15C37E412DCB048C00BAE42F /* TV_Service */ = {
@@ -401,12 +456,12 @@
 			path = TV_View;
 			sourceTree = "<group>";
 		};
-		15C37E4A2DCC845900BAE42F /* Person_Models */ = {
+		15C37E4A2DCC845900BAE42F /* Person_Model */ = {
 			isa = PBXGroup;
 			children = (
 				15C37E4C2DCC85E600BAE42F /* PersonDetailModel.swift */,
 			);
-			path = Person_Models;
+			path = Person_Model;
 			sourceTree = "<group>";
 		};
 		15C37E4E2DCC8B3E00BAE42F /* Person_Service */ = {
@@ -586,10 +641,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				15C37E502DCC8B5A00BAE42F /* PersonService.swift in Sources */,
+				1535FA072DD783020090E25A /* MovieReviewService.swift in Sources */,
 				158BFB472DCDF8D500ABBA52 /* FavoriteTVResponseModel.swift in Sources */,
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
 				158BFBCD2DD48AC100ABBA52 /* MovieCreditsService.swift in Sources */,
 				1598AC3D2DCA0D1C005E972C /* TVDetailModel.swift in Sources */,
+				1535FA0A2DD787660090E25A /* MovieReviewViewModel.swift in Sources */,
 				1598ABA22DC8B7F5005E972C /* SearchResultsView.swift in Sources */,
 				158BFBD32DD5D30E00ABBA52 /* FavoriteService.swift in Sources */,
 				158BFB552DD1C66600ABBA52 /* EpisodeModel.swift in Sources */,
@@ -616,13 +673,16 @@
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				158BFBCB2DD48A3200ABBA52 /* MovieCreditsResponse.swift in Sources */,
 				158BFBD52DD5DB8E00ABBA52 /* FavoriteViewModel.swift in Sources */,
+				1535F9942DD7554D0090E25A /* MovieReviewTableView.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AC1B2DC9B968005E972C /* MovieDetailService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
+				1535FA0C2DD78A340090E25A /* MovieReviewTableViewCell.swift in Sources */,
 				15C37E492DCB389900BAE42F /* TVDetailView.swift in Sources */,
 				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				158BFB452DCDE79300ABBA52 /* FavoriteMoviesModel.swift in Sources */,
+				1535FA052DD77F490090E25A /* MovieReviewModel.swift in Sources */,
 				15C37E462DCB088400BAE42F /* TVDetailViewModel.swift in Sources */,
 				158BFB532DD1BD2200ABBA52 /* SeasonDetailView.swift in Sources */,
 				1598AB112DC4C7FA005E972C /* MovieView.swift in Sources */,
