@@ -1,17 +1,14 @@
 //
-//  MovieReviewTableViewCell.swift
+//  TVReviewTableViewCell.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2025/5/16.
+//  Created by Willy Hsu on 2025/5/17.
 //
 
 import Foundation
 import UIKit
-import Combine
-import SDWebImage
-import SnapKit
 
-class MovieReviewTableViewCell: UITableViewCell {
+class TVReviewTableViewCell: UITableViewCell {
     
     private let authorLabel:UILabel = {
         let label = UILabel()
@@ -42,7 +39,6 @@ class MovieReviewTableViewCell: UITableViewCell {
         return label
     }()
     
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(authorImageView)
@@ -75,8 +71,8 @@ class MovieReviewTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func configure(with review: Review) {
+    
+    func tvConfig(with review: Review) {
         authorLabel.text = review.author
         if let path = review.authorDetails.avatarPath,
            let url = URL(string: "https://image.tmdb.org/t/p/w45\(path)") {
@@ -91,4 +87,5 @@ class MovieReviewTableViewCell: UITableViewCell {
         }
         contentLabel.text = review.content
     }
+    
 }

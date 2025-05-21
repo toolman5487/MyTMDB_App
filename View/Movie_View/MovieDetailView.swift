@@ -243,19 +243,21 @@ class MovieDetailView: UITableViewController {
     }
 
     @objc private func showReview() {
-
         let reviewVC = MovieReviewTableView(movieId: viewModel.movieId)
-        reviewVC.modalPresentationStyle = .pageSheet
-        if let sheet = reviewVC.sheetPresentationController {
+        reviewVC.title = "電影評論"
+        let nav = UINavigationController(rootViewController: reviewVC)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
             sheet.detents = [
-              .medium(),
-              .large()
+                .medium(),
+                .large()
             ]
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.largestUndimmedDetentIdentifier = .medium
         }
-        present(reviewVC, animated: true)
+        reviewVC.navigationItem.largeTitleDisplayMode = .always
+        present(nav, animated: true)
     }
     
     override func viewDidLoad() {

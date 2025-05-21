@@ -172,7 +172,8 @@ class LoginViewController: UIViewController {
                       let window = sceneDelegate.window else {
                   return
                 }
-                let tabBar = MainTabBarController()
+                let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID") ?? ""
+                let tabBar = MainTabBarController(accountId: account.id, sessionId: sessionId)
                 window.rootViewController = tabBar
                 window.makeKeyAndVisible()
             }

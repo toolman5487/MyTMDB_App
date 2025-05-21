@@ -167,6 +167,42 @@ class TVDetailView: UITableViewController{
         navigationItem.rightBarButtonItem = heartItem
     }
     
+    private func configureTVReviewButton() {
+        let reviewButton = UIButton(type: .system)
+        reviewButton.setTitle("查看評論", for: .normal)
+        reviewButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        reviewButton.backgroundColor = .systemBlue
+        reviewButton.setTitleColor(.white, for: .normal)
+        reviewButton.layer.cornerRadius = 20
+        reviewButton.addTarget(self, action: #selector(showTVReview), for: .touchUpInside)
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 80))
+        
+        footerView.addSubview(reviewButton)
+        reviewButton.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.height.equalTo(60)
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+        tableView.tableFooterView = footerView
+    }
+    
+    @objc private func showTVReview() {
+        let tvReviewVC = TVReviewTableView(tvId: viewModel.tvId)
+        tvReviewVC.title = "影集評論"
+        let nav = UINavigationController(rootViewController: tvReviewVC)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [
+                .medium(),
+                .large()
+            ]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.largestUndimmedDetentIdentifier = .medium
+        }
+        tvReviewVC.navigationItem.largeTitleDisplayMode = .always
+        present(nav, animated: true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -181,5 +217,6 @@ class TVDetailView: UITableViewController{
         favoriteViewModel.fetchFavoriteState()
         configureTVTableView()
         viewModel.fetchTVDetail()
+        configureTVReviewButton()
     }
 }

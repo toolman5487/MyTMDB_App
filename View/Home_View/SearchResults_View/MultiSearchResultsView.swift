@@ -1,10 +1,11 @@
 import Foundation
 import UIKit
 import Combine
+import CombineCocoa
 import SnapKit
 import SDWebImage
 
-class SearchResultsView: UIViewController, UISearchResultsUpdating{
+class MultiSearchResultsView: UIViewController, UISearchResultsUpdating{
     
     private let viewModel = MultiSearchViewModel()
     private var results: [MultiSearchResult] = []
@@ -23,6 +24,7 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
         viewModel.search(query: text)
+        print("updateSearchResults：", searchController.searchBar.text ?? "<nil>")
     }
     
     private func layout(){
@@ -44,6 +46,7 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("MultiSearchResultsView loaded with current results count:", results.count)
         view.backgroundColor = .systemBackground
         tableView.dataSource = self
         tableView.delegate   = self
@@ -60,7 +63,7 @@ class SearchResultsView: UIViewController, UISearchResultsUpdating{
     
 }
 
-extension SearchResultsView: UITableViewDataSource, UITableViewDelegate{
+extension MultiSearchResultsView: UITableViewDataSource, UITableViewDelegate{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results.count
     }
@@ -106,12 +109,12 @@ extension SearchResultsView: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let result = results[indexPath.row]
+        print("User tapped row \(indexPath.row), mediaType:", result.mediaType, "id:", result.id ?? -1)
         guard let id = result.id else { return }
         switch result.mediaType {
         case .person:
             didSelectPerson?(id)
         case .tv:
-            print("tap tv id:", id)
             didSelectTV?(id)
         default:
             didSelectMovie?(id)

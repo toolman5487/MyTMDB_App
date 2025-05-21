@@ -8,7 +8,18 @@
 import Foundation
 import UIKit
 
-class MainTabBarController:UITabBarController{
+class MainTabBarController: UITabBarController {
+    
+    private let accountId: Int
+    private let sessionId: String
+    init(accountId: Int, sessionId: String) {
+        self.accountId = accountId
+        self.sessionId = sessionId
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,11 +28,16 @@ class MainTabBarController:UITabBarController{
         homeNav.tabBarItem = UITabBarItem(title: "首頁",
                                           image: UIImage(systemName: "person.fill"),
                                           tag: 0)
-        let movieVC = MovieView()
+        let movieVC = MovieHomeView(accountId: accountId, sessionId: sessionId)
         let movieNav = UINavigationController(rootViewController: movieVC)
-        movieNav.tabBarItem = UITabBarItem(title: "探索",
-                                           image: UIImage(systemName: "movieclapper"),
+        movieNav.tabBarItem = UITabBarItem(title: "電影",
+                                           image: UIImage(systemName: "movieclapper.fill"),
                                            tag: 1)
-        viewControllers = [homeNav, movieNav]
+        let tvVC = TVHomeView()
+        let tvNav = UINavigationController(rootViewController: tvVC)
+        tvNav.tabBarItem = UITabBarItem(title: "劇集",
+                                           image: UIImage(systemName: "appletv.fill"),
+                                           tag: 2)
+        viewControllers = [homeNav, movieNav, tvNav]
     }
 }

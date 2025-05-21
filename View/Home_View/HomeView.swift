@@ -18,11 +18,11 @@ class HomeView: UIViewController{
     private let favoriteMoviesCarousel = FavoriteMoviesCarouselView()
     private let favoriteTVCarousel = FavoriteTVCarouselView()
     
-    private let searchResultsView = SearchResultsView()
+    private let searchResultsView = MultiSearchResultsView()
     private lazy var searchController: UISearchController = {
         let search = UISearchController(searchResultsController: searchResultsView)
         search.obscuresBackgroundDuringPresentation = false
-        search.searchBar.placeholder = "Search Movies, TV, People"
+        search.searchBar.placeholder = "搜尋電影、電視劇、人物等"
         search.searchResultsUpdater = searchResultsView
         return search
     }()
@@ -116,10 +116,10 @@ class HomeView: UIViewController{
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.largeTitleDisplayMode = .automatic
         navigationItem.title = "首頁"
         navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
     }
     
