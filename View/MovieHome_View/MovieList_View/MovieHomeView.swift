@@ -16,6 +16,18 @@ class MovieHomeView: UIViewController {
     private let sessionId: String
     private let categories = ["現正熱映", "熱門", "經典好評", "即將上映"]
     private var selectedCategoryIndex = 0
+
+    private lazy var viewModel = MovieListViewModel(
+        nowPlayingService: NowPlayingService(),
+        popularService: PopularMovieService(),
+        topRatedService: TopRatedService(),
+        upcomingService: UpcomingService()
+    )
+    private var nowPlayingItems: [MovieSummary] = []
+    private var popularItems:   [MovieSummary] = []
+    private var topRatedItems:  [MovieSummary] = []
+    private var upcomingItems:  [MovieSummary] = []
+    private var cancellables = Set<AnyCancellable>()
     
     init(accountId: Int, sessionId: String) {
         self.accountId = accountId
@@ -97,16 +109,61 @@ class MovieHomeView: UIViewController {
         }
     }
     
+    private func bindViewModel() {
+        viewModel.$nowPlaying
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] movies in
+                self?.nowPlayingItems = movies
+                if self?.selectedCategoryIndex == 0 {
+                    self?.tableView.reloadData()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.$popular
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] movies in
+                self?.popularItems = movies
+                if self?.selectedCategoryIndex == 1 {
+                    self?.tableView.reloadData()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.$topRated
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] movies in
+                self?.topRatedItems = movies
+                if self?.selectedCategoryIndex == 2 {
+                    self?.tableView.reloadData()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.$upcoming
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] movies in
+                self?.upcomingItems = movies
+                if self?.selectedCategoryIndex == 3 {
+                    self?.tableView.reloadData()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchAction()
         configureCategoryStrip()
         configureTableView()
         setupNavigationBar()
+        bindViewModel()
     }
+
 }
 
 extension MovieHomeView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return categories.count
     }
@@ -133,6 +190,11 @@ extension MovieHomeView: UICollectionViewDataSource, UICollectionViewDelegateFlo
 
 
 extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 140
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch selectedCategoryIndex {
         case 0: return nowPlayingItems.count
@@ -153,7 +215,8 @@ extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
         case 3: movie = upcomingItems[indexPath.row]
         default: fatalError("Invalid category")
         }
-       
+        cell.configure(with: movie)
+
         return cell
     }
 }

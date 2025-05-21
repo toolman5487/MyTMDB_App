@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 struct ThemeFont {
-    
     static func regular(ofSize size: CGFloat) -> UIFont {
         return UIFont(name: "SFProRounded-Regular", size: size) ?? UIFont.systemFont(ofSize: size, weight: .regular)
     }
