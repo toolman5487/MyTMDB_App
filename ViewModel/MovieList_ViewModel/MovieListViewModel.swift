@@ -57,7 +57,8 @@ final class MovieListViewModel {
             self?.nowPlaying = now
             self?.popular = popular
             self?.topRated = toprated
-            self?.upcoming = upcoming
+            let sortedUpcoming = upcoming.sorted { $0.releaseDate > $1.releaseDate }
+            self?.upcoming = sortedUpcoming
         })
         .store(in: &cancellables)
     }

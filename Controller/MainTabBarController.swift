@@ -35,7 +35,7 @@ class MainTabBarController: UITabBarController {
                                            tag: 1)
         let tvVC = TVHomeView()
         let tvNav = UINavigationController(rootViewController: tvVC)
-        tvNav.tabBarItem = UITabBarItem(title: "劇集",
+        tvNav.tabBarItem = UITabBarItem(title: "電視節目",
                                            image: UIImage(systemName: "appletv.fill"),
                                            tag: 2)
         viewControllers = [homeNav, movieNav, tvNav]

@@ -219,4 +219,21 @@ extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
 
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let movie: MovieSummary
+        switch selectedCategoryIndex {
+        case 0: movie = nowPlayingItems[indexPath.row]
+        case 1: movie = popularItems[indexPath.row]
+        case 2: movie = topRatedItems[indexPath.row]
+        case 3: movie = upcomingItems[indexPath.row]
+        default: fatalError("Invalid category")
+        }
+        let detailVM = MovieDetailViewModel(movieId: movie.id)
+        let detailVC = MovieDetailView(viewModel: detailVM,
+                                       accountId: self.accountId,
+                                       sessionId: self.sessionId)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
 }
