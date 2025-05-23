@@ -17,6 +17,12 @@ class CategoryCell: UICollectionViewCell {
        label.textAlignment = .center
        return label
     }()
+    
+    func configure(text: String, selected: Bool) {
+        titleLabel.text = text
+        contentView.backgroundColor = selected ? .label : .secondarySystemBackground
+        titleLabel.textColor = selected ? .secondarySystemBackground : .label
+    }
 
    override init(frame: CGRect) {
        super.init(frame: frame)
@@ -27,11 +33,7 @@ class CategoryCell: UICollectionViewCell {
        contentView.layer.cornerRadius = 16
        contentView.clipsToBounds = true
    }
-   required init?(coder: NSCoder) { fatalError() }
-
-   func configure(text: String, selected: Bool) {
-       titleLabel.text = text
-       contentView.backgroundColor = selected ? .label : .secondarySystemBackground
-       titleLabel.textColor = selected ? .secondarySystemBackground : .label
-   }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 }

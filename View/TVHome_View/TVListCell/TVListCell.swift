@@ -1,21 +1,22 @@
 //
-//  MovieListCell.swift
+//  TVListView.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2025/5/21.
+//  Created by Willy Hsu on 2025/5/23.
 //
 
 import Foundation
 import UIKit
 import SnapKit
 
-class MovieListCell: UITableViewCell {
+class TVListCell: UITableViewCell {
     
-    static let reuseIdentifier = "MovieListCell"
-
+    static let reuseIdentifier = "TVListCell"
+    
     private let posterImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
+        image.image = UIImage(systemName: "photo")
         image.clipsToBounds = true
         image.layer.cornerRadius = 10
         return image
@@ -23,6 +24,7 @@ class MovieListCell: UITableViewCell {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
+        label.text = "Title"
         label.font = ThemeFont.demiBold(ofSize: 16)
         label.numberOfLines = 2
         return label
@@ -30,6 +32,7 @@ class MovieListCell: UITableViewCell {
     
     private let releaseDateLabel: UILabel = {
         let label = UILabel()
+        label.text = "Release Date"
         label.font = ThemeFont.regular(ofSize: 12)
         label.textColor = .tertiaryLabel
         label.numberOfLines = 1
@@ -38,12 +41,13 @@ class MovieListCell: UITableViewCell {
 
     private let overviewLabel: UILabel = {
         let label = UILabel()
+        label.text = "Overview"
         label.font = ThemeFont.regular(ofSize: 12)
         label.textColor = .secondaryLabel
         label.numberOfLines = 6
         return label
     }()
-
+    
     private func layout() {
         contentView.addSubview(posterImageView)
         posterImageView.snp.makeConstraints { make in
@@ -76,11 +80,12 @@ class MovieListCell: UITableViewCell {
         }
     }
     
-    func movieCellConfigure(with movie: MovieSummary) {
-        posterImageView.sd_setImage(with: movie.posterURL)
-        titleLabel.text = movie.title
-        releaseDateLabel.text = movie.releaseDate
-        let overviewText = movie.overview.isEmpty ? "目前無任何簡介" : movie.overview
+    func tvCellConfigure(with tv: TVListShow) {
+        posterImageView.sd_setImage(with: tv.posterURL)
+        titleLabel.text = tv.name
+        let dateText = tv.firstAirDate.isEmpty ? "目前無資料" : tv.firstAirDate
+        releaseDateLabel.text = dateText
+        let overviewText = tv.overview.isEmpty ? "目前無劇情介紹" : tv.overview
         overviewLabel.text = overviewText
     }
     

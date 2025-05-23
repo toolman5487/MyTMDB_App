@@ -26,7 +26,6 @@ final class MovieSearchViewModel {
             movies = []
             return
         }
-        
         isLoading = true
         errorMessage = nil
         service.searchMovies(query: query, page: 1)

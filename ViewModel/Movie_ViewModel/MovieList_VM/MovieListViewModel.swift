@@ -6,7 +6,6 @@
 //
 
 import Foundation
-
 import Combine
 
 final class MovieListViewModel {
@@ -21,18 +20,6 @@ final class MovieListViewModel {
     private let topRatedService:  TopRatedServiceProtocol
     private let upcomingService:  UpcomingServiceProtocol
     private var cancellables = Set<AnyCancellable>()
-
-    init(nowPlayingService: NowPlayingServiceProtocol,
-         popularService:   PopularMovieServiceProtocol,
-         topRatedService:  TopRatedServiceProtocol,
-         upcomingService:  UpcomingServiceProtocol) {
-        self.nowPlayingService = nowPlayingService
-        self.popularService   = popularService
-        self.topRatedService  = topRatedService
-        self.upcomingService  = upcomingService
-
-        fetchAllLists()
-    }
     
     enum MovieCategory {
         case nowPlaying, popular, topRated, upcoming
@@ -90,5 +77,16 @@ final class MovieListViewModel {
                 }
             })
             .store(in: &cancellables)
+    }
+    
+    init(nowPlayingService: NowPlayingServiceProtocol,
+         popularService:   PopularMovieServiceProtocol,
+         topRatedService:  TopRatedServiceProtocol,
+         upcomingService:  UpcomingServiceProtocol) {
+        self.nowPlayingService = nowPlayingService
+        self.popularService   = popularService
+        self.topRatedService  = topRatedService
+        self.upcomingService  = upcomingService
+        fetchAllLists()
     }
 }

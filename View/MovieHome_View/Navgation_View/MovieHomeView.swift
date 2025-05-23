@@ -14,15 +14,8 @@ class MovieHomeView: UIViewController {
     
     private let accountId: Int
     private let sessionId: String
-    private let categories = ["現正熱映", "熱門", "經典好評", "即將上映"]
+    private let categories = ["現正熱映", "熱門電影", "經典好評", "即將上映"]
     private var selectedCategoryIndex = 0
-
-    private lazy var viewModel = MovieListViewModel(
-        nowPlayingService: NowPlayingService(),
-        popularService: PopularMovieService(),
-        topRatedService: TopRatedService(),
-        upcomingService: UpcomingService()
-    )
     private var nowPlayingItems: [MovieSummary] = []
     private var popularItems:   [MovieSummary] = []
     private var topRatedItems:  [MovieSummary] = []
@@ -37,6 +30,13 @@ class MovieHomeView: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    private lazy var viewModel = MovieListViewModel(
+        nowPlayingService: NowPlayingService(),
+        popularService: PopularMovieService(),
+        topRatedService: TopRatedService(),
+        upcomingService: UpcomingService()
+    )
     
     private lazy var searchMovieResultsView = MovieSerachResultView(accountId: accountId, sessionId: sessionId)
     private lazy var searchController: UISearchController = {
@@ -65,7 +65,6 @@ class MovieHomeView: UIViewController {
         tableview.register(MovieListCell.self, forCellReuseIdentifier: "MovieListCell")
         tableview.dataSource = self
         tableview.delegate = self
-        tableview.rowHeight = 100
         return tableview
     }()
     
@@ -86,6 +85,7 @@ class MovieHomeView: UIViewController {
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
+    
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -209,13 +209,17 @@ extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieListCell", for: indexPath) as! MovieListCell
         let movie: MovieSummary
         switch selectedCategoryIndex {
-        case 0: movie = nowPlayingItems[indexPath.row]
-        case 1: movie = popularItems[indexPath.row]
-        case 2: movie = topRatedItems[indexPath.row]
-        case 3: movie = upcomingItems[indexPath.row]
+        case 0:
+            movie = nowPlayingItems[indexPath.row]
+        case 1:
+            movie = popularItems[indexPath.row]
+        case 2:
+            movie = topRatedItems[indexPath.row]
+        case 3:
+            movie = upcomingItems[indexPath.row]
         default: fatalError("Invalid category")
         }
-        cell.configure(with: movie)
+        cell.movieCellConfigure(with: movie)
 
         return cell
     }
@@ -224,11 +228,16 @@ extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let movie: MovieSummary
         switch selectedCategoryIndex {
-        case 0: movie = nowPlayingItems[indexPath.row]
-        case 1: movie = popularItems[indexPath.row]
-        case 2: movie = topRatedItems[indexPath.row]
-        case 3: movie = upcomingItems[indexPath.row]
-        default: fatalError("Invalid category")
+        case 0:
+            movie = nowPlayingItems[indexPath.row]
+        case 1:
+            movie = popularItems[indexPath.row]
+        case 2:
+            movie = topRatedItems[indexPath.row]
+        case 3:
+            movie = upcomingItems[indexPath.row]
+        default: 
+            fatalError("Invalid category")
         }
         let detailVM = MovieDetailViewModel(movieId: movie.id)
         let detailVC = MovieDetailView(viewModel: detailVM,

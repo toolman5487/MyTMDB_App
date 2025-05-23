@@ -33,7 +33,7 @@ class MainTabBarController: UITabBarController {
         movieNav.tabBarItem = UITabBarItem(title: "電影",
                                            image: UIImage(systemName: "movieclapper.fill"),
                                            tag: 1)
-        let tvVC = TVHomeView()
+        let tvVC = TVHomeView(accountId: accountId, sessionId: sessionId)
         let tvNav = UINavigationController(rootViewController: tvVC)
         tvNav.tabBarItem = UITabBarItem(title: "電視節目",
                                            image: UIImage(systemName: "appletv.fill"),
