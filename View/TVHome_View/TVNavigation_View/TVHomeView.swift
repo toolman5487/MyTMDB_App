@@ -38,10 +38,10 @@ class TVHomeView:UIViewController{
         topRatedService: TopRatedTVService()
     )
     
+    private lazy var searchTVResultsView = TVSearchResultView(accountId: accountId, sessionId: sessionId)
     private lazy var tvSearchController: UISearchController = {
-        let resultsVC = TVSearchResultView()
-        let search = UISearchController(searchResultsController: resultsVC)
-        search.searchResultsUpdater = resultsVC
+        let search = UISearchController(searchResultsController: searchTVResultsView)
+        search.searchResultsUpdater = searchTVResultsView
         search.obscuresBackgroundDuringPresentation = false
         search.searchBar.placeholder = "搜尋電視節目"
         return search
@@ -67,6 +67,15 @@ class TVHomeView:UIViewController{
         tableview.register(TVListCell.self, forCellReuseIdentifier: "TVListCell")
         return tableview
     }()
+    
+    private func configureTVSearchAction() {
+        searchTVResultsView.didSelectTV = { [weak self] tv in
+            guard let self = self else { return }
+            let detailVM = TVDetailViewModel(tvId: tv.id)
+            let detailVC = TVDetailView(viewModel: detailVM, accountId: accountId, sessionId: sessionId)
+            self.navigationController?.pushViewController(detailVC, animated: true)
+        }
+    }
     
     private func setupTVNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -139,6 +148,7 @@ class TVHomeView:UIViewController{
         setupTVNavigationBar()
         layout()
         bindTVListViewModel()
+        configureTVSearchAction()
         viewModel.fetchAllTVLists()
     }
 }
@@ -171,6 +181,7 @@ extension TVHomeView: UICollectionViewDataSource, UICollectionViewDelegateFlowLa
 }
 
 extension TVHomeView:UITableViewDelegate, UITableViewDataSource{
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch selectedTVCategoryIndex {
         case 0: return viewModel.airingToday.count
@@ -198,6 +209,26 @@ extension TVHomeView:UITableViewDelegate, UITableViewDataSource{
         }
         cell.tvCellConfigure(with: shows)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let show: TVListShow
+        switch selectedTVCategoryIndex {
+        case 0:
+            show = airingTodayItems[indexPath.row]
+        case 1:
+            show = onTheAirItems[indexPath.row]
+        case 2:
+            show = popularTVItems[indexPath.row]
+        case 3:
+            show = topRatedTVItems[indexPath.row]
+        default:
+            return
+        }
+        let detailVM = TVDetailViewModel(tvId: show.id)
+        let detailVC = TVDetailView(viewModel: detailVM, accountId: accountId, sessionId: sessionId)
+        navigationController?.pushViewController(detailVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

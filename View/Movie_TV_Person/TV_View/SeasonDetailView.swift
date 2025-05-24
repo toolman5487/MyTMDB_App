@@ -12,6 +12,7 @@ import SnapKit
 import SnapKit
 
 class SeasonDetailView: UITableViewController {
+    
     private let viewModel: SeasonDetailViewModel
     private var cancellables = Set<AnyCancellable>()
     private var episodes: [EpisodeModel] = []

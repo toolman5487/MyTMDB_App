@@ -13,6 +13,11 @@ final class TMDBAuthService {
     private let apiKey = TMDB.apiKey
     private let baseURL = "\(TMDB.baseURL)/authentication"
     private let decoder = JSONDecoder()
+    private let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.connectionProxyDictionary = ["__QUIC__": false]
+        return URLSession(configuration: config)
+    }()
 
     private func request<T: Decodable>(path: String,method: String = "GET",body: Data? = nil) -> AnyPublisher<T, Error> {
         let url = URL(string: "\(baseURL)\(path)?api_key=\(apiKey)")!
@@ -22,9 +27,15 @@ final class TMDBAuthService {
             request.httpBody = body
             request.setValue("application/json;charset=utf-8",forHTTPHeaderField: "Content-Type")
         }
-        return URLSession.shared.dataTaskPublisher(for: request)
+        return session.dataTaskPublisher(for: request)
             .map(\.data)
             .decode(type: T.self, decoder: decoder)
+            .retry(1)
+            .handleEvents(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    print("TMDBAuthService request \(path) failed:", error)
+                }
+            })
             .eraseToAnyPublisher()
     }
 
@@ -68,6 +79,12 @@ final class TMDBAuthService {
                 self.sessionPublisher(token: token)
             }
             .receive(on: DispatchQueue.main)
+            .retry(1)
+            .handleEvents(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    print("TMDBAuthService loginPublisher failed:", error)
+                }
+            })
             .eraseToAnyPublisher()
     }
 }

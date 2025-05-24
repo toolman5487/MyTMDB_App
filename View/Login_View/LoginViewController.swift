@@ -16,8 +16,6 @@ class LoginViewController: UIViewController {
     private let loginVM = LoginViewModel()
     let accountVM = AccountViewModel()
     private var cancellables = Set<AnyCancellable>()
-    
-    
     private let indicator = UIActivityIndicatorView(style: .medium)
     
     private let logoImage: UIImageView = {
@@ -54,12 +52,12 @@ class LoginViewController: UIViewController {
     }()
     
     private let loginBotton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("確認", for: .normal)
-        button.titleLabel?.font = ThemeFont.bold(ofSize: 16)
-        button.tintColor = .label
-        button.layer.cornerRadius = 12
-        button.backgroundColor = .secondarySystemBackground
+        var config = UIButton.Configuration.filled()
+        config.title = "確認"
+        config.baseBackgroundColor = .label
+        config.baseForegroundColor = .systemBackground
+        config.cornerStyle = .medium
+        let button = UIButton(configuration: config, primaryAction: nil)
         return button
     }()
     
@@ -80,7 +78,6 @@ class LoginViewController: UIViewController {
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        navigationItem.title = "登入"
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
     }
@@ -181,6 +178,7 @@ class LoginViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        view.backgroundColor = .systemBackground
         super.viewDidLoad()
         setupNavigationBar()
         layout()

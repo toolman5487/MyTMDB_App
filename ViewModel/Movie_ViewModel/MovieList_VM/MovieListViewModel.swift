@@ -20,6 +20,19 @@ final class MovieListViewModel {
     private let topRatedService:  TopRatedServiceProtocol
     private let upcomingService:  UpcomingServiceProtocol
     private var cancellables = Set<AnyCancellable>()
+
+    init(
+        nowPlayingService: NowPlayingServiceProtocol,
+        popularService:   PopularMovieServiceProtocol,
+        topRatedService:  TopRatedServiceProtocol,
+        upcomingService:  UpcomingServiceProtocol
+    ) {
+        self.nowPlayingService = nowPlayingService
+        self.popularService   = popularService
+        self.topRatedService  = topRatedService
+        self.upcomingService  = upcomingService
+        fetchAllLists()
+    }
     
     enum MovieCategory {
         case nowPlaying, popular, topRated, upcoming
@@ -41,11 +54,15 @@ final class MovieListViewModel {
                 print("Error fetching lists:", error)
             }
         }, receiveValue: { [weak self] now, popular, toprated, upcoming in
-            self?.nowPlaying = now
-            self?.popular = popular
-            self?.topRated = toprated
-            let sortedUpcoming = upcoming.sorted { $0.releaseDate > $1.releaseDate }
-            self?.upcoming = sortedUpcoming
+            let sortedNowPlaying = now.sorted { $0.releaseDate > $1.releaseDate }
+            let sortedPopular    = popular.sorted { $0.popularity > $1.popularity }
+            let sortedTopRated   = toprated.sorted { $0.voteAverage > $1.voteAverage }
+            let sortedUpcoming   = upcoming.sorted { $0.releaseDate > $1.releaseDate }
+
+            self?.nowPlaying = sortedNowPlaying
+            self?.popular    = sortedPopular
+            self?.topRated   = sortedTopRated
+            self?.upcoming   = sortedUpcoming
         })
         .store(in: &cancellables)
     }
@@ -77,16 +94,5 @@ final class MovieListViewModel {
                 }
             })
             .store(in: &cancellables)
-    }
-    
-    init(nowPlayingService: NowPlayingServiceProtocol,
-         popularService:   PopularMovieServiceProtocol,
-         topRatedService:  TopRatedServiceProtocol,
-         upcomingService:  UpcomingServiceProtocol) {
-        self.nowPlayingService = nowPlayingService
-        self.popularService   = popularService
-        self.topRatedService  = topRatedService
-        self.upcomingService  = upcomingService
-        fetchAllLists()
     }
 }

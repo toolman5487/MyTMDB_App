@@ -18,12 +18,10 @@ class FavoriteMoviesCarouselView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
-        backgroundColor = .secondarySystemBackground
     }
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupLayout()
-        backgroundColor = .secondarySystemBackground
     }
     
     private let headerLabel: UILabel = {
@@ -54,12 +52,13 @@ class FavoriteMoviesCarouselView: UIView {
     
     private func setupLayout() {
         addSubview(headerLabel)
-        addSubview(collectionView)
         headerLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(16)
             make.leading.equalToSuperview().inset(16)
             make.trailing.equalToSuperview().inset(16)
         }
+        
+        addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(headerLabel.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview()

@@ -34,7 +34,7 @@ class TVListCell: UITableViewCell {
         let label = UILabel()
         label.text = "Release Date"
         label.font = ThemeFont.regular(ofSize: 12)
-        label.textColor = .tertiaryLabel
+        label.textColor = .secondaryLabel
         label.numberOfLines = 1
         return label
     }()
@@ -43,7 +43,7 @@ class TVListCell: UITableViewCell {
         let label = UILabel()
         label.text = "Overview"
         label.font = ThemeFont.regular(ofSize: 12)
-        label.textColor = .secondaryLabel
+        label.textColor = .tertiaryLabel
         label.numberOfLines = 6
         return label
     }()
@@ -75,7 +75,7 @@ class TVListCell: UITableViewCell {
         overviewLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel)
             make.trailing.equalTo(titleLabel)
-            make.top.equalTo(releaseDateLabel.snp.bottom).offset(4)
+            make.top.equalTo(releaseDateLabel.snp.bottom).offset(2)
             make.bottom.lessThanOrEqualToSuperview().inset(8)
         }
     }

@@ -11,8 +11,12 @@ import Combine
 import SnapKit
 
 class MovieSerachResultView: UIViewController, UISearchResultsUpdating {
+    
     private let accountId: Int
     private let sessionId: String
+    private let viewModel = MovieSearchViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    private var movies: [Movie] = []
     var didSelectMovie: ((Movie) -> Void)?
 
     init(accountId: Int, sessionId: String) {
@@ -24,10 +28,6 @@ class MovieSerachResultView: UIViewController, UISearchResultsUpdating {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let viewModel = MovieSearchViewModel()
-    private var cancellables = Set<AnyCancellable>()
-    private var movies: [Movie] = []
-
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false

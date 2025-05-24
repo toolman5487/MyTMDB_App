@@ -12,13 +12,26 @@ import Combine
 
 class TVSearchResultView: UIViewController, UISearchResultsUpdating {
 
+    private let accountId: Int
+    private let sessionId: String
     private let viewModel = TVSearchViewModel()
     private var results: [TVShow] = []
+    var didSelectTV: ((TVShow) -> Void)?
     private var cancellables = Set<AnyCancellable>()
+    
+    init(accountId: Int, sessionId: String) {
+        self.accountId = accountId
+        self.sessionId = sessionId
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     private lazy var tableView: UITableView = {
         let tableview = UITableView()
         tableview.dataSource = self
+        tableview.delegate = self
         return tableview
     }()
 
@@ -47,7 +60,7 @@ class TVSearchResultView: UIViewController, UISearchResultsUpdating {
     }
 }
 
-extension TVSearchResultView: UITableViewDataSource {
+extension TVSearchResultView: UITableViewDataSource, UITableViewDelegate{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results.count
     }
@@ -59,5 +72,11 @@ extension TVSearchResultView: UITableViewDataSource {
         cell.textLabel?.text = tv.name
         cell.detailTextLabel?.text = tv.firstAirDate
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let tv = results[indexPath.row]
+        didSelectTV?(tv)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

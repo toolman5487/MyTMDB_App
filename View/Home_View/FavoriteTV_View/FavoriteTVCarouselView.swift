@@ -19,12 +19,12 @@ class FavoriteTVCarouselView:UIView{
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
-        backgroundColor = .secondarySystemBackground
+       
     }
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupLayout()
-        backgroundColor = .secondarySystemBackground
+       
     }
     
     private let tvHeaderLabel: UILabel = {

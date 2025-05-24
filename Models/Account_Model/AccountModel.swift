@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Account: Decodable {
+struct Account: Codable {
     let id: Int
     let name: String?
     let username: String
@@ -16,15 +16,15 @@ struct Account: Decodable {
     let iso_3166_1: String
     let avatar: Avatar
     
-    struct Avatar: Decodable {
+    struct Avatar: Codable {
         let gravatar: Gravatar
         let tmdb: TMDBAvatar
         
-        struct Gravatar: Decodable {
+        struct Gravatar: Codable {
             let hash: String
         }
         
-        struct TMDBAvatar: Decodable {
+        struct TMDBAvatar: Codable {
             let avatar_path: String?
         }
     }

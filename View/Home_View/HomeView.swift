@@ -54,7 +54,7 @@ class HomeView: UIViewController{
         stack.spacing = 16
         stack.alignment = .center
         stack.distribution = .fill
-        stack.backgroundColor = .secondarySystemGroupedBackground
+        stack.backgroundColor = .secondarySystemBackground
         stack.layer.cornerRadius = 16
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)

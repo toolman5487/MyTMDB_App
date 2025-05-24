@@ -244,5 +244,6 @@ extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
                                        accountId: self.accountId,
                                        sessionId: self.sessionId)
         navigationController?.pushViewController(detailVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

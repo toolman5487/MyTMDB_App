@@ -7,16 +7,16 @@
 
 import Foundation
 
-struct TokenResponse: Decodable {
+struct TokenResponse: Codable {
     let request_token: String
     let success: Bool
 }
 
-struct ValidateResponse: Decodable {
+struct ValidateResponse: Codable {
     let success: Bool
 }
 
-struct SessionResponse: Decodable {
+struct SessionResponse: Codable {
     let session_id: String
     let success: Bool
 }
