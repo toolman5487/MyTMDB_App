@@ -29,7 +29,8 @@ class SettingsViewController: UITableViewController {
     
     private lazy var themeSwitch: UISwitch = {
         let switchButton = UISwitch()
-        switchButton.isOn = UserDefaults.standard.bool(forKey: "isDarkMode")
+        let isDark = UserDefaults.standard.bool(forKey: "isDarkMode")
+        switchButton.isOn = !isDark
         switchButton.addTarget(self, action: #selector(themeSwitchChanged(_:)), for: .valueChanged)
         return switchButton
     }()
@@ -88,15 +89,16 @@ class SettingsViewController: UITableViewController {
                 break
             }
         case .appearance:
-            cell.textLabel?.text = "深色模式"
+            cell.textLabel?.text = "淺色模式"
             cell.accessoryView = themeSwitch
         }
         return cell
     }
     
     @objc private func themeSwitchChanged(_ sender: UISwitch) {
-        UserDefaults.standard.set(sender.isOn, forKey: "isDarkMode")
-        applyTheme(isDark: sender.isOn)
+        let isDark = !sender.isOn
+        UserDefaults.standard.set(isDark, forKey: "isDarkMode")
+        applyTheme(isDark: isDark)
     }
     
     private func applyTheme(isDark: Bool) {
