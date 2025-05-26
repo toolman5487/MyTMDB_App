@@ -27,6 +27,14 @@ class HomeView: UIViewController{
         return search
     }()
     
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .automatic
+        navigationItem.title = "首頁"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = true
+    }
+    
     private let avatarImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
@@ -73,11 +81,8 @@ class HomeView: UIViewController{
     }()
     
     private func bindAccountVM() {
-        guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID"),
-            let accountId = UserDefaults.standard.value(forKey: "TMDBAccountID") as? Int
-        else { return }
+        guard let sessionId = UserDefaults.standard.string(forKey: "TMDBSessionID") else { return }
         accountVM.loadAccount(sessionId: sessionId)
-        accountVM.loadFavorites(accountId: accountId, sessionId: sessionId)
         accountVM.$account
             .compactMap { $0 }
             .sink { [weak self] account in
@@ -112,15 +117,6 @@ class HomeView: UIViewController{
                 self?.favoriteTVCarousel.update(with: tv)
             }
             .store(in: &cancellables)
-    }
-    
-    private func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .automatic
-        navigationItem.title = "首頁"
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = true
-        definesPresentationContext = true
     }
     
     private func configureSearchSelection() {

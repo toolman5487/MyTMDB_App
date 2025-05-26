@@ -47,34 +47,23 @@ final class TVListViewModel {
             topRatedService.fetchTopRated()
         )
         .receive(on: DispatchQueue.main)
-        .sink(receiveCompletion: { completion in
+        .sink(receiveCompletion: { [weak self] completion in
             switch completion {
             case .finished:
                 break
             case .failure(let error):
-                print("Error fetching lists:", error)
+                self?.errorMessage = error.localizedDescription
             }
         }, receiveValue: { [weak self] airing, onAir, popularTV, topTV in
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            let sortedAiring = airing.sorted {
-                guard let d0 = formatter.date(from: $0.firstAirDate),
-                      let d1 = formatter.date(from: $1.firstAirDate) else {
-                    return false
-                }
-                return d0 > d1
-            }
-            let sortedOnAir = onAir.sorted {
-                guard let d0 = formatter.date(from: $0.firstAirDate),
-                      let d1 = formatter.date(from: $1.firstAirDate) else {
-                    return false
-                }
-                return d0 > d1
-            }
+            let sortedAiring    = airing.sorted { $0.firstAirDate > $1.firstAirDate }
+            let sortedOnTheAir  = onAir.sorted { $0.firstAirDate > $1.firstAirDate }
+            let sortedPopular   = popularTV.sorted { $0.popularity > $1.popularity }
+            let sortedTopRated  = topTV.sorted { $0.voteAverage > $1.voteAverage }
+
             self?.airingToday = sortedAiring
-            self?.onTheAir = sortedOnAir
-            self?.popular = popularTV
-            self?.topRated = topTV
+            self?.onTheAir    = sortedOnTheAir
+            self?.popular     = sortedPopular
+            self?.topRated    = sortedTopRated
         })
         .store(in: &cancellables)
     }
