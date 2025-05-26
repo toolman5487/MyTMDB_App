@@ -12,15 +12,21 @@ import SDWebImage
 
 class FavoriteMovieCardCell: UICollectionViewCell {
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        posterImageView.contentMode = .scaleAspectFit
+        posterImageView.image = nil
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     private let posterImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
-        image.layer.cornerRadius = 20
+        image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
         return image
     }()
@@ -43,19 +49,20 @@ class FavoriteMovieCardCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(posterImageView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(subtitleLabel)
-    
         posterImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.width.equalTo(120)
             make.height.equalTo(180)
         }
+        
+        contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(posterImageView.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(16)
         }
+        
+        contentView.addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(16)
@@ -69,8 +76,9 @@ class FavoriteMovieCardCell: UICollectionViewCell {
             .split(separator: "-")
             .first
             .map(String.init)
+        posterImageView.contentMode = .scaleAspectFit
         if let path = item.posterPath,
-           let url = URL(string: "https://image.tmdb.org/t/p/w185\(path)") {
+           let url = URL(string: "https://image.tmdb.org/t/p/w342\(path)") {
             posterImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "film"))
         } else {
             posterImageView.image = UIImage(systemName: "film")

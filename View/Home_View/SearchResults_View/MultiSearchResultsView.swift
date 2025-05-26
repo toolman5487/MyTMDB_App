@@ -109,7 +109,6 @@ extension MultiSearchResultsView: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let result = results[indexPath.row]
-        print("User tapped row \(indexPath.row), mediaType:", result.mediaType, "id:", result.id ?? -1)
         guard let id = result.id else { return }
         switch result.mediaType {
         case .person:

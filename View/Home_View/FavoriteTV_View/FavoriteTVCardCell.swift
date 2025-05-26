@@ -13,15 +13,21 @@ import SDWebImage
 
 class FavoriteTVCardCell:UICollectionViewCell{
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        posterImageView.contentMode = .scaleAspectFit
+        posterImageView.image = nil
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     private let posterImageView: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
-        image.layer.cornerRadius = 20
+        image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
         return image
     }()
@@ -71,7 +77,7 @@ class FavoriteTVCardCell:UICollectionViewCell{
             .first
             .map(String.init)
         if let path = item.posterPath,
-           let url = URL(string: "https://image.tmdb.org/t/p/w185\(path)") {
+           let url = URL(string: "https://image.tmdb.org/t/p/w342\(path)") {
             posterImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "film"))
         } else {
             posterImageView.image = UIImage(systemName: "film")

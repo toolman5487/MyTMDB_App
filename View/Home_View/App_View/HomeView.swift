@@ -27,13 +27,42 @@ class HomeView: UIViewController{
         return search
     }()
     
-    private func setupNavigationBar() {
+    private lazy var settingButton: UIButton = {
+        let button = UIButton(type: .system)
+        let boldConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
+        button.setPreferredSymbolConfiguration(boldConfig, forImageIn: .normal)
+        button.setImage(UIImage(systemName: "gearshape.fill"), for: .normal)
+        button.tintColor = .label
+        button.addTarget(self, action: #selector(didSettingAddButton), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var settingBarButtonItem: UIBarButtonItem = {
+        UIBarButtonItem(customView: settingButton)
+    }()
+    
+    @objc private func didSettingAddButton() {
+        let settingsVC = SettingsViewController()
+        settingsVC.title = "設定"
+        navigationController?.pushViewController(settingsVC, animated: true)
+    }
+    
+    private func homeNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .automatic
         navigationItem.title = "首頁"
+        navigationItem.rightBarButtonItem = settingBarButtonItem
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
     }
+    
+    private let scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.showsVerticalScrollIndicator = true
+        return scroll
+    }()
+    
+    private let contentView = UIView()
     
     private let avatarImageView: UIImageView = {
         let image = UIImageView()
@@ -67,17 +96,6 @@ class HomeView: UIViewController{
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         return stack
-    }()
-    
-    private let scrollView: UIScrollView = {
-        let scroll = UIScrollView()
-        scroll.showsVerticalScrollIndicator = true
-        return scroll
-    }()
-    
-    private let contentView: UIView = {
-        let view = UIView()
-        return view
     }()
     
     private func bindAccountVM() {
@@ -208,9 +226,9 @@ class HomeView: UIViewController{
         super.viewDidLoad()
         bindAccountVM()
         bindFavorites()
-        setupNavigationBar()
+        homeNavigationBar()
         configureSearchSelection()
-        layout()
         configureFavoritesSelection()
+        layout()
     }
 }
