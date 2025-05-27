@@ -33,12 +33,26 @@ class LoginViewController: UIViewController {
         label.font = ThemeFont.bold(ofSize: 30)
         return label
     }()
-    
+
     private let userField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "UserID"
-        textField.borderStyle = .roundedRect
         textField.text = ""
+        textField.clearButtonMode = .whileEditing
+        textField.borderStyle = .none
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 1))
+        textField.leftView = paddingView
+        textField.leftViewMode = .always
+        textField.textContentType = .username
+        textField.keyboardType = .emailAddress
+        textField.autocapitalizationType = .none
+        let underline = UIView()
+        underline.backgroundColor = .label
+        textField.addSubview(underline)
+        underline.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
         return textField
     }()
     
@@ -47,9 +61,37 @@ class LoginViewController: UIViewController {
         textField.placeholder = "Password"
         textField.text = ""
         textField.isSecureTextEntry = true
-        textField.borderStyle = .roundedRect
+        textField.clearButtonMode = .whileEditing
+        textField.borderStyle = .none
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 1))
+        textField.leftView = paddingView
+        textField.leftViewMode = .always
+        textField.textContentType = .password
+       
+        let eyeButton = UIButton(type: .system)
+        eyeButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        eyeButton.tintColor = .secondaryLabel
+        eyeButton.frame = CGRect(x: 0, y: -4, width: 24, height: 24)
+        eyeButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+        let container = UIView(frame: CGRect(x: 0, y: -6, width: 24, height: 28))
+        container.addSubview(eyeButton)
+        textField.rightView = container
+        textField.rightViewMode = .always
+        let underline = UIView()
+        underline.backgroundColor = .label
+        textField.addSubview(underline)
+        underline.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
         return textField
     }()
+    
+    @objc private func togglePasswordVisibility(_ sender: UIButton) {
+        passField.isSecureTextEntry.toggle()
+        let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye.circle"
+        sender.setImage(UIImage(systemName: imageName), for: .normal)
+    }
     
     private let loginBotton: UIButton = {
         var config = UIButton.Configuration.filled()

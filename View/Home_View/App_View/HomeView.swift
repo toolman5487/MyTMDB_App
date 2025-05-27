@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 import Combine
 import SDWebImage
+import CoreData
 
 class HomeView: UIViewController{
     
@@ -17,6 +18,7 @@ class HomeView: UIViewController{
     private var cancellables = Set<AnyCancellable>()
     private let favoriteMoviesCarousel = FavoriteMoviesCarouselView()
     private let favoriteTVCarousel = FavoriteTVCarouselView()
+    private let localFavoritesService = FavoritesLocalService()
     
     private let searchResultsView = MultiSearchResultsView()
     private lazy var searchController: UISearchController = {
@@ -125,7 +127,16 @@ class HomeView: UIViewController{
         accountVM.$favoriteMovies
             .receive(on: DispatchQueue.main)
             .sink { [weak self] movies in
-                self?.favoriteMoviesCarousel.update(with: movies)
+                guard let self = self else { return }
+                self.favoriteMoviesCarousel.update(with: movies)
+                movies.forEach { movie in
+                    self.localFavoritesService.addFavorite(
+                        id: movie.id,
+                        title: movie.title,
+                        posterPath: movie.posterPath,
+                        mediaType: "movie"
+                    )
+                }
             }
             .store(in: &cancellables)
         
