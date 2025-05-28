@@ -23,6 +23,11 @@
 		153AD9742DE59616007DF535 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD9732DE59616007DF535 /* CoreDataManager.swift */; };
 		153AD9792DE59D02007DF535 /* FavoritesLocalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD9782DE59D02007DF535 /* FavoritesLocalService.swift */; };
 		153AD97C2DE5A1FC007DF535 /* FavoritesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD97B2DE5A1FC007DF535 /* FavoritesRepository.swift */; };
+		153AD97F2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 153AD97E2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper */; };
+		153AD9812DE5F6CB007DF535 /* MovieVideoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD9802DE5F6CB007DF535 /* MovieVideoModel.swift */; };
+		153AD9832DE5FC36007DF535 /* MovieVideoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD9822DE5FC36007DF535 /* MovieVideoService.swift */; };
+		153AD9852DE60026007DF535 /* MovieVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD9842DE60026007DF535 /* MovieVideoViewModel.swift */; };
+		153AD9872DE706D7007DF535 /* RatingInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153AD9862DE706D7007DF535 /* RatingInputViewController.swift */; };
 		1554B8192DDDC8F7004A4C3B /* MovieListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1554B8182DDDC8F7004A4C3B /* MovieListCell.swift */; };
 		15787ED22DDDBF8A00505B87 /* MovieListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15787ED12DDDBF8A00505B87 /* MovieListViewModel.swift */; };
 		158BFB452DCDE79300ABBA52 /* FavoriteMoviesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158BFB442DCDE79300ABBA52 /* FavoriteMoviesModel.swift */; };
@@ -132,6 +137,10 @@
 		153AD9732DE59616007DF535 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		153AD9782DE59D02007DF535 /* FavoritesLocalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesLocalService.swift; sourceTree = "<group>"; };
 		153AD97B2DE5A1FC007DF535 /* FavoritesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesRepository.swift; sourceTree = "<group>"; };
+		153AD9802DE5F6CB007DF535 /* MovieVideoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieVideoModel.swift; sourceTree = "<group>"; };
+		153AD9822DE5FC36007DF535 /* MovieVideoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieVideoService.swift; sourceTree = "<group>"; };
+		153AD9842DE60026007DF535 /* MovieVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieVideoViewModel.swift; sourceTree = "<group>"; };
+		153AD9862DE706D7007DF535 /* RatingInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingInputViewController.swift; sourceTree = "<group>"; };
 		1554B8182DDDC8F7004A4C3B /* MovieListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListCell.swift; sourceTree = "<group>"; };
 		15787ED12DDDBF8A00505B87 /* MovieListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListViewModel.swift; sourceTree = "<group>"; };
 		158BFB442DCDE79300ABBA52 /* FavoriteMoviesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteMoviesModel.swift; sourceTree = "<group>"; };
@@ -246,6 +255,7 @@
 				1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */,
 				1598AA852DC4B6F8005E972C /* CombineCocoa in Frameworks */,
 				1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */,
+				153AD97F2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +305,7 @@
 				1535FA0B2DD78A340090E25A /* MovieReviewTableViewCell.swift */,
 				1535FA0D2DD86A1F0090E25A /* TVReviewTableView.swift */,
 				1535FA0F2DD86A640090E25A /* TVReviewTableViewCell.swift */,
+				153AD9862DE706D7007DF535 /* RatingInputViewController.swift */,
 			);
 			path = Review_View;
 			sourceTree = "<group>";
@@ -550,6 +561,7 @@
 		1598AC162DC9B5EA005E972C /* Movie_Model */ = {
 			isa = PBXGroup;
 			children = (
+				153AD9802DE5F6CB007DF535 /* MovieVideoModel.swift */,
 				1598AC172DC9B5FC005E972C /* MovieDetailModel.swift */,
 				158BFB442DCDE79300ABBA52 /* FavoriteMoviesModel.swift */,
 				158BFBCA2DD48A3200ABBA52 /* MovieCreditsResponse.swift */,
@@ -705,6 +717,7 @@
 				158BFBCC2DD48AC100ABBA52 /* MovieCreditsService.swift */,
 				1535FA062DD783020090E25A /* MovieReviewService.swift */,
 				15B068272DDC7CC4009591F9 /* MovieSearchService.swift */,
+				153AD9822DE5FC36007DF535 /* MovieVideoService.swift */,
 			);
 			path = MovieDetail_Service;
 			sourceTree = "<group>";
@@ -784,6 +797,7 @@
 				1598AC1D2DC9E086005E972C /* MovieDetailViewModel.swift */,
 				158BFBCE2DD48BD900ABBA52 /* MovieCreditsViewModel.swift */,
 				15B068292DDC8088009591F9 /* MovieSearchViewModel.swift */,
+				153AD9842DE60026007DF535 /* MovieVideoViewModel.swift */,
 			);
 			path = Movie_VM;
 			sourceTree = "<group>";
@@ -811,6 +825,7 @@
 				1598AA7E2DC4B6D1005E972C /* SDWebImage */,
 				1598AA812DC4B6DF005E972C /* SnapKit */,
 				1598AA842DC4B6F8005E972C /* CombineCocoa */,
+				153AD97E2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper */,
 			);
 			productName = MyTMDB_App;
 			productReference = 1598AA492DC4B69F005E972C /* MyTMDB_App.app */;
@@ -898,6 +913,7 @@
 				1598AA7D2DC4B6D1005E972C /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				1598AA802DC4B6DF005E972C /* XCRemoteSwiftPackageReference "SnapKit" */,
 				1598AA832DC4B6F8005E972C /* XCRemoteSwiftPackageReference "CombineCocoa" */,
+				153AD97D2DE5EDE2007DF535 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1598AA4A2DC4B69F005E972C /* Products */;
@@ -947,6 +963,7 @@
 				15EDCDB02DE04A3E0013CF53 /* TVListModel.swift in Sources */,
 				1554B8192DDDC8F7004A4C3B /* MovieListCell.swift in Sources */,
 				158BFB472DCDF8D500ABBA52 /* FavoriteTVResponseModel.swift in Sources */,
+				153AD9812DE5F6CB007DF535 /* MovieVideoModel.swift in Sources */,
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
 				158BFBCD2DD48AC100ABBA52 /* MovieCreditsService.swift in Sources */,
 				1535FA122DDADB2D0090E25A /* TVReviewService.swift in Sources */,
@@ -964,6 +981,7 @@
 				158BFB572DD1D0B000ABBA52 /* SeasonDetailViewModel.swift in Sources */,
 				15EDCDBC2DE04E950013CF53 /* TopRatedTVService.swift in Sources */,
 				15EDCDAD2DE01FA50013CF53 /* TVListCell.swift in Sources */,
+				153AD9832DE5FC36007DF535 /* MovieVideoService.swift in Sources */,
 				1598AB9C2DC8B0B6005E972C /* MultiSearchResultModel.swift in Sources */,
 				15C37E552DCC939000BAE42F /* PersonDetailView.swift in Sources */,
 				158BFBD12DD5CD5600ABBA52 /* FavoriteResponseModel.swift in Sources */,
@@ -976,6 +994,7 @@
 				15C37E432DCB04E400BAE42F /* TVDetailService.swift in Sources */,
 				158BFB4C2DCFA22900ABBA52 /* FavoriteMovieCardCell.swift in Sources */,
 				1539140C2DE463F3002193DF /* SettingsViewController.swift in Sources */,
+				153AD9852DE60026007DF535 /* MovieVideoViewModel.swift in Sources */,
 				1598AB0B2DC4C708005E972C /* MainTabBarController.swift in Sources */,
 				15CB7D9A2DDDB5A100CDAB6E /* MovieListModel.swift in Sources */,
 				158BFB592DD1F9CE00ABBA52 /* EpisodeDetailView.swift in Sources */,
@@ -1012,6 +1031,7 @@
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				158BFB452DCDE79300ABBA52 /* FavoriteMoviesModel.swift in Sources */,
 				1535FA052DD77F490090E25A /* MovieReviewModel.swift in Sources */,
+				153AD9872DE706D7007DF535 /* RatingInputViewController.swift in Sources */,
 				15C37E462DCB088400BAE42F /* TVDetailViewModel.swift in Sources */,
 				158BFB532DD1BD2200ABBA52 /* SeasonDetailView.swift in Sources */,
 				153AD9792DE59D02007DF535 /* FavoritesLocalService.swift in Sources */,
@@ -1350,6 +1370,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		153AD97D2DE5EDE2007DF535 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		1598AA7D2DC4B6D1005E972C /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
@@ -1377,6 +1405,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		153AD97E2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 153AD97D2DE5EDE2007DF535 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */;
+			productName = YouTubeiOSPlayerHelper;
+		};
 		1598AA7E2DC4B6D1005E972C /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1598AA7D2DC4B6D1005E972C /* XCRemoteSwiftPackageReference "SDWebImage" */;

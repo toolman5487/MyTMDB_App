@@ -9,17 +9,20 @@ import UIKit
 import SnapKit
 import Combine
 import SDWebImage
+import YouTubeiOSPlayerHelper
 
 
 class MovieDetailView: UITableViewController {
-    private let viewModel: MovieDetailViewModel
-    private var cancellables = Set<AnyCancellable>()
-    private var movie: MovieDetailModel?
-    private var creditsViewModel: MovieCreditsViewModel!
-    private var castMembers: [CastMember] = []
-    private var favoriteViewModel: FavoriteViewModel!
+    
     private let accountId: Int
     private let sessionId: String
+    private let viewModel: MovieDetailViewModel
+    private var favoriteViewModel: FavoriteViewModel!
+    private let videoViewModel: MovieVideoViewModel
+    private var creditsViewModel: MovieCreditsViewModel!
+    private var movie: MovieDetailModel?
+    private var castMembers: [CastMember] = []
+    private var cancellables = Set<AnyCancellable>()
     
     private let posterImageView: UIImageView = {
         let image = UIImageView()
@@ -34,6 +37,7 @@ class MovieDetailView: UITableViewController {
         self.creditsViewModel = MovieCreditsViewModel(movieId: viewModel.movieId)
         self.accountId = accountId
         self.sessionId = sessionId
+        self.videoViewModel = MovieVideoViewModel(movieId: viewModel.movieId)
         super.init(style: .insetGrouped)
         navigationItem.largeTitleDisplayMode = .always
         title = "電影詳情"
@@ -79,10 +83,17 @@ class MovieDetailView: UITableViewController {
                 self?.configureNavigationBarItems()
             }
             .store(in: &cancellables)
+        
+        videoViewModel.$videos
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
     }
     
     enum Section: Int, CaseIterable {
-        case info, review, overview, cast, production
+        case trailer, info, review, overview, cast, production
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -91,7 +102,9 @@ class MovieDetailView: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let m = movie else { return 0 }
-        switch Section(rawValue: section)! {
+       switch Section(rawValue: section)! {
+        case .trailer:
+            return videoViewModel.videos.isEmpty ? 0 : 1
         case .info:
             return 3
         case .overview:
@@ -107,6 +120,8 @@ class MovieDetailView: UITableViewController {
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section)! {
+        case .trailer:
+            return "預告片"
         case .info:
             return "基本資訊"
         case .overview:
@@ -128,6 +143,21 @@ class MovieDetailView: UITableViewController {
         var config = cell.defaultContentConfiguration()
         
         switch section {
+        case .trailer:
+            let cell = UITableViewCell()
+            let playerView = YTPlayerView()
+            cell.contentView.addSubview(playerView)
+            playerView.snp.makeConstraints {
+                $0.edges.equalToSuperview()
+                $0.height.equalTo(200)
+                
+            }
+           if let video = videoViewModel.videos.first(where: { $0.site == "YouTube" && $0.type == "Trailer" }) {
+                playerView.load(withVideoId: video.key)
+            }
+            cell.selectionStyle = .none
+            return cell
+            
         case .info:
             let titles = ["上映日期", "片長 (分)", "電影預算"]
             let formatter = NumberFormatter()
@@ -201,10 +231,6 @@ class MovieDetailView: UITableViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-
-    @objc private func toggleFavorite() {
-        favoriteViewModel.toggleFavorite()
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -212,21 +238,49 @@ class MovieDetailView: UITableViewController {
     }
     
     private func configureNavigationBarItems() {
-        let imageName = favoriteViewModel.isFavorite ? "heart.fill" : "heart"
-        let heartItem = UIBarButtonItem(
-            image: UIImage(systemName: imageName),
+        let plusImageName = favoriteViewModel.isFavorite ? "plus.circle.fill" : "plus.circle"
+        let plusItem = UIBarButtonItem(
+            image: UIImage(systemName: plusImageName),
             style: .plain,
             target: self,
             action: #selector(toggleFavorite)
         )
-        heartItem.tintColor = .systemPink
-        navigationItem.rightBarButtonItem = heartItem
+
+        let heartItem = UIBarButtonItem(
+            image: UIImage(systemName: "heart"),
+            style: .plain,
+            target: self,
+            action: #selector(showRatingPrompt)
+        )
+
+        plusItem.tintColor = .label
+        heartItem.tintColor = .label
+        navigationItem.rightBarButtonItems = [plusItem, heartItem]
+    }
+    
+    @objc private func toggleFavorite() {
+        favoriteViewModel.toggleFavorite()
+    }
+    
+    @objc private func showRatingPrompt() {
+        let ratingVC = RatingInputViewController()
+        ratingVC.favoriteViewModel = favoriteViewModel
+        ratingVC.title = "給予評分"
+        let nav = UINavigationController(rootViewController: ratingVC)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.largestUndimmedDetentIdentifier = .medium
+        }
+        present(nav, animated: true)
     }
     
     private func configureReviewButton() {
         let reviewButton = UIButton(type: .system)
         reviewButton.setTitle("查看評論", for: .normal)
-        reviewButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        reviewButton.titleLabel?.font = ThemeFont.bold(ofSize: 18)
         reviewButton.backgroundColor = .systemBlue
         reviewButton.setTitleColor(.white, for: .normal)
         reviewButton.layer.cornerRadius = 20
@@ -274,5 +328,6 @@ class MovieDetailView: UITableViewController {
         creditsViewModel.loadCredits()
         viewModel.fetchMovieDetail()
         configureReviewButton()
+        videoViewModel.fetchVideos()
     }
 }

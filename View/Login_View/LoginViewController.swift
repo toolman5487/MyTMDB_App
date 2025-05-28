@@ -39,20 +39,13 @@ class LoginViewController: UIViewController {
         textField.placeholder = "UserID"
         textField.text = ""
         textField.clearButtonMode = .whileEditing
-        textField.borderStyle = .none
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 1))
-        textField.leftView = paddingView
-        textField.leftViewMode = .always
+        textField.borderStyle = .roundedRect
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.secondaryLabel.cgColor
+        textField.layer.cornerRadius = 8
+        textField.font = UIFont.systemFont(ofSize: 18)
         textField.textContentType = .username
-        textField.keyboardType = .emailAddress
         textField.autocapitalizationType = .none
-        let underline = UIView()
-        underline.backgroundColor = .label
-        textField.addSubview(underline)
-        underline.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
-        }
         return textField
     }()
     
@@ -62,28 +55,23 @@ class LoginViewController: UIViewController {
         textField.text = ""
         textField.isSecureTextEntry = true
         textField.clearButtonMode = .whileEditing
-        textField.borderStyle = .none
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 1))
-        textField.leftView = paddingView
-        textField.leftViewMode = .always
+        textField.borderStyle = .roundedRect
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.secondaryLabel.cgColor
+        textField.layer.cornerRadius = 8
+        textField.font = UIFont.systemFont(ofSize: 18)
         textField.textContentType = .password
-       
+        
         let eyeButton = UIButton(type: .system)
         eyeButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         eyeButton.tintColor = .secondaryLabel
-        eyeButton.frame = CGRect(x: 0, y: -4, width: 24, height: 24)
+        eyeButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         eyeButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
-        let container = UIView(frame: CGRect(x: 0, y: -6, width: 24, height: 28))
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 24))
         container.addSubview(eyeButton)
+        eyeButton.center = container.center
         textField.rightView = container
         textField.rightViewMode = .always
-        let underline = UIView()
-        underline.backgroundColor = .label
-        textField.addSubview(underline)
-        underline.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
-        }
         return textField
     }()
     
@@ -125,14 +113,6 @@ class LoginViewController: UIViewController {
     }
     
     private func layout(){
-        view.addSubview(logoImage)
-        logoImage.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(92)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(100)
-        }
-        
         view.addSubview(loginStack)
         loginStack.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -140,14 +120,23 @@ class LoginViewController: UIViewController {
         }
         userField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(8)
+            make.height.equalTo(56)
         }
         passField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(8)
+            make.height.equalTo(56)
+        }
+        
+        view.addSubview(logoImage)
+        logoImage.snp.makeConstraints { make in
+            make.bottom.equalTo(loginStack.snp.top).offset(-16)
+            make.leading.trailing.equalTo(loginStack)
+            make.height.equalTo(100)
         }
         
         view.addSubview(loginBotton)
         loginBotton.snp.makeConstraints { make in
-            make.top.equalTo(loginStack.snp.bottom).offset(8)
+            make.top.equalTo(loginStack.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
@@ -205,7 +194,6 @@ class LoginViewController: UIViewController {
             .compactMap { $0 }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] account in
-                print("Account ID:", account.id)
                 guard let windowScene = self?.view.window?.windowScene,
                       let sceneDelegate = windowScene.delegate as? SceneDelegate,
                       let window = sceneDelegate.window else {

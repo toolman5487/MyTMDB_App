@@ -22,7 +22,7 @@ struct MovieDetailModel: Codable {
     let budget: Int
     let revenue: Int
     let productionCompanies: [ProductionCompany]
-
+    
     enum CodingKeys: String, CodingKey {
         case id
         case adult
@@ -46,10 +46,11 @@ struct ProductionCompany: Codable {
     let name: String
     let logoPath: String?
     let originCountry: String
-
+    
     enum CodingKeys: String, CodingKey {
         case id, name
         case logoPath = "logo_path"
         case originCountry = "origin_country"
     }
 }
+

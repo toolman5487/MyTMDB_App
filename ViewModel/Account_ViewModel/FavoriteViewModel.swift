@@ -16,6 +16,8 @@ class FavoriteViewModel {
 
     @Published private(set) var isFavorite: Bool = false
     @Published private(set) var errorMessage: String?
+    @Published var didRate: Bool = false
+    @Published var rateError: String?
 
     private let service: FavoriteServiceProtocol
     private var cancellables = Set<AnyCancellable>()
@@ -34,7 +36,6 @@ class FavoriteViewModel {
         self.accountId = accountId
         self.sessionId = sessionId
         self.service = service
-        // Load cached favorite state if available
         self.isFavorite = UserDefaults.standard.bool(forKey: favoriteKey)
         fetchFavoriteState()
     }
@@ -79,6 +80,25 @@ class FavoriteViewModel {
                 UserDefaults.standard.set(newValue, forKey: self?.favoriteKey ?? "")
                 print("toggleFavorite succeeded for \(self?.mediaType ?? "") id: \(self?.mediaId ?? 0)")
             }
+            .store(in: &cancellables)
+    }
+    
+    func rate(_ value: Double) {
+        guard value >= 0.5 && value <= 10 else {
+            errorMessage = "評分需介於 0.5 到 10 之間"
+            return
+        }
+
+        service.rate(mediaType: mediaType, mediaId: mediaId, value: value, sessionId: sessionId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    self?.didRate = true
+                case .failure(let error):
+                    self?.rateError = error.localizedDescription
+                }
+            } receiveValue: { }
             .store(in: &cancellables)
     }
 }

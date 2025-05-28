@@ -12,6 +12,9 @@ import Combine
 class MovieReviewTableView: UITableViewController {
     
     private let viewModel: MovieReviewViewModel
+    private var reviews: [Review] = []
+    private var cancellables = Set<AnyCancellable>()
+    
     init(movieId: Int) {
         self.viewModel = MovieReviewViewModel(movieId: movieId)
         super.init(style: .plain)
@@ -19,9 +22,6 @@ class MovieReviewTableView: UITableViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private var reviews: [Review] = []
-    private var cancellables = Set<AnyCancellable>()
 
     private let emptyLabel: UILabel = {
         let label = UILabel()

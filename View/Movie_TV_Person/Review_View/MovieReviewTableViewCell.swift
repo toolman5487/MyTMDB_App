@@ -21,6 +21,8 @@ class MovieReviewTableViewCell: UITableViewCell {
     
     private let authorImageView: UIImageView = {
         let image = UIImageView()
+        image.image = UIImage(systemName: "person.crop.circle")
+        image.tintColor = .secondaryLabel
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         image.layer.cornerRadius = 20
@@ -81,8 +83,6 @@ class MovieReviewTableViewCell: UITableViewCell {
         if let path = review.authorDetails.avatarPath,
            let url = URL(string: "https://image.tmdb.org/t/p/w45\(path)") {
             authorImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.crop.circle"))
-        } else {
-            authorImageView.image = UIImage(systemName: "person.crop.circle")
         }
         if let userRating = review.authorDetails.rating {
             ratingLabel.text = "Rating: \(userRating) / 10"
