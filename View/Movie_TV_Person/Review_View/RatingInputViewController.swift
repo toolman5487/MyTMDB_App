@@ -19,6 +19,7 @@ class RatingInputViewController: UIViewController {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont.preferredFont(forTextStyle: .title2)
+        
         return label
     }()
 
@@ -27,6 +28,10 @@ class RatingInputViewController: UIViewController {
         slider.minimumValue = 0.5
         slider.maximumValue = 10.0
         slider.value = 5.0
+        
+        slider.maximumTrackTintColor = .label
+        slider.minimumTrackTintColor = .tertiaryLabel
+        
         return slider
     }()
 
@@ -69,7 +74,24 @@ class RatingInputViewController: UIViewController {
     @objc private func sliderChanged(_ sender: UISlider) {
         let stepped = round(sender.value * 2) / 2
         sender.value = stepped
-        valueLabel.text = "❤️ \(stepped)"
+        valueLabel.text = "\(stepped)"
+        
+        let minFontSize: CGFloat = 20
+        let maxFontSize: CGFloat = 30
+        let normalizedValue = CGFloat((stepped - 0.5) / (10.0 - 0.5))
+        let newFontSize = minFontSize + (maxFontSize - minFontSize) * normalizedValue
+        
+        UIView.animate(withDuration: 0.1) {
+            self.valueLabel.font = UIFont.systemFont(ofSize: newFontSize, weight: .medium)
+        }
+        
+        let thumbColor = UIColor(
+            red: (1 - normalizedValue) * 0.5,
+            green: 0,
+            blue: normalizedValue,
+            alpha: 1
+        )
+        sender.thumbTintColor = thumbColor
     }
 
     @objc private func submitRating() {

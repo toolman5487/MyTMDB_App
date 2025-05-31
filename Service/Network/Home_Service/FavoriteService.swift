@@ -10,11 +10,13 @@ import Combine
 
 protocol FavoriteServiceProtocol {
     
-    func toggleFavorite(mediaType: String,mediaId: Int,favorite: Bool,accountId: Int,sessionId: String) -> AnyPublisher<FavoriteResponse, Error>
-    
     func fetchFavoriteState(mediaType: String, mediaId: Int, sessionId: String) -> AnyPublisher<AccountState, Error>
     
+    func toggleFavorite(mediaType: String,mediaId: Int,favorite: Bool,accountId: Int,sessionId: String) -> AnyPublisher<FavoriteResponse, Error>
+    
     func rate(mediaType: String, mediaId: Int, value: Double, sessionId: String) -> AnyPublisher<Void, Error>
+    
+    func fetchAccountState(movieId: Int, sessionId: String) -> AnyPublisher<MovieAccountState, Error>
 }
 
 final class FavoriteService: FavoriteServiceProtocol {
@@ -91,5 +93,16 @@ final class FavoriteService: FavoriteServiceProtocol {
                 .receive(on: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
+    
+    func fetchAccountState(movieId: Int, sessionId: String) -> AnyPublisher<MovieAccountState, Error> {
+        let urlString = "\(TMDB.baseURL)/movie/\(movieId)/account_states?api_key=\(TMDB.apiKey)&session_id=\(sessionId)"
+        guard let url = URL(string: urlString) else {
+            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+        }
+        return URLSession.shared.dataTaskPublisher(for: url)
+            .map(\.data)
+            .decode(type: MovieAccountState.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
-
+}

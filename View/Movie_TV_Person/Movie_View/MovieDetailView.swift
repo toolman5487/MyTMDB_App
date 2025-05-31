@@ -84,6 +84,13 @@ class MovieDetailView: UITableViewController {
             }
             .store(in: &cancellables)
         
+        favoriteViewModel.$didRate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.configureNavigationBarItems()
+            }
+            .store(in: &cancellables)
+        
         videoViewModel.$videos
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -232,13 +239,8 @@ class MovieDetailView: UITableViewController {
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureNavigationBarItems()
-    }
-    
     private func configureNavigationBarItems() {
-        let plusImageName = favoriteViewModel.isFavorite ? "plus.circle.fill" : "plus.circle"
+        let plusImageName = favoriteViewModel.isFavorite ? "bookmark.fill" : "bookmark"
         let plusItem = UIBarButtonItem(
             image: UIImage(systemName: plusImageName),
             style: .plain,
@@ -246,15 +248,16 @@ class MovieDetailView: UITableViewController {
             action: #selector(toggleFavorite)
         )
 
+        let heartImageName = (favoriteViewModel.accountState?.rated != nil) ? "heart.fill" : "heart"
         let heartItem = UIBarButtonItem(
-            image: UIImage(systemName: "heart"),
+            image: UIImage(systemName: heartImageName),
             style: .plain,
             target: self,
             action: #selector(showRatingPrompt)
         )
 
         plusItem.tintColor = .label
-        heartItem.tintColor = .label
+        heartItem.tintColor = .systemPink
         navigationItem.rightBarButtonItems = [plusItem, heartItem]
     }
     
@@ -265,7 +268,7 @@ class MovieDetailView: UITableViewController {
     @objc private func showRatingPrompt() {
         let ratingVC = RatingInputViewController()
         ratingVC.favoriteViewModel = favoriteViewModel
-        ratingVC.title = "給予評分"
+        ratingVC.title = "評分"
         let nav = UINavigationController(rootViewController: ratingVC)
         nav.modalPresentationStyle = .pageSheet
         if let sheet = nav.sheetPresentationController {
@@ -314,8 +317,14 @@ class MovieDetailView: UITableViewController {
         present(nav, animated: true)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureNavigationBarItems()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureTableView()
         favoriteViewModel = FavoriteViewModel(
             mediaType: "movie",
             mediaId: viewModel.movieId,
@@ -324,10 +333,10 @@ class MovieDetailView: UITableViewController {
         )
         configureNavigationBarItems()
         bindViewModel()
-        configureTableView()
         creditsViewModel.loadCredits()
         viewModel.fetchMovieDetail()
         configureReviewButton()
         videoViewModel.fetchVideos()
     }
+    
 }

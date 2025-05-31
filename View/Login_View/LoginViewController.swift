@@ -52,7 +52,7 @@ class LoginViewController: UIViewController {
     private let passField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Password"
-        textField.text = ""
+        textField.text = "548798willy"
         textField.isSecureTextEntry = true
         textField.clearButtonMode = .whileEditing
         textField.borderStyle = .roundedRect

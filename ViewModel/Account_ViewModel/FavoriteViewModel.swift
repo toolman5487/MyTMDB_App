@@ -18,8 +18,9 @@ class FavoriteViewModel {
     @Published private(set) var errorMessage: String?
     @Published var didRate: Bool = false
     @Published var rateError: String?
+    @Published var accountState: MovieAccountState?
 
-    private let service: FavoriteServiceProtocol
+    private let favoriteService: FavoriteServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     private let mediaType: String
     private let mediaId: Int
@@ -35,13 +36,14 @@ class FavoriteViewModel {
         self.mediaId = mediaId
         self.accountId = accountId
         self.sessionId = sessionId
-        self.service = service
+        self.favoriteService = service
         self.isFavorite = UserDefaults.standard.bool(forKey: favoriteKey)
         fetchFavoriteState()
+        fetchAccountState()
     }
 
     func fetchFavoriteState() {
-        service.fetchFavoriteState(mediaType: mediaType,
+        favoriteService.fetchFavoriteState(mediaType: mediaType,
                                    mediaId: mediaId,
                                    sessionId: sessionId)
             .receive(on: DispatchQueue.main)
@@ -61,7 +63,7 @@ class FavoriteViewModel {
 
     func toggleFavorite() {
         let newValue = !isFavorite
-        service.toggleFavorite(mediaType: mediaType,
+        favoriteService.toggleFavorite(mediaType: mediaType,
                                mediaId: mediaId,
                                favorite: newValue,
                                accountId: accountId,
@@ -89,7 +91,7 @@ class FavoriteViewModel {
             return
         }
 
-        service.rate(mediaType: mediaType, mediaId: mediaId, value: value, sessionId: sessionId)
+        favoriteService.rate(mediaType: mediaType, mediaId: mediaId, value: value, sessionId: sessionId)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 switch completion {
@@ -101,4 +103,23 @@ class FavoriteViewModel {
             } receiveValue: { }
             .store(in: &cancellables)
     }
+    
+    func fetchAccountState() {
+       favoriteService.fetchAccountState(movieId: mediaId, sessionId: sessionId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    print("ok")
+                    break
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] state in
+                self?.accountState = state
+            }
+            .store(in: &cancellables)
+    }
 }
+
+   
