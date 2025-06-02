@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct MovieAccountState: Decodable {
+struct MovieAccountState: Codable {
     let id: Int
     let favorite: Bool
     let rated: Rated?
     let watchlist: Bool
 
-    struct Rated: Decodable {
+    struct Rated: Codable {
         let value: Double
     }
 }

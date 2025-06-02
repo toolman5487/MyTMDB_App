@@ -91,6 +91,13 @@ class MovieDetailView: UITableViewController {
             }
             .store(in: &cancellables)
         
+        favoriteViewModel.$accountState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.configureNavigationBarItems()
+            }
+            .store(in: &cancellables)
+        
         videoViewModel.$videos
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -248,7 +255,8 @@ class MovieDetailView: UITableViewController {
             action: #selector(toggleFavorite)
         )
 
-        let heartImageName = (favoriteViewModel.accountState?.rated != nil) ? "heart.fill" : "heart"
+        let heartImageName = (favoriteViewModel.didRate || (favoriteViewModel.accountState?.rated != nil))
+            ? "heart.fill" : "heart"
         let heartItem = UIBarButtonItem(
             image: UIImage(systemName: heartImageName),
             style: .plain,
@@ -272,10 +280,16 @@ class MovieDetailView: UITableViewController {
         let nav = UINavigationController(rootViewController: ratingVC)
         nav.modalPresentationStyle = .pageSheet
         if let sheet = nav.sheetPresentationController {
-            sheet.detents = [.medium()]
+            let quarterDetent = UISheetPresentationController.Detent.custom(
+                identifier: UISheetPresentationController.Detent.Identifier("quarter")
+            ) { context in
+                return context.maximumDetentValue / 3
+            }
+            sheet.detents = [quarterDetent]
+            sheet.selectedDetentIdentifier = quarterDetent.identifier
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-            sheet.largestUndimmedDetentIdentifier = .medium
+            sheet.largestUndimmedDetentIdentifier = quarterDetent.identifier
         }
         present(nav, animated: true)
     }
@@ -331,6 +345,7 @@ class MovieDetailView: UITableViewController {
             accountId: accountId,
             sessionId: sessionId
         )
+        favoriteViewModel.fetchAccountState()
         configureNavigationBarItems()
         bindViewModel()
         creditsViewModel.loadCredits()

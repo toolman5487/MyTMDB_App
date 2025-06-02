@@ -18,8 +18,7 @@ class RatingInputViewController: UIViewController {
     private let valueLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.preferredFont(forTextStyle: .title2)
-        
+        label.font = ThemeFont.bold(ofSize: 30)
         return label
     }()
 
@@ -28,9 +27,8 @@ class RatingInputViewController: UIViewController {
         slider.minimumValue = 0.5
         slider.maximumValue = 10.0
         slider.value = 5.0
-        
-        slider.maximumTrackTintColor = .label
-        slider.minimumTrackTintColor = .tertiaryLabel
+        slider.maximumTrackTintColor = .secondaryLabel
+        slider.minimumTrackTintColor = .label
         
         return slider
     }()
@@ -39,7 +37,7 @@ class RatingInputViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("提交評分", for: .normal)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 20
         button.backgroundColor = .systemBlue
         button.setTitleColor(.white, for: .normal)
         return button
@@ -47,7 +45,7 @@ class RatingInputViewController: UIViewController {
 
 
     private func layout() {
-        valueLabel.text = "評分: \(slider.value)"
+        valueLabel.text = "\(slider.value)"
         view.addSubview(valueLabel)
         view.addSubview(slider)
         view.addSubview(submitButton)
@@ -56,55 +54,21 @@ class RatingInputViewController: UIViewController {
         submitButton.addTarget(self, action: #selector(submitRating), for: .touchUpInside)
 
         valueLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
         }
         slider.snp.makeConstraints { make in
-            make.top.equalTo(valueLabel.snp.bottom).offset(20)
+            make.top.equalTo(valueLabel.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
         }
         submitButton.snp.makeConstraints { make in
             make.top.equalTo(slider.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(50)
+            make.height.equalTo(40)
         }
     }
     
-    
-    @objc private func sliderChanged(_ sender: UISlider) {
-        let stepped = round(sender.value * 2) / 2
-        sender.value = stepped
-        valueLabel.text = "\(stepped)"
-        
-        let minFontSize: CGFloat = 20
-        let maxFontSize: CGFloat = 30
-        let normalizedValue = CGFloat((stepped - 0.5) / (10.0 - 0.5))
-        let newFontSize = minFontSize + (maxFontSize - minFontSize) * normalizedValue
-        
-        UIView.animate(withDuration: 0.1) {
-            self.valueLabel.font = UIFont.systemFont(ofSize: newFontSize, weight: .medium)
-        }
-        
-        let thumbColor = UIColor(
-            red: (1 - normalizedValue) * 0.5,
-            green: 0,
-            blue: normalizedValue,
-            alpha: 1
-        )
-        sender.thumbTintColor = thumbColor
-    }
-
-    @objc private func submitRating() {
-        let score = Double(slider.value)
-        favoriteViewModel.rate(score)
-        dismiss(animated: true)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        layout()
-        
+    private func bindViewModel() {
         favoriteViewModel.$didRate
             .filter { $0 }
             .sink { [weak self] _ in
@@ -122,5 +86,36 @@ class RatingInputViewController: UIViewController {
                 self?.present(alert, animated: true)
             }
             .store(in: &cancellables)
+    }
+    
+    @objc private func sliderChanged(_ sender: UISlider) {
+        let stepped = round(sender.value * 2) / 2
+        sender.value = stepped
+        valueLabel.text = "\(stepped)"
+        
+        let minFontSize: CGFloat = 20
+        let maxFontSize: CGFloat = 40
+        let normalizedValue = CGFloat((stepped - 0.5) / (10.0 - 0.5))
+        let newFontSize = minFontSize + (maxFontSize - minFontSize) * normalizedValue
+        
+        UIView.animate(withDuration: 0.1) {
+            self.valueLabel.font = UIFont.systemFont(ofSize: newFontSize, weight: .medium)
+        }
+    }
+
+    @objc private func submitRating() {
+        let score = Double(slider.value)
+        favoriteViewModel.rate(score)
+        favoriteViewModel.didRate = true
+        dismiss(animated: true) { [weak self] in
+            self?.favoriteViewModel.fetchAccountState()
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        layout()
+        bindViewModel()
     }
 }

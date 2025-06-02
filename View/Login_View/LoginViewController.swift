@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 import Combine
 import CombineCocoa
+import SafariServices
 
 class LoginViewController: UIViewController {
     
@@ -83,13 +84,36 @@ class LoginViewController: UIViewController {
     
     private let loginBotton: UIButton = {
         var config = UIButton.Configuration.filled()
-        config.title = "確認"
+        var attribute = AttributedString("確認")
+        attribute.font = ThemeFont.bold(ofSize: 16)
+        config.attributedTitle = attribute
         config.baseBackgroundColor = .label
         config.baseForegroundColor = .systemBackground
         config.cornerStyle = .medium
         let button = UIButton(configuration: config, primaryAction: nil)
+        button.layer.cornerRadius = 20
+        button.clipsToBounds = true
         return button
     }()
+    
+    private let registerButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        var attribute = AttributedString("註冊")
+        attribute.font = ThemeFont.bold(ofSize: 16)
+        config.attributedTitle = attribute
+        config.baseBackgroundColor = .label
+        config.baseForegroundColor = .systemBackground
+        let button = UIButton(configuration: config, primaryAction: nil)
+        button.layer.cornerRadius = 20
+        button.clipsToBounds = true
+        return button
+    }()
+    
+    @objc private func goToRegister() {
+        guard let url = URL(string: "https://www.themoviedb.org/signup") else { return }
+        let safariVC = SFSafariViewController(url: url)
+        present(safariVC, animated: true)
+    }
     
     lazy var loginStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [headerLabel,userField, passField])
@@ -140,9 +164,17 @@ class LoginViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
+        
+        view.addSubview(registerButton)
+        registerButton.snp.makeConstraints { make in
+            make.top.equalTo(loginBotton.snp.bottom).offset(8)
+            make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(48)
+        }
     }
     
-    private func viewmodelBind() {
+    private func bindingViewmodel() {
         userField.textPublisher
             .compactMap { $0 }
             .assign(to: \.username, on: loginVM)
@@ -205,6 +237,8 @@ class LoginViewController: UIViewController {
                 window.makeKeyAndVisible()
             }
             .store(in: &cancellables)
+        
+        registerButton.addTarget(self, action: #selector(goToRegister), for: .touchUpInside)
     }
     
     override func viewDidLoad() {
@@ -212,6 +246,6 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         layout()
-        viewmodelBind()
+        bindingViewmodel()
     }
 }
