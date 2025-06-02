@@ -86,6 +86,6 @@ static let baseURL = "https://api.themoviedb.org/3"
 如果你有任何問題、建議或想請求新功能，請提交 Issue；若要發 Pull Request，請先確保程式碼風格與專案一致，並附上相應說明。
 
 ## 授權條款
-本專案以 MIT Licence 授權，詳細條款請見專案根目錄中的 [LICENSE](LICENSE) 文件。  
+本專案以 MIT Licence 授權，詳細條款請見專案根目錄中的文件。  
 您可以自由使用、修改、合佈及轉載本專案程式碼，但需保留原作者版權聲明與本許可聲明。
 
