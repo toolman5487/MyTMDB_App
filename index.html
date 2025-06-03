@@ -3,34 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TMDB iOS App 作品集</title>
-
-  <!-- 引入 Google Font -->
-  <link 
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" 
-    rel="stylesheet"
-  />
-
-  <!-- Prism.js 語法高亮（可選）-->
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
-    rel="stylesheet"
-  />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
-
+  <title>MyTMDB_App 作品說明</title>
   <style>
-    /* --- 全域設定 --- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* 基本全域設定 */
     body {
-      font-family: 'Noto Sans TC', sans-serif;
+      font-family: "Noto Sans TC", sans-serif;
       background-color: #f5f5f5;
       color: #333;
       line-height: 1.6;
+      margin: 0;
+      padding: 0;
     }
     a {
       color: #0366d6;
@@ -39,227 +21,205 @@
     a:hover {
       text-decoration: underline;
     }
-
-    /* --- Header 區塊 --- */
-    header {
-      background-color: #24292e;
-      color: #ffffff;
-      padding: 1rem 2rem;
-    }
-    header .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header h1 {
-      font-size: 1.8rem;
-    }
-    header nav a {
-      color: #c9d1d9;
-      margin-left: 1rem;
-      font-size: 0.9rem;
-    }
-    header nav a:hover {
-      color: #ffffff;
-    }
-
-    /* --- 主內容容器 --- */
+    /* 容器 */
     .container {
       max-width: 900px;
       margin: 2rem auto;
-      padding: 0 1rem;
+      padding: 1rem;
       background-color: #ffffff;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-
-    /* 區塊標題樣式 */
-    .section-title {
-      margin-top: 2rem;
+    h1, h2, h3 {
+      color: #24292e;
+      margin-top: 1.5rem;
+    }
+    h1 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    h2 {
       font-size: 1.5rem;
-      padding: 0.5rem 0;
       border-left: 4px solid #0366d6;
       padding-left: 0.75rem;
-      color: #0366d6;
     }
-
-    /* 文字段落 */
-    .container p {
+    p {
       margin: 1rem 0;
     }
-
-    /* 程式碼/結構區塊 */
+    ul, ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
     pre {
       background-color: #2d2d2d;
-      border-radius: 4px;
-      padding: 1rem;
-      overflow-x: auto;
-      margin: 1rem 0;
-    }
-    pre code {
-      font-family: 'Source Code Pro', monospace;
-      font-size: 0.9rem;
       color: #f8f8f2;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: "Source Code Pro", monospace;
+      font-size: 0.9rem;
     }
-
-    /* 技術標籤 */
-    .tech-list {
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      margin: 0.5rem 0 1rem 0;
-    }
-    .tech-list li {
-      background-color: #e1ecf4;
-      color: #0366d6;
-      padding: 0.3rem 0.6rem;
+    code {
+      background-color: #eaeaea;
       border-radius: 3px;
-      margin-right: 0.5rem;
-      margin-bottom: 0.5rem;
-      font-size: 0.85rem;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 1rem 0;
-      margin-top: 2rem;
-      font-size: 0.8rem;
-      color: #666;
+      padding: 0.2rem 0.4rem;
+      font-family: "Source Code Pro", monospace;
+      font-size: 0.9rem;
     }
   </style>
 </head>
-
 <body>
-  <!-- Header -->
-  <header>
-    <div class="container">
-      <h1>TMDB iOS App 作品集</h1>
-      <nav>
-        <a href="#overview">專案概述</a>
-        <a href="#structure">專案結構</a>
-        <a href="#tech">使用技術</a>
-        <a href="#contact">聯絡我</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- 主內容：容器開始 -->
   <div class="container">
-    <!-- 1. 專案概述 -->
-    <section id="overview">
-      <h2 class="section-title">一、專案概述</h2>
-      <p>
-        這是一個以 UIKit + Combine + MVVM 架構開發的 TMDB（The Movie Database）iOS 應用程式範例，  
-        完整整合了 TMDB API，包括電影列表、電影詳情（包含預告片、演員名單）、喜好功能與評分功能，  
-        並使用 SnapKit 做自動排版、SDWebImage 處理圖片載入、YouTube-Player-iOS-Helper 播放預告片。  
-      </p>
-      <!-- 暫時不放截圖 -->
-    </section>
+    <h1>MyTMDB_App 作品說明</h1>
 
-    <!-- 2. 專案結構 -->
-    <section id="structure">
-      <h2 class="section-title">二、專案結構</h2>
-      <p>以下展示專案的資料夾層級結構，方便快速了解整體模組劃分：</p>
-      <pre><code class="language-none">
-MyTMDB_App/
-├─ Repository/
-├─ CoreData/
-├─ Controller/
-├─ Config/
-├─ Service/
-│   ├─ FavoriteService.swift
-│   ├─ MovieService.swift
-│   ├─ MovieVideoService.swift
-│   └─ …  // 其他服務層檔案
-├─ Models/
-│   ├─ MovieModel/
-│   ├─ MovieDetailModel.swift
-│   └─ …  // 其他 Model 檔案
-├─ View/
-│   ├─ Movie_TV_Person/
-│   │   ├─ Person_View/
-│   │   ├─ TV_View/
-│   │   ├─ Movie_View/
-│   │   └─ Review_View/
-│   ├─ TVHome_View/
-│   │   ├─ TVListCell/
-│   │   └─ TVNavigation_View/
-│   ├─ MovieHome_View/
-│   │   ├─ Navigation_View/
-│   │   └─ MovieList_View/
-│   ├─ Home_View/
-│   │   ├─ App_View/
-│   │   ├─ FavoriteTV_View/
-│   │   ├─ FavoriteMovies_View/
-│   │   └─ SearchResults_View/
-│   └─ Login_View/
-├─ ViewModel/
-│   ├─ All_ViewModel/
-│   ├─ Review_ViewModel/
-│   ├─ Account_ViewModel/
-│   ├─ Person_ViewModel/
-│   ├─ TV_ViewModel/
-│   └─ Movie_ViewModel/
-├─ MyTMDB_App (App 入口程式)
-├─ MyTMDB_AppTests/
-└─ MyTMDB_AppUITests/
-      </code></pre>
-      <p>以上結構明確區分：<br>
-        1. <code>Service</code>：負責與 TMDB API 溝通。<br>
-        2. <code>Models</code>：定義 JSON 對應的資料模型。<br>
-        3. <code>View</code>：各畫面（Movie、TV、Person、Home 等）與客製化的 UITableViewCell。<br>
-        4. <code>ViewModel</code>：MVVM 中介層，負責商業邏輯、資料綁定與 Combine Publisher/Subscriber。<br>
-      </p>
-    </section>
+    <h2>專案簡介</h2>
+    <p>
+      <strong>MyTMDB_App</strong>  
+      一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + Combine + MVVM 架構，  
+      提供電影列表瀏覽、詳細資訊、收藏與評分功能。
+    </p>
 
-    <!-- 3. 使用技術 -->
-    <section id="tech">
-      <h2 class="section-title">三、使用技術</h2>
-      <ul class="tech-list">
-        <li>Swift 5.7+</li>
-        <li>UIKit + Combine + MVVM</li>
-        <li>SnapKit（Auto Layout）</li>
-        <li>SDWebImage（圖片快取載入）</li>
-        <li>YouTube-Player-iOS-Helper（播放 YouTube 預告片）</li>
-        <li>TMDB RESTful API</li>
-        <li>GCD / DispatchQueue（非同步處理）</li>
-        <li>CocoaPods / SPM（套件管理）</li>
-      </ul>
-      <p>
-        使用 MVC 已熟悉後，改採用 MVVM 架構，將<code>View</code>與<code>Model</code>解耦，  
-        透過<code>ViewModel</code>處理 API 呼叫、資料轉換與錯誤處理，再以<code>Combine</code>做資料綁定。  
-      </p>
-    </section>
+    <h2>功能特色</h2>
 
-    <!-- 4. Demo 錄影或連結 -->
-    <section id="demo">
-      <h2 class="section-title">四、線上 Demo 或錄影</h2>
-      <p>
-        你可以點擊以下連結，查看完整操作影片／App 下載連結：  
-      </p>
+    <h3>1. 電影列表與搜尋</h3>
+    <ul>
+      <li>使用 TMDB 的 Search/Multi 搜尋 API，可同時搜尋電影、影集與演員。</li>
+      <li>搜尋結果會自動依「發行／首播日期」由新到舊排序，並將電影、影集顯示在前，演員顯示在後。</li>
+    </ul>
+
+    <h3>2. 電影詳情</h3>
+    <ul>
+      <li>顯示單部電影的海報、標題、簡介、演員名單、預告影片等。</li>
+      <li>內嵌 YouTube Trailer 播放功能（使用 <code>YTPlayerView</code> + <code>SnapKit</code> 佈局），並能以固定高度呈現。</li>
+    </ul>
+
+    <h3>3. 帳號認證（登入／註冊）</h3>
+    <ul>
+      <li>採用 TMDB 提供的「Request Token → 使用者授權 → 換取 Session ID」流程登入。</li>
+      <li>登入後可呼叫「新增最愛」與「評分」API，管理個人最愛清單與影片評分。</li>
+      <li>在登入畫面提供「註冊」按鈕，點擊後以 <code>SFSafariViewController</code> 開啟 TMDB 官方註冊頁面。</li>
+    </ul>
+
+    <h3>4. 收藏／評分功能</h3>
+    <ul>
+      <li>「收藏」功能：點擊書籤按鈕即可將電影加入或移除最愛，按鈕會即時切換填滿狀態。</li>
+      <li>「評分」功能：點擊愛心按鈕後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後即時顯示實心愛心，並在幕後同步到 TMDB。</li>
+    </ul>
+
+    <h3>5. MVVM + Combine 架構</h3>
+    <ul>
+      <li><strong>Service 層</strong>：封裝所有 TMDB API 呼叫（搜尋、詳情、最愛、評分、帳號狀態）。</li>
+      <li><strong>ViewModel 層</strong>：負責呼叫 Service、處理回傳並透過 <code>@Published</code> 將資料推送給 View 層。</li>
+      <li><strong>View 層</strong>：僅處理畫面與使用者互動，採用 <code>CombineCocoa</code> 監聽 UI 事件與綁定 ViewModel。</li>
+    </ul>
+
+    <h2>環境需求</h2>
+    <ul>
+      <li>iOS 15.0 以上</li>
+      <li>Xcode 14.0 以上</li>
+      <li>Swift 5.6 以上</li>
+      <li>Swift Packages：</li>
       <ul>
-        <li><a href="https://youtu.be/你的Demo影片連結" target="_blank">YouTube Demo 影片</a></li>
-        <li><a href="https://github.com/yourusername/MyTMDB_App" target="_blank">GitHub 原始碼</a></li>
+        <li>SnapKit</li>
+        <li>SDWebImage</li>
+        <li>YouTube-Player-iOS-Helper</li>
+        <li>CombineCocoa</li>
       </ul>
-    </section>
+    </ul>
 
-    <!-- 5. 聯絡我 -->
-    <section id="contact">
-      <h2 class="section-title">五、聯絡我</h2>
-      <p>
-        若對此專案有任何問題或想更深入交流，歡迎透過以下方式聯絡我：<br>
-        <strong>Email：</strong><a href="mailto:your.email@example.com">your.email@example.com</a><br>
-        <strong>GitHub：</strong><a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a><br>
-        <strong>LinkedIn：</strong><a href="https://www.linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a>
-      </p>
-    </section>
+    <h2>安裝與執行</h2>
+    <ol>
+      <li>
+        <strong>Clone 專案</strong><br />
+        <code>git clone https://github.com/你的帳號/MyTMDB_App.git  
+        <br />
+        cd MyTMDB_App</code>
+      </li>
+      <li>
+        <strong>打開 Xcode 並安裝套件</strong><br />
+        在 Finder 中打開 <code>MyTMDB_App.xcodeproj</code>。  
+        Xcode 會自動讀取內部的 Swift Package 依賴，並下載：
+        <ul>
+          <li>SnapKit</li>
+          <li>SDWebImage</li>
+          <li>YouTube-Player-iOS-Helper</li>
+          <li>CombineCocoa</li>
+        </ul>
+      </li>
+      <li>
+        <strong>設定 TMDB API Key</strong><br />
+        在專案中打開 <code>TMDB.swift</code>（或 <code>Constants.swift</code>），找到：
+        <pre><code>struct TMDB {
+  static let apiKey = "YOUR_API_KEY"
+  static let baseURL = "https://api.themoviedb.org/3"
+}</code></pre>
+        把 <code>"YOUR_API_KEY"</code> 改成你在 TMDB 官網申請的 API Key，然後存檔。
+      </li>
+      <li>
+        <strong>執行 App</strong><br />
+        選擇模擬器或真機後，按下 <code>Run (⌘R)</code>。  
+        首次啟動會顯示登入頁，若尚未擁有 TMDB 帳號，請點「註冊」按鈕在瀏覽器完成註冊。  
+        註冊完成後返回 App，輸入帳號與密碼並登入，即可瀏覽電影列表、查看詳情、加入最愛與評分。
+      </li>
+    </ol>
+
+    <h2>使用說明</h2>
+
+    <h3>1. 登入</h3>
+    <p>使用 TMDB 官網註冊的帳號與密碼進行登入，登入成功後會取得 <code>session_id</code>，後續 API 呼叫皆以該 Session ID 驗證。</p>
+
+    <h3>2. 電影列表與搜尋</h3>
+    <ul>
+      <li>在主畫面輸入關鍵字後，搜尋結果會顯示電影、影集、演員，並依「發行／首播日期」由新到舊排序。</li>
+      <li>支援空白鍵修剪後的關鍵字過濾，若輸入為空則清除結果。</li>
+    </ul>
+
+    <h3>3. 電影詳情</h3>
+    <ul>
+      <li>點擊電影後可進入詳情頁面，包含海報、標題、簡介、演員名單與影片預告。</li>
+      <li>若該電影有 YouTube Trailer，可在列表中直接播放，並且維持固定高度。</li>
+    </ul>
+
+    <h3>4. 收藏與評分</h3>
+    <ul>
+      <li>詳情頁右上角有兩個按鈕：  
+        <ul>
+          <li><strong>書籤（Bookmark）</strong>：點擊後將電影加入或移除「我的最愛」清單，書籤圖示會隨狀態切換。</li>
+          <li><strong>愛心（Heart）</strong>：點擊後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後愛心圖示會立刻變成實心，並在幕後更新到 TMDB。</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>技術細節</h2>
+    <ul>
+      <li><strong>半頁評分介面</strong><br />
+        採用 iOS 15+ 的 <code>UISheetPresentationController.Detent</code> 自訂 1/4 螢幕高度，並以 SnapKit 排版滑桿與按鈕，  
+        滑動時即時顯示數值並動態調整字體大小。</li>
+      <li><strong>Combine 資料流</strong><br />
+        所有 Service 層呼叫皆回傳 <code>AnyPublisher&lt;T, Error&gt;</code>，並在 ViewModel 中使用 <code>.map</code>、<code>.tryMap</code>、<code>.receive(on: DispatchQueue.main)</code> 等操作。  
+        在 View 層使用 CombineCocoa 的 <code>textPublisher</code>、<code>tapPublisher</code> 監聽文字輸入與按鈕點擊，並利用 <code>@Published</code> 在 ViewModel 更新資料後自動更新 UI。</li>
+      <li><strong>本地收藏資料庫</strong><br />
+        使用 <code>FavoritesLocalService</code> 搭配 Core Data 儲存電影最愛清單，並使用 <code>NSFetchedResultsController</code> 在收藏頁面實現動態更新。</li>
+    </ul>
+
+    <h2>貢獻與回報</h2>
+    <p>
+      如果你有任何問題、建議或想請求新功能，請提交 Issue；若要發 Pull Request，  
+      請先確保程式碼風格與專案一致，並附上相應說明。
+    </p>
+
+    <h2>授權條款</h2>
+    <p>
+      本專案以 MIT Licence 授權，詳細條款請見專案根目錄中的文件。  
+      您可以自由使用、修改、合夥及轉載本專案程式碼，但需保留原作者版權聲明與本許可聲明。
+    </p>
+
+    <footer style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #666;">
+      &copy; 2025 Willy Hsu ｜ <a href="https://github.com/你的帳號/MyTMDB_App" target="_blank">GitHub 倉庫連結</a>
+    </footer>
   </div>
-  <!-- 主內容結束 -->
-
-  <!-- Footer -->
-  <footer>
-    &copy; 2025 Willy Hsu ｜ <a href="https://github.com/yourusername/MyTMDB_App" target="_blank">GitHub 倉庫</a>
-  </footer>
 </body>
 </html>
