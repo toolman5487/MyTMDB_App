@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TMDB iOS App 作品集</title>
+
+  <!-- 引入 Google Font -->
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" 
+    rel="stylesheet"
+  />
+
+  <!-- Prism.js 語法高亮（可選）-->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+    rel="stylesheet"
+  />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+
+  <style>
+    /* --- 全域設定 --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Header 區塊 --- */
+    header {
+      background-color: #24292e;
+      color: #ffffff;
+      padding: 1rem 2rem;
+    }
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      font-size: 1.8rem;
+    }
+    header nav a {
+      color: #c9d1d9;
+      margin-left: 1rem;
+      font-size: 0.9rem;
+    }
+    header nav a:hover {
+      color: #ffffff;
+    }
+
+    /* --- 主內容容器 --- */
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 區塊標題樣式 */
+    .section-title {
+      margin-top: 2rem;
+      font-size: 1.5rem;
+      padding: 0.5rem 0;
+      border-left: 4px solid #0366d6;
+      padding-left: 0.75rem;
+      color: #0366d6;
+    }
+
+    /* 文字段落 */
+    .container p {
+      margin: 1rem 0;
+    }
+
+    /* 程式碼/結構區塊 */
+    pre {
+      background-color: #2d2d2d;
+      border-radius: 4px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    pre code {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.9rem;
+      color: #f8f8f2;
+    }
+
+    /* 技術標籤 */
+    .tech-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0.5rem 0 1rem 0;
+    }
+    .tech-list li {
+      background-color: #e1ecf4;
+      color: #0366d6;
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <h1>TMDB iOS App 作品集</h1>
+      <nav>
+        <a href="#overview">專案概述</a>
+        <a href="#structure">專案結構</a>
+        <a href="#tech">使用技術</a>
+        <a href="#contact">聯絡我</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主內容：容器開始 -->
+  <div class="container">
+    <!-- 1. 專案概述 -->
+    <section id="overview">
+      <h2 class="section-title">一、專案概述</h2>
+      <p>
+        這是一個以 UIKit + Combine + MVVM 架構開發的 TMDB（The Movie Database）iOS 應用程式範例，  
+        完整整合了 TMDB API，包括電影列表、電影詳情（包含預告片、演員名單）、喜好功能與評分功能，  
+        並使用 SnapKit 做自動排版、SDWebImage 處理圖片載入、YouTube-Player-iOS-Helper 播放預告片。  
+      </p>
+      <!-- 暫時不放截圖 -->
+    </section>
+
+    <!-- 2. 專案結構 -->
+    <section id="structure">
+      <h2 class="section-title">二、專案結構</h2>
+      <p>以下展示專案的資料夾層級結構，方便快速了解整體模組劃分：</p>
+      <pre><code class="language-none">
+MyTMDB_App/
+├─ Repository/
+├─ CoreData/
+├─ Controller/
+├─ Config/
+├─ Service/
+│   ├─ FavoriteService.swift
+│   ├─ MovieService.swift
+│   ├─ MovieVideoService.swift
+│   └─ …  // 其他服務層檔案
+├─ Models/
+│   ├─ MovieModel/
+│   ├─ MovieDetailModel.swift
+│   └─ …  // 其他 Model 檔案
+├─ View/
+│   ├─ Movie_TV_Person/
+│   │   ├─ Person_View/
+│   │   ├─ TV_View/
+│   │   ├─ Movie_View/
+│   │   └─ Review_View/
+│   ├─ TVHome_View/
+│   │   ├─ TVListCell/
+│   │   └─ TVNavigation_View/
+│   ├─ MovieHome_View/
+│   │   ├─ Navigation_View/
+│   │   └─ MovieList_View/
+│   ├─ Home_View/
+│   │   ├─ App_View/
+│   │   ├─ FavoriteTV_View/
+│   │   ├─ FavoriteMovies_View/
+│   │   └─ SearchResults_View/
+│   └─ Login_View/
+├─ ViewModel/
+│   ├─ All_ViewModel/
+│   ├─ Review_ViewModel/
+│   ├─ Account_ViewModel/
+│   ├─ Person_ViewModel/
+│   ├─ TV_ViewModel/
+│   └─ Movie_ViewModel/
+├─ MyTMDB_App (App 入口程式)
+├─ MyTMDB_AppTests/
+└─ MyTMDB_AppUITests/
+      </code></pre>
+      <p>以上結構明確區分：<br>
+        1. <code>Service</code>：負責與 TMDB API 溝通。<br>
+        2. <code>Models</code>：定義 JSON 對應的資料模型。<br>
+        3. <code>View</code>：各畫面（Movie、TV、Person、Home 等）與客製化的 UITableViewCell。<br>
+        4. <code>ViewModel</code>：MVVM 中介層，負責商業邏輯、資料綁定與 Combine Publisher/Subscriber。<br>
+      </p>
+    </section>
+
+    <!-- 3. 使用技術 -->
+    <section id="tech">
+      <h2 class="section-title">三、使用技術</h2>
+      <ul class="tech-list">
+        <li>Swift 5.7+</li>
+        <li>UIKit + Combine + MVVM</li>
+        <li>SnapKit（Auto Layout）</li>
+        <li>SDWebImage（圖片快取載入）</li>
+        <li>YouTube-Player-iOS-Helper（播放 YouTube 預告片）</li>
+        <li>TMDB RESTful API</li>
+        <li>GCD / DispatchQueue（非同步處理）</li>
+        <li>CocoaPods / SPM（套件管理）</li>
+      </ul>
+      <p>
+        使用 MVC 已熟悉後，改採用 MVVM 架構，將<code>View</code>與<code>Model</code>解耦，  
+        透過<code>ViewModel</code>處理 API 呼叫、資料轉換與錯誤處理，再以<code>Combine</code>做資料綁定。  
+      </p>
+    </section>
+
+    <!-- 4. Demo 錄影或連結 -->
+    <section id="demo">
+      <h2 class="section-title">四、線上 Demo 或錄影</h2>
+      <p>
+        你可以點擊以下連結，查看完整操作影片／App 下載連結：  
+      </p>
+      <ul>
+        <li><a href="https://youtu.be/你的Demo影片連結" target="_blank">YouTube Demo 影片</a></li>
+        <li><a href="https://github.com/yourusername/MyTMDB_App" target="_blank">GitHub 原始碼</a></li>
+      </ul>
+    </section>
+
+    <!-- 5. 聯絡我 -->
+    <section id="contact">
+      <h2 class="section-title">五、聯絡我</h2>
+      <p>
+        若對此專案有任何問題或想更深入交流，歡迎透過以下方式聯絡我：<br>
+        <strong>Email：</strong><a href="mailto:your.email@example.com">your.email@example.com</a><br>
+        <strong>GitHub：</strong><a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a><br>
+        <strong>LinkedIn：</strong><a href="https://www.linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a>
+      </p>
+    </section>
+  </div>
+  <!-- 主內容結束 -->
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Willy Hsu ｜ <a href="https://github.com/yourusername/MyTMDB_App" target="_blank">GitHub 倉庫</a>
+  </footer>
+</body>
+</html>
