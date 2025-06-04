@@ -10,7 +10,7 @@ import SnapKit
 import Combine
 import SDWebImage
 import YouTubeiOSPlayerHelper
-
+import Lottie
 
 class MovieDetailView: UITableViewController {
     
@@ -23,6 +23,15 @@ class MovieDetailView: UITableViewController {
     private var movie: MovieDetailModel?
     private var castMembers: [CastMember] = []
     private var cancellables = Set<AnyCancellable>()
+    
+    private let loadingAnimationView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "Animation_popcorn")
+        animationView.loopMode = .loop
+        animationView.contentMode = .scaleAspectFit
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.isHidden = true
+        return animationView
+    }()
     
     private let posterImageView: UIImageView = {
         let image = UIImageView()
@@ -64,7 +73,10 @@ class MovieDetailView: UITableViewController {
                     strongSelf.posterImageView.sd_setImage(with: url)
                     strongSelf.tableView.tableHeaderView = strongSelf.posterImageView
                 }
+                self?.loadingAnimationView.stop()
+                self?.loadingAnimationView.isHidden = true
                 self?.tableView.reloadData()
+                self?.configureReviewButton()
             }
             .store(in: &cancellables)
         
@@ -116,7 +128,7 @@ class MovieDetailView: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let m = movie else { return 0 }
-       switch Section(rawValue: section)! {
+        switch Section(rawValue: section)! {
         case .trailer:
             return videoViewModel.videos.isEmpty ? 0 : 1
         case .info:
@@ -166,7 +178,7 @@ class MovieDetailView: UITableViewController {
                 $0.height.equalTo(200)
                 
             }
-           if let video = videoViewModel.videos.first(where: { $0.site == "YouTube" && $0.type == "Trailer" }) {
+            if let video = videoViewModel.videos.first(where: { $0.site == "YouTube" && $0.type == "Trailer" }) {
                 playerView.load(withVideoId: video.key)
             }
             cell.selectionStyle = .none
@@ -254,16 +266,16 @@ class MovieDetailView: UITableViewController {
             target: self,
             action: #selector(toggleFavorite)
         )
-
+        
         let heartImageName = (favoriteViewModel.didRate || (favoriteViewModel.accountState?.rated != nil))
-            ? "heart.fill" : "heart"
+        ? "heart.fill" : "heart"
         let heartItem = UIBarButtonItem(
             image: UIImage(systemName: heartImageName),
             style: .plain,
             target: self,
             action: #selector(showRatingPrompt)
         )
-
+        
         plusItem.tintColor = .label
         heartItem.tintColor = .systemPink
         navigationItem.rightBarButtonItems = [plusItem, heartItem]
@@ -312,7 +324,7 @@ class MovieDetailView: UITableViewController {
         }
         tableView.tableFooterView = footerView
     }
-
+    
     @objc private func showReview() {
         let reviewVC = MovieReviewTableView(movieId: viewModel.movieId)
         reviewVC.title = "電影評論"
@@ -329,6 +341,17 @@ class MovieDetailView: UITableViewController {
         }
         reviewVC.navigationItem.largeTitleDisplayMode = .always
         present(nav, animated: true)
+    }
+    
+    private func loadingAnimation(){
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(300)
+        }
+        loadingAnimationView.isHidden = false
+        loadingAnimationView.play()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -350,8 +373,8 @@ class MovieDetailView: UITableViewController {
         bindViewModel()
         creditsViewModel.loadCredits()
         viewModel.fetchMovieDetail()
-        configureReviewButton()
         videoViewModel.fetchVideos()
+        loadingAnimation()
     }
     
 }

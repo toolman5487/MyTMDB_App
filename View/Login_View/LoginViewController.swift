@@ -11,6 +11,7 @@ import SnapKit
 import Combine
 import CombineCocoa
 import SafariServices
+import Lottie
 
 class LoginViewController: UIViewController {
     
@@ -18,6 +19,21 @@ class LoginViewController: UIViewController {
     let accountVM = AccountViewModel()
     private var cancellables = Set<AnyCancellable>()
     private let indicator = UIActivityIndicatorView(style: .medium)
+    
+    private let animationView: LottieAnimationView = {
+        let view = LottieAnimationView(name: "loadingAir")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFit
+        view.isHidden = true
+        return view
+    }()
+    
+    private let loadingOverlayView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.4)
+        view.isHidden = true
+        return view
+    }()
     
     private let logoImage: UIImageView = {
         let image = UIImageView()
@@ -172,6 +188,17 @@ class LoginViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
+        
+        view.addSubview(loadingOverlayView)
+        loadingOverlayView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        view.addSubview(animationView)
+        animationView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(300)
+        }
     }
     
     private func bindingViewmodel() {
@@ -194,9 +221,13 @@ class LoginViewController: UIViewController {
         loginVM.$isLoading
             .sink { [weak self] loading in
                 if loading {
-                    self?.indicator.startAnimating()
+                    self?.loadingOverlayView.isHidden = false
+                    self?.animationView.isHidden = false
+                    self?.animationView.play()
                 } else {
-                    self?.indicator.stopAnimating()
+                    self?.loadingOverlayView.isHidden = true
+                    self?.animationView.stop()
+                    self?.animationView.isHidden = true
                 }
                 self?.loginBotton.isEnabled = !loading
             }

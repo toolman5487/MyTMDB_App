@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import Combine
 import SnapKit
+import Lottie
 
 class MovieHomeView: UIViewController {
     
@@ -21,6 +22,22 @@ class MovieHomeView: UIViewController {
     private var topRatedItems:  [MovieSummary] = []
     private var upcomingItems:  [MovieSummary] = []
     private var cancellables = Set<AnyCancellable>()
+    
+    private let loadingAnimationView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "Animation_popcorn")
+        animationView.loopMode = .loop
+        animationView.contentMode = .scaleAspectFit
+        animationView.isHidden = true
+        return animationView
+    }()
+    
+    private let categoryLoadingView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "Animation_popcorn")
+        animationView.loopMode = .loop
+        animationView.contentMode = .scaleAspectFit
+        animationView.isHidden = true
+        return animationView
+    }()
     
     init(accountId: Int, sessionId: String) {
         self.accountId = accountId
@@ -69,20 +86,24 @@ class MovieHomeView: UIViewController {
     }()
     
 
-    private func configureCategoryStrip() {
+    private func layout() {
         view.addSubview(categoryCollectionView)
         categoryCollectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(44)
         }
-    }
-
-    private func configureTableView() {
+        
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(categoryCollectionView.snp.bottom).offset(8)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        view.addSubview(categoryLoadingView)
+        categoryLoadingView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(300)
         }
     }
     
@@ -109,6 +130,25 @@ class MovieHomeView: UIViewController {
         }
     }
     
+    private func updateCategoryLoadingState() {
+        let currentItems: [MovieSummary]
+        switch selectedCategoryIndex {
+        case 0: currentItems = nowPlayingItems
+        case 1: currentItems = popularItems
+        case 2: currentItems = topRatedItems
+        case 3: currentItems = upcomingItems
+        default: currentItems = []
+        }
+
+        if currentItems.isEmpty {
+            categoryLoadingView.isHidden = false
+            categoryLoadingView.play()
+        } else {
+            categoryLoadingView.stop()
+            categoryLoadingView.isHidden = true
+        }
+    }
+    
     private func bindViewModel() {
         viewModel.$nowPlaying
             .receive(on: DispatchQueue.main)
@@ -116,6 +156,7 @@ class MovieHomeView: UIViewController {
                 self?.nowPlayingItems = movies
                 if self?.selectedCategoryIndex == 0 {
                     self?.tableView.reloadData()
+                    self?.updateCategoryLoadingState()
                 }
             }
             .store(in: &cancellables)
@@ -126,6 +167,7 @@ class MovieHomeView: UIViewController {
                 self?.popularItems = movies
                 if self?.selectedCategoryIndex == 1 {
                     self?.tableView.reloadData()
+                    self?.updateCategoryLoadingState()
                 }
             }
             .store(in: &cancellables)
@@ -136,6 +178,7 @@ class MovieHomeView: UIViewController {
                 self?.topRatedItems = movies
                 if self?.selectedCategoryIndex == 2 {
                     self?.tableView.reloadData()
+                    self?.updateCategoryLoadingState()
                 }
             }
             .store(in: &cancellables)
@@ -146,6 +189,7 @@ class MovieHomeView: UIViewController {
                 self?.upcomingItems = movies
                 if self?.selectedCategoryIndex == 3 {
                     self?.tableView.reloadData()
+                    self?.updateCategoryLoadingState()
                 }
             }
             .store(in: &cancellables)
@@ -154,8 +198,7 @@ class MovieHomeView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchAction()
-        configureCategoryStrip()
-        configureTableView()
+        layout()
         setupNavigationBar()
         bindViewModel()
     }
@@ -179,6 +222,7 @@ extension MovieHomeView: UICollectionViewDataSource, UICollectionViewDelegateFlo
         selectedCategoryIndex = indexPath.item
         collectionView.reloadData()
         tableView.reloadData()
+        updateCategoryLoadingState()
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -236,7 +280,7 @@ extension MovieHomeView: UITableViewDataSource, UITableViewDelegate {
             movie = topRatedItems[indexPath.row]
         case 3:
             movie = upcomingItems[indexPath.row]
-        default: 
+        default:
             fatalError("Invalid category")
         }
         let detailVM = MovieDetailViewModel(movieId: movie.id)
