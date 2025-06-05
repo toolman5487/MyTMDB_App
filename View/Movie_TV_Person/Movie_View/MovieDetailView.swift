@@ -25,7 +25,7 @@ class MovieDetailView: UITableViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private let loadingAnimationView: LottieAnimationView = {
-        let animationView = LottieAnimationView(name: "Animation_popcorn")
+        let animationView = LottieAnimationView(name: "loadingAnimation_blue")
         animationView.loopMode = .loop
         animationView.contentMode = .scaleAspectFit
         animationView.translatesAutoresizingMaskIntoConstraints = false
