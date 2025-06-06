@@ -37,7 +37,7 @@
 # 安裝與執行
 	•	Clone 專案
 	•	在終端機輸入：
-git clone https://github.com/你的帳號/MyTMDB_App.git
+git clone https://github.com/toolman5487/MyTMDB_App
 cd MyTMDB_App
 	•	開啟 Xcode 並安裝套件
 	•	在 Finder 中打開 MyTMDB_App.xcodeproj。
@@ -47,7 +47,7 @@ cd MyTMDB_App
   	•	YouTube-Player-iOS-Helper
   	•	CombineCocoa
 	•	設定 TMDB API Key
-	•	在專案中開啟 TMDB.swift（或 Constants.swift），找到：
+	•	在專案中開啟 Constants.swift，找到：
 struct TMDB 
 { 
 static let apiKey = "YOUR_API_KEY" 
