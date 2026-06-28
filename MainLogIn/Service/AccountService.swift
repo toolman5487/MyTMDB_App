@@ -6,19 +6,22 @@
 //
 
 import Foundation
-import Combine
+
+// MARK: - Protocol
 
 protocol AccountServiceProtocol {
-    func fetchAccount(sessionId: String) -> AnyPublisher<Account, Error>
+    func fetchAccount(sessionId: String) async throws -> Account
 }
 
+// MARK: - AccountService
+
 final class AccountService: AccountServiceProtocol {
-    func fetchAccount(sessionId: String) -> AnyPublisher<Account, Error> {
+
+    // MARK: - Public Methods
+
+    func fetchAccount(sessionId: String) async throws -> Account {
         let url = URL(string: "\(TMDB.baseURL)/account?api_key=\(TMDB.apiKey)&session_id=\(sessionId)")!
-        return URLSession.shared.dataTaskPublisher(for: url)
-            .map(\.data)
-            .decode(type: Account.self, decoder: JSONDecoder())
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(Account.self, from: data)
     }
 }

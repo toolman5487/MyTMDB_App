@@ -8,18 +8,20 @@
 import Foundation
 import UIKit
 import SnapKit
-import Combine
-import CombineCocoa
 import SafariServices
 import Lottie
+import Observation
 
 class LoginViewController: UIViewController {
-    
+
+    // MARK: - Properties
+
     private let loginVM = LoginViewModel()
     let accountVM = AccountViewModel()
-    private var cancellables = Set<AnyCancellable>()
     private let indicator = UIActivityIndicatorView(style: .medium)
-    
+
+    // MARK: - UI Components
+
     private let animationView: LottieAnimationView = {
         let view = LottieAnimationView(name: "loadingAir")
         view.loopMode = .loop
@@ -27,14 +29,14 @@ class LoginViewController: UIViewController {
         view.isHidden = true
         return view
     }()
-    
+
     private let loadingOverlayView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.4)
         view.isHidden = true
         return view
     }()
-    
+
     private let logoImage: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "tmdb_icon_long")
@@ -43,7 +45,7 @@ class LoginViewController: UIViewController {
         image.layer.cornerRadius = 10
         return image
     }()
-    
+
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "登入"
@@ -65,7 +67,7 @@ class LoginViewController: UIViewController {
         textField.autocapitalizationType = .none
         return textField
     }()
-    
+
     private let passField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Password"
@@ -78,7 +80,7 @@ class LoginViewController: UIViewController {
         textField.layer.cornerRadius = 8
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.textContentType = .password
-        
+
         let eyeButton = UIButton(type: .system)
         eyeButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         eyeButton.tintColor = .secondaryLabel
@@ -91,13 +93,7 @@ class LoginViewController: UIViewController {
         textField.rightViewMode = .always
         return textField
     }()
-    
-    @objc private func togglePasswordVisibility(_ sender: UIButton) {
-        passField.isSecureTextEntry.toggle()
-        let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye.circle"
-        sender.setImage(UIImage(systemName: imageName), for: .normal)
-    }
-    
+
     private let loginBotton: UIButton = {
         var config = UIButton.Configuration.filled()
         var attribute = AttributedString("確認")
@@ -111,7 +107,7 @@ class LoginViewController: UIViewController {
         button.clipsToBounds = true
         return button
     }()
-    
+
     private let registerButton: UIButton = {
         var config = UIButton.Configuration.filled()
         var attribute = AttributedString("註冊")
@@ -124,15 +120,9 @@ class LoginViewController: UIViewController {
         button.clipsToBounds = true
         return button
     }()
-    
-    @objc private func goToRegister() {
-        guard let url = URL(string: "https://www.themoviedb.org/signup") else { return }
-        let safariVC = SFSafariViewController(url: url)
-        present(safariVC, animated: true)
-    }
-    
-    lazy var loginStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [headerLabel,userField, passField])
+
+    private lazy var loginStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [headerLabel, userField, passField])
         stack.axis = .vertical
         stack.spacing = 16
         stack.alignment = .center
@@ -144,15 +134,41 @@ class LoginViewController: UIViewController {
         stack.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         return stack
     }()
-    
+
+    // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        view.backgroundColor = .systemBackground
+        super.viewDidLoad()
+        setupNavigationBar()
+        layout()
+        bindingViewmodel()
+    }
+
+    // MARK: - Setup
+
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
     }
-    
-    private func layout(){
+
+    private func bindingViewmodel() {
+        userField.addTarget(self, action: #selector(usernameDidChange), for: .editingChanged)
+        passField.addTarget(self, action: #selector(passwordDidChange), for: .editingChanged)
+        loginBotton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
+        registerButton.addTarget(self, action: #selector(goToRegister), for: .touchUpInside)
+
+        handleLoginState(loginVM.state)
+        handleAccountState(accountVM.state)
+        observeLoginState()
+        observeAccountState()
+    }
+
+    // MARK: - Layout
+
+    private func layout() {
         view.addSubview(loginStack)
         loginStack.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -166,21 +182,21 @@ class LoginViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(56)
         }
-        
+
         view.addSubview(logoImage)
         logoImage.snp.makeConstraints { make in
             make.bottom.equalTo(loginStack.snp.top).offset(-16)
             make.leading.trailing.equalTo(loginStack)
             make.height.equalTo(100)
         }
-        
+
         view.addSubview(loginBotton)
         loginBotton.snp.makeConstraints { make in
             make.top.equalTo(loginStack.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
-        
+
         view.addSubview(registerButton)
         registerButton.snp.makeConstraints { make in
             make.top.equalTo(loginBotton.snp.bottom).offset(8)
@@ -188,103 +204,137 @@ class LoginViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
-        
+
         view.addSubview(loadingOverlayView)
         loadingOverlayView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
+
         view.addSubview(animationView)
         animationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(300)
         }
     }
-    
-    private func bindingViewmodel() {
-        userField.textPublisher
-            .compactMap { $0 }
-            .assign(to: \.username, on: loginVM)
-            .store(in: &cancellables)
-        
-        passField.textPublisher
-            .compactMap { $0 }
-            .assign(to: \.password, on: loginVM)
-            .store(in: &cancellables)
-        
-        loginBotton.tapPublisher
-            .sink { [weak self] in
-                self?.loginVM.loginTap.send()
-            }
-            .store(in: &cancellables)
-        
-        loginVM.$isLoading
-            .sink { [weak self] loading in
-                if loading {
-                    self?.loadingOverlayView.isHidden = false
-                    self?.animationView.isHidden = false
-                    self?.animationView.play()
-                } else {
-                    self?.loadingOverlayView.isHidden = true
-                    self?.animationView.stop()
-                    self?.animationView.isHidden = true
-                }
-                self?.loginBotton.isEnabled = !loading
-            }
-            .store(in: &cancellables)
-        
-        loginVM.$sessionId
-            .compactMap { $0 }
-            .sink { [weak self] sessionId in
-                UserDefaults.standard.set(sessionId, forKey: "TMDBSessionID")
-                print("Session ID:", sessionId)
-                self?.accountVM.loadAccount(sessionId: sessionId)
-            }
-            .store(in: &cancellables)
-        
-        loginVM.$errorMessage
-            .compactMap { $0 }
-            .sink { [weak self] message in
-                let alert = UIAlertController(title: "Login Failed", message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                self?.present(alert, animated: true)
-                self?.loginBotton.isEnabled = true
-                self?.indicator.stopAnimating()
-            }
-            .store(in: &cancellables)
-        
-        accountVM.$account
-            .compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let windowScene = self?.view.window?.windowScene,
-                      let sceneDelegate = windowScene.delegate as? SceneDelegate,
-                      let window = sceneDelegate.window else {
-                    return
-                }
-                window.rootViewController = ViewController()
-                window.makeKeyAndVisible()
-            }
-            .store(in: &cancellables)
 
-        accountVM.$errorMessage
-            .compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] message in
-                let alert = UIAlertController(title: "載入帳號失敗", message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                self?.present(alert, animated: true)
-            }
-            .store(in: &cancellables)
-        
-        registerButton.addTarget(self, action: #selector(goToRegister), for: .touchUpInside)
+    // MARK: - Actions
+
+    @objc private func usernameDidChange() {
+        loginVM.username = userField.text ?? ""
     }
-    
-    override func viewDidLoad() {
-        view.backgroundColor = .systemBackground
-        super.viewDidLoad()
-        setupNavigationBar()
-        layout()
-        bindingViewmodel()
+
+    @objc private func passwordDidChange() {
+        loginVM.password = passField.text ?? ""
+    }
+
+    @objc private func loginTapped() {
+        Task(priority: .userInitiated) {
+            await loginVM.login()
+        }
+    }
+
+    @objc private func togglePasswordVisibility(_ sender: UIButton) {
+        passField.isSecureTextEntry.toggle()
+        let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye.circle"
+        sender.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+
+    @objc private func goToRegister() {
+        guard let url = URL(string: "https://www.themoviedb.org/signup") else { return }
+        let safariVC = SFSafariViewController(url: url)
+        present(safariVC, animated: true)
+    }
+
+    // MARK: - Observation
+
+    private func observeLoginState() {
+        withObservationTracking {
+            _ = loginVM.state
+        } onChange: { [weak self] in
+            Task(priority: .userInitiated) { @MainActor in
+                guard let self else { return }
+                self.handleLoginState(self.loginVM.state)
+                self.observeLoginState()
+            }
+        }
+    }
+
+    private func observeAccountState() {
+        withObservationTracking {
+            _ = accountVM.state
+        } onChange: { [weak self] in
+            Task(priority: .userInitiated) { @MainActor in
+                guard let self else { return }
+                self.handleAccountState(self.accountVM.state)
+                self.observeAccountState()
+            }
+        }
+    }
+
+    // MARK: - State Handling
+
+    private func handleLoginState(_ state: LoginState) {
+        switch state {
+        case .idle:
+            setLoadingOverlayVisible(false)
+            loginBotton.isEnabled = true
+
+        case .loading:
+            setLoadingOverlayVisible(true)
+            loginBotton.isEnabled = false
+
+        case .success(let sessionId):
+            setLoadingOverlayVisible(false)
+            loginBotton.isEnabled = true
+            UserDefaults.standard.set(sessionId, forKey: "TMDBSessionID")
+            Task(priority: .userInitiated) {
+                await accountVM.loadAccount(sessionId: sessionId)
+            }
+
+        case .failed(let message):
+            setLoadingOverlayVisible(false)
+            loginBotton.isEnabled = true
+            indicator.stopAnimating()
+            presentAlert(title: "Login Failed", message: message)
+        }
+    }
+
+    private func handleAccountState(_ state: AccountState) {
+        switch state {
+        case .idle, .loading:
+            break
+
+        case .loaded:
+            guard let windowScene = view.window?.windowScene,
+                  let sceneDelegate = windowScene.delegate as? SceneDelegate,
+                  let window = sceneDelegate.window else {
+                return
+            }
+            window.rootViewController = ViewController()
+            window.makeKeyAndVisible()
+
+        case .failed(let message):
+            presentAlert(title: "載入帳號失敗", message: message)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func setLoadingOverlayVisible(_ visible: Bool) {
+        loadingOverlayView.isHidden = !visible
+        animationView.isHidden = !visible
+
+        switch visible {
+        case true:
+            animationView.play()
+        case false:
+            animationView.stop()
+        }
+    }
+
+    private func presentAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }

@@ -6,47 +6,49 @@
 //
 
 import Foundation
-import Combine
+import Observation
 
+// MARK: - State
+
+enum LoginState: Equatable {
+    case idle
+    case loading
+    case success(sessionId: String)
+    case failed(message: String)
+}
+
+// MARK: - LoginViewModel
+
+@MainActor
+@Observable
 final class LoginViewModel {
-    
-    @Published var username: String = ""
-    @Published var password: String = ""
-    @Published private(set) var isLoading: Bool = false
-    @Published private(set) var sessionId: String?
-    @Published private(set) var errorMessage: String?
-    
-    let loginTap = PassthroughSubject<Void, Never>()
-    private let authService: TMDBAuthService
-    private var cancellables = Set<AnyCancellable>()
-    
-    init(authService: TMDBAuthService = TMDBAuthService()) {
+
+    // MARK: - Properties
+
+    var username = ""
+    var password = ""
+    private(set) var state: LoginState = .idle
+
+    private let authService: TMDBAuthServicing
+
+    // MARK: - Initialization
+
+    init(authService: TMDBAuthServicing = TMDBAuthService()) {
         self.authService = authService
-        bind()
     }
-    
-    private func bind() {
-        loginTap
-            .filter { [unowned self] in
-                return !username.isEmpty && !password.isEmpty
-            }
-            .handleEvents(receiveOutput: { [unowned self] _ in
-                isLoading = true
-                errorMessage = nil
-            })
-            .flatMap { [unowned self] in
-                authService
-                    .loginPublisher(username: username, password: password)
-                    .catch { [unowned self] error -> Empty<String, Never> in
-                        self.errorMessage = error.localizedDescription
-                        return .init()
-                    }
-            }
-            .receive(on: DispatchQueue.main)
-            .sink { [unowned self] sid in
-                isLoading = false
-                sessionId = sid
-            }
-            .store(in: &cancellables)
+
+    // MARK: - Public Methods
+
+    func login() async {
+        guard !username.isEmpty, !password.isEmpty else { return }
+
+        state = .loading
+
+        do {
+            let sessionId = try await authService.login(username: username, password: password)
+            state = .success(sessionId: sessionId)
+        } catch {
+            state = .failed(message: error.localizedDescription)
+        }
     }
 }

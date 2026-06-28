@@ -6,29 +6,45 @@
 //
 
 import Foundation
-import Combine
+import Observation
 
+// MARK: - State
+
+enum AccountState {
+    case idle
+    case loading
+    case loaded(Account)
+    case failed(message: String)
+}
+
+// MARK: - AccountViewModel
+
+@MainActor
+@Observable
 final class AccountViewModel {
-    @Published private(set) var account: Account?
-    @Published private(set) var errorMessage: String?
+
+    // MARK: - Properties
+
+    private(set) var state: AccountState = .idle
 
     private let service: AccountServiceProtocol
-    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Initialization
 
     init(service: AccountServiceProtocol = AccountService()) {
         self.service = service
     }
 
-    func loadAccount(sessionId: String) {
-        service.fetchAccount(sessionId: sessionId)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
-                }
-            } receiveValue: { [weak self] account in
-                self?.account = account
-            }
-            .store(in: &cancellables)
+    // MARK: - Public Methods
+
+    func loadAccount(sessionId: String) async {
+        state = .loading
+
+        do {
+            let account = try await service.fetchAccount(sessionId: sessionId)
+            state = .loaded(account)
+        } catch {
+            state = .failed(message: error.localizedDescription)
+        }
     }
 }

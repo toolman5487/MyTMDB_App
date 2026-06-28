@@ -147,11 +147,12 @@
 			isa = PBXGroup;
 			children = (
 				15D547122DF01A2700CAA0EE /* Animations */,
-				15D196332FF10EFF00545A85 /* MainLogIn */,
 				1598AA982DC4C29C005E972C /* Config */,
+				15D196332FF10EFF00545A85 /* MainLogIn */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
 				1598AA6C2DC4B6A1005E972C /* MyTMDB_AppUITests */,
+				15D196982FF1205000545A85 /* Network */,
 				1598AA4A2DC4B69F005E972C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -201,6 +202,13 @@
 				1535F9902DD743E70090E25A /* Model */,
 			);
 			path = MainLogIn;
+			sourceTree = "<group>";
+		};
+		15D196982FF1205000545A85 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Network;
 			sourceTree = "<group>";
 		};
 		15D547122DF01A2700CAA0EE /* Animations */ = {
@@ -534,6 +542,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -590,6 +599,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

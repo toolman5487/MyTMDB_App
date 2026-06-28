@@ -5,11 +5,20 @@
 //  Created by Willy Hsu on 2025/5/2.
 //
 
-
 import Foundation
-import Combine
 
-final class TMDBAuthService {
+// MARK: - Protocol
+
+protocol TMDBAuthServicing {
+    func login(username: String, password: String) async throws -> String
+}
+
+// MARK: - TMDBAuthService
+
+final class TMDBAuthService: TMDBAuthServicing {
+
+    // MARK: - Properties
+
     private let apiKey = TMDB.apiKey
     private let baseURL = "\(TMDB.baseURL)/authentication"
     private let decoder = JSONDecoder()
@@ -19,72 +28,87 @@ final class TMDBAuthService {
         return URLSession(configuration: config)
     }()
 
-    private func request<T: Decodable>(path: String,method: String = "GET",body: Data? = nil) -> AnyPublisher<T, Error> {
-        let url = URL(string: "\(baseURL)\(path)?api_key=\(apiKey)")!
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        if let body = body {
-            request.httpBody = body
-            request.setValue("application/json;charset=utf-8",forHTTPHeaderField: "Content-Type")
-        }
-        return session.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: T.self, decoder: decoder)
-            .retry(1)
-            .handleEvents(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    print("TMDBAuthService request \(path) failed:", error)
-                }
-            })
-            .eraseToAnyPublisher()
+    // MARK: - Public Methods
+
+    func login(username: String, password: String) async throws -> String {
+        let token = try await requestToken()
+        let validatedToken = try await validate(token: token, username: username, password: password)
+        return try await createSession(token: validatedToken)
     }
 
-    private func requestTokenPublisher() -> AnyPublisher<String, Error> {
-        request(path: "/token/new")
-            .compactMap { (resp: TokenResponse) in
-                resp.success ? resp.request_token : nil
+    // MARK: - Private Methods
+
+    private func request<T: Decodable>(
+        path: String,
+        method: String = "GET",
+        body: Data? = nil
+    ) async throws -> T {
+        var lastError: Error?
+
+        for _ in 0..<2 {
+            do {
+                return try await performRequest(path: path, method: method, body: body)
+            } catch {
+                lastError = error
             }
-            .eraseToAnyPublisher()
+        }
+
+        throw lastError ?? URLError(.unknown)
     }
 
-    private func validatePublisher(token: String, username: String, password: String) -> AnyPublisher<String, Error> {
-        let credentials = try? JSONEncoder().encode([
+    private func performRequest<T: Decodable>(
+        path: String,
+        method: String,
+        body: Data?
+    ) async throws -> T {
+        let url = URL(string: "\(baseURL)\(path)?api_key=\(apiKey)")!
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = method
+
+        if let body {
+            urlRequest.httpBody = body
+            urlRequest.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
+        }
+
+        let (data, _) = try await session.data(for: urlRequest)
+        return try decoder.decode(T.self, from: data)
+    }
+
+    private func requestToken() async throws -> String {
+        let response: TokenResponse = try await request(path: "/token/new")
+        guard response.success else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        return response.request_token
+    }
+
+    private func validate(token: String, username: String, password: String) async throws -> String {
+        let credentials = try JSONEncoder().encode([
             "username": username,
             "password": password,
             "request_token": token
         ])
-        return request(path: "/token/validate_with_login", method: "POST", body: credentials)
-            .tryMap { (resp: ValidateResponse) in
-                guard resp.success else { throw URLError(.userAuthenticationRequired) }
-                return token
-            }
-            .eraseToAnyPublisher()
+        let response: ValidateResponse = try await request(
+            path: "/token/validate_with_login",
+            method: "POST",
+            body: credentials
+        )
+        guard response.success else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        return token
     }
 
-    private func sessionPublisher(token: String) -> AnyPublisher<String, Error> {
-        let sessionBody = try? JSONEncoder().encode(["request_token": token])
-        return request(path: "/session/new", method: "POST", body: sessionBody)
-            .compactMap { (resp: SessionResponse) in
-                resp.success ? resp.session_id : nil
-            }
-            .eraseToAnyPublisher()
-    }
-
-    func loginPublisher(username: String, password: String) -> AnyPublisher<String, Error> {
-        requestTokenPublisher()
-            .flatMap { token in
-                self.validatePublisher(token: token, username: username, password: password)
-            }
-            .flatMap { token in
-                self.sessionPublisher(token: token)
-            }
-            .receive(on: DispatchQueue.main)
-            .retry(1)
-            .handleEvents(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    print("TMDBAuthService loginPublisher failed:", error)
-                }
-            })
-            .eraseToAnyPublisher()
+    private func createSession(token: String) async throws -> String {
+        let sessionBody = try JSONEncoder().encode(["request_token": token])
+        let response: SessionResponse = try await request(
+            path: "/session/new",
+            method: "POST",
+            body: sessionBody
+        )
+        guard response.success else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        return response.session_id
     }
 }
