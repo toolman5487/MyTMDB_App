@@ -19,14 +19,13 @@ final class TMDBAuthService: TMDBAuthServicing {
 
     // MARK: - Properties
 
-    private let apiKey = TMDB.apiKey
-    private let baseURL = "\(TMDB.baseURL)/authentication"
-    private let decoder = JSONDecoder()
-    private let session: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.connectionProxyDictionary = ["__QUIC__": false]
-        return URLSession(configuration: config)
-    }()
+    private let network: NetworkServicing
+
+    // MARK: - Initialization
+
+    init(network: NetworkServicing = NetworkService()) {
+        self.network = network
+    }
 
     // MARK: - Public Methods
 
@@ -38,44 +37,10 @@ final class TMDBAuthService: TMDBAuthServicing {
 
     // MARK: - Private Methods
 
-    private func request<T: Decodable>(
-        path: String,
-        method: String = "GET",
-        body: Data? = nil
-    ) async throws -> T {
-        var lastError: Error?
-
-        for _ in 0..<2 {
-            do {
-                return try await performRequest(path: path, method: method, body: body)
-            } catch {
-                lastError = error
-            }
-        }
-
-        throw lastError ?? URLError(.unknown)
-    }
-
-    private func performRequest<T: Decodable>(
-        path: String,
-        method: String,
-        body: Data?
-    ) async throws -> T {
-        let url = URL(string: "\(baseURL)\(path)?api_key=\(apiKey)")!
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = method
-
-        if let body {
-            urlRequest.httpBody = body
-            urlRequest.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
-        }
-
-        let (data, _) = try await session.data(for: urlRequest)
-        return try decoder.decode(T.self, from: data)
-    }
-
     private func requestToken() async throws -> String {
-        let response: TokenResponse = try await request(path: "/token/new")
+        let response: TokenResponse = try await network.get(
+            path: APIConfig.Authentication.tokenNew
+        )
         guard response.success else {
             throw URLError(.userAuthenticationRequired)
         }
@@ -83,14 +48,13 @@ final class TMDBAuthService: TMDBAuthServicing {
     }
 
     private func validate(token: String, username: String, password: String) async throws -> String {
-        let credentials = try JSONEncoder().encode([
-            "username": username,
-            "password": password,
-            "request_token": token
-        ])
-        let response: ValidateResponse = try await request(
-            path: "/token/validate_with_login",
-            method: "POST",
+        let credentials = ValidateCredentials(
+            username: username,
+            password: password,
+            request_token: token
+        )
+        let response: ValidateResponse = try await network.post(
+            path: APIConfig.Authentication.tokenValidateWithLogin,
             body: credentials
         )
         guard response.success else {
@@ -100,15 +64,25 @@ final class TMDBAuthService: TMDBAuthServicing {
     }
 
     private func createSession(token: String) async throws -> String {
-        let sessionBody = try JSONEncoder().encode(["request_token": token])
-        let response: SessionResponse = try await request(
-            path: "/session/new",
-            method: "POST",
-            body: sessionBody
+        let response: SessionResponse = try await network.post(
+            path: APIConfig.Authentication.sessionNew,
+            body: SessionRequest(request_token: token)
         )
         guard response.success else {
             throw URLError(.userAuthenticationRequired)
         }
         return response.session_id
     }
+}
+
+// MARK: - Request Models
+
+private struct ValidateCredentials: Encodable {
+    let username: String
+    let password: String
+    let request_token: String
+}
+
+private struct SessionRequest: Encodable {
+    let request_token: String
 }

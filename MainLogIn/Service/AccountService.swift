@@ -17,11 +17,22 @@ protocol AccountServiceProtocol {
 
 final class AccountService: AccountServiceProtocol {
 
+    // MARK: - Properties
+
+    private let network: NetworkServicing
+
+    // MARK: - Initialization
+
+    init(network: NetworkServicing = NetworkService()) {
+        self.network = network
+    }
+
     // MARK: - Public Methods
 
     func fetchAccount(sessionId: String) async throws -> Account {
-        let url = URL(string: "\(TMDB.baseURL)/account?api_key=\(TMDB.apiKey)&session_id=\(sessionId)")!
-        let (data, _) = try await URLSession.shared.data(from: url)
-        return try JSONDecoder().decode(Account.self, from: data)
+        try await network.get(
+            path: APIConfig.Account.me,
+            queryItems: [URLQueryItem(name: "session_id", value: sessionId)]
+        )
     }
 }

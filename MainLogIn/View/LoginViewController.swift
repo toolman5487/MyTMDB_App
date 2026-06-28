@@ -18,7 +18,6 @@ class LoginViewController: UIViewController {
 
     private let loginVM = LoginViewModel()
     let accountVM = AccountViewModel()
-    private let indicator = UIActivityIndicatorView(style: .medium)
 
     // MARK: - UI Components
 
@@ -49,7 +48,8 @@ class LoginViewController: UIViewController {
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "登入"
-        label.font = ThemeFont.bold(ofSize: 30)
+        label.font = UIFont.preferredFont(forTextStyle: .title1)
+        label.adjustsFontForContentSizeCategory = true
         return label
     }()
 
@@ -62,10 +62,19 @@ class LoginViewController: UIViewController {
         textField.layer.borderWidth = 1
         textField.layer.borderColor = UIColor.secondaryLabel.cgColor
         textField.layer.cornerRadius = 8
-        textField.font = UIFont.systemFont(ofSize: 18)
+        textField.font = UIFont.preferredFont(forTextStyle: .body)
+        textField.adjustsFontForContentSizeCategory = true
         textField.textContentType = .username
         textField.autocapitalizationType = .none
         return textField
+    }()
+
+    private let passwordToggleButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        button.tintColor = .secondaryLabel
+        button.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        return button
     }()
 
     private let passField: UITextField = {
@@ -78,26 +87,16 @@ class LoginViewController: UIViewController {
         textField.layer.borderWidth = 1
         textField.layer.borderColor = UIColor.secondaryLabel.cgColor
         textField.layer.cornerRadius = 8
-        textField.font = UIFont.systemFont(ofSize: 18)
+        textField.font = UIFont.preferredFont(forTextStyle: .body)
+        textField.adjustsFontForContentSizeCategory = true
         textField.textContentType = .password
-
-        let eyeButton = UIButton(type: .system)
-        eyeButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        eyeButton.tintColor = .secondaryLabel
-        eyeButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-        eyeButton.addTarget(LoginViewController.self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
-        let container = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 24))
-        container.addSubview(eyeButton)
-        eyeButton.center = container.center
-        textField.rightView = container
-        textField.rightViewMode = .always
         return textField
     }()
 
     private let loginBotton: UIButton = {
         var config = UIButton.Configuration.filled()
         var attribute = AttributedString("確認")
-        attribute.font = ThemeFont.bold(ofSize: 16)
+        attribute.font = UIFont.preferredFont(forTextStyle: .headline)
         config.attributedTitle = attribute
         config.baseBackgroundColor = .label
         config.baseForegroundColor = .systemBackground
@@ -111,14 +110,23 @@ class LoginViewController: UIViewController {
     private let registerButton: UIButton = {
         var config = UIButton.Configuration.filled()
         var attribute = AttributedString("註冊")
-        attribute.font = ThemeFont.bold(ofSize: 16)
+        attribute.font = UIFont.preferredFont(forTextStyle: .headline)
         config.attributedTitle = attribute
         config.baseBackgroundColor = .label
         config.baseForegroundColor = .systemBackground
+        config.cornerStyle = .medium
         let button = UIButton(configuration: config, primaryAction: nil)
         button.layer.cornerRadius = 20
         button.clipsToBounds = true
         return button
+    }()
+
+    private lazy var actionButtonStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [loginBotton, registerButton])
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.distribution = .fillEqually
+        return stack
     }()
 
     private lazy var loginStack: UIStackView = {
@@ -142,6 +150,7 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         layout()
+        setupPasswordField()
         bindingViewmodel()
     }
 
@@ -152,6 +161,15 @@ class LoginViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .always
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
+    }
+
+    private func setupPasswordField() {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 24))
+        container.addSubview(passwordToggleButton)
+        passwordToggleButton.center = container.center
+        passField.rightView = container
+        passField.rightViewMode = .always
+        passwordToggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
     }
 
     private func bindingViewmodel() {
@@ -170,47 +188,42 @@ class LoginViewController: UIViewController {
 
     private func layout() {
         view.addSubview(loginStack)
+        view.addSubview(logoImage)
+        view.addSubview(actionButtonStack)
+        view.addSubview(loadingOverlayView)
+        view.addSubview(animationView)
+
         loginStack.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
         }
+
         userField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(56)
         }
+
         passField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(56)
         }
 
-        view.addSubview(logoImage)
         logoImage.snp.makeConstraints { make in
             make.bottom.equalTo(loginStack.snp.top).offset(-16)
             make.leading.trailing.equalTo(loginStack)
             make.height.equalTo(100)
         }
 
-        view.addSubview(loginBotton)
-        loginBotton.snp.makeConstraints { make in
+        actionButtonStack.snp.makeConstraints { make in
             make.top.equalTo(loginStack.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
 
-        view.addSubview(registerButton)
-        registerButton.snp.makeConstraints { make in
-            make.top.equalTo(loginBotton.snp.bottom).offset(8)
-            make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(48)
-        }
-
-        view.addSubview(loadingOverlayView)
         loadingOverlayView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        view.addSubview(animationView)
         animationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(300)
@@ -234,8 +247,14 @@ class LoginViewController: UIViewController {
     }
 
     @objc private func togglePasswordVisibility(_ sender: UIButton) {
+        let existingText = passField.text
+        let selectedRange = passField.selectedTextRange
+
         passField.isSecureTextEntry.toggle()
-        let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye.circle"
+        passField.text = existingText
+        passField.selectedTextRange = selectedRange
+
+        let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye"
         sender.setImage(UIImage(systemName: imageName), for: .normal)
     }
 
@@ -284,8 +303,8 @@ class LoginViewController: UIViewController {
             loginBotton.isEnabled = false
 
         case .success(let sessionId):
-            setLoadingOverlayVisible(false)
-            loginBotton.isEnabled = true
+            setLoadingOverlayVisible(true)
+            loginBotton.isEnabled = false
             UserDefaults.standard.set(sessionId, forKey: "TMDBSessionID")
             Task(priority: .userInitiated) {
                 await accountVM.loadAccount(sessionId: sessionId)
@@ -294,17 +313,21 @@ class LoginViewController: UIViewController {
         case .failed(let message):
             setLoadingOverlayVisible(false)
             loginBotton.isEnabled = true
-            indicator.stopAnimating()
             presentAlert(title: "Login Failed", message: message)
         }
     }
 
     private func handleAccountState(_ state: AccountState) {
         switch state {
-        case .idle, .loading:
+        case .idle:
             break
 
+        case .loading:
+            setLoadingOverlayVisible(true)
+            loginBotton.isEnabled = false
+
         case .loaded:
+            setLoadingOverlayVisible(false)
             guard let windowScene = view.window?.windowScene,
                   let sceneDelegate = windowScene.delegate as? SceneDelegate,
                   let window = sceneDelegate.window else {
@@ -314,6 +337,8 @@ class LoginViewController: UIViewController {
             window.makeKeyAndVisible()
 
         case .failed(let message):
+            setLoadingOverlayVisible(false)
+            loginBotton.isEnabled = true
             presentAlert(title: "載入帳號失敗", message: message)
         }
     }
