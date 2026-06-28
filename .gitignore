@@ -1,0 +1,5 @@
+# Local secrets
+MyTMDB_App/Info.plist
+
+# macOS
+.DS_Store

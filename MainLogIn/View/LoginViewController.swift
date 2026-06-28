@@ -83,7 +83,7 @@ class LoginViewController: UIViewController {
         eyeButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         eyeButton.tintColor = .secondaryLabel
         eyeButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-        eyeButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+        eyeButton.addTarget(LoginViewController.self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
         let container = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 24))
         container.addSubview(eyeButton)
         eyeButton.center = container.center

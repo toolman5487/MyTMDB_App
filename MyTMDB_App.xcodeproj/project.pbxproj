@@ -177,6 +177,7 @@
 		1598AA982DC4C29C005E972C /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				1598AC392DCA026E005E972C /* Constants.swift */,
 				1598AB072DC4C2E0005E972C /* ThemeFont.swift */,
 			);
 			path = Config;
@@ -187,7 +188,6 @@
 			children = (
 				1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */,
 				1598AB2B2DC88DED005E972C /* AccountService.swift */,
-				1598AC392DCA026E005E972C /* Constants.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
