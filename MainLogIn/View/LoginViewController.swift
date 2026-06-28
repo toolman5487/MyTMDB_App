@@ -36,15 +36,6 @@ class LoginViewController: UIViewController {
         return view
     }()
 
-    private let logoImage: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "tmdb_icon_long")
-        image.clipsToBounds = true
-        image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 10
-        return image
-    }()
-
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "登入"
@@ -188,7 +179,6 @@ class LoginViewController: UIViewController {
 
     private func layout() {
         view.addSubview(loginStack)
-        view.addSubview(logoImage)
         view.addSubview(actionButtonStack)
         view.addSubview(loadingOverlayView)
         view.addSubview(animationView)
@@ -206,12 +196,6 @@ class LoginViewController: UIViewController {
         passField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(56)
-        }
-
-        logoImage.snp.makeConstraints { make in
-            make.bottom.equalTo(loginStack.snp.top).offset(-16)
-            make.leading.trailing.equalTo(loginStack)
-            make.height.equalTo(100)
         }
 
         actionButtonStack.snp.makeConstraints { make in

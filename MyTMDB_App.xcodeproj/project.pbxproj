@@ -15,7 +15,6 @@
 		1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */; };
 		1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */; };
 		1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA962DC4BF57005E972C /* LoginViewModel.swift */; };
-		1598AB082DC4C2E0005E972C /* ThemeFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB072DC4C2E0005E972C /* ThemeFont.swift */; };
 		1598AB262DC867DA005E972C /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB252DC867DA005E972C /* AccountModel.swift */; };
 		1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB272DC88D98005E972C /* AccountViewModel.swift */; };
 		1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB2B2DC88DED005E972C /* AccountService.swift */; };
@@ -28,6 +27,12 @@
 		15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196D62FF14D2300545A85 /* AppLogger.swift */; };
 		15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196D62FF14D2300545A85 /* AppLogger.swift */; };
 		15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196D62FF14D2300545A85 /* AppLogger.swift */; };
+		15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D197292FF167FE00545A85 /* UIColorExtension.swift */; };
+		15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D197292FF167FE00545A85 /* UIColorExtension.swift */; };
+		15D1972C2FF167FE00545A85 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D197292FF167FE00545A85 /* UIColorExtension.swift */; };
+		15D1972F2FF1683D00545A85 /* ThemeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1972E2FF1683D00545A85 /* ThemeColor.swift */; };
+		15D197302FF1683D00545A85 /* ThemeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1972E2FF1683D00545A85 /* ThemeColor.swift */; };
+		15D197312FF1683D00545A85 /* ThemeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1972E2FF1683D00545A85 /* ThemeColor.swift */; };
 		15D547112DF017B900CAA0EE /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 15D547102DF017B900CAA0EE /* Lottie */; };
 		15D547142DF01A4700CAA0EE /* loadingAnimation_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */; };
 		15D547152DF01A4700CAA0EE /* loadingAnimation_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */; };
@@ -62,13 +67,14 @@
 		1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBAuthService.swift; sourceTree = "<group>"; };
 		1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBAuthModels.swift; sourceTree = "<group>"; };
 		1598AA962DC4BF57005E972C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
-		1598AB072DC4C2E0005E972C /* ThemeFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeFont.swift; sourceTree = "<group>"; };
 		1598AB252DC867DA005E972C /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
 		1598AB272DC88D98005E972C /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		15D1969A2FF1238E00545A85 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		15D196C02FF14A2100545A85 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15D196D62FF14D2300545A85 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		15D197292FF167FE00545A85 /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
+		15D1972E2FF1683D00545A85 /* ThemeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeColor.swift; sourceTree = "<group>"; };
 		15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAnimation_blue.json; sourceTree = "<group>"; };
 		15D547162DF01F2100CAA0EE /* loadingAir.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAir.json; sourceTree = "<group>"; };
 		15D547192DF022CE00CAA0EE /* Animation_popcorn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Animation_popcorn.json; sourceTree = "<group>"; };
@@ -156,9 +162,10 @@
 		1598AA402DC4B69F005E972C = {
 			isa = PBXGroup;
 			children = (
-				15D196C42FF14CD300545A85 /* Logger */,
 				15D547122DF01A2700CAA0EE /* Animations */,
 				1598AA982DC4C29C005E972C /* Config */,
+				15D197282FF167E300545A85 /* Extension */,
+				15D196C42FF14CD300545A85 /* Logger */,
 				15D196332FF10EFF00545A85 /* MainLogIn */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
@@ -189,7 +196,7 @@
 		1598AA982DC4C29C005E972C /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				1598AB072DC4C2E0005E972C /* ThemeFont.swift */,
+				15D1972E2FF1683D00545A85 /* ThemeColor.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -229,6 +236,22 @@
 				15D196D62FF14D2300545A85 /* AppLogger.swift */,
 			);
 			path = Logger;
+			sourceTree = "<group>";
+		};
+		15D197282FF167E300545A85 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				15D1972D2FF1681800545A85 /* UIColor */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		15D1972D2FF1681800545A85 /* UIColor */ = {
+			isa = PBXGroup;
+			children = (
+				15D197292FF167FE00545A85 /* UIColorExtension.swift */,
+			);
+			path = UIColor;
 			sourceTree = "<group>";
 		};
 		15D547122DF01A2700CAA0EE /* Animations */ = {
@@ -405,13 +428,14 @@
 			files = (
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
+				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C12FF14A2100545A85 /* NetworkService.swift in Sources */,
-				1598AB082DC4C2E0005E972C /* ThemeFont.swift in Sources */,
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
+				15D1972F2FF1683D00545A85 /* ThemeColor.swift in Sources */,
 				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 			);
@@ -422,8 +446,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */,
+				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */,
+				15D197302FF1683D00545A85 /* ThemeColor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +460,8 @@
 				15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C32FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */,
+				15D197312FF1683D00545A85 /* ThemeColor.swift in Sources */,
+				15D1972C2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
