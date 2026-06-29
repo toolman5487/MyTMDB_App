@@ -48,17 +48,29 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func makeNavigationController(for item: MainTabItem) -> UINavigationController {
-        let viewController = ViewController(
-            displayTitle: item.title,
-            tabKind: item.kind,
-            session: session
-        )
+        let viewController = makeContentViewController(for: item)
         viewController.tabBarItem = makeTabBarItem(for: item)
 
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.tabBarItem = makeTabBarItem(for: item)
         return navigationController
+    }
+
+    private func makeContentViewController(for item: MainTabItem) -> UIViewController {
+        switch item.kind {
+        case .home:
+            let viewController = MainHomeViewController()
+            viewController.title = item.title
+            return viewController
+
+        case .movie, .series, .memberCenter:
+            return ViewController(
+                displayTitle: item.title,
+                tabKind: item.kind,
+                session: session
+            )
+        }
     }
 
     private func makeTabBarItem(for item: MainTabItem) -> UITabBarItem {

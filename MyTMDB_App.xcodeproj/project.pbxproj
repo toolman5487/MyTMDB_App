@@ -28,6 +28,9 @@
 		15A94F6F2FF2704800FCBB0F /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */; };
 		15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */; };
 		15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */; };
+		15A94F9C2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */; };
+		15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */; };
+		15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */; };
 		15A950032FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
@@ -97,6 +100,7 @@
 		15A94F492FF26D7900FCBB0F /* BaseViewController.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
 		15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
 		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		15D1969A2FF1238E00545A85 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
@@ -202,6 +206,7 @@
 			isa = PBXGroup;
 			children = (
 				15D198632FF210DE00545A85 /* Feature */,
+				15A94F982FF27D0900FCBB0F /* MainHome */,
 				15D196332FF10EFF00545A85 /* MainLogIn */,
 				15A94F672FF26FCE00FCBB0F /* MainTabBar */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
@@ -287,6 +292,30 @@
 			sourceTree = "<group>";
 		};
 		15A94F692FF26FF200FCBB0F /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		15A94F982FF27D0900FCBB0F /* MainHome */ = {
+			isa = PBXGroup;
+			children = (
+				15A94F992FF27D1600FCBB0F /* Controller */,
+				15A94F9A2FF27D1F00FCBB0F /* View */,
+			);
+			path = MainHome;
+			sourceTree = "<group>";
+		};
+		15A94F992FF27D1600FCBB0F /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		15A94F9A2FF27D1F00FCBB0F /* View */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -576,6 +605,7 @@
 				15A94F642FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
 				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
+				15A94F9C2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +616,7 @@
 				15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
+				15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
@@ -601,6 +632,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
+				15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 				15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */,
