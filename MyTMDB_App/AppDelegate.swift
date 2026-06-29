@@ -5,6 +5,7 @@
 //  Created by Willy Hsu on 2025/5/2.
 //
 
+import SkeletonView
 import UIKit
 
 @main
@@ -13,8 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        configureSkeletonAppearance()
         return true
+    }
+
+    private func configureSkeletonAppearance() {
+        SkeletonAppearance.default.textLineHeight = .fixed(14)
+        SkeletonAppearance.default.multilineCornerRadius = 6
     }
 
     // MARK: UISceneSession Lifecycle

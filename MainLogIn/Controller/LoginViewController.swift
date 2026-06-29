@@ -318,7 +318,7 @@ extension LoginViewController: GuestPageViewDelegate {
 @MainActor
 extension LoginViewController: RegisterPageViewDelegate {
     func registerPageViewDidTapRegister(_ view: RegisterPageView) {
-        guard let url = URL(string: "https://www.themoviedb.org/signup") else { return }
+        guard let url = APIConfig.tmdbSignupURL else { return }
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)
     }

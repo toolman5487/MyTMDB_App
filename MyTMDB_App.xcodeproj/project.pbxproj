@@ -10,6 +10,9 @@
 		150E9BF12FF228EC00F0E7FD /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9BF02FF228EC00F0E7FD /* MainBaseViewController.swift */; };
 		150E9BF22FF228EC00F0E7FD /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9BF02FF228EC00F0E7FD /* MainBaseViewController.swift */; };
 		150E9BF32FF228EC00F0E7FD /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9BF02FF228EC00F0E7FD /* MainBaseViewController.swift */; };
+		150E9BF62FF25E000F0E7FD /* MainBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9BF92FF25E000F0E7FD /* MainBaseCollectionViewCell.swift */; };
+		150E9BF72FF25E000F0E7FD /* MainBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9BF92FF25E000F0E7FD /* MainBaseCollectionViewCell.swift */; };
+		150E9BF82FF25E000F0E7FD /* MainBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9BF92FF25E000F0E7FD /* MainBaseCollectionViewCell.swift */; };
 		150E9C0C2FF23C0300F0E7FD /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9C0B2FF23C0300F0E7FD /* MainHomeViewController.swift */; };
 		150E9C0D2FF23C0300F0E7FD /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9C0B2FF23C0300F0E7FD /* MainHomeViewController.swift */; };
 		150E9C0E2FF23C0300F0E7FD /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E9C0B2FF23C0300F0E7FD /* MainHomeViewController.swift */; };
@@ -30,6 +33,10 @@
 		15A94E172FF24A000FCBB0F /* MainMyAccountAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94E162FF24A000FCBB0F /* MainMyAccountAPIModel.swift */; };
 		15A94E182FF24A000FCBB0F /* MainMyAccountAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94E162FF24A000FCBB0F /* MainMyAccountAPIModel.swift */; };
 		15A94E192FF24A000FCBB0F /* MainMyAccountAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94E162FF24A000FCBB0F /* MainMyAccountAPIModel.swift */; };
+		15A94E1A2FF25A000FCBB0F /* MainMyAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94E1D2FF25A000FCBB0F /* MainMyAccountService.swift */; };
+		15A94E1B2FF25A100FCBB0F /* MainMyAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94E1E2FF25A100FCBB0F /* MainMyAccountViewModel.swift */; };
+		15A94E1C2FF25A200FCBB0F /* MainMyAccountProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94E1F2FF25A200FCBB0F /* MainMyAccountProfileCell.swift */; };
+		15A94EB02FF2536100FCBB0F /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 15A94EAF2FF2536100FCBB0F /* SkeletonView */; };
 		15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
@@ -85,6 +92,7 @@
 
 /* Begin PBXFileReference section */
 		150E9BF02FF228EC00F0E7FD /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
+		150E9BF92FF25E000F0E7FD /* MainBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		150E9C0B2FF23C0300F0E7FD /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +106,9 @@
 		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		15A94E112FF23E7D00FCBB0F /* MainMyAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMyAccountViewController.swift; sourceTree = "<group>"; };
 		15A94E162FF24A000FCBB0F /* MainMyAccountAPIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMyAccountAPIModel.swift; sourceTree = "<group>"; };
+		15A94E1D2FF25A000FCBB0F /* MainMyAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMyAccountService.swift; sourceTree = "<group>"; };
+		15A94E1E2FF25A100FCBB0F /* MainMyAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMyAccountViewModel.swift; sourceTree = "<group>"; };
+		15A94E1F2FF25A200FCBB0F /* MainMyAccountProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMyAccountProfileCell.swift; sourceTree = "<group>"; };
 		15D1969A2FF1238E00545A85 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		15D196C02FF14A2100545A85 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15D196D62FF14D2300545A85 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
@@ -160,6 +171,7 @@
 				1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */,
 				1598AA852DC4B6F8005E972C /* CombineCocoa in Frameworks */,
 				1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */,
+				15A94EB02FF2536100FCBB0F /* SkeletonView in Frameworks */,
 				153AD97F2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,6 +207,7 @@
 		150E9BF42FF228FD00F0E7FD /* MainBase */ = {
 			isa = PBXGroup;
 			children = (
+				150E9BF92FF25E000F0E7FD /* MainBaseCollectionViewCell.swift */,
 				150E9BF02FF228EC00F0E7FD /* MainBaseViewController.swift */,
 			);
 			path = MainBase;
@@ -325,6 +338,7 @@
 		15A94E0E2FF23DC000FCBB0F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				15A94E1F2FF25A200FCBB0F /* MainMyAccountProfileCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -340,6 +354,7 @@
 		15A94E102FF23DCA00FCBB0F /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				15A94E1E2FF25A100FCBB0F /* MainMyAccountViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -347,6 +362,7 @@
 		15A94E152FF2474F00FCBB0F /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				15A94E1D2FF25A000FCBB0F /* MainMyAccountService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -505,6 +521,7 @@
 				1598AA842DC4B6F8005E972C /* CombineCocoa */,
 				153AD97E2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper */,
 				15D547102DF017B900CAA0EE /* Lottie */,
+				15A94EAF2FF2536100FCBB0F /* SkeletonView */,
 			);
 			productName = MyTMDB_App;
 			productReference = 1598AA492DC4B69F005E972C /* MyTMDB_App.app */;
@@ -594,6 +611,7 @@
 				1598AA832DC4B6F8005E972C /* XCRemoteSwiftPackageReference "CombineCocoa" */,
 				153AD97D2DE5EDE2007DF535 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 				15D5470F2DF017B900CAA0EE /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				15A94EAE2FF2536100FCBB0F /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1598AA4A2DC4B69F005E972C /* Products */;
@@ -649,6 +667,9 @@
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
 				15A94E122FF23E7D00FCBB0F /* MainMyAccountViewController.swift in Sources */,
 				15A94E172FF24A000FCBB0F /* MainMyAccountAPIModel.swift in Sources */,
+				15A94E1A2FF25A000FCBB0F /* MainMyAccountService.swift in Sources */,
+				15A94E1B2FF25A100FCBB0F /* MainMyAccountViewModel.swift in Sources */,
+				15A94E1C2FF25A200FCBB0F /* MainMyAccountProfileCell.swift in Sources */,
 				15D1974A2FF1695000545A85 /* RegisterPageView.swift in Sources */,
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				15D198112FF2200000545A85 /* AuthSession.swift in Sources */,
@@ -662,6 +683,7 @@
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				15D198992FF2400000545A85 /* MainTabBarView.swift in Sources */,
 				15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */,
+				150E9BF62FF25E000F0E7FD /* MainBaseCollectionViewCell.swift in Sources */,
 				150E9BF22FF228EC00F0E7FD /* MainBaseViewController.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
@@ -680,6 +702,7 @@
 				15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
+				150E9BF72FF25E000F0E7FD /* MainBaseCollectionViewCell.swift in Sources */,
 				150E9BF32FF228EC00F0E7FD /* MainBaseViewController.swift in Sources */,
 				150E9C0D2FF23C0300F0E7FD /* MainHomeViewController.swift in Sources */,
 				15A94E182FF24A000FCBB0F /* MainMyAccountAPIModel.swift in Sources */,
@@ -701,6 +724,7 @@
 				15A94E142FF23E7D00FCBB0F /* MainMyAccountViewController.swift in Sources */,
 				15A94E192FF24A000FCBB0F /* MainMyAccountAPIModel.swift in Sources */,
 				15D1972C2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
+				150E9BF82FF25E000F0E7FD /* MainBaseCollectionViewCell.swift in Sources */,
 				150E9BF12FF228EC00F0E7FD /* MainBaseViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1048,6 +1072,14 @@
 				minimumVersion = 0.4.1;
 			};
 		};
+		15A94EAE2FF2536100FCBB0F /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.31.0;
+			};
+		};
 		15D5470F2DF017B900CAA0EE /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
@@ -1078,6 +1110,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1598AA832DC4B6F8005E972C /* XCRemoteSwiftPackageReference "CombineCocoa" */;
 			productName = CombineCocoa;
+		};
+		15A94EAF2FF2536100FCBB0F /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15A94EAE2FF2536100FCBB0F /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
 		};
 		15D547102DF017B900CAA0EE /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

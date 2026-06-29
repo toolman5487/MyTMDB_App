@@ -21,6 +21,31 @@ nonisolated enum APIConfig {
         return key
     }()
 
+    // MARK: - External URL
+
+    static let tmdbWebsiteBaseURL = "https://www.themoviedb.org"
+    static let tmdbImageBaseURL = "https://image.tmdb.org/t/p"
+    static let gravatarBaseURL = "https://www.gravatar.com/avatar"
+
+    enum ImageSize: String {
+        case w185
+        case w500
+    }
+
+    static func tmdbImageURL(path: String, size: ImageSize = .w185) -> URL? {
+        guard !path.isEmpty else { return nil }
+        return URL(string: "\(tmdbImageBaseURL)/\(size.rawValue)\(path)")
+    }
+
+    static func gravatarURL(hash: String, size: Int = 185) -> URL? {
+        guard !hash.isEmpty else { return nil }
+        return URL(string: "\(gravatarBaseURL)/\(hash)?s=\(size)&d=identicon")
+    }
+
+    static var tmdbSignupURL: URL? {
+        URL(string: "\(tmdbWebsiteBaseURL)/signup")
+    }
+
     // MARK: - Account
 
     enum Account {
