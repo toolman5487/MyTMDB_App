@@ -14,6 +14,7 @@ enum LoginState: Equatable {
     case idle
     case loading
     case success(sessionId: String)
+    case guestSuccess(guestSessionId: String)
     case failed(message: String)
 }
 
@@ -47,6 +48,17 @@ final class LoginViewModel {
         do {
             let sessionId = try await authService.login(username: username, password: password)
             state = .success(sessionId: sessionId)
+        } catch {
+            state = .failed(message: error.localizedDescription)
+        }
+    }
+
+    func continueAsGuest() async {
+        state = .loading
+
+        do {
+            let guestSessionId = try await authService.createGuestSession()
+            state = .guestSuccess(guestSessionId: guestSessionId)
         } catch {
             state = .failed(message: error.localizedDescription)
         }

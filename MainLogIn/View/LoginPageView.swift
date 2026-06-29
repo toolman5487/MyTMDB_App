@@ -1,0 +1,155 @@
+//
+//  LoginPageView.swift
+//  MyTMDB_App
+//
+//  Created by Willy Hsu on 2026/6/28.
+//
+
+import UIKit
+import SnapKit
+
+// MARK: - LoginPageViewDelegate
+
+protocol LoginPageViewDelegate: AnyObject {
+    func loginPageView(_ view: LoginPageView, didUpdateUsername username: String)
+    func loginPageView(_ view: LoginPageView, didUpdatePassword password: String)
+    func loginPageViewDidTapLogin(_ view: LoginPageView)
+}
+
+// MARK: - LoginPageView
+
+final class LoginPageView: UIView, AuthPageView {
+
+    // MARK: - Properties
+
+    weak var delegate: LoginPageViewDelegate?
+
+    let page: AuthPage = .login
+
+    // MARK: - UI Components
+
+    private let userField = AuthPageStyle.makeTextField(
+        placeholder: "UserID",
+        contentType: .username
+    )
+
+    private let passwordToggleButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        button.tintColor = .secondaryLabel
+        button.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        return button
+    }()
+
+    private let passField = AuthPageStyle.makeTextField(
+        placeholder: "Password",
+        contentType: .password,
+        isSecure: true
+    )
+
+    private let loginButton = AuthPageStyle.makeFilledButton(title: "確認")
+
+    private lazy var formStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [userField, passField, loginButton])
+        stack.axis = .vertical
+        stack.spacing = 16
+        stack.alignment = .fill
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        AuthPageStyle.applyCardStyle(to: stack)
+        return stack
+    }()
+
+    // MARK: - Initialization
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - AuthPageView
+
+    func setInteractionEnabled(_ isEnabled: Bool) {
+        userField.isEnabled = isEnabled
+        passField.isEnabled = isEnabled
+        loginButton.isEnabled = isEnabled
+        passwordToggleButton.isEnabled = isEnabled
+    }
+
+    // MARK: - Setup
+
+    private func setup() {
+        backgroundColor = .clear
+        layout()
+        setupPasswordField()
+        bindActions()
+    }
+
+    private func layout() {
+        addSubview(formStack)
+
+        formStack.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.bottom.equalToSuperview().inset(16)
+        }
+
+        userField.snp.makeConstraints { make in
+            make.height.equalTo(56)
+        }
+
+        passField.snp.makeConstraints { make in
+            make.height.equalTo(56)
+        }
+
+        loginButton.snp.makeConstraints { make in
+            make.height.equalTo(48)
+        }
+    }
+
+    private func setupPasswordField() {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 24))
+        container.addSubview(passwordToggleButton)
+        passwordToggleButton.center = container.center
+        passField.rightView = container
+        passField.rightViewMode = .always
+        passwordToggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+    }
+
+    private func bindActions() {
+        userField.addTarget(self, action: #selector(usernameDidChange), for: .editingChanged)
+        passField.addTarget(self, action: #selector(passwordDidChange), for: .editingChanged)
+        loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
+    }
+
+    // MARK: - Actions
+
+    @objc private func usernameDidChange() {
+        delegate?.loginPageView(self, didUpdateUsername: userField.text ?? "")
+    }
+
+    @objc private func passwordDidChange() {
+        delegate?.loginPageView(self, didUpdatePassword: passField.text ?? "")
+    }
+
+    @objc private func loginTapped() {
+        endEditing(true)
+        delegate?.loginPageViewDidTapLogin(self)
+    }
+
+    @objc private func togglePasswordVisibility(_ sender: UIButton) {
+        let existingText = passField.text
+        let selectedRange = passField.selectedTextRange
+
+        passField.isSecureTextEntry.toggle()
+        passField.text = existingText
+        passField.selectedTextRange = selectedRange
+
+        let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye"
+        sender.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+}

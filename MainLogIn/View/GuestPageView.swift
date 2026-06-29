@@ -1,0 +1,90 @@
+//
+//  GuestPageView.swift
+//  MyTMDB_App
+//
+//  Created by Willy Hsu on 2026/6/28.
+//
+
+import UIKit
+import SnapKit
+
+// MARK: - GuestPageViewDelegate
+
+protocol GuestPageViewDelegate: AnyObject {
+    func guestPageViewDidTapContinue(_ view: GuestPageView)
+}
+
+// MARK: - GuestPageView
+
+final class GuestPageView: UIView, AuthPageView {
+
+    // MARK: - Properties
+
+    weak var delegate: GuestPageViewDelegate?
+
+    let page: AuthPage = .guest
+
+    // MARK: - UI Components
+
+    private let descriptionLabel = AuthPageStyle.makeDescriptionLabel(
+        "無需帳號即可瀏覽電影與影集，部分個人化功能將無法使用。"
+    )
+
+    private let continueButton = AuthPageStyle.makeFilledButton(title: "以訪客身分繼續")
+
+    private lazy var formStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [descriptionLabel, continueButton])
+        stack.axis = .vertical
+        stack.spacing = 16
+        stack.alignment = .fill
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        AuthPageStyle.applyCardStyle(to: stack)
+        return stack
+    }()
+
+    // MARK: - Initialization
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - AuthPageView
+
+    func setInteractionEnabled(_ isEnabled: Bool) {
+        continueButton.isEnabled = isEnabled
+    }
+
+    // MARK: - Setup
+
+    private func setup() {
+        backgroundColor = .clear
+        layout()
+        continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
+    }
+
+    private func layout() {
+        addSubview(formStack)
+
+        formStack.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+        }
+
+        continueButton.snp.makeConstraints { make in
+            make.height.equalTo(48)
+        }
+    }
+
+    // MARK: - Actions
+
+    @objc private func continueTapped() {
+        delegate?.guestPageViewDidTapContinue(self)
+    }
+}

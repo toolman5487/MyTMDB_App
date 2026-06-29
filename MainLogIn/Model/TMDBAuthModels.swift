@@ -20,3 +20,8 @@ struct SessionResponse: Codable {
     let session_id: String
     let success: Bool
 }
+
+struct GuestSessionResponse: Codable {
+    let guest_session_id: String
+    let success: Bool
+}

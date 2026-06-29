@@ -11,6 +11,7 @@ import Foundation
 
 protocol TMDBAuthServicing {
     func login(username: String, password: String) async throws -> String
+    func createGuestSession() async throws -> String
 }
 
 // MARK: - TMDBAuthService
@@ -33,6 +34,17 @@ final class TMDBAuthService: TMDBAuthServicing {
         let token = try await requestToken()
         let validatedToken = try await validate(token: token, username: username, password: password)
         return try await createSession(token: validatedToken)
+    }
+
+    func createGuestSession() async throws -> String {
+        let response: GuestSessionResponse = try await network.post(
+            path: APIConfig.Authentication.guestSessionNew,
+            body: nil
+        )
+        guard response.success else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        return response.guest_session_id
     }
 
     // MARK: - Private Methods
