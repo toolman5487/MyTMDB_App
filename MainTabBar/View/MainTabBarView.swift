@@ -31,9 +31,9 @@ final class MainTabBarView: UIView {
 
     // MARK: - UI Components
 
-    private let backgroundView: UIView = {
-        let view = UIView()
-        view.backgroundColor = ThemeColor.backgroundSecondary
+    private let backgroundView: UIVisualEffectView = {
+        let effect = UIBlurEffect(style: .systemChromeMaterial)
+        let view = UIVisualEffectView(effect: effect)
         return view
     }()
 
@@ -115,7 +115,7 @@ final class MainTabBarView: UIView {
     private func setupHierarchy() {
         addSubview(backgroundView)
         addSubview(topSeparatorView)
-        backgroundView.addSubview(stackView)
+        backgroundView.contentView.addSubview(stackView)
     }
 
     private func setupConstraints() {

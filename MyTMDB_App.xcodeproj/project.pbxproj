@@ -330,20 +330,20 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		15D1989B2FF2400000545A85 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				15D198952FF2400000545A85 /* MainTabBarItem.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		15D1987E2FF211C700545A85 /* Base */ = {
 			isa = PBXGroup;
 			children = (
 				15D198932FF2203300545A85 /* BaseViewController.swift */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		15D1989B2FF2400000545A85 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				15D198952FF2400000545A85 /* MainTabBarItem.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		15D547122DF01A2700CAA0EE /* Animations */ = {
