@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - LoginPageViewDelegate
 
+@MainActor
 protocol LoginPageViewDelegate: AnyObject {
     func loginPageView(_ view: LoginPageView, didUpdateUsername username: String)
     func loginPageView(_ view: LoginPageView, didUpdatePassword password: String)

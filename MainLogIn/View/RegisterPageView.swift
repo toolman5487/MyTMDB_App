@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - RegisterPageViewDelegate
 
+@MainActor
 protocol RegisterPageViewDelegate: AnyObject {
     func registerPageViewDidTapRegister(_ view: RegisterPageView)
 }

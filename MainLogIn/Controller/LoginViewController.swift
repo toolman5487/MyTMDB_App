@@ -284,6 +284,7 @@ final class LoginViewController: BaseViewController {
 
 // MARK: - LoginPageViewDelegate
 
+@MainActor
 extension LoginViewController: LoginPageViewDelegate {
     func loginPageView(_ view: LoginPageView, didUpdateUsername username: String) {
         loginVM.username = username
@@ -303,6 +304,7 @@ extension LoginViewController: LoginPageViewDelegate {
 
 // MARK: - GuestPageViewDelegate
 
+@MainActor
 extension LoginViewController: GuestPageViewDelegate {
     func guestPageViewDidTapContinue(_ view: GuestPageView) {
         Task(priority: .userInitiated) {
@@ -313,6 +315,7 @@ extension LoginViewController: GuestPageViewDelegate {
 
 // MARK: - RegisterPageViewDelegate
 
+@MainActor
 extension LoginViewController: RegisterPageViewDelegate {
     func registerPageViewDidTapRegister(_ view: RegisterPageView) {
         guard let url = URL(string: "https://www.themoviedb.org/signup") else { return }
@@ -323,6 +326,7 @@ extension LoginViewController: RegisterPageViewDelegate {
 
 // MARK: - UIScrollViewDelegate
 
+@MainActor
 extension LoginViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView.bounds.width > 0 else { return }

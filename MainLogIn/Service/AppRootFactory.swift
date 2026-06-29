@@ -18,7 +18,7 @@ enum AppRootFactory {
             return UINavigationController(rootViewController: LoginViewController())
 
         case .guest, .user:
-            return UINavigationController(rootViewController: MainTabBarController(session: session))
+            return MainTabBarController(session: session)
         }
     }
 

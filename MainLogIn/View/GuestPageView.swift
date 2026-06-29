@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - GuestPageViewDelegate
 
+@MainActor
 protocol GuestPageViewDelegate: AnyObject {
     func guestPageViewDidTapContinue(_ view: GuestPageView)
 }

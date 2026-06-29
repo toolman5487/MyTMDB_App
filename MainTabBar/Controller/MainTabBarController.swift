@@ -46,8 +46,6 @@ final class MainTabBarController: BaseViewController {
     // MARK: - Template Methods
 
     override func configureView() {
-        title = items.first?.title
-        navigationItem.largeTitleDisplayMode = .never
         pageViewController.dataSource = self
         pageViewController.delegate = self
         tabBarView.delegate = self
@@ -63,8 +61,7 @@ final class MainTabBarController: BaseViewController {
 
     override func setupConstraints() {
         pageViewController.view.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(tabBarView.snp.top)
+            make.edges.equalToSuperview()
         }
 
         tabBarView.snp.makeConstraints { make in
@@ -83,12 +80,16 @@ final class MainTabBarController: BaseViewController {
 
     private func makePages() -> [UIViewController] {
         items.map { item in
-            ViewController(displayTitle: item.placeholderTitle)
+            item.makeViewController(session: session).makeNavigationController()
         }
     }
 
     private func moveToPage(at index: Int) {
-        guard pages.indices.contains(index), index != selectedIndex else { return }
+        guard pages.indices.contains(index) else { return }
+        guard index != selectedIndex else {
+            mainPage(at: index)?.tabDidReselect()
+            return
+        }
         let direction: UIPageViewController.NavigationDirection = index > selectedIndex ? .forward : .reverse
         updateSelectedIndex(index)
         pageViewController.setViewControllers([pages[index]], direction: direction, animated: false)
@@ -96,9 +97,36 @@ final class MainTabBarController: BaseViewController {
 
     private func updateSelectedIndex(_ index: Int) {
         guard items.indices.contains(index) else { return }
+        let previousIndex = selectedIndex
+
+        if previousIndex != index {
+            mainPage(at: previousIndex)?.pageDidEndVisible()
+        }
+
         selectedIndex = index
-        title = items[index].title
         tabBarView.updateSelection(index)
+
+        if let page = mainPage(at: index) {
+            page.pageDidBecomeVisible()
+            page.tabDidSelect()
+        }
+    }
+
+    private func mainPage(at index: Int) -> MainBaseViewController? {
+        guard pages.indices.contains(index) else { return nil }
+        return mainPage(from: pages[index])
+    }
+
+    private func mainPage(from viewController: UIViewController) -> MainBaseViewController? {
+        if let page = viewController as? MainBaseViewController {
+            return page
+        }
+
+        if let navigationController = viewController as? UINavigationController {
+            return navigationController.viewControllers.first as? MainBaseViewController
+        }
+
+        return nil
     }
 }
 

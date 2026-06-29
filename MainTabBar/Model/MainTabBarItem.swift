@@ -5,14 +5,12 @@
 //  Created by Willy Hsu on 2026/6/29.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - MainTabBarItem
 
 enum MainTabBarItem: Int, CaseIterable, Sendable {
     case home
-    case discover
-    case watchlist
     case profile
 
     static func items(for session: AuthSession) -> [MainTabBarItem] {
@@ -20,19 +18,8 @@ enum MainTabBarItem: Int, CaseIterable, Sendable {
         case .loggedOut:
             return []
 
-        case .guest:
-            return [
-                .home,
-                .discover,
-            ]
-
-        case .user:
-            return [
-                .home,
-                .discover,
-                .watchlist,
-                .profile,
-            ]
+        case .guest, .user:
+            return [.home, .profile]
         }
     }
 
@@ -41,30 +28,8 @@ enum MainTabBarItem: Int, CaseIterable, Sendable {
         case .home:
             return "首頁"
 
-        case .discover:
-            return "探索"
-
-        case .watchlist:
-            return "片單"
-
         case .profile:
-            return "我的"
-        }
-    }
-
-    var placeholderTitle: String {
-        switch self {
-        case .home:
-            return "電影首頁"
-
-        case .discover:
-            return "探索電影"
-
-        case .watchlist:
-            return "我的片單"
-
-        case .profile:
-            return "會員中心"
+            return "個人中心"
         }
     }
 
@@ -72,12 +37,6 @@ enum MainTabBarItem: Int, CaseIterable, Sendable {
         switch self {
         case .home:
             return "house"
-
-        case .discover:
-            return "sparkle.magnifyingglass"
-
-        case .watchlist:
-            return "bookmark"
 
         case .profile:
             return "person.crop.circle"
@@ -89,14 +48,19 @@ enum MainTabBarItem: Int, CaseIterable, Sendable {
         case .home:
             return "house.fill"
 
-        case .discover:
-            return "sparkle.magnifyingglass"
-
-        case .watchlist:
-            return "bookmark.fill"
-
         case .profile:
             return "person.crop.circle.fill"
+        }
+    }
+
+    @MainActor
+    func makeViewController(session: AuthSession) -> MainBaseViewController {
+        switch self {
+        case .home:
+            return MainHomeViewController()
+
+        case .profile:
+            return MainMyAccountViewController(session: session)
         }
     }
 }

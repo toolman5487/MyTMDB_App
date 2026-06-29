@@ -38,13 +38,21 @@ final class AccountViewModel {
     // MARK: - Public Methods
 
     func loadAccount(sessionId: String) async {
+        AppLogger.authentication.debug("Start loading account profile")
         state = .loading
 
         do {
             let account = try await service.fetchAccount(sessionId: sessionId)
             state = .loaded(account)
+            AppLogger.authentication.info(
+                "Account loaded successfully for user \(account.username, privacy: .public)"
+            )
         } catch {
-            state = .failed(message: error.localizedDescription)
+            let message = error.localizedDescription
+            state = .failed(message: message)
+            AppLogger.authentication.error(
+                "Failed to load account: \(message, privacy: .public)"
+            )
         }
     }
 }
