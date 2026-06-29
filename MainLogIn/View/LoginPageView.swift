@@ -32,7 +32,7 @@ final class LoginPageView: UIView, AuthPageView {
     private let cardView = UIView()
 
     private let userField = AuthPageStyle.makeTextField(
-        placeholder: "UserID",
+        placeholder: "輸入帳號",
         contentType: .username
     )
 
@@ -45,7 +45,7 @@ final class LoginPageView: UIView, AuthPageView {
     }()
 
     private let passField = AuthPageStyle.makeTextField(
-        placeholder: "Password",
+        placeholder: "輸入密碼",
         contentType: .password,
         isSecure: true
     )

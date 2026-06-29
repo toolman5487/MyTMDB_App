@@ -9,7 +9,7 @@ import SnapKit
 import UIKit
 
 @MainActor
-final class ViewController: MainBaseViewController {
+final class ViewController: BaseViewController {
 
     // MARK: - Properties
 
@@ -38,14 +38,20 @@ final class ViewController: MainBaseViewController {
         super.init(coder: coder)
     }
 
-    // MARK: - MainBaseViewController
+    // MARK: - BaseViewController
 
-    override var pageTitle: String {
-        displayTitle
+    override func configureView() {
+        title = displayTitle
     }
 
-    override func makeContentView() -> UIView? {
-        placeholderContentView
+    override func setupHierarchy() {
+        view.addSubview(placeholderContentView)
+    }
+
+    override func setupConstraints() {
+        placeholderContentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     // MARK: - Alert
