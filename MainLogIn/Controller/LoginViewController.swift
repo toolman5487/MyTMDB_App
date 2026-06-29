@@ -13,7 +13,7 @@ import Lottie
 import Observation
 
 @MainActor
-final class LoginViewController: UIViewController {
+final class LoginViewController: BaseViewController {
 
     // MARK: - Properties
 
@@ -69,44 +69,12 @@ final class LoginViewController: UIViewController {
 
     // MARK: - Lifecycle
 
-    override func viewDidLoad() {
-        view.backgroundColor = .systemBackground
-        super.viewDidLoad()
+    override func configureView() {
         setupNavigationBar()
         setupPageDelegates()
-        layout()
-        bindingViewmodel()
     }
 
-    // MARK: - Setup
-
-    private func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
-        navigationItem.title = AuthPage.login.title
-        definesPresentationContext = true
-        navigationItem.hidesSearchBarWhenScrolling = false
-    }
-
-    private func setupPageDelegates() {
-        loginPageView.delegate = self
-        guestPageView.delegate = self
-        registerPageView.delegate = self
-    }
-
-    private func bindingViewmodel() {
-        pageScrollView.delegate = self
-        pageControl.addTarget(self, action: #selector(pageControlChanged), for: .valueChanged)
-
-        handleLoginState(loginVM.state)
-        handleAccountState(accountVM.state)
-        observeLoginState()
-        observeAccountState()
-    }
-
-    // MARK: - Layout
-
-    private func layout() {
+    override func setupHierarchy() {
         pageScrollView.addSubview(loginPageView)
         pageScrollView.addSubview(guestPageView)
         pageScrollView.addSubview(registerPageView)
@@ -115,11 +83,13 @@ final class LoginViewController: UIViewController {
         view.addSubview(pageControl)
         view.addSubview(loadingOverlayView)
         view.addSubview(animationView)
+    }
 
+    override func setupConstraints() {
         pageScrollView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(loginPageView.snp.height)
+            make.height.equalTo(AuthPageStyle.Layout.pageHeight)
         }
 
         loginPageView.snp.makeConstraints { make in
@@ -127,6 +97,7 @@ final class LoginViewController: UIViewController {
             make.bottom.equalTo(pageScrollView.contentLayoutGuide)
             make.leading.equalTo(pageScrollView.contentLayoutGuide)
             make.width.equalTo(pageScrollView.frameLayoutGuide)
+            make.height.equalTo(AuthPageStyle.Layout.pageHeight)
         }
 
         guestPageView.snp.makeConstraints { make in
@@ -153,6 +124,32 @@ final class LoginViewController: UIViewController {
             make.center.equalToSuperview()
             make.width.height.equalTo(300)
         }
+    }
+
+    override func bindViewModel() {
+        pageScrollView.delegate = self
+        pageControl.addTarget(self, action: #selector(pageControlChanged), for: .valueChanged)
+
+        handleLoginState(loginVM.state)
+        handleAccountState(accountVM.state)
+        observeLoginState()
+        observeAccountState()
+    }
+
+    // MARK: - Setup
+
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.title = AuthPage.login.title
+        definesPresentationContext = true
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+
+    private func setupPageDelegates() {
+        loginPageView.delegate = self
+        guestPageView.delegate = self
+        registerPageView.delegate = self
     }
 
     // MARK: - Actions
@@ -283,11 +280,6 @@ final class LoginViewController: UIViewController {
         }
     }
 
-    private func presentAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
 }
 
 // MARK: - LoginPageViewDelegate

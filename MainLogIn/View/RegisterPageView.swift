@@ -5,8 +5,8 @@
 //  Created by Willy Hsu on 2026/6/28.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 // MARK: - RegisterPageViewDelegate
 
@@ -26,22 +26,13 @@ final class RegisterPageView: UIView, AuthPageView {
 
     // MARK: - UI Components
 
+    private let cardView = UIView()
+
     private let descriptionLabel = AuthPageStyle.makeDescriptionLabel(
         "前往 TMDB 官網建立帳號，即可使用收藏、待看清單等功能。"
     )
 
     private let registerButton = AuthPageStyle.makeFilledButton(title: "前往註冊")
-
-    private lazy var formStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [descriptionLabel, registerButton])
-        stack.axis = .vertical
-        stack.spacing = 16
-        stack.alignment = .fill
-        stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        AuthPageStyle.applyCardStyle(to: stack)
-        return stack
-    }()
 
     // MARK: - Initialization
 
@@ -70,16 +61,15 @@ final class RegisterPageView: UIView, AuthPageView {
     }
 
     private func layout() {
-        addSubview(formStack)
-
-        formStack.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
-        }
-
-        registerButton.snp.makeConstraints { make in
-            make.height.equalTo(48)
-        }
+        AuthPageStyle.applyCardStyle(to: cardView)
+        AuthPageStyle.applyCardLayout(cardView, in: self)
+        AuthPageStyle.applyActionButtonLayout(registerButton, in: cardView)
+        AuthPageStyle.applyCenteredDescriptionLayout(
+            symbolName: "person.crop.circle.badge.plus",
+            label: descriptionLabel,
+            in: cardView,
+            above: registerButton
+        )
     }
 
     // MARK: - Actions

@@ -5,8 +5,8 @@
 //  Created by Willy Hsu on 2026/6/28.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 // MARK: - LoginPageViewDelegate
 
@@ -28,6 +28,8 @@ final class LoginPageView: UIView, AuthPageView {
 
     // MARK: - UI Components
 
+    private let cardView = UIView()
+
     private let userField = AuthPageStyle.makeTextField(
         placeholder: "UserID",
         contentType: .username
@@ -47,18 +49,9 @@ final class LoginPageView: UIView, AuthPageView {
         isSecure: true
     )
 
-    private let loginButton = AuthPageStyle.makeFilledButton(title: "確認")
+    private lazy var inputStack = AuthPageStyle.makeInputStack(arrangedSubviews: [userField, passField])
 
-    private lazy var formStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [userField, passField, loginButton])
-        stack.axis = .vertical
-        stack.spacing = 16
-        stack.alignment = .fill
-        stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        AuthPageStyle.applyCardStyle(to: stack)
-        return stack
-    }()
+    private let loginButton = AuthPageStyle.makeFilledButton(title: "確認")
 
     // MARK: - Initialization
 
@@ -91,24 +84,22 @@ final class LoginPageView: UIView, AuthPageView {
     }
 
     private func layout() {
-        addSubview(formStack)
+        let margins = AuthPageStyle.Layout.stackMargins
 
-        formStack.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.bottom.equalToSuperview().inset(16)
+        AuthPageStyle.applyCardStyle(to: cardView)
+        AuthPageStyle.applyCardLayout(cardView, in: self)
+
+        cardView.addSubview(inputStack)
+        AuthPageStyle.applyActionButtonLayout(loginButton, in: cardView)
+
+        inputStack.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(margins.top)
+            make.leading.trailing.equalToSuperview().inset(margins.left)
+            make.bottom.lessThanOrEqualTo(loginButton.snp.top).offset(-AuthPageStyle.Layout.stackSpacing)
         }
 
-        userField.snp.makeConstraints { make in
-            make.height.equalTo(56)
-        }
-
-        passField.snp.makeConstraints { make in
-            make.height.equalTo(56)
-        }
-
-        loginButton.snp.makeConstraints { make in
-            make.height.equalTo(48)
-        }
+        AuthPageStyle.applyFieldHeight(userField)
+        AuthPageStyle.applyFieldHeight(passField)
     }
 
     private func setupPasswordField() {

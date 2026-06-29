@@ -5,8 +5,8 @@
 //  Created by Willy Hsu on 2026/6/28.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 // MARK: - GuestPageViewDelegate
 
@@ -26,22 +26,13 @@ final class GuestPageView: UIView, AuthPageView {
 
     // MARK: - UI Components
 
+    private let cardView = UIView()
+
     private let descriptionLabel = AuthPageStyle.makeDescriptionLabel(
         "無需帳號即可瀏覽電影與影集，部分個人化功能將無法使用。"
     )
 
     private let continueButton = AuthPageStyle.makeFilledButton(title: "以訪客身分繼續")
-
-    private lazy var formStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [descriptionLabel, continueButton])
-        stack.axis = .vertical
-        stack.spacing = 16
-        stack.alignment = .fill
-        stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        AuthPageStyle.applyCardStyle(to: stack)
-        return stack
-    }()
 
     // MARK: - Initialization
 
@@ -70,16 +61,15 @@ final class GuestPageView: UIView, AuthPageView {
     }
 
     private func layout() {
-        addSubview(formStack)
-
-        formStack.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
-        }
-
-        continueButton.snp.makeConstraints { make in
-            make.height.equalTo(48)
-        }
+        AuthPageStyle.applyCardStyle(to: cardView)
+        AuthPageStyle.applyCardLayout(cardView, in: self)
+        AuthPageStyle.applyActionButtonLayout(continueButton, in: cardView)
+        AuthPageStyle.applyCenteredDescriptionLayout(
+            symbolName: "person.crop.circle",
+            label: descriptionLabel,
+            in: cardView,
+            above: continueButton
+        )
     }
 
     // MARK: - Actions

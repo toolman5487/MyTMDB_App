@@ -41,6 +41,7 @@
 		15D198112FF2200000545A85 /* AuthSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198102FF2200000545A85 /* AuthSession.swift */; };
 		15D198132FF2201000545A85 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198122FF2201000545A85 /* SessionStore.swift */; };
 		15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198142FF2202000545A85 /* AppRootFactory.swift */; };
+		15D198942FF2203400545A85 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198932FF2203300545A85 /* BaseViewController.swift */; };
 		15D547112DF017B900CAA0EE /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 15D547102DF017B900CAA0EE /* Lottie */; };
 		15D547142DF01A4700CAA0EE /* loadingAnimation_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */; };
 		15D547152DF01A4700CAA0EE /* loadingAnimation_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */; };
@@ -91,6 +92,7 @@
 		15D198102FF2200000545A85 /* AuthSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSession.swift; sourceTree = "<group>"; };
 		15D198122FF2201000545A85 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		15D198142FF2202000545A85 /* AppRootFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootFactory.swift; sourceTree = "<group>"; };
+		15D198932FF2203300545A85 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAnimation_blue.json; sourceTree = "<group>"; };
 		15D547162DF01F2100CAA0EE /* loadingAir.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAir.json; sourceTree = "<group>"; };
 		15D547192DF022CE00CAA0EE /* Animation_popcorn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Animation_popcorn.json; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 			children = (
 				15D198632FF210DE00545A85 /* Feature */,
 				15D196332FF10EFF00545A85 /* MainLogIn */,
+				15D1987B2FF2117E00545A85 /* MainTabBar */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
 				1598AA6C2DC4B6A1005E972C /* MyTMDB_AppUITests */,
@@ -287,11 +290,43 @@
 			isa = PBXGroup;
 			children = (
 				15D547122DF01A2700CAA0EE /* Animations */,
+				15D1987E2FF211C700545A85 /* Base */,
 				1598AA982DC4C29C005E972C /* Config */,
 				15D197282FF167E300545A85 /* Extension */,
 				15D196C42FF14CD300545A85 /* Logger */,
 			);
 			path = Feature;
+			sourceTree = "<group>";
+		};
+		15D1987B2FF2117E00545A85 /* MainTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				15D1987C2FF2118E00545A85 /* Controller */,
+				15D1987D2FF2119500545A85 /* View */,
+			);
+			path = MainTabBar;
+			sourceTree = "<group>";
+		};
+		15D1987C2FF2118E00545A85 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		15D1987D2FF2119500545A85 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		15D1987E2FF211C700545A85 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				15D198932FF2203300545A85 /* BaseViewController.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		15D547122DF01A2700CAA0EE /* Animations */ = {
@@ -475,6 +510,7 @@
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				15D198112FF2200000545A85 /* AuthSession.swift in Sources */,
 				15D198132FF2201000545A85 /* SessionStore.swift in Sources */,
+				15D198942FF2203400545A85 /* BaseViewController.swift in Sources */,
 				15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */,
 				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,

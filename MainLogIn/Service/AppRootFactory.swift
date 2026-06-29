@@ -21,4 +21,10 @@ enum AppRootFactory {
             return UINavigationController(rootViewController: ViewController())
         }
     }
+
+    @MainActor
+    static func replaceRoot(in window: UIWindow, for session: AuthSession) {
+        window.rootViewController = makeRootViewController(for: session)
+        window.makeKeyAndVisible()
+    }
 }
