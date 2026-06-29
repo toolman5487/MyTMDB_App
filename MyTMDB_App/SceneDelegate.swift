@@ -12,17 +12,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     private let sessionStore: SessionStoring = SessionStore()
+    private let sessionValidator = AuthSessionValidator()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         window.overrideUserInterfaceStyle = .dark
 
-        let authSession = sessionStore.load()
-        window.rootViewController = AppRootFactory.makeRootViewController(for: authSession)
+        window.rootViewController = AppRootFactory.makeLoadingViewController()
 
         self.window = window
         window.makeKeyAndVisible()
+
+        validateStoredSession(in: window)
+    }
+
+    private func validateStoredSession(in window: UIWindow) {
+        let storedSession = sessionStore.load()
+
+        Task { @MainActor in
+            let validatedSession = await sessionValidator.validatedSession(storedSession)
+
+            if validatedSession == .loggedOut {
+                sessionStore.clear()
+            } else if validatedSession != storedSession {
+                sessionStore.save(validatedSession)
+            }
+
+            AppRootFactory.replaceRoot(in: window, for: validatedSession)
+        }
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
