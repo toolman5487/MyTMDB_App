@@ -31,6 +31,9 @@
 		15A950032FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
+		15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */; };
+		15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */; };
+		15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */; };
 		15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
@@ -95,6 +98,7 @@
 		15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
 		15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
+		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		15D1969A2FF1238E00545A85 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		15D196C02FF14A2100545A85 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15D196D62FF14D2300545A85 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
@@ -241,6 +245,7 @@
 		15A94F4A2FF26D7900FCBB0F /* Root */ = {
 			isa = PBXGroup;
 			children = (
+				15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */,
 				15A94F492FF26D7900FCBB0F /* BaseViewController.swift */,
 			);
 			path = Root;
@@ -551,6 +556,7 @@
 				15D197442FF1692000545A85 /* AuthPageStyle.swift in Sources */,
 				15D197462FF1693000545A85 /* LoginPageView.swift in Sources */,
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
+				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15D1974A2FF1695000545A85 /* RegisterPageView.swift in Sources */,
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
@@ -581,6 +587,7 @@
 				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
+				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15A94F4C2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
@@ -595,6 +602,7 @@
 			files = (
 				15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
+				15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C32FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */,

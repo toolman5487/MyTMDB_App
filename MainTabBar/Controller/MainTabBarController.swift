@@ -63,7 +63,7 @@ final class MainTabBarController: UITabBarController {
 
     private func makeTabBarItem(for item: MainTabItem) -> UITabBarItem {
         UITabBarItem(
-            title: item.title,
+            title: nil,
             image: UIImage(systemName: item.imageName),
             selectedImage: UIImage(systemName: item.selectedImageName)
         )

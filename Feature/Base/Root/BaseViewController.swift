@@ -15,10 +15,6 @@ class BaseViewController: UIViewController {
 
     // MARK: - Properties
 
-    var preferredBackgroundColor: UIColor {
-        ThemeColor.background
-    }
-
     private var keyboardDismissTapGesture: UITapGestureRecognizer?
 
     private lazy var baseLoadingOverlayView: UIView = {
@@ -40,7 +36,7 @@ class BaseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = preferredBackgroundColor
+        view.backgroundColor = ThemeColor.background
         configureView()
         setupHierarchy()
         setupConstraints()
