@@ -42,6 +42,9 @@
 		15D198132FF2201000545A85 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198122FF2201000545A85 /* SessionStore.swift */; };
 		15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198142FF2202000545A85 /* AppRootFactory.swift */; };
 		15D198942FF2203400545A85 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198932FF2203300545A85 /* BaseViewController.swift */; };
+		15D198982FF2400000545A85 /* MainTabBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198952FF2400000545A85 /* MainTabBarItem.swift */; };
+		15D198992FF2400000545A85 /* MainTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198962FF2400000545A85 /* MainTabBarView.swift */; };
+		15D1989A2FF2400000545A85 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198972FF2400000545A85 /* MainTabBarController.swift */; };
 		15D547112DF017B900CAA0EE /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 15D547102DF017B900CAA0EE /* Lottie */; };
 		15D547142DF01A4700CAA0EE /* loadingAnimation_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */; };
 		15D547152DF01A4700CAA0EE /* loadingAnimation_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */; };
@@ -93,6 +96,9 @@
 		15D198122FF2201000545A85 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		15D198142FF2202000545A85 /* AppRootFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootFactory.swift; sourceTree = "<group>"; };
 		15D198932FF2203300545A85 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		15D198952FF2400000545A85 /* MainTabBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarItem.swift; sourceTree = "<group>"; };
+		15D198962FF2400000545A85 /* MainTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarView.swift; sourceTree = "<group>"; };
+		15D198972FF2400000545A85 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAnimation_blue.json; sourceTree = "<group>"; };
 		15D547162DF01F2100CAA0EE /* loadingAir.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAir.json; sourceTree = "<group>"; };
 		15D547192DF022CE00CAA0EE /* Animation_popcorn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Animation_popcorn.json; sourceTree = "<group>"; };
@@ -302,6 +308,7 @@
 			isa = PBXGroup;
 			children = (
 				15D1987C2FF2118E00545A85 /* Controller */,
+				15D1989B2FF2400000545A85 /* Model */,
 				15D1987D2FF2119500545A85 /* View */,
 			);
 			path = MainTabBar;
@@ -310,6 +317,7 @@
 		15D1987C2FF2118E00545A85 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				15D198972FF2400000545A85 /* MainTabBarController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -317,8 +325,17 @@
 		15D1987D2FF2119500545A85 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				15D198962FF2400000545A85 /* MainTabBarView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		15D1989B2FF2400000545A85 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				15D198952FF2400000545A85 /* MainTabBarItem.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		15D1987E2FF211C700545A85 /* Base */ = {
@@ -512,14 +529,17 @@
 				15D198132FF2201000545A85 /* SessionStore.swift in Sources */,
 				15D198942FF2203400545A85 /* BaseViewController.swift in Sources */,
 				15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */,
+				15D198982FF2400000545A85 /* MainTabBarItem.swift in Sources */,
 				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C12FF14A2100545A85 /* NetworkService.swift in Sources */,
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
+				15D198992FF2400000545A85 /* MainTabBarView.swift in Sources */,
 				15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
 				15D1972F2FF1683D00545A85 /* ThemeColor.swift in Sources */,
+				15D1989A2FF2400000545A85 /* MainTabBarController.swift in Sources */,
 				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 			);

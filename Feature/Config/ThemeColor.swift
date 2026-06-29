@@ -13,14 +13,26 @@ enum ThemeColor {
 
     // MARK: Brand
 
-    static let sakuraHex = "#FFB7C5"
+    static let midnightHex = "#090712"
+    static let midnightElevatedHex = "#151026"
+    static let midnightSurfaceHex = "#211637"
+    static let cinemaPurpleHex = "#8B5CF6"
+    static let amethystHex = "#C084FC"
+    static let spotlightGoldHex = "#F5C451"
+    static let velvetRedHex = "#B23A63"
 
-    static let sakura: UIColor = UIColor(hex: sakuraHex) ?? .systemPink
-    static let primary: UIColor = sakura
-    static let accent: UIColor = sakura
+    static let cinemaPurple: UIColor = UIColor(hex: cinemaPurpleHex) ?? .systemPurple
+    static let amethyst: UIColor = UIColor(hex: amethystHex) ?? .systemPurple
+    static let spotlightGold: UIColor = UIColor(hex: spotlightGoldHex) ?? .systemYellow
+    static let velvetRed: UIColor = UIColor(hex: velvetRedHex) ?? .systemPink
 
-    static let sakuraGlass: UIColor = UIColor(hex: sakuraHex, alpha: 0.20) ?? .systemPink.withAlphaComponent(0.20)
-    static let sakuraGlassStrong: UIColor = UIColor(hex: sakuraHex, alpha: 0.35) ?? .systemPink.withAlphaComponent(0.35)
+    static let primary: UIColor = cinemaPurple
+    static let accent: UIColor = amethyst
+    static let highlight: UIColor = spotlightGold
+
+    static let purpleGlass: UIColor = UIColor(hex: cinemaPurpleHex, alpha: 0.20) ?? .systemPurple.withAlphaComponent(0.20)
+    static let purpleGlassStrong: UIColor = UIColor(hex: cinemaPurpleHex, alpha: 0.35) ?? .systemPurple.withAlphaComponent(0.35)
+    static let goldGlass: UIColor = UIColor(hex: spotlightGoldHex, alpha: 0.20) ?? .systemYellow.withAlphaComponent(0.20)
 
     // MARK: Text
 
@@ -33,21 +45,47 @@ enum ThemeColor {
 
     // MARK: Background
 
-    static let background: UIColor = .systemBackground
-    static let backgroundSecondary: UIColor = .secondarySystemBackground
-    static let backgroundTertiary: UIColor = .tertiarySystemBackground
+    static let background: UIColor = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor(hex: midnightHex) ?? .systemBackground
+
+        default:
+            return UIColor(hex: "#F8F5FF") ?? .systemBackground
+        }
+    }
+
+    static let backgroundSecondary: UIColor = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor(hex: midnightElevatedHex) ?? .secondarySystemBackground
+
+        default:
+            return UIColor(hex: "#EFE8FF") ?? .secondarySystemBackground
+        }
+    }
+
+    static let backgroundTertiary: UIColor = UIColor { traitCollection in
+        switch traitCollection.userInterfaceStyle {
+        case .dark:
+            return UIColor(hex: midnightSurfaceHex) ?? .tertiarySystemBackground
+
+        default:
+            return UIColor(hex: "#E5D8FF") ?? .tertiarySystemBackground
+        }
+    }
 
     // MARK: Grouped Background
 
-    static let groupedBackground: UIColor = .systemGroupedBackground
-    static let groupedBackgroundSecondary: UIColor = .secondarySystemGroupedBackground
-    static let groupedBackgroundTertiary: UIColor = .tertiarySystemGroupedBackground
+    static let groupedBackground: UIColor = background
+    static let groupedBackgroundSecondary: UIColor = backgroundSecondary
+    static let groupedBackgroundTertiary: UIColor = backgroundTertiary
 
     // MARK: Fill
 
-    static let fill: UIColor = .systemFill
-    static let fillSecondary: UIColor = .secondarySystemFill
-    static let fillTertiary: UIColor = .tertiarySystemFill
+    static let fill: UIColor = purpleGlassStrong
+    static let fillSecondary: UIColor = purpleGlass
+    static let fillTertiary: UIColor = goldGlass
     static let fillQuaternary: UIColor = .quaternarySystemFill
 
     // MARK: Separator

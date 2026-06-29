@@ -13,6 +13,7 @@ final class ViewController: BaseViewController {
 
     // MARK: - Properties
 
+    private let displayTitle: String
     private let sessionStore: SessionStoring = SessionStore()
 
     // MARK: - UI Components
@@ -32,19 +33,47 @@ final class ViewController: BaseViewController {
         return button
     }()
 
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = displayTitle
+        label.textColor = ThemeColor.textPrimary
+        label.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        label.adjustsFontForContentSizeCategory = true
+        label.textAlignment = .center
+        return label
+    }()
+
+    // MARK: - Initializer
+
+    init(displayTitle: String = "MyTMDB") {
+        self.displayTitle = displayTitle
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        self.displayTitle = "MyTMDB"
+        super.init(coder: coder)
+    }
+
     // MARK: - Template Methods
 
     override func configureView() {
-        title = "MyTMDB"
+        title = displayTitle
     }
 
     override func setupHierarchy() {
+        view.addSubview(titleLabel)
         view.addSubview(logoutButton)
     }
 
     override func setupConstraints() {
+        titleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.centerY.equalToSuperview().offset(-48)
+        }
+
         logoutButton.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.top.equalTo(titleLabel.snp.bottom).offset(32)
             make.leading.trailing.equalToSuperview().inset(32)
             make.height.equalTo(48)
         }
