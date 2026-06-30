@@ -52,14 +52,14 @@ struct AuthSessionValidator: Sendable {
         do {
             _ = try await AccountService().fetchAccount(sessionId: sessionId)
             return .user(sessionId: sessionId)
-        } catch NetworkError.httpError(let statusCode) where [401, 403].contains(statusCode) {
+        } catch let error as NetworkError where [401, 403].contains(error.statusCode ?? 0) {
             AppLogger.authentication.warning(
-                "Stored user session is unauthorized: \(statusCode, privacy: .public)"
+                "Stored user session is unauthorized: \(error.statusCode ?? 0, privacy: .public)"
             )
             return .loggedOut
         } catch {
             AppLogger.authentication.error(
-                "Stored user session validation failed: \(error.localizedDescription, privacy: .public)"
+                "Stored user session validation failed: \(error.errorMessage.message, privacy: .public)"
             )
             return .user(sessionId: sessionId)
         }

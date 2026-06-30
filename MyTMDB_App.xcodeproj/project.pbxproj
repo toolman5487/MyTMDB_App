@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		150336A32FF35D4C003125EC /* ErrorMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336A22FF35D4C003125EC /* ErrorMessageView.swift */; };
+		150336A42FF35D4C003125EC /* ErrorMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336A22FF35D4C003125EC /* ErrorMessageView.swift */; };
+		150336A52FF35D4C003125EC /* ErrorMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336A22FF35D4C003125EC /* ErrorMessageView.swift */; };
+		150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336B32FF35E00003125EC /* ErrorMessage.swift */; };
+		150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336B32FF35E00003125EC /* ErrorMessage.swift */; };
+		150336B22FF35E00003125EC /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336B32FF35E00003125EC /* ErrorMessage.swift */; };
+		150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
+		150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
+		150336C22FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
 		153AD97F2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 153AD97E2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper */; };
 		1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA7E2DC4B6D1005E972C /* SDWebImage */; };
 		1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA812DC4B6DF005E972C /* SnapKit */; };
@@ -31,15 +40,21 @@
 		15A94F9C2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */; };
 		15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */; };
 		15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */; };
-		15A9500A2FF2A10000FCBB0F /* MainHomeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */; };
-		15A9500B2FF2A10000FCBB0F /* MainHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */; };
-		15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */; };
 		15A950032FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */; };
 		15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */; };
 		15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */; };
 		15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */; };
+		15A9500A2FF2A10000FCBB0F /* MainHomeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */; };
+		15A9500B2FF2A10000FCBB0F /* MainHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */; };
+		15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */; };
+		15A950202FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */; };
+		15A950212FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */; };
+		15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */; };
+		15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
+		15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
+		15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
 		15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
@@ -49,6 +64,9 @@
 		15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196D62FF14D2300545A85 /* AppLogger.swift */; };
 		15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196D62FF14D2300545A85 /* AppLogger.swift */; };
 		15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196D62FF14D2300545A85 /* AppLogger.swift */; };
+		15D196E02FF35F1000545A85 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196E32FF35F1000545A85 /* NetworkError.swift */; };
+		15D196E12FF35F1000545A85 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196E32FF35F1000545A85 /* NetworkError.swift */; };
+		15D196E22FF35F1000545A85 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D196E32FF35F1000545A85 /* NetworkError.swift */; };
 		15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D197292FF167FE00545A85 /* UIColorExtension.swift */; };
 		15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D197292FF167FE00545A85 /* UIColorExtension.swift */; };
 		15D1972C2FF167FE00545A85 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D197292FF167FE00545A85 /* UIColorExtension.swift */; };
@@ -90,6 +108,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		150336A22FF35D4C003125EC /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
+		150336B32FF35E00003125EC /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
+		150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError+ErrorMessage.swift"; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,14 +125,17 @@
 		15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
 		15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
+		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
+		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeModels.swift; sourceTree = "<group>"; };
 		15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeService.swift; sourceTree = "<group>"; };
 		15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewModel.swift; sourceTree = "<group>"; };
-		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
-		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeContentCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionHeaderView.swift; sourceTree = "<group>"; };
 		15D1969A2FF1238E00545A85 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		15D196C02FF14A2100545A85 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15D196D62FF14D2300545A85 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		15D196E32FF35F1000545A85 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		15D197292FF167FE00545A85 /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		15D1972E2FF1683D00545A85 /* ThemeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeColor.swift; sourceTree = "<group>"; };
 		15D197422FF1691000545A85 /* AuthPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPage.swift; sourceTree = "<group>"; };
@@ -189,6 +213,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1503369E2FF35CFC003125EC /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1503369F2FF35D19003125EC /* ErrorMessage */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		1503369F2FF35D19003125EC /* ErrorMessage */ = {
+			isa = PBXGroup;
+			children = (
+				150336B42FF35E00003125EC /* Model */,
+				150336A12FF35D3B003125EC /* View */,
+			);
+			path = ErrorMessage;
+			sourceTree = "<group>";
+		};
+		150336A12FF35D3B003125EC /* View */ = {
+			isa = PBXGroup;
+			children = (
+				150336A22FF35D4C003125EC /* ErrorMessageView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		150336B42FF35E00003125EC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				150336B32FF35E00003125EC /* ErrorMessage.swift */,
+				150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		1535F9902DD743E70090E25A /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -324,11 +382,21 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
-		15A94F9A2FF27D1F00FCBB0F /* View */ = {
+			15A94F9A2FF27D1F00FCBB0F /* View */ = {
+				isa = PBXGroup;
+				children = (
+					15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */,
+					15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */,
+				);
+				path = View;
+				sourceTree = "<group>";
+		};
+		15A950022FF281000FCBB0F /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */,
 			);
-			path = View;
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		15A950102FF2A10000FCBB0F /* Model */ = {
@@ -351,14 +419,6 @@
 			isa = PBXGroup;
 			children = (
 				15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		15A950022FF281000FCBB0F /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -390,6 +450,7 @@
 			isa = PBXGroup;
 			children = (
 				15D1969A2FF1238E00545A85 /* APIConfig.swift */,
+				15D196E32FF35F1000545A85 /* NetworkError.swift */,
 				15D196C02FF14A2100545A85 /* NetworkService.swift */,
 			);
 			path = Network;
@@ -432,6 +493,7 @@
 			children = (
 				15D547122DF01A2700CAA0EE /* Animations */,
 				15A94F4B2FF26D7900FCBB0F /* Base */,
+				1503369E2FF35CFC003125EC /* Components */,
 				1598AA982DC4C29C005E972C /* Config */,
 				15D197282FF167E300545A85 /* Extension */,
 				15D196C42FF14CD300545A85 /* Logger */,
@@ -624,10 +686,14 @@
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				15D198112FF2200000545A85 /* AuthSession.swift in Sources */,
 				15D198132FF2201000545A85 /* SessionStore.swift in Sources */,
+				150336A52FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
+				150336B22FF35E00003125EC /* ErrorMessage.swift in Sources */,
+				150336C22FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */,
 				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C12FF14A2100545A85 /* NetworkService.swift in Sources */,
+				15D196E02FF35F1000545A85 /* NetworkError.swift in Sources */,
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
@@ -636,8 +702,10 @@
 				15A950032FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15A9500A2FF2A10000FCBB0F /* MainHomeModels.swift in Sources */,
 				15A9500B2FF2A10000FCBB0F /* MainHomeService.swift in Sources */,
-				15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */,
-				15A94F6F2FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
+					15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */,
+					15A950202FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+					15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
+					15A94F6F2FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A94F642FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
 				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
@@ -652,10 +720,16 @@
 				15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
-				15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
+					15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
+					15A950212FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+					15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
+					150336A42FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
+				150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */,
+				150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
+				15D196E12FF35F1000545A85 /* NetworkError.swift in Sources */,
 				15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15A94F4C2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15A94F662FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
@@ -668,12 +742,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
-				15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
-				15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
+					15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
+					15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+					15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
+					15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C32FF14A2100545A85 /* NetworkService.swift in Sources */,
+				15D196E22FF35F1000545A85 /* NetworkError.swift in Sources */,
 				15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */,
+				150336A32FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
+				150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */,
+				150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A94F4D2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15A94F652FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
 				15D197312FF1683D00545A85 /* ThemeColor.swift in Sources */,

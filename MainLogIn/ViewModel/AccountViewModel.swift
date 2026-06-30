@@ -14,7 +14,7 @@ enum AccountState {
     case idle
     case loading
     case loaded(Account)
-    case failed(message: String)
+    case failed(ErrorMessage)
 }
 
 // MARK: - AccountViewModel
@@ -48,10 +48,10 @@ final class AccountViewModel {
                 "Account loaded successfully for user \(account.username, privacy: .public)"
             )
         } catch {
-            let message = error.localizedDescription
-            state = .failed(message: message)
+            let message = error.errorMessage
+            state = .failed(message)
             AppLogger.authentication.error(
-                "Failed to load account: \(message, privacy: .public)"
+                "Failed to load account: \(message.message, privacy: .public)"
             )
         }
     }

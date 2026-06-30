@@ -9,34 +9,12 @@ import Foundation
 
 // MARK: - HTTPMethod
 
-enum HTTPMethod: String {
+enum HTTPMethod: String, Sendable {
     case get = "GET"
     case post = "POST"
     case put = "PUT"
     case patch = "PATCH"
     case delete = "DELETE"
-}
-
-// MARK: - NetworkError
-
-enum NetworkError: LocalizedError {
-    case invalidURL
-    case invalidResponse
-    case httpError(statusCode: Int)
-    case decodingFailed
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "網址格式錯誤"
-        case .invalidResponse:
-            return "伺服器回應異常"
-        case .httpError(let statusCode):
-            return "HTTP 錯誤（\(statusCode)）"
-        case .decodingFailed:
-            return "資料解析失敗"
-        }
-    }
 }
 
 // MARK: - Protocol
@@ -223,18 +201,33 @@ final class NetworkService: NetworkServicing {
         urlRequest.httpMethod = method.rawValue
 
         if let body {
-            urlRequest.httpBody = try encoder.encode(AnyEncodable(body))
+            do {
+                urlRequest.httpBody = try encoder.encode(AnyEncodable(body))
+            } catch {
+                throw NetworkError.encodingFailed
+            }
             urlRequest.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
         }
 
-        let (data, response) = try await session.data(for: urlRequest)
+        let data: Data
+        let response: URLResponse
+
+        do {
+            (data, response) = try await session.data(for: urlRequest)
+        } catch let error as URLError {
+            throw NetworkError.requestFailed(error.code)
+        }
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.invalidResponse
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw NetworkError.httpError(statusCode: httpResponse.statusCode)
+            throw makeHTTPError(statusCode: httpResponse.statusCode, data: data)
+        }
+
+        if T.self == EmptyResponse.self, data.isEmpty {
+            return EmptyResponse() as! T
         }
 
         do {
@@ -264,6 +257,19 @@ final class NetworkService: NetworkServicing {
         return url
     }
 
+    private func makeHTTPError(statusCode: Int, data: Data) -> NetworkError {
+        guard let response = try? decoder.decode(TMDBErrorResponse.self, from: data),
+              let statusMessage = response.statusMessage else {
+            return .httpError(statusCode: statusCode)
+        }
+
+        return .apiError(
+            statusCode: statusCode,
+            apiCode: response.statusCode,
+            message: statusMessage
+        )
+    }
+
     private static func makeSession() -> URLSession {
         let config = URLSessionConfiguration.default
         config.connectionProxyDictionary = ["__QUIC__": false]
@@ -273,7 +279,21 @@ final class NetworkService: NetworkServicing {
 
 // MARK: - Helpers
 
-private struct EmptyResponse: Decodable {}
+private struct EmptyResponse: Decodable {
+    init() {}
+}
+
+private struct TMDBErrorResponse: Decodable {
+    let success: Bool?
+    let statusCode: Int?
+    let statusMessage: String?
+
+    enum CodingKeys: String, CodingKey {
+        case success
+        case statusCode = "status_code"
+        case statusMessage = "status_message"
+    }
+}
 
 private struct AnyEncodable: Encodable {
     private let encodeValue: (Encoder) throws -> Void

@@ -10,12 +10,12 @@ import Foundation
 // MARK: - Protocol
 
 nonisolated protocol MainHomeServicing {
-    func fetchMovies(
-        for category: MainHomeMovieCategory,
+    func fetchContent(
+        for category: MainHomeContentCategory,
         page: Int
-    ) async throws -> MainHomeMoviePage
+    ) async throws -> MainHomeContentPage
 
-    func fetchHomeSections() async throws -> [MainHomeMovieSection]
+    func fetchHomeSections() async throws -> [MainHomeContentSection]
 }
 
 // MARK: - MainHomeService
@@ -27,49 +27,52 @@ nonisolated final class MainHomeService: MainHomeServicing {
     private let network: NetworkServicing
     private let language: String
     private let region: String
+    private let timeZoneIdentifier: String
 
     // MARK: - Initialization
 
     init(
         network: NetworkServicing = NetworkService(),
         language: String = "zh-TW",
-        region: String = "TW"
+        region: String = "TW",
+        timeZoneIdentifier: String = "Asia/Taipei"
     ) {
         self.network = network
         self.language = language
         self.region = region
+        self.timeZoneIdentifier = timeZoneIdentifier
     }
 
     // MARK: - Public Methods
 
-    func fetchMovies(
-        for category: MainHomeMovieCategory,
+    func fetchContent(
+        for category: MainHomeContentCategory,
         page: Int = 1
-    ) async throws -> MainHomeMoviePage {
-        let response: TMDBPageResponse<MainHomeMovie> = try await network.get(
+    ) async throws -> MainHomeContentPage {
+        let response: TMDBPageResponse<MainHomeContent> = try await network.get(
             path: category.path,
             queryItems: queryItems(for: category, page: page)
         )
 
-        return MainHomeMoviePage(
+        return MainHomeContentPage(
             category: category,
             page: response.page,
             totalPages: response.totalPages,
             totalResults: response.totalResults,
-            movies: response.results
+            contents: response.results
         )
     }
 
-    func fetchHomeSections() async throws -> [MainHomeMovieSection] {
-        var sections: [MainHomeMovieSection] = []
+    func fetchHomeSections() async throws -> [MainHomeContentSection] {
+        var sections: [MainHomeContentSection] = []
 
-        for category in MainHomeMovieCategory.allCases {
-            let page = try await fetchMovies(for: category, page: 1)
+        for category in MainHomeContentCategory.allCases {
+            let page = try await fetchContent(for: category, page: 1)
             sections.append(
-                MainHomeMovieSection(
+                MainHomeContentSection(
                     category: category,
                     totalResults: page.totalResults,
-                    movies: page.movies
+                    contents: page.contents
                 )
             )
         }
@@ -80,7 +83,7 @@ nonisolated final class MainHomeService: MainHomeServicing {
     // MARK: - Private Methods
 
     private func queryItems(
-        for category: MainHomeMovieCategory,
+        for category: MainHomeContentCategory,
         page: Int
     ) -> [URLQueryItem] {
         var items = [
@@ -92,40 +95,70 @@ nonisolated final class MainHomeService: MainHomeServicing {
             items.append(URLQueryItem(name: "region", value: region))
         }
 
+        if category.usesTimeZone {
+            items.append(URLQueryItem(name: "timezone", value: timeZoneIdentifier))
+        }
+
         return items
     }
 }
 
-// MARK: - MainHomeMovieCategory Helpers
+// MARK: - MainHomeContentCategory Helpers
 
-private extension MainHomeMovieCategory {
+private extension MainHomeContentCategory {
 
     var path: String {
         switch self {
-        case .trendingToday:
+        case .trendingMovies:
             return APIConfig.Trending.movie(timeWindow: "day")
 
-        case .popular:
+        case .trendingTV:
+            return APIConfig.Trending.tv(timeWindow: "day")
+
+        case .popularMovies:
             return APIConfig.Movie.popular
 
-        case .nowPlaying:
+        case .popularTV:
+            return APIConfig.TV.popular
+
+        case .nowPlayingMovies:
             return APIConfig.Movie.nowPlaying
 
-        case .upcoming:
+        case .onTheAirTV:
+            return APIConfig.TV.onTheAir
+
+        case .upcomingMovies:
             return APIConfig.Movie.upcoming
 
-        case .topRated:
+        case .airingTodayTV:
+            return APIConfig.TV.airingToday
+
+        case .topRatedMovies:
             return APIConfig.Movie.topRated
+
+        case .topRatedTV:
+            return APIConfig.TV.topRated
         }
     }
 
     var usesRegion: Bool {
         switch self {
-        case .trendingToday:
+        case .trendingMovies, .trendingTV, .popularTV, .onTheAirTV, .airingTodayTV, .topRatedTV:
             return false
 
-        case .popular, .nowPlaying, .upcoming, .topRated:
+        case .popularMovies, .nowPlayingMovies, .upcomingMovies, .topRatedMovies:
             return true
+        }
+    }
+
+    var usesTimeZone: Bool {
+        switch self {
+        case .onTheAirTV, .airingTodayTV:
+            return true
+
+        case .trendingMovies, .trendingTV, .popularMovies, .popularTV, .nowPlayingMovies,
+                .upcomingMovies, .topRatedMovies, .topRatedTV:
+            return false
         }
     }
 }

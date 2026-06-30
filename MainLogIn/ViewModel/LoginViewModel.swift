@@ -15,7 +15,7 @@ enum LoginState: Equatable {
     case loading
     case success(sessionId: String)
     case guestSuccess(guestSessionId: String)
-    case failed(message: String)
+    case failed(ErrorMessage)
 }
 
 // MARK: - LoginViewModel
@@ -49,7 +49,7 @@ final class LoginViewModel {
             let sessionId = try await authService.login(username: username, password: password)
             state = .success(sessionId: sessionId)
         } catch {
-            state = .failed(message: error.localizedDescription)
+            state = .failed(error.errorMessage)
         }
     }
 
@@ -60,7 +60,7 @@ final class LoginViewModel {
             let guestSessionId = try await authService.createGuestSession()
             state = .guestSuccess(guestSessionId: guestSessionId)
         } catch {
-            state = .failed(message: error.localizedDescription)
+            state = .failed(error.errorMessage)
         }
     }
 }
