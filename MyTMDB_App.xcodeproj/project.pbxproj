@@ -79,6 +79,9 @@
 		15CF9A142FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A172FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift */; };
 		15CF9A152FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A172FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift */; };
 		15CF9A162FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A172FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift */; };
+		15CF9A182FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A1B2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift */; };
+		15CF9A192FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A1B2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift */; };
+		15CF9A1A2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A1B2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift */; };
 		15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
 		15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1969A2FF1238E00545A85 /* APIConfig.swift */; };
@@ -167,6 +170,7 @@
 		15CF9A0C2FF380000041F4CC /* MovieDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewModel.swift; sourceTree = "<group>"; };
 		15CF9A132FF3A0000041F4CC /* MovieDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailCells.swift; sourceTree = "<group>"; };
 		15CF9A172FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailSectionHeaderView.swift; sourceTree = "<group>"; };
+		15CF9A1B2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15D1969A2FF1238E00545A85 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		15D196C02FF14A2100545A85 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15D196D62FF14D2300545A85 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
@@ -497,6 +501,7 @@
 			isa = PBXGroup;
 			children = (
 				15CF9A132FF3A0000041F4CC /* MovieDetailCells.swift */,
+				15CF9A1B2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift */,
 				15CF9A172FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift */,
 			);
 			path = View;
@@ -785,6 +790,7 @@
 				15CF9A042FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A072FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A102FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
+				15CF9A182FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A142FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
 				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
@@ -845,6 +851,7 @@
 				15CF9A052FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A082FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A112FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
+				15CF9A192FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A152FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D196E12FF35F1000545A85 /* NetworkError.swift in Sources */,
 				15D196E52FF3900000545A85 /* AppLocalization.swift in Sources */,
@@ -884,6 +891,7 @@
 				15CF9A062FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A092FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A122FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
+				15CF9A1A2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A162FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D1972C2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 			);

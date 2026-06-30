@@ -9,167 +9,6 @@ import SDWebImage
 import SnapKit
 import UIKit
 
-// MARK: - MovieDetailHeroCollectionViewCell
-
-@MainActor
-final class MovieDetailHeroCollectionViewCell: BaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: MovieDetailHeroCollectionViewCell.self)
-
-    private enum Layout {
-        static let backdropHeight: CGFloat = 220
-        static let posterWidth: CGFloat = 112
-        static let posterHeight: CGFloat = 168
-    }
-
-    private let backdropImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-
-    private let posterImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFontMetrics(forTextStyle: .title2).scaledFont(
-            for: .systemFont(ofSize: 24, weight: .bold)
-        )
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
-        return label
-    }()
-
-    private let originalTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let taglineLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 2
-        return label
-    }()
-
-    private let metadataLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let scoreLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFontMetrics(forTextStyle: .headline).scaledFont(
-            for: .systemFont(ofSize: 17, weight: .semibold)
-        )
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    override func configureView() {
-        contentView.backgroundColor = .clear
-        contentView.clipsToBounds = false
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(backdropImageView)
-        containerView.addSubview(posterImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(originalTitleLabel)
-        containerView.addSubview(taglineLabel)
-        containerView.addSubview(metadataLabel)
-        containerView.addSubview(scoreLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        backdropImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(Layout.backdropHeight)
-        }
-
-        posterImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalTo(backdropImageView.snp.bottom).offset(-72)
-            make.width.equalTo(Layout.posterWidth)
-            make.height.equalTo(Layout.posterHeight)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(backdropImageView.snp.bottom).offset(16)
-            make.leading.equalTo(posterImageView.snp.trailing).offset(16)
-            make.trailing.equalToSuperview().inset(16)
-        }
-
-        originalTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.leading.trailing.equalTo(titleLabel)
-        }
-
-        metadataLabel.snp.makeConstraints { make in
-            make.top.equalTo(originalTitleLabel.snp.bottom).offset(8)
-            make.leading.trailing.equalTo(titleLabel)
-        }
-
-        scoreLabel.snp.makeConstraints { make in
-            make.top.equalTo(metadataLabel.snp.bottom).offset(8)
-            make.leading.trailing.equalTo(titleLabel)
-        }
-
-        taglineLabel.snp.makeConstraints { make in
-            make.top.equalTo(posterImageView.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.lessThanOrEqualToSuperview().inset(16)
-        }
-    }
-
-    override func resetForReuse() {
-        backdropImageView.sd_cancelCurrentImageLoad()
-        posterImageView.sd_cancelCurrentImageLoad()
-        backdropImageView.image = nil
-        posterImageView.image = nil
-        titleLabel.text = nil
-        originalTitleLabel.text = nil
-        taglineLabel.text = nil
-        metadataLabel.text = nil
-        scoreLabel.text = nil
-    }
-
-    func configure(with item: MovieDetailHeroItem) {
-        backdropImageView.sd_setImage(with: item.backdropURL)
-        posterImageView.sd_setImage(with: item.posterURL)
-        titleLabel.text = item.title
-        originalTitleLabel.text = item.originalTitle == item.title ? nil : item.originalTitle
-        taglineLabel.text = item.tagline
-        metadataLabel.text = item.metadataText
-        scoreLabel.text = "評分 \(item.scoreText)  \(item.voteCountText)"
-    }
-}
-
 // MARK: - MovieDetailOverviewCollectionViewCell
 
 @MainActor
@@ -187,9 +26,9 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     }()
 
     override func configureView() {
-        contentView.backgroundColor = ThemeColor.backgroundSecondary
-        contentView.layer.cornerRadius = 8
-        contentView.clipsToBounds = true
+        containerView.backgroundColor = ThemeColor.backgroundSecondary
+        containerView.layer.cornerRadius = 8
+        containerView.clipsToBounds = true
     }
 
     override func setupHierarchy() {
@@ -229,9 +68,9 @@ final class MovieDetailFactsCollectionViewCell: BaseCollectionViewCell {
     }()
 
     override func configureView() {
-        contentView.backgroundColor = ThemeColor.backgroundSecondary
-        contentView.layer.cornerRadius = 8
-        contentView.clipsToBounds = true
+        containerView.backgroundColor = ThemeColor.backgroundSecondary
+        containerView.layer.cornerRadius = 8
+        containerView.clipsToBounds = true
     }
 
     override func setupHierarchy() {
@@ -300,7 +139,7 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
     private var items: [MovieDetailCastItem] = []
 
     override func configureView() {
-        contentView.backgroundColor = .clear
+        containerView.backgroundColor = .clear
         collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -368,7 +207,7 @@ final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
     private var items: [MovieDetailVideoItem] = []
 
     override func configureView() {
-        contentView.backgroundColor = .clear
+        containerView.backgroundColor = .clear
         collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -436,7 +275,7 @@ final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionVi
     private var items: [MovieDetailRecommendationItem] = []
 
     override func configureView() {
-        contentView.backgroundColor = .clear
+        containerView.backgroundColor = .clear
         collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionView.dataSource = self
         collectionView.delegate = self

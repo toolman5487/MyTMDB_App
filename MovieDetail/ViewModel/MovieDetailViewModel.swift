@@ -205,7 +205,7 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         self.releaseDateText = detail.releaseDate.isEmpty ? "尚未公布" : detail.releaseDate
         self.runtimeText = Self.formatRuntime(detail.runtime)
         self.scoreText = String(format: "%.1f", detail.voteAverage)
-        self.voteCountText = "\(detail.voteCount) 人評分"
+        self.voteCountText = "\(detail.voteCount)"
         self.genresText = Self.joinedNames(detail.genres.map(\.name), fallback: "未分類")
         self.statusText = detail.status.isEmpty ? "未知" : detail.status
         self.budgetText = Self.formatCurrency(detail.budget)
