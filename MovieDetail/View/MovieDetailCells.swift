@@ -177,8 +177,6 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailOverviewCollectionViewCell.self)
 
-    private let titleLabel = MovieDetailCellFactory.makeSectionTitleLabel()
-
     private let overviewLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .body)
@@ -196,20 +194,14 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(titleLabel)
         containerView.addSubview(overviewLabel)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
-        titleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(16)
-        }
-
         overviewLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(12)
-            make.leading.trailing.bottom.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(16)
         }
     }
 
@@ -217,8 +209,7 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         overviewLabel.text = nil
     }
 
-    func configure(title: String, overview: String) {
-        titleLabel.text = title
+    func configure(overview: String) {
         overviewLabel.text = overview
     }
 }
@@ -229,8 +220,6 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 final class MovieDetailFactsCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailFactsCollectionViewCell.self)
-
-    private let titleLabel = MovieDetailCellFactory.makeSectionTitleLabel()
 
     private let stackView: UIStackView = {
         let stackView = UIStackView()
@@ -247,20 +236,14 @@ final class MovieDetailFactsCollectionViewCell: BaseCollectionViewCell {
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(titleLabel)
         containerView.addSubview(stackView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
-        titleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(16)
-        }
-
         stackView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(12)
-            make.leading.trailing.bottom.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(16)
         }
     }
 
@@ -271,8 +254,7 @@ final class MovieDetailFactsCollectionViewCell: BaseCollectionViewCell {
         }
     }
 
-    func configure(title: String, facts: [MovieDetailFactItem]) {
-        titleLabel.text = title
+    func configure(facts: [MovieDetailFactItem]) {
         resetForReuse()
 
         for fact in facts {
@@ -316,7 +298,6 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
     }
 
     private var items: [MovieDetailCastItem] = []
-    private let titleLabel = MovieDetailCellFactory.makeSectionTitleLabel()
 
     override func configureView() {
         contentView.backgroundColor = .clear
@@ -331,13 +312,15 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(titleLabel)
         containerView.addSubview(collectionView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
-        makeHorizontalSectionConstraints(titleLabel: titleLabel, collectionView: collectionView)
+
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     override func resetForReuse() {
@@ -345,8 +328,7 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.reloadData()
     }
 
-    func configure(title: String, items: [MovieDetailCastItem]) {
-        titleLabel.text = title
+    func configure(items: [MovieDetailCastItem]) {
         self.items = items
         collectionView.reloadData()
     }
@@ -384,7 +366,6 @@ final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
     }
 
     private var items: [MovieDetailVideoItem] = []
-    private let titleLabel = MovieDetailCellFactory.makeSectionTitleLabel()
 
     override func configureView() {
         contentView.backgroundColor = .clear
@@ -399,13 +380,15 @@ final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(titleLabel)
         containerView.addSubview(collectionView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
-        makeHorizontalSectionConstraints(titleLabel: titleLabel, collectionView: collectionView)
+
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     override func resetForReuse() {
@@ -413,8 +396,7 @@ final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.reloadData()
     }
 
-    func configure(title: String, items: [MovieDetailVideoItem]) {
-        titleLabel.text = title
+    func configure(items: [MovieDetailVideoItem]) {
         self.items = items
         collectionView.reloadData()
     }
@@ -452,7 +434,6 @@ final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionVi
     }
 
     private var items: [MovieDetailRecommendationItem] = []
-    private let titleLabel = MovieDetailCellFactory.makeSectionTitleLabel()
 
     override func configureView() {
         contentView.backgroundColor = .clear
@@ -467,13 +448,15 @@ final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionVi
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(titleLabel)
         containerView.addSubview(collectionView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
-        makeHorizontalSectionConstraints(titleLabel: titleLabel, collectionView: collectionView)
+
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     override func resetForReuse() {
@@ -481,8 +464,7 @@ final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionVi
         collectionView.reloadData()
     }
 
-    func configure(title: String, items: [MovieDetailRecommendationItem]) {
-        titleLabel.text = title
+    func configure(items: [MovieDetailRecommendationItem]) {
         self.items = items
         collectionView.reloadData()
     }
@@ -661,17 +643,6 @@ private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell 
 
 @MainActor
 private enum MovieDetailCellFactory {
-
-    static func makeSectionTitleLabel() -> UILabel {
-        let label = UILabel()
-        label.font = UIFontMetrics(forTextStyle: .title3).scaledFont(
-            for: .systemFont(ofSize: 20, weight: .semibold)
-        )
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }
 
     static func makePosterImageView(cornerRadius: CGFloat) -> UIImageView {
         let imageView = UIImageView()

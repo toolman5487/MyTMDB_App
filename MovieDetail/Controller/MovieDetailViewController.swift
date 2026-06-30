@@ -60,6 +60,11 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     // MARK: - Setup
 
+    private enum Layout {
+        static let headerHeight: CGFloat = 28
+        static let headerContentSpacing: CGFloat = 8
+    }
+
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -90,6 +95,11 @@ final class MovieDetailViewController: DetailBaseViewController {
         collectionView.register(
             MovieDetailRecommendationsCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MovieDetailSectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: MovieDetailSectionHeaderView.reuseIdentifier
         )
     }
 
@@ -167,10 +177,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(
-                title: sections[indexPath.section].title ?? "",
-                overview: overview
-            )
+            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(overview: overview)
             return cell
 
         case .facts(let facts):
@@ -178,10 +185,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailFactsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailFactsCollectionViewCell)?.configure(
-                title: sections[indexPath.section].title ?? "",
-                facts: facts
-            )
+            (cell as? MovieDetailFactsCollectionViewCell)?.configure(facts: facts)
             return cell
 
         case .cast(let items):
@@ -189,10 +193,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailCastCollectionViewCell)?.configure(
-                title: sections[indexPath.section].title ?? "",
-                items: items
-            )
+            (cell as? MovieDetailCastCollectionViewCell)?.configure(items: items)
             return cell
 
         case .videos(let items):
@@ -200,10 +201,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailVideosCollectionViewCell)?.configure(
-                title: sections[indexPath.section].title ?? "",
-                items: items
-            )
+            (cell as? MovieDetailVideosCollectionViewCell)?.configure(items: items)
             return cell
 
         case .recommendations(let items):
@@ -211,18 +209,62 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(
-                title: sections[indexPath.section].title ?? "",
-                items: items
-            )
+            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(items: items)
             return cell
         }
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
+        }
+
+        let reusableView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: MovieDetailSectionHeaderView.reuseIdentifier,
+            for: indexPath
+        )
+
+        if let headerView = reusableView as? MovieDetailSectionHeaderView {
+            headerView.configure(title: sections[indexPath.section].title)
+        }
+
+        return reusableView
     }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        guard sections[section].title != nil else {
+            return .zero
+        }
+
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: Layout.headerHeight
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+
+        return UIEdgeInsets(top: topInset, left: 16, bottom: 24, right: 16)
+    }
 
     func collectionView(
         _ collectionView: UICollectionView,
@@ -245,19 +287,19 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
             return 420
 
         case .overview:
-            return 188
+            return 148
 
         case .facts:
-            return 348
+            return 308
 
         case .cast:
-            return 224
+            return 168
 
         case .videos:
-            return 204
+            return 148
 
         case .recommendations:
-            return 276
+            return 220
         }
     }
 }

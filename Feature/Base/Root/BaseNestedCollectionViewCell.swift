@@ -34,20 +34,4 @@ class BaseNestedCollectionViewCell: BaseCollectionViewCell {
         collectionView.alwaysBounceHorizontal = true
         return collectionView
     }()
-
-    // MARK: - Layout
-
-    func makeHorizontalSectionConstraints(
-        titleLabel: UILabel,
-        collectionView: UICollectionView
-    ) {
-        titleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(16)
-        }
-
-        collectionView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(12)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
-    }
 }
