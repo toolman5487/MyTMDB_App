@@ -31,6 +31,7 @@ final class MainHomeContentCollectionViewCell: BaseCollectionViewCell {
     // MARK: - Properties
 
     private var contents: [MainHomeContentItem] = []
+    var onContentSelected: ((MainHomeContentItem) -> Void)?
 
     // MARK: - UI Components
 
@@ -91,6 +92,7 @@ final class MainHomeContentCollectionViewCell: BaseCollectionViewCell {
 
     override func resetForReuse() {
         contents = []
+        onContentSelected = nil
         collectionView.setContentOffset(.zero, animated: false)
         collectionView.reloadData()
     }
@@ -134,6 +136,7 @@ extension MainHomeContentCollectionViewCell: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        onContentSelected?(contents[indexPath.item])
     }
 }
 

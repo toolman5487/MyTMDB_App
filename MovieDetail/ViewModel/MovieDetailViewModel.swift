@@ -13,7 +13,7 @@ import Observation
 nonisolated enum MovieDetailViewState: Equatable {
     case idle
     case loading
-    case loaded(MovieDetailItem)
+    case loaded([MovieDetailSectionItem])
     case failed(ErrorMessage)
 }
 
@@ -52,11 +52,118 @@ final class MovieDetailViewModel {
         state = .loading
 
         do {
-            let detail = try await service.fetchMovieDetail(id: id)
-            state = .loaded(MovieDetailItem(detail: detail))
+            let content = try await service.fetchMovieDetailContent(id: id)
+            state = .loaded(MovieDetailSectionBuilder.makeSections(content: content))
         } catch {
             state = .failed(error.errorMessage)
         }
+    }
+}
+
+// MARK: - MovieDetailSectionItem
+
+nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
+    case hero(MovieDetailHeroItem)
+    case overview(String)
+    case facts([MovieDetailFactItem])
+    case cast([MovieDetailCastItem])
+    case videos([MovieDetailVideoItem])
+    case recommendations([MovieDetailRecommendationItem])
+
+    var title: String? {
+        switch self {
+        case .hero:
+            return nil
+
+        case .overview:
+            return "劇情簡介"
+
+        case .facts:
+            return "電影資訊"
+
+        case .cast:
+            return "主要演員"
+
+        case .videos:
+            return "預告與影片"
+
+        case .recommendations:
+            return "推薦電影"
+        }
+    }
+}
+
+// MARK: - MovieDetailSectionBuilder
+
+nonisolated enum MovieDetailSectionBuilder {
+
+    static func makeSections(content: MovieDetailContent) -> [MovieDetailSectionItem] {
+        let detailItem = MovieDetailItem(detail: content.detail)
+        var sections: [MovieDetailSectionItem] = [
+            .hero(MovieDetailHeroItem(detail: detailItem)),
+            .overview(detailItem.overview),
+            .facts(makeFacts(detail: detailItem))
+        ]
+
+        let castItems = content.credits.cast
+            .sorted { $0.order < $1.order }
+            .prefix(12)
+            .map(MovieDetailCastItem.init(cast:))
+        if !castItems.isEmpty {
+            sections.append(.cast(Array(castItems)))
+        }
+
+        let videoItems = content.videos.results
+            .filter { !$0.key.isEmpty }
+            .sorted { lhs, rhs in
+                videoPriority(lhs) < videoPriority(rhs)
+            }
+            .prefix(8)
+            .map(MovieDetailVideoItem.init(video:))
+        if !videoItems.isEmpty {
+            sections.append(.videos(Array(videoItems)))
+        }
+
+        let recommendationItems = content.recommendations.results
+            .prefix(12)
+            .map(MovieDetailRecommendationItem.init(recommendation:))
+        if !recommendationItems.isEmpty {
+            sections.append(.recommendations(Array(recommendationItems)))
+        }
+
+        return sections
+    }
+
+    private static func makeFacts(detail: MovieDetailItem) -> [MovieDetailFactItem] {
+        [
+            MovieDetailFactItem(title: "上映日", value: detail.releaseDateText),
+            MovieDetailFactItem(title: "片長", value: detail.runtimeText),
+            MovieDetailFactItem(title: "類型", value: detail.genresText),
+            MovieDetailFactItem(title: "狀態", value: detail.statusText),
+            MovieDetailFactItem(title: "預算", value: detail.budgetText),
+            MovieDetailFactItem(title: "票房", value: detail.revenueText),
+            MovieDetailFactItem(title: "語言", value: detail.spokenLanguagesText),
+            MovieDetailFactItem(title: "製作", value: detail.productionCompaniesText)
+        ]
+    }
+
+    private static func videoPriority(_ video: MovieVideo) -> Int {
+        let typeRank: Int
+        switch video.type.lowercased() {
+        case "trailer":
+            typeRank = 0
+
+        case "teaser":
+            typeRank = 1
+
+        default:
+            typeRank = 2
+        }
+
+        let siteRank = video.site.lowercased() == "youtube" ? 0 : 1
+        let officialRank = video.official ? 0 : 1
+
+        return (typeRank * 100) + (siteRank * 10) + officialRank
     }
 }
 
@@ -156,5 +263,107 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     private static func makeIMDbURL(from imdbID: String?) -> URL? {
         guard let imdbID, !imdbID.isEmpty else { return nil }
         return URL(string: "https://www.imdb.com/title/\(imdbID)")
+    }
+}
+
+// MARK: - MovieDetailHeroItem
+
+nonisolated struct MovieDetailHeroItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let title: String
+    let originalTitle: String
+    let tagline: String?
+    let posterURL: URL?
+    let backdropURL: URL?
+    let scoreText: String
+    let voteCountText: String
+    let metadataText: String
+
+    init(detail: MovieDetailItem) {
+        self.id = detail.id
+        self.title = detail.title
+        self.originalTitle = detail.originalTitle
+        self.tagline = detail.tagline
+        self.posterURL = detail.posterURL
+        self.backdropURL = detail.backdropURL
+        self.scoreText = detail.scoreText
+        self.voteCountText = detail.voteCountText
+        self.metadataText = "\(detail.releaseDateText) · \(detail.runtimeText)"
+    }
+}
+
+// MARK: - MovieDetailFactItem
+
+nonisolated struct MovieDetailFactItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let title: String
+    let value: String
+
+    init(title: String, value: String) {
+        self.id = title
+        self.title = title
+        self.value = value
+    }
+}
+
+// MARK: - MovieDetailCastItem
+
+nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let name: String
+    let characterText: String
+    let profileURL: URL?
+
+    init(cast: MovieCreditCast) {
+        self.id = cast.id
+        self.name = cast.name
+        self.characterText = cast.character.isEmpty ? "角色未公開" : cast.character
+        self.profileURL = cast.profilePath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
+    }
+}
+
+// MARK: - MovieDetailVideoItem
+
+nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String
+    let thumbnailURL: URL?
+    let videoURL: URL?
+
+    init(video: MovieVideo) {
+        self.id = video.id
+        self.title = video.name
+        self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
+
+        if video.site.lowercased() == "youtube" {
+            self.thumbnailURL = URL(string: "https://img.youtube.com/vi/\(video.key)/hqdefault.jpg")
+            self.videoURL = URL(string: "https://www.youtube.com/watch?v=\(video.key)")
+        } else {
+            self.thumbnailURL = nil
+            self.videoURL = nil
+        }
+    }
+}
+
+// MARK: - MovieDetailRecommendationItem
+
+nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let title: String
+    let releaseDateText: String
+    let scoreText: String
+    let posterURL: URL?
+
+    init(recommendation: MovieRecommendation) {
+        self.id = recommendation.id
+        self.title = recommendation.title
+        self.releaseDateText = recommendation.releaseDate.isEmpty ? "尚未公布" : recommendation.releaseDate
+        self.scoreText = String(format: "%.1f", recommendation.voteAverage)
+        self.posterURL = recommendation.posterPath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
     }
 }

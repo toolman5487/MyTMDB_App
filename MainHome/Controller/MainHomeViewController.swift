@@ -131,6 +131,15 @@ final class MainHomeViewController: MainBaseViewController {
 
         collectionView.reloadData()
     }
+
+    // MARK: - Navigation
+
+    private func showDetail(for item: MainHomeContentItem, in section: MainHomeSectionItem) {
+        guard section.category.mediaType == .movie else { return }
+
+        let detailViewController = MovieDetailViewController(movieID: item.id)
+        navigationController?.pushViewController(detailViewController, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -155,7 +164,11 @@ extension MainHomeViewController: UICollectionViewDataSource {
         )
 
         if let cell = cell as? MainHomeContentCollectionViewCell {
-            cell.configure(contents: sections[indexPath.section].contents)
+            let section = sections[indexPath.section]
+            cell.configure(contents: section.contents)
+            cell.onContentSelected = { [weak self] item in
+                self?.showDetail(for: item, in: section)
+            }
         }
 
         return cell
