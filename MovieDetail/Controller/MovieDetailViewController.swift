@@ -61,7 +61,6 @@ final class MovieDetailViewController: DetailBaseViewController {
     // MARK: - Setup
 
     private enum Layout {
-        static let heroHeaderHeight: CGFloat = 388
         static let headerHeight: CGFloat = 28
         static let headerContentSpacing: CGFloat = 8
     }
@@ -261,10 +260,13 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        if case .hero = sections[section] {
+        if case .hero(let item) = sections[section] {
             return CGSize(
                 width: collectionView.bounds.width,
-                height: Layout.heroHeaderHeight
+                height: MovieDetailHeroHeaderView.headerHeight(
+                    for: item,
+                    width: collectionView.bounds.width
+                )
             )
         }
 

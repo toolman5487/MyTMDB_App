@@ -16,10 +16,30 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: MovieDetailHeroHeaderView.self)
 
+    enum TaglinePresentation: Equatable {
+        case none
+        case singleLine
+        case doubleLine
+
+        var headerHeight: CGFloat {
+            switch self {
+            case .none:
+                return 356
+
+            case .singleLine:
+                return 376
+
+            case .doubleLine:
+                return 388
+            }
+        }
+    }
+
     private enum Layout {
         static let backdropHeight: CGFloat = 220
         static let posterWidth: CGFloat = 112
         static let posterHeight: CGFloat = 168
+        static let contentHorizontalInset: CGFloat = 16
     }
 
     private let containerView: UIView = {
@@ -53,15 +73,6 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 2
-        return label
-    }()
-
-    private let originalTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
         return label
     }()
 
@@ -122,7 +133,6 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
         containerView.addSubview(backdropImageView)
         containerView.addSubview(posterImageView)
         containerView.addSubview(titleLabel)
-        containerView.addSubview(originalTitleLabel)
         containerView.addSubview(taglineLabel)
         containerView.addSubview(metadataLabel)
         containerView.addSubview(scoreLabel)
@@ -151,13 +161,8 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
             make.trailing.equalToSuperview().inset(16)
         }
 
-        originalTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.leading.trailing.equalTo(titleLabel)
-        }
-
         metadataLabel.snp.makeConstraints { make in
-            make.top.equalTo(originalTitleLabel.snp.bottom).offset(8)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.trailing.equalTo(titleLabel)
         }
 
@@ -179,8 +184,8 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
         backdropImageView.image = nil
         posterImageView.image = nil
         titleLabel.text = nil
-        originalTitleLabel.text = nil
         taglineLabel.text = nil
+        taglineLabel.isHidden = false
         metadataLabel.text = nil
         scoreLabel.text = nil
     }
@@ -188,10 +193,45 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
     func configure(with item: MovieDetailHeroItem) {
         backdropImageView.sd_setImage(with: item.backdropURL)
         posterImageView.sd_setImage(with: item.posterURL)
-        titleLabel.text = item.title
-        originalTitleLabel.text = item.originalTitle == item.title ? nil : item.originalTitle
-        taglineLabel.text = item.tagline
+        titleLabel.text = item.title.isEmpty ? item.originalTitle : item.title
+        let tagline = item.tagline?.trimmingCharacters(in: .whitespacesAndNewlines)
+        taglineLabel.text = tagline
+        taglineLabel.isHidden = tagline?.isEmpty != false
         metadataLabel.text = item.metadataText
         scoreLabel.text = "評分 \(item.scoreText) (\(item.voteCountText))"
+    }
+}
+
+// MARK: - Layout Calculation
+
+extension MovieDetailHeroHeaderView {
+
+    static func headerHeight(for item: MovieDetailHeroItem, width: CGFloat) -> CGFloat {
+        taglinePresentation(for: item.tagline, width: width).headerHeight
+    }
+
+    static func taglinePresentation(
+        for tagline: String?,
+        width: CGFloat
+    ) -> TaglinePresentation {
+        let trimmedTagline = tagline?.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let trimmedTagline, !trimmedTagline.isEmpty else {
+            return .none
+        }
+
+        let availableWidth = width - (Layout.contentHorizontalInset * 2)
+        guard availableWidth > 0 else {
+            return .singleLine
+        }
+
+        let font = UIFont.preferredFont(forTextStyle: .callout)
+        let boundingRect = (trimmedTagline as NSString).boundingRect(
+            with: CGSize(width: availableWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: font],
+            context: nil
+        )
+
+        return boundingRect.height <= font.lineHeight * 1.2 ? .singleLine : .doubleLine
     }
 }

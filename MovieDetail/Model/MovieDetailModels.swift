@@ -14,7 +14,7 @@ nonisolated struct MovieDetail: Decodable, Sendable, Equatable, Identifiable {
     let title: String
     let originalTitle: String
     let tagline: String
-    let overview: String
+    let overview: String?
     let adult: Bool
     let video: Bool
     let backdropPath: String?
@@ -73,7 +73,7 @@ nonisolated struct MovieDetail: Decodable, Sendable, Equatable, Identifiable {
         self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? "未命名"
         self.originalTitle = try container.decodeIfPresent(String.self, forKey: .originalTitle) ?? title
         self.tagline = try container.decodeIfPresent(String.self, forKey: .tagline) ?? ""
-        self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
+        self.overview = try container.decodeIfPresent(String.self, forKey: .overview)
         self.adult = try container.decodeIfPresent(Bool.self, forKey: .adult) ?? false
         self.video = try container.decodeIfPresent(Bool.self, forKey: .video) ?? false
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)

@@ -61,14 +61,14 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
         id: Int,
         recommendationPage: Int = 1
     ) async throws -> MovieDetailContent {
-        let detail = try await fetchMovieDetail(id: id)
-        let credits = try await fetchMovieCredits(id: id)
-        let videos = try await fetchMovieVideos(id: id)
-        let images = try await fetchMovieImages(id: id)
-        let recommendations = try await fetchMovieRecommendations(id: id, page: recommendationPage)
-        let watchProviders = try await fetchMovieWatchProviders(id: id)
+        async let detail = fetchMovieDetail(id: id)
+        async let credits = fetchMovieCredits(id: id)
+        async let videos = fetchMovieVideos(id: id)
+        async let images = fetchMovieImages(id: id)
+        async let recommendations = fetchMovieRecommendations(id: id, page: recommendationPage)
+        async let watchProviders = fetchMovieWatchProviders(id: id)
 
-        return MovieDetailContent(
+        return try await MovieDetailContent(
             detail: detail,
             credits: credits,
             videos: videos,

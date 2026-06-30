@@ -101,9 +101,12 @@ nonisolated enum MovieDetailSectionBuilder {
         let detailItem = MovieDetailItem(detail: content.detail)
         var sections: [MovieDetailSectionItem] = [
             .hero(MovieDetailHeroItem(detail: detailItem)),
-            .overview(detailItem.overview),
             .facts(makeFacts(detail: detailItem))
         ]
+
+        if let overview = detailItem.overview {
+            sections.insert(.overview(overview), at: 1)
+        }
 
         let castItems = content.credits.cast
             .sorted { $0.order < $1.order }
@@ -174,7 +177,7 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     let title: String
     let originalTitle: String
     let tagline: String?
-    let overview: String
+    let overview: String?
     let posterURL: URL?
     let backdropURL: URL?
     let releaseDateText: String
@@ -195,7 +198,7 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         self.title = detail.title
         self.originalTitle = detail.originalTitle
         self.tagline = detail.tagline.isEmpty ? nil : detail.tagline
-        self.overview = detail.overview.isEmpty ? "尚無簡介" : detail.overview
+        self.overview = Self.nonEmptyText(from: detail.overview)
         self.posterURL = detail.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
@@ -253,6 +256,13 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     private static func joinedNames(_ names: [String], fallback: String) -> String {
         let visibleNames = names.filter { !$0.isEmpty }
         return visibleNames.isEmpty ? fallback : visibleNames.joined(separator: "、")
+    }
+
+    private static func nonEmptyText(from text: String?) -> String? {
+        guard let text else { return nil }
+
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmedText.isEmpty ? nil : trimmedText
     }
 
     private static func makeURL(from string: String?) -> URL? {
