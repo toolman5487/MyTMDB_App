@@ -63,6 +63,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     private enum Layout {
         static let headerHeight: CGFloat = 28
         static let headerContentSpacing: CGFloat = 8
+        static let factsSectionHeight: CGFloat = 96
     }
 
     private func configureCollectionView() {
@@ -318,7 +319,7 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
             return 148
 
         case .facts:
-            return 308
+            return Layout.factsSectionHeight
 
         case .cast:
             return 168
@@ -330,4 +331,5 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
             return 220
         }
     }
+
 }

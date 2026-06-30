@@ -72,7 +72,9 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
         )
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
+        label.numberOfLines = 1
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.72
         return label
     }()
 

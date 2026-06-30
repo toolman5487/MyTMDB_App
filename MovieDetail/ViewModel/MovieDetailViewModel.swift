@@ -141,12 +141,9 @@ nonisolated enum MovieDetailSectionBuilder {
         [
             MovieDetailFactItem(title: "上映日", value: detail.releaseDateText),
             MovieDetailFactItem(title: "片長", value: detail.runtimeText),
-            MovieDetailFactItem(title: "類型", value: detail.genresText),
             MovieDetailFactItem(title: "狀態", value: detail.statusText),
             MovieDetailFactItem(title: "預算", value: detail.budgetText),
-            MovieDetailFactItem(title: "票房", value: detail.revenueText),
-            MovieDetailFactItem(title: "語言", value: detail.spokenLanguagesText),
-            MovieDetailFactItem(title: "製作", value: detail.productionCompaniesText)
+            MovieDetailFactItem(title: "票房", value: detail.revenueText)
         ]
     }
 
@@ -184,14 +181,11 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     let runtimeText: String
     let scoreText: String
     let voteCountText: String
-    let genresText: String
     let statusText: String
     let budgetText: String
     let revenueText: String
     let homepageURL: URL?
     let imdbURL: URL?
-    let productionCompaniesText: String
-    let spokenLanguagesText: String
 
     init(detail: MovieDetail) {
         self.id = detail.id
@@ -209,20 +203,11 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         self.runtimeText = Self.formatRuntime(detail.runtime)
         self.scoreText = String(format: "%.1f", detail.voteAverage)
         self.voteCountText = "\(detail.voteCount)"
-        self.genresText = Self.joinedNames(detail.genres.map(\.name), fallback: "未分類")
         self.statusText = detail.status.isEmpty ? "未知" : detail.status
         self.budgetText = Self.formatCurrency(detail.budget)
         self.revenueText = Self.formatCurrency(detail.revenue)
         self.homepageURL = Self.makeURL(from: detail.homepage)
         self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
-        self.productionCompaniesText = Self.joinedNames(
-            detail.productionCompanies.map(\.name),
-            fallback: "尚無製作公司資訊"
-        )
-        self.spokenLanguagesText = Self.joinedNames(
-            detail.spokenLanguages.map(\.name).filter { !$0.isEmpty },
-            fallback: "尚無語言資訊"
-        )
     }
 
     private static func formatRuntime(_ runtime: Int?) -> String {
@@ -251,11 +236,6 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         formatter.maximumFractionDigits = 0
 
         return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
-    }
-
-    private static func joinedNames(_ names: [String], fallback: String) -> String {
-        let visibleNames = names.filter { !$0.isEmpty }
-        return visibleNames.isEmpty ? fallback : visibleNames.joined(separator: "、")
     }
 
     private static func nonEmptyText(from text: String?) -> String? {

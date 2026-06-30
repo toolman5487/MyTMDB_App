@@ -56,72 +56,142 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 // MARK: - MovieDetailFactsCollectionViewCell
 
 @MainActor
-final class MovieDetailFactsCollectionViewCell: BaseCollectionViewCell {
+final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailFactsCollectionViewCell.self)
 
-    private let stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        return stackView
-    }()
+    private enum Layout {
+        static let itemSize = CGSize(width: 156, height: 104)
+    }
+
+    private var facts: [MovieDetailFactItem] = []
 
     override func configureView() {
-        containerView.backgroundColor = ThemeColor.backgroundSecondary
-        containerView.layer.cornerRadius = 8
-        containerView.clipsToBounds = true
+        containerView.backgroundColor = .clear
+        collectionViewFlowLayout.itemSize = Layout.itemSize
+        collectionView.dataSource = self
+        collectionView.register(
+            MovieDetailFactCardCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailFactCardCollectionViewCell.reuseIdentifier
+        )
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(stackView)
+        containerView.addSubview(collectionView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
-        stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 
     override func resetForReuse() {
-        stackView.arrangedSubviews.forEach { view in
-            stackView.removeArrangedSubview(view)
-            view.removeFromSuperview()
-        }
+        facts = []
+        collectionView.reloadData()
     }
 
     func configure(facts: [MovieDetailFactItem]) {
-        resetForReuse()
+        self.facts = facts
+        collectionView.reloadData()
+    }
+}
 
-        for fact in facts {
-            stackView.addArrangedSubview(makeFactRow(fact))
+extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        facts.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: MovieDetailFactCardCollectionViewCell.reuseIdentifier,
+            for: indexPath
+        )
+
+        if let cell = cell as? MovieDetailFactCardCollectionViewCell {
+            cell.configure(with: facts[indexPath.item])
+        }
+
+        return cell
+    }
+}
+
+@MainActor
+private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MovieDetailFactCardCollectionViewCell.self)
+
+    private let accentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = ThemeColor.highlight
+        return view
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 1
+        return label
+    }()
+
+    private let valueLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .title3)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 1
+        label.minimumScaleFactor = 0.82
+        label.adjustsFontSizeToFitWidth = true
+        return label
+    }()
+
+    override func configureView() {
+        containerView.backgroundColor = ThemeColor.backgroundSecondary
+        containerView.layer.cornerRadius = 16
+        containerView.clipsToBounds = true
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        containerView.addSubview(accentView)
+        containerView.addSubview(titleLabel)
+        containerView.addSubview(valueLabel)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        accentView.snp.makeConstraints { make in
+            make.top.leading.bottom.equalToSuperview()
+            make.width.equalTo(8)
+        }
+
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(12)
+            make.leading.equalToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(12)
+        }
+
+        valueLabel.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel)
+            make.trailing.bottom.equalToSuperview().inset(12)
         }
     }
 
-    private func makeFactRow(_ fact: MovieDetailFactItem) -> UIView {
-        let titleLabel = UILabel()
-        titleLabel.font = .preferredFont(forTextStyle: .caption1)
-        titleLabel.adjustsFontForContentSizeCategory = true
-        titleLabel.textColor = ThemeColor.textSecondary
-        titleLabel.text = fact.title
-        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
+    override func resetForReuse() {
+        titleLabel.text = nil
+        valueLabel.text = nil
+    }
 
-        let valueLabel = UILabel()
-        valueLabel.font = .preferredFont(forTextStyle: .subheadline)
-        valueLabel.adjustsFontForContentSizeCategory = true
-        valueLabel.textColor = ThemeColor.textPrimary
-        valueLabel.numberOfLines = 2
-        valueLabel.textAlignment = .right
-        valueLabel.text = fact.value
-
-        let rowStackView = UIStackView(arrangedSubviews: [titleLabel, valueLabel])
-        rowStackView.axis = .horizontal
-        rowStackView.alignment = .top
-        rowStackView.spacing = 12
-        return rowStackView
+    func configure(with item: MovieDetailFactItem) {
+        titleLabel.text = item.title
+        valueLabel.text = item.value
     }
 }
 
