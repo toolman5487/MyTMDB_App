@@ -1,15 +1,16 @@
 //
-//  MainBaseViewController.swift
+//  DetailBaseViewController.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/6/29.
+//  Created by Willy Hsu on 2026/6/30.
 //
 
+import Foundation
 import SnapKit
 import UIKit
 
 @MainActor
-class MainBaseViewController: BaseViewController {
+class DetailBaseViewController: BaseViewController {
 
     // MARK: - Properties
 
@@ -68,3 +69,5 @@ class MainBaseViewController: BaseViewController {
         collectionViewFlowLayout.invalidateLayout()
     }
 }
+
+

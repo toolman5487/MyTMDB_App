@@ -175,7 +175,7 @@ private final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         label.font = .preferredFont(forTextStyle: .caption1)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
+        label.numberOfLines = 1
         return label
     }()
 

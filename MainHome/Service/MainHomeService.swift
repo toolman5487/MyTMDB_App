@@ -25,22 +25,16 @@ nonisolated final class MainHomeService: MainHomeServicing {
     // MARK: - Properties
 
     private let network: NetworkServicing
-    private let language: String
-    private let region: String
-    private let timeZoneIdentifier: String
+    private let localization: AppLocalization
 
     // MARK: - Initialization
 
     init(
         network: NetworkServicing = NetworkService(),
-        language: String = "zh-TW",
-        region: String = "TW",
-        timeZoneIdentifier: String = "Asia/Taipei"
+        localization: AppLocalization = .current
     ) {
         self.network = network
-        self.language = language
-        self.region = region
-        self.timeZoneIdentifier = timeZoneIdentifier
+        self.localization = localization
     }
 
     // MARK: - Public Methods
@@ -87,16 +81,16 @@ nonisolated final class MainHomeService: MainHomeServicing {
         page: Int
     ) -> [URLQueryItem] {
         var items = [
-            URLQueryItem(name: "language", value: language),
+            URLQueryItem(name: "language", value: localization.languageParameter),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
 
         if category.usesRegion {
-            items.append(URLQueryItem(name: "region", value: region))
+            items.append(URLQueryItem(name: "region", value: localization.regionCode))
         }
 
         if category.usesTimeZone {
-            items.append(URLQueryItem(name: "timezone", value: timeZoneIdentifier))
+            items.append(URLQueryItem(name: "timezone", value: localization.timeZoneIdentifier))
         }
 
         return items
