@@ -63,8 +63,14 @@ final class MovieDetailViewController: DetailBaseViewController {
     private enum Layout {
         static let headerHeight: CGFloat = 28
         static let headerContentSpacing: CGFloat = 8
+        static let defaultHorizontalInset: CGFloat = 16
+        static let defaultSectionBottomInset: CGFloat = 24
+        static let heroSectionHeight: CGFloat = 0
         static let factsSectionHeight: CGFloat = 96
-        static let castSectionHeight: CGFloat = 228
+        static let attributesSectionHeight: CGFloat = 84
+        static let castSectionHeight: CGFloat = 220
+        static let videosSectionHeight: CGFloat = 148
+        static let recommendationsSectionHeight: CGFloat = 220
     }
 
     private func configureCollectionView() {
@@ -81,6 +87,10 @@ final class MovieDetailViewController: DetailBaseViewController {
         collectionView.register(
             MovieDetailFactsCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailFactsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MovieDetailAttributesCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailAttributesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             MovieDetailCastCollectionViewCell.self,
@@ -190,6 +200,14 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             (cell as? MovieDetailFactsCollectionViewCell)?.configure(facts: facts)
             return cell
 
+        case .attributes(let item):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MovieDetailAttributesCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? MovieDetailAttributesCollectionViewCell)?.configure(with: item)
+            return cell
+
         case .cast(let items):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MovieDetailCastCollectionViewCell.reuseIdentifier,
@@ -287,13 +305,7 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        if case .hero = sections[section] {
-            return UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
-        }
-
-        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
-
-        return UIEdgeInsets(top: topInset, left: 16, bottom: 24, right: 16)
+        sectionInset(for: section)
     }
 
     func collectionView(
@@ -301,35 +313,62 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
+        let sectionInset = sectionInset(for: indexPath.section)
         let width = collectionView.bounds.width
-            - collectionViewFlowLayout.sectionInset.left
-            - collectionViewFlowLayout.sectionInset.right
+            - sectionInset.left
+            - sectionInset.right
 
         return CGSize(
             width: max(width, 0),
-            height: height(for: sections[indexPath.section])
+            height: height(for: sections[indexPath.section], width: max(width, 0))
         )
     }
 
-    private func height(for section: MovieDetailSectionItem) -> CGFloat {
+    private func sectionInset(for section: Int) -> UIEdgeInsets {
+        if case .hero = sections[section] {
+            return UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: Layout.defaultSectionBottomInset,
+                right: 0
+            )
+        }
+
+        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+
+        return UIEdgeInsets(
+            top: topInset,
+            left: Layout.defaultHorizontalInset,
+            bottom: Layout.defaultSectionBottomInset,
+            right: Layout.defaultHorizontalInset
+        )
+    }
+
+    private func height(for section: MovieDetailSectionItem, width: CGFloat) -> CGFloat {
         switch section {
         case .hero:
-            return 0
+            return Layout.heroSectionHeight
 
-        case .overview:
-            return 148
+        case .overview(let overview):
+            return MovieDetailOverviewCollectionViewCell.fittingHeight(
+                for: overview,
+                width: width
+            )
 
         case .facts:
             return Layout.factsSectionHeight
+
+        case .attributes:
+            return Layout.attributesSectionHeight
 
         case .cast:
             return Layout.castSectionHeight
 
         case .videos:
-            return 148
+            return Layout.videosSectionHeight
 
         case .recommendations:
-            return 220
+            return Layout.recommendationsSectionHeight
         }
     }
 

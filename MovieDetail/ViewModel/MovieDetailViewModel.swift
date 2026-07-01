@@ -66,6 +66,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case hero(MovieDetailHeroItem)
     case overview(String)
     case facts([MovieDetailFactItem])
+    case attributes(MovieDetailAttributeSectionItem)
     case cast([MovieDetailCastItem])
     case videos([MovieDetailVideoItem])
     case recommendations([MovieDetailRecommendationItem])
@@ -80,6 +81,9 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .facts:
             return "電影資訊"
+
+        case .attributes:
+            return "類型與製作公司"
 
         case .cast:
             return "主要演員"
@@ -97,7 +101,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
 nonisolated enum MovieDetailSectionBuilder {
 
-    private static let castPreviewLimit = 10
+    private static let previewItemLimit = 10
 
     static func makeSections(content: MovieDetailContent) -> [MovieDetailSectionItem] {
         let detailItem = MovieDetailItem(detail: content.detail)
@@ -110,27 +114,31 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.insert(.overview(overview), at: 1)
         }
 
-        let castItems = content.credits.cast
-            .sorted { $0.order < $1.order }
-            .prefix(castPreviewLimit)
-            .map(MovieDetailCastItem.init(cast:))
-        if !castItems.isEmpty {
-            sections.append(.cast(Array(castItems)))
-        }
-
         let videoItems = content.videos.results
             .filter { !$0.key.isEmpty }
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
-            .prefix(8)
+            .prefix(previewItemLimit)
             .map(MovieDetailVideoItem.init(video:))
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
         }
 
+        if let attributes = makeAttributes(detail: content.detail) {
+            sections.append(.attributes(attributes))
+        }
+
+        let castItems = content.credits.cast
+            .sorted { $0.order < $1.order }
+            .prefix(previewItemLimit)
+            .map(MovieDetailCastItem.init(cast:))
+        if !castItems.isEmpty {
+            sections.append(.cast(Array(castItems)))
+        }
+
         let recommendationItems = content.recommendations.results
-            .prefix(12)
+            .prefix(previewItemLimit)
             .map(MovieDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
@@ -147,6 +155,19 @@ nonisolated enum MovieDetailSectionBuilder {
             MovieDetailFactItem(title: "預算", value: detail.budgetText),
             MovieDetailFactItem(title: "票房", value: detail.revenueText)
         ]
+    }
+
+    private static func makeAttributes(detail: MovieDetail) -> MovieDetailAttributeSectionItem? {
+        let genres = detail.genres.map(MovieDetailAttributeItem.init(genre:))
+        let productionCompanies = detail.productionCompanies
+            .prefix(previewItemLimit)
+            .map(MovieDetailAttributeItem.init(productionCompany:))
+        let section = MovieDetailAttributeSectionItem(
+            genres: genres,
+            productionCompanies: Array(productionCompanies)
+        )
+
+        return section.isEmpty ? nil : section
     }
 
     private static func videoPriority(_ video: MovieVideo) -> Int {
@@ -295,6 +316,46 @@ nonisolated struct MovieDetailFactItem: Sendable, Equatable, Identifiable {
         self.id = title
         self.title = title
         self.value = value
+    }
+}
+
+// MARK: - MovieDetailAttributeSectionItem
+
+nonisolated struct MovieDetailAttributeSectionItem: Sendable, Equatable {
+    let genres: [MovieDetailAttributeItem]
+    let productionCompanies: [MovieDetailAttributeItem]
+
+    var isEmpty: Bool {
+        genres.isEmpty && productionCompanies.isEmpty
+    }
+}
+
+// MARK: - MovieDetailAttributeItem
+
+nonisolated struct MovieDetailAttributeItem: Sendable, Equatable, Identifiable {
+
+    enum Kind: Sendable, Equatable {
+        case genre
+        case productionCompany
+    }
+
+    let id: String
+    let sourceID: Int
+    let title: String
+    let kind: Kind
+
+    init(genre: MovieDetailGenre) {
+        self.id = "genre-\(genre.id)"
+        self.sourceID = genre.id
+        self.title = genre.name
+        self.kind = .genre
+    }
+
+    init(productionCompany: MovieDetailProductionCompany) {
+        self.id = "production-company-\(productionCompany.id)"
+        self.sourceID = productionCompany.id
+        self.title = productionCompany.name
+        self.kind = .productionCompany
     }
 }
 

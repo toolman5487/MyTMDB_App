@@ -16,6 +16,11 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailOverviewCollectionViewCell.self)
 
+    private enum Layout {
+        static let contentInset: CGFloat = 16
+        static let minimumHeight: CGFloat = 148
+    }
+
     private let overviewLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .body)
@@ -40,7 +45,7 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         overviewLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(Layout.contentInset)
         }
     }
 
@@ -50,6 +55,26 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     func configure(overview: String) {
         overviewLabel.text = overview
+    }
+
+    static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
+        let contentWidth = width - (Layout.contentInset * 2)
+        guard contentWidth > 0 else {
+            return Layout.minimumHeight
+        }
+
+        let font = UIFont.preferredFont(forTextStyle: .body)
+        let textHeight = (overview as NSString).boundingRect(
+            with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: font],
+            context: nil
+        ).height
+
+        return max(
+            Layout.minimumHeight,
+            ceil(textHeight) + (Layout.contentInset * 2)
+        )
     }
 }
 
@@ -274,6 +299,275 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
     }
 }
 
+// MARK: - MovieDetailAttributesCollectionViewCell
+
+@MainActor
+final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MovieDetailAttributesCollectionViewCell.self)
+
+    private enum Layout {
+        static let collectionHeight: CGFloat = 36
+        static let titleCollectionSpacing: CGFloat = 12
+        static let groupSpacing: CGFloat = 12
+        static let itemSpacing: CGFloat = 8
+    }
+
+    private enum AttributeGroup {
+        case genres
+        case productionCompanies
+    }
+
+    private var genres: [MovieDetailAttributeItem] = []
+    private var productionCompanies: [MovieDetailAttributeItem] = []
+
+    private let genresTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.numberOfLines = 1
+        label.text = "種類"
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }()
+
+    private let productionCompaniesTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.numberOfLines = 1
+        label.text = "製作公司"
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }()
+
+    private let genresCollectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = Layout.itemSpacing
+        layout.minimumInteritemSpacing = Layout.itemSpacing
+        return layout
+    }()
+
+    private let productionCompaniesCollectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = Layout.itemSpacing
+        layout.minimumInteritemSpacing = Layout.itemSpacing
+        return layout
+    }()
+
+    private lazy var genresCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: genresCollectionViewFlowLayout
+        )
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.alwaysBounceHorizontal = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(
+            MovieDetailAttributePillCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailAttributePillCollectionViewCell.reuseIdentifier
+        )
+        return collectionView
+    }()
+
+    private lazy var productionCompaniesCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: productionCompaniesCollectionViewFlowLayout
+        )
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.alwaysBounceHorizontal = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(
+            MovieDetailAttributePillCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailAttributePillCollectionViewCell.reuseIdentifier
+        )
+        return collectionView
+    }()
+
+    override func configureView() {
+        containerView.backgroundColor = .clear
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        containerView.addSubview(genresTitleLabel)
+        containerView.addSubview(genresCollectionView)
+        containerView.addSubview(productionCompaniesTitleLabel)
+        containerView.addSubview(productionCompaniesCollectionView)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        genresTitleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalTo(genresCollectionView)
+        }
+
+        genresCollectionView.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview()
+            make.leading.equalTo(genresTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
+            make.height.equalTo(Layout.collectionHeight)
+        }
+
+        productionCompaniesTitleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalTo(productionCompaniesCollectionView)
+        }
+
+        productionCompaniesCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(genresCollectionView.snp.bottom).offset(Layout.groupSpacing)
+            make.leading.equalTo(productionCompaniesTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
+            make.trailing.bottom.equalToSuperview()
+            make.height.equalTo(Layout.collectionHeight)
+        }
+    }
+
+    override func resetForReuse() {
+        genres = []
+        productionCompanies = []
+        genresCollectionView.reloadData()
+        productionCompaniesCollectionView.reloadData()
+    }
+
+    func configure(with item: MovieDetailAttributeSectionItem) {
+        genres = item.genres
+        productionCompanies = item.productionCompanies
+        genresCollectionView.reloadData()
+        productionCompaniesCollectionView.reloadData()
+    }
+
+    private func group(for collectionView: UICollectionView) -> AttributeGroup {
+        collectionView === genresCollectionView ? .genres : .productionCompanies
+    }
+
+    private func items(for group: AttributeGroup) -> [MovieDetailAttributeItem] {
+        switch group {
+        case .genres:
+            return genres
+
+        case .productionCompanies:
+            return productionCompanies
+        }
+    }
+}
+
+extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        items(for: group(for: collectionView)).count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: MovieDetailAttributePillCollectionViewCell.reuseIdentifier,
+            for: indexPath
+        )
+        let items = items(for: group(for: collectionView))
+
+        if let cell = cell as? MovieDetailAttributePillCollectionViewCell {
+            cell.configure(with: items[indexPath.item])
+        }
+
+        return cell
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let items = items(for: group(for: collectionView))
+        guard items.indices.contains(indexPath.item) else {
+            return .zero
+        }
+
+        return MovieDetailAttributePillCollectionViewCell.fittingSize(
+            for: items[indexPath.item],
+            maximumWidth: collectionView.bounds.width
+        )
+    }
+}
+
+@MainActor
+private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MovieDetailAttributePillCollectionViewCell.self)
+
+    private enum Layout {
+        static let height: CGFloat = 36
+        static let minimumWidth: CGFloat = 64
+        static let horizontalInset: CGFloat = 16
+    }
+
+    private static var titleFont: UIFont {
+        .preferredFont(forTextStyle: .caption1)
+    }
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = titleFont
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        label.textAlignment = .center
+        return label
+    }()
+
+    override func configureView() {
+        containerView.backgroundColor = ThemeColor.backgroundSecondary
+        containerView.layer.borderColor = ThemeColor.highlight.cgColor
+        containerView.layer.borderWidth = 2
+        containerView.layer.cornerRadius = Layout.height / 2
+        containerView.clipsToBounds = true
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        containerView.addSubview(titleLabel)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        titleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(Layout.horizontalInset)
+            make.centerY.equalToSuperview()
+        }
+    }
+
+    override func resetForReuse() {
+        titleLabel.text = nil
+    }
+
+    func configure(with item: MovieDetailAttributeItem) {
+        titleLabel.text = item.title
+    }
+
+    static func fittingSize(for item: MovieDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {
+        let measuredWidth = (item.title as NSString).size(withAttributes: [.font: titleFont]).width
+        let fittingWidth = ceil(measuredWidth) + (Layout.horizontalInset * 2)
+        let width = min(
+            max(Layout.minimumWidth, fittingWidth),
+            max(Layout.minimumWidth, maximumWidth)
+        )
+
+        return CGSize(width: width, height: Layout.height)
+    }
+}
+
 // MARK: - MovieDetailCastCollectionViewCell
 
 @MainActor
@@ -282,7 +576,7 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
     static let reuseIdentifier = String(describing: MovieDetailCastCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 112, height: 232)
+        static let itemSize = CGSize(width: 112, height: 220)
     }
 
     private var items: [MovieDetailCastItem] = []
@@ -531,7 +825,8 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         profileImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(8)
+            make.left.right.equalToSuperview()
             make.height.equalTo(Layout.profileImageHeight)
         }
 
@@ -579,7 +874,7 @@ private final class MovieDetailVideoThumbnailCell: BaseCollectionViewCell {
         label.font = .preferredFont(forTextStyle: .caption1)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
+        label.numberOfLines = 1
         return label
     }()
 
@@ -651,7 +946,7 @@ private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell 
         label.font = .preferredFont(forTextStyle: .caption1)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
+        label.numberOfLines = 1
         return label
     }()
 
