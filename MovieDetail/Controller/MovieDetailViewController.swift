@@ -64,14 +64,15 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let headerHeight: CGFloat = 28
         static let headerContentSpacing: CGFloat = 8
         static let factsSectionHeight: CGFloat = 96
+        static let castSectionHeight: CGFloat = 228
     }
 
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
-        collectionViewFlowLayout.minimumLineSpacing = 16
-        collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
+        collectionViewFlowLayout.minimumLineSpacing = 8
+        collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
 
         collectionView.register(
             MovieDetailOverviewCollectionViewCell.self,
@@ -322,7 +323,7 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
             return Layout.factsSectionHeight
 
         case .cast:
-            return 168
+            return Layout.castSectionHeight
 
         case .videos:
             return 148

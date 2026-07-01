@@ -173,7 +173,7 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
     }
 
     private static var titleFont: UIFont {
-        .preferredFont(forTextStyle: .caption1)
+        .preferredFont(forTextStyle: .callout)
     }
 
     private static var valueFont: UIFont {
@@ -282,7 +282,7 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
     static let reuseIdentifier = String(describing: MovieDetailCastCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 112, height: 168)
+        static let itemSize = CGSize(width: 112, height: 232)
     }
 
     private var items: [MovieDetailCastItem] = []
@@ -485,9 +485,40 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailCastPersonCell.self)
 
-    private let profileImageView = MovieDetailCellFactory.makePosterImageView(cornerRadius: 8)
-    private let nameLabel = MovieDetailCellFactory.makeCardTitleLabel()
-    private let characterLabel = MovieDetailCellFactory.makeCardSubtitleLabel()
+    private enum Layout {
+        static let profileImageHeight: CGFloat = 168
+        static let textTopSpacing: CGFloat = 4
+        static let subtitleTopBottomSpacing: CGFloat = 2
+    }
+
+    private let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = ThemeColor.fillSecondary
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        return imageView
+    }()
+
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
+
+    private let characterLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption2)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
 
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -501,17 +532,17 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
 
         profileImageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(112)
+            make.height.equalTo(Layout.profileImageHeight)
         }
 
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(6)
+            make.top.equalTo(profileImageView.snp.bottom).offset(Layout.textTopSpacing)
             make.leading.trailing.equalToSuperview()
         }
 
         characterLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(2)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
+            make.top.equalTo(nameLabel.snp.bottom).offset(Layout.subtitleTopBottomSpacing)
+            make.leading.trailing.equalToSuperview()
         }
     }
 
@@ -534,9 +565,32 @@ private final class MovieDetailVideoThumbnailCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailVideoThumbnailCell.self)
 
-    private let thumbnailImageView = MovieDetailCellFactory.makePosterImageView(cornerRadius: 8)
-    private let titleLabel = MovieDetailCellFactory.makeCardTitleLabel()
-    private let subtitleLabel = MovieDetailCellFactory.makeCardSubtitleLabel()
+    private let thumbnailImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = ThemeColor.fillSecondary
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        return imageView
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 2
+        return label
+    }()
+
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption2)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.numberOfLines = 1
+        return label
+    }()
 
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -583,9 +637,32 @@ private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell 
 
     static let reuseIdentifier = String(describing: MovieDetailRecommendationPosterCell.self)
 
-    private let posterImageView = MovieDetailCellFactory.makePosterImageView(cornerRadius: 8)
-    private let titleLabel = MovieDetailCellFactory.makeCardTitleLabel()
-    private let scoreLabel = MovieDetailCellFactory.makeCardSubtitleLabel()
+    private let posterImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = ThemeColor.fillSecondary
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        return imageView
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 2
+        return label
+    }()
+
+    private let scoreLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption2)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.numberOfLines = 1
+        return label
+    }()
 
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -624,38 +701,5 @@ private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell 
         posterImageView.sd_setImage(with: item.posterURL)
         titleLabel.text = item.title
         scoreLabel.text = "評分 \(item.scoreText)"
-    }
-}
-
-// MARK: - Shared Helpers
-
-@MainActor
-private enum MovieDetailCellFactory {
-
-    static func makePosterImageView(cornerRadius: CGFloat) -> UIImageView {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = cornerRadius
-        return imageView
-    }
-
-    static func makeCardTitleLabel() -> UILabel {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
-        return label
-    }
-
-    static func makeCardSubtitleLabel() -> UILabel {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
     }
 }

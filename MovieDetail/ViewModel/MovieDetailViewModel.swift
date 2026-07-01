@@ -97,6 +97,8 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
 nonisolated enum MovieDetailSectionBuilder {
 
+    private static let castPreviewLimit = 10
+
     static func makeSections(content: MovieDetailContent) -> [MovieDetailSectionItem] {
         let detailItem = MovieDetailItem(detail: content.detail)
         var sections: [MovieDetailSectionItem] = [
@@ -110,7 +112,7 @@ nonisolated enum MovieDetailSectionBuilder {
 
         let castItems = content.credits.cast
             .sorted { $0.order < $1.order }
-            .prefix(12)
+            .prefix(castPreviewLimit)
             .map(MovieDetailCastItem.init(cast:))
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
