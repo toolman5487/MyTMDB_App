@@ -19,6 +19,7 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     private enum Layout {
         static let contentInset: CGFloat = 16
         static let minimumHeight: CGFloat = 148
+        static let titleContentSpacing: CGFloat = 8
     }
 
     private let overviewLabel: UILabel = {
@@ -51,10 +52,11 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     override func resetForReuse() {
         overviewLabel.text = nil
+        overviewLabel.attributedText = nil
     }
 
     func configure(overview: String) {
-        overviewLabel.text = overview
+        overviewLabel.attributedText = Self.makeOverviewAttributedText(overview: overview)
     }
 
     static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
@@ -63,11 +65,10 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let font = UIFont.preferredFont(forTextStyle: .body)
-        let textHeight = (overview as NSString).boundingRect(
+        let attributedText = makeOverviewAttributedText(overview: overview)
+        let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: font],
             context: nil
         ).height
 
@@ -75,6 +76,35 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             Layout.minimumHeight,
             ceil(textHeight) + (Layout.contentInset * 2)
         )
+    }
+
+    private static func makeOverviewAttributedText(overview: String) -> NSAttributedString {
+        let titleParagraphStyle = NSMutableParagraphStyle()
+        titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
+
+        let bodyParagraphStyle = NSMutableParagraphStyle()
+        bodyParagraphStyle.lineSpacing = 4
+
+        let attributedText = NSMutableAttributedString(
+            string: "劇情簡介\n",
+            attributes: [
+                .font: UIFont.preferredFont(forTextStyle: .headline),
+                .foregroundColor: ThemeColor.textPrimary,
+                .paragraphStyle: titleParagraphStyle
+            ]
+        )
+        attributedText.append(
+            NSAttributedString(
+                string: overview,
+                attributes: [
+                    .font: UIFont.preferredFont(forTextStyle: .body),
+                    .foregroundColor: ThemeColor.textPrimary,
+                    .paragraphStyle: bodyParagraphStyle
+                ]
+            )
+        )
+
+        return attributedText
     }
 }
 

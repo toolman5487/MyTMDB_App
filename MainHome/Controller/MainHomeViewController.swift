@@ -28,6 +28,7 @@ final class MainHomeViewController: MainBaseViewController {
     private let viewModel: MainHomeViewModel
     private var sections: [MainHomeSectionItem] = []
     private var loadTask: Task<Void, Never>?
+    private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
 
     override var collectionViewItemHeight: CGFloat {
         Layout.itemHeight
@@ -134,11 +135,8 @@ final class MainHomeViewController: MainBaseViewController {
 
     // MARK: - Navigation
 
-    private func showDetail(for item: MainHomeContentItem, in section: MainHomeSectionItem) {
-        guard section.category.mediaType == .movie else { return }
-
-        let detailViewController = MovieDetailViewController(movieID: item.id)
-        navigationController?.pushViewController(detailViewController, animated: true)
+    private func showDetail(for item: MainHomeContentItem) {
+        router.showDetail(for: item)
     }
 }
 
@@ -167,7 +165,7 @@ extension MainHomeViewController: UICollectionViewDataSource {
             let section = sections[indexPath.section]
             cell.configure(contents: section.contents)
             cell.onContentSelected = { [weak self] item in
-                self?.showDetail(for: item, in: section)
+                self?.showDetail(for: item)
             }
         }
 

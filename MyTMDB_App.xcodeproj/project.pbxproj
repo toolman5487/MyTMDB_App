@@ -17,6 +17,21 @@
 		150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
 		150336C22FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
 		153AD97F2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 153AD97E2DE5EDE2007DF535 /* YouTubeiOSPlayerHelper */; };
+		15606C9E2FF4E0060036898B /* TVDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606C9D2FF4E0060036898B /* TVDetailViewController.swift */; };
+		15606C9F2FF4E0060036898B /* TVDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606C9D2FF4E0060036898B /* TVDetailViewController.swift */; };
+		15606CA02FF4E0060036898B /* TVDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606C9D2FF4E0060036898B /* TVDetailViewController.swift */; };
+		15606CA52FF4F0000036898B /* TVDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CAE2FF4F0000036898B /* TVDetailModels.swift */; };
+		15606CA62FF4F0000036898B /* TVDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CAE2FF4F0000036898B /* TVDetailModels.swift */; };
+		15606CA72FF4F0000036898B /* TVDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CAE2FF4F0000036898B /* TVDetailModels.swift */; };
+		15606CA82FF4F0000036898B /* TVDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CAF2FF4F0000036898B /* TVDetailService.swift */; };
+		15606CA92FF4F0000036898B /* TVDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CAF2FF4F0000036898B /* TVDetailService.swift */; };
+		15606CAA2FF4F0000036898B /* TVDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CAF2FF4F0000036898B /* TVDetailService.swift */; };
+		15606CAB2FF4F0000036898B /* TVDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB02FF4F0000036898B /* TVDetailViewModel.swift */; };
+		15606CAC2FF4F0000036898B /* TVDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB02FF4F0000036898B /* TVDetailViewModel.swift */; };
+		15606CAD2FF4F0000036898B /* TVDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB02FF4F0000036898B /* TVDetailViewModel.swift */; };
+		15606CB12FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
+		15606CB22FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
+		15606CB32FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
 		1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA7E2DC4B6D1005E972C /* SDWebImage */; };
 		1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA812DC4B6DF005E972C /* SnapKit */; };
 		1598AA852DC4B6F8005E972C /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA842DC4B6F8005E972C /* CombineCocoa */; };
@@ -31,9 +46,6 @@
 		15A94F4C2FF26D7900FCBB0F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F492FF26D7900FCBB0F /* BaseViewController.swift */; };
 		15A94F4D2FF26D7900FCBB0F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F492FF26D7900FCBB0F /* BaseViewController.swift */; };
 		15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F492FF26D7900FCBB0F /* BaseViewController.swift */; };
-		15E000012FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
-		15E000022FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
-		15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
 		15A94F642FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */; };
 		15A94F652FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */; };
 		15A94F662FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */; };
@@ -61,6 +73,12 @@
 		15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */; };
 		15A950292FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */; };
 		15A9502A2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */; };
+		15A950302FF5100000FCBB0F /* MainHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950362FF5100000FCBB0F /* MainHomeRouter.swift */; };
+		15A950312FF5100000FCBB0F /* MainHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950362FF5100000FCBB0F /* MainHomeRouter.swift */; };
+		15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950362FF5100000FCBB0F /* MainHomeRouter.swift */; };
+		15A950332FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */; };
+		15A950342FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */; };
+		15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */; };
 		15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99CD2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
@@ -121,6 +139,9 @@
 		15D547182DF01F2100CAA0EE /* loadingAir.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547162DF01F2100CAA0EE /* loadingAir.json */; };
 		15D5471A2DF022CE00CAA0EE /* Animation_popcorn.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547192DF022CE00CAA0EE /* Animation_popcorn.json */; };
 		15D5471B2DF022CE00CAA0EE /* Animation_popcorn.json in Resources */ = {isa = PBXBuildFile; fileRef = 15D547192DF022CE00CAA0EE /* Animation_popcorn.json */; };
+		15E000012FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
+		15E000022FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
+		15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -144,6 +165,11 @@
 		150336A22FF35D4C003125EC /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
 		150336B32FF35E00003125EC /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError+ErrorMessage.swift"; sourceTree = "<group>"; };
+		15606C9D2FF4E0060036898B /* TVDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailViewController.swift; sourceTree = "<group>"; };
+		15606CAE2FF4F0000036898B /* TVDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailModels.swift; sourceTree = "<group>"; };
+		15606CAF2FF4F0000036898B /* TVDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailService.swift; sourceTree = "<group>"; };
+		15606CB02FF4F0000036898B /* TVDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailViewModel.swift; sourceTree = "<group>"; };
+		15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,7 +182,6 @@
 		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		15A94F492FF26D7900FCBB0F /* BaseViewController.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
-		15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollTrackingBaseViewController.swift; sourceTree = "<group>"; };
 		15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
@@ -167,6 +192,8 @@
 		15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeContentCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionHeaderView.swift; sourceTree = "<group>"; };
 		15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNestedCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A950362FF5100000FCBB0F /* MainHomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeRouter.swift; sourceTree = "<group>"; };
+		15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomePresentationBuilder.swift; sourceTree = "<group>"; };
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
 		15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailModels.swift; sourceTree = "<group>"; };
@@ -193,6 +220,7 @@
 		15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAnimation_blue.json; sourceTree = "<group>"; };
 		15D547162DF01F2100CAA0EE /* loadingAir.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAir.json; sourceTree = "<group>"; };
 		15D547192DF022CE00CAA0EE /* Animation_popcorn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Animation_popcorn.json; sourceTree = "<group>"; };
+		15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollTrackingBaseViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -310,19 +338,72 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		15606C842FF4DF840036898B /* TVDetail */ = {
+			isa = PBXGroup;
+			children = (
+				15606C852FF4DF940036898B /* Controller */,
+				15606CA32FF4E1370036898B /* Model */,
+				15606CA42FF4E13C0036898B /* Service */,
+				15606CA12FF4E12A0036898B /* View */,
+				15606CA22FF4E1310036898B /* ViewModel */,
+			);
+			path = TVDetail;
+			sourceTree = "<group>";
+		};
+		15606C852FF4DF940036898B /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				15606C9D2FF4E0060036898B /* TVDetailViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		15606CA12FF4E12A0036898B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		15606CA22FF4E1310036898B /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				15606CB02FF4F0000036898B /* TVDetailViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		15606CA32FF4E1370036898B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				15606CAE2FF4F0000036898B /* TVDetailModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		15606CA42FF4E13C0036898B /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				15606CAF2FF4F0000036898B /* TVDetailService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
 		1598AA402DC4B69F005E972C = {
 			isa = PBXGroup;
 			children = (
-				15CF99C72FF36FEC0041F4CC /* MovieDetail */,
 				15D198632FF210DE00545A85 /* Feature */,
 				15A94F982FF27D0900FCBB0F /* MainHome */,
 				15D196332FF10EFF00545A85 /* MainLogIn */,
 				15A94F672FF26FCE00FCBB0F /* MainTabBar */,
+				15CF99C72FF36FEC0041F4CC /* MovieDetail */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
 				1598AA6C2DC4B6A1005E972C /* MyTMDB_AppUITests */,
 				15D196982FF1205000545A85 /* Network */,
 				1598AA4A2DC4B69F005E972C /* Products */,
+				15606C842FF4DF840036898B /* TVDetail */,
 			);
 			sourceTree = "<group>";
 		};
@@ -385,14 +466,6 @@
 			path = MainBase;
 			sourceTree = "<group>";
 		};
-		15E000052FF400000000001 /* ScrollTrackingBase */ = {
-			isa = PBXGroup;
-			children = (
-				15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */,
-			);
-			path = ScrollTrackingBase;
-			sourceTree = "<group>";
-		};
 		15A94F672FF26FCE00FCBB0F /* MainTabBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,6 +496,7 @@
 			children = (
 				15A94F992FF27D1600FCBB0F /* Controller */,
 				15A950102FF2A10000FCBB0F /* Model */,
+				15A950382FF5100000FCBB0F /* Router */,
 				15A950112FF2A10000FCBB0F /* Service */,
 				15A94F9A2FF27D1F00FCBB0F /* View */,
 				15A950122FF2A10000FCBB0F /* ViewModel */,
@@ -474,9 +548,18 @@
 		15A950122FF2A10000FCBB0F /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */,
 				15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		15A950382FF5100000FCBB0F /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				15A950362FF5100000FCBB0F /* MainHomeRouter.swift */,
+			);
+			path = Router;
 			sourceTree = "<group>";
 		};
 		15B067462DDC76C0009591F9 /* Service */ = {
@@ -628,6 +711,14 @@
 				15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */,
 			);
 			path = Animations;
+			sourceTree = "<group>";
+		};
+		15E000052FF400000000001 /* ScrollTrackingBase */ = {
+			isa = PBXGroup;
+			children = (
+				15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */,
+			);
+			path = ScrollTrackingBase;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -813,6 +904,11 @@
 				15D1974A2FF1695000545A85 /* RegisterPageView.swift in Sources */,
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				15D198112FF2200000545A85 /* AuthSession.swift in Sources */,
+				15606C9E2FF4E0060036898B /* TVDetailViewController.swift in Sources */,
+				15606CA52FF4F0000036898B /* TVDetailModels.swift in Sources */,
+				15606CA82FF4F0000036898B /* TVDetailService.swift in Sources */,
+				15606CAB2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
+				15606CB12FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
 				15D198132FF2201000545A85 /* SessionStore.swift in Sources */,
 				150336A52FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				150336B22FF35E00003125EC /* ErrorMessage.swift in Sources */,
@@ -832,6 +928,8 @@
 				15A9500A2FF2A10000FCBB0F /* MainHomeModels.swift in Sources */,
 				15A9500B2FF2A10000FCBB0F /* MainHomeService.swift in Sources */,
 				15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */,
+				15A950302FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
+				15A950332FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15A950202FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
 				15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A94F6F2FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
@@ -852,6 +950,8 @@
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 				15A950212FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+				15A950312FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
+				15A950342FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				150336A42FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */,
@@ -865,6 +965,11 @@
 				15CF9A052FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A082FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A112FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
+				15606CA02FF4E0060036898B /* TVDetailViewController.swift in Sources */,
+				15606CA72FF4F0000036898B /* TVDetailModels.swift in Sources */,
+				15606CAA2FF4F0000036898B /* TVDetailService.swift in Sources */,
+				15606CAD2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
+				15606CB32FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
 				15CF9A192FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A152FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D196E12FF35F1000545A85 /* NetworkError.swift in Sources */,
@@ -884,6 +989,8 @@
 			files = (
 				15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
+				15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
+				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
 				15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
@@ -892,6 +999,11 @@
 				15A9502A2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C32FF14A2100545A85 /* NetworkService.swift in Sources */,
+				15606C9F2FF4E0060036898B /* TVDetailViewController.swift in Sources */,
+				15606CA62FF4F0000036898B /* TVDetailModels.swift in Sources */,
+				15606CA92FF4F0000036898B /* TVDetailService.swift in Sources */,
+				15606CAC2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
+				15606CB22FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
 				15D196E22FF35F1000545A85 /* NetworkError.swift in Sources */,
 				15D196E62FF3900000545A85 /* AppLocalization.swift in Sources */,
 				15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */,

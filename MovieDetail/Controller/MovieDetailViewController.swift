@@ -64,7 +64,6 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let headerContentSpacing: CGFloat = 8
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
-        static let heroSectionHeight: CGFloat = 0
         static let factsSectionHeight: CGFloat = 96
         static let attributesSectionHeight: CGFloat = 84
         static let castSectionHeight: CGFloat = 220
@@ -168,8 +167,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if case .hero = sections[section] {
-            return 0
+        if case .overview(let item) = sections[section] {
+            return item.overview == nil ? 0 : 1
         }
 
         return 1
@@ -180,15 +179,12 @@ extension MovieDetailViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch sections[indexPath.section] {
-        case .hero:
-            return UICollectionViewCell()
-
-        case .overview(let overview):
+        case .overview(let item):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MovieDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(overview: overview)
+            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
             return cell
 
         case .facts(let facts):
@@ -242,7 +238,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
 
-        if case .hero(let item) = sections[indexPath.section] {
+        if case .overview(let item) = sections[indexPath.section] {
             let reusableView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: MovieDetailHeroHeaderView.reuseIdentifier,
@@ -250,7 +246,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             )
 
             if let headerView = reusableView as? MovieDetailHeroHeaderView {
-                headerView.configure(with: item)
+                headerView.configure(with: item.hero)
             }
 
             return reusableView
@@ -279,11 +275,11 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        if case .hero(let item) = sections[section] {
+        if case .overview(let item) = sections[section] {
             return CGSize(
                 width: collectionView.bounds.width,
                 height: MovieDetailHeroHeaderView.headerHeight(
-                    for: item,
+                    for: item.hero,
                     width: collectionView.bounds.width
                 )
             )
@@ -324,12 +320,12 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
     }
 
     private func sectionInset(for section: Int) -> UIEdgeInsets {
-        if case .hero = sections[section] {
+        if case .overview(let item) = sections[section] {
             return UIEdgeInsets(
-                top: 0,
-                left: 0,
+                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
+                left: Layout.defaultHorizontalInset,
                 bottom: Layout.defaultSectionBottomInset,
-                right: 0
+                right: Layout.defaultHorizontalInset
             )
         }
 
@@ -345,10 +341,9 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
 
     private func height(for section: MovieDetailSectionItem, width: CGFloat) -> CGFloat {
         switch section {
-        case .hero:
-            return Layout.heroSectionHeight
+        case .overview(let item):
+            guard let overview = item.overview else { return 0 }
 
-        case .overview(let overview):
             return MovieDetailOverviewCollectionViewCell.fittingHeight(
                 for: overview,
                 width: width

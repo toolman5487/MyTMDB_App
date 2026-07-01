@@ -63,8 +63,7 @@ final class MovieDetailViewModel {
 // MARK: - MovieDetailSectionItem
 
 nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
-    case hero(MovieDetailHeroItem)
-    case overview(String)
+    case overview(MovieDetailOverviewSectionItem)
     case facts([MovieDetailFactItem])
     case attributes(MovieDetailAttributeSectionItem)
     case cast([MovieDetailCastItem])
@@ -73,11 +72,8 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
     var title: String? {
         switch self {
-        case .hero:
-            return nil
-
         case .overview:
-            return "劇情簡介"
+            return nil
 
         case .facts:
             return "電影資訊"
@@ -106,13 +102,14 @@ nonisolated enum MovieDetailSectionBuilder {
     static func makeSections(content: MovieDetailContent) -> [MovieDetailSectionItem] {
         let detailItem = MovieDetailItem(detail: content.detail)
         var sections: [MovieDetailSectionItem] = [
-            .hero(MovieDetailHeroItem(detail: detailItem)),
+            .overview(
+                MovieDetailOverviewSectionItem(
+                    hero: MovieDetailHeroItem(detail: detailItem),
+                    overview: detailItem.overview
+                )
+            ),
             .facts(makeFacts(detail: detailItem))
         ]
-
-        if let overview = detailItem.overview {
-            sections.insert(.overview(overview), at: 1)
-        }
 
         let videoItems = content.videos.results
             .filter { !$0.key.isEmpty }
@@ -188,6 +185,13 @@ nonisolated enum MovieDetailSectionBuilder {
 
         return (typeRank * 100) + (siteRank * 10) + officialRank
     }
+}
+
+// MARK: - MovieDetailOverviewSectionItem
+
+nonisolated struct MovieDetailOverviewSectionItem: Sendable, Equatable {
+    let hero: MovieDetailHeroItem
+    let overview: String?
 }
 
 // MARK: - MovieDetailItem
