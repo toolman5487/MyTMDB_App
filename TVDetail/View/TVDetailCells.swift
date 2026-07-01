@@ -365,55 +365,56 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     private lazy var networksCollectionView = makeCollectionView(layout: networksCollectionViewFlowLayout)
     private lazy var productionCompaniesCollectionView = makeCollectionView(layout: productionCompaniesCollectionViewFlowLayout)
 
+    private let verticalStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = Layout.groupSpacing
+        return stackView
+    }()
+
+    private lazy var genresRowStackView = makeRowStackView(
+        titleLabel: genresTitleLabel,
+        collectionView: genresCollectionView
+    )
+
+    private lazy var networksRowStackView = makeRowStackView(
+        titleLabel: networksTitleLabel,
+        collectionView: networksCollectionView
+    )
+
+    private lazy var productionCompaniesRowStackView = makeRowStackView(
+        titleLabel: productionCompaniesTitleLabel,
+        collectionView: productionCompaniesCollectionView
+    )
+
     override func configureView() {
         containerView.backgroundColor = .clear
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(genresTitleLabel)
-        containerView.addSubview(genresCollectionView)
-        containerView.addSubview(networksTitleLabel)
-        containerView.addSubview(networksCollectionView)
-        containerView.addSubview(productionCompaniesTitleLabel)
-        containerView.addSubview(productionCompaniesCollectionView)
+        containerView.addSubview(verticalStackView)
+        verticalStackView.addArrangedSubview(genresRowStackView)
+        verticalStackView.addArrangedSubview(networksRowStackView)
+        verticalStackView.addArrangedSubview(productionCompaniesRowStackView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
-        genresTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(genresCollectionView)
+        verticalStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         genresCollectionView.snp.makeConstraints { make in
-            make.top.trailing.equalToSuperview()
-            make.leading.equalTo(genresTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
             make.height.equalTo(Layout.collectionHeight)
-        }
-
-        networksTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(networksCollectionView)
         }
 
         networksCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(genresCollectionView.snp.bottom).offset(Layout.groupSpacing)
-            make.leading.equalTo(networksTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
-            make.trailing.equalToSuperview()
             make.height.equalTo(Layout.collectionHeight)
         }
 
-        productionCompaniesTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(productionCompaniesCollectionView)
-        }
-
         productionCompaniesCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(networksCollectionView.snp.bottom).offset(Layout.groupSpacing)
-            make.leading.equalTo(productionCompaniesTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
-            make.trailing.bottom.equalToSuperview()
             make.height.equalTo(Layout.collectionHeight)
         }
     }
@@ -422,6 +423,9 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         genres = []
         networks = []
         productionCompanies = []
+        setGroup(.genres, hidden: false)
+        setGroup(.networks, hidden: false)
+        setGroup(.productionCompanies, hidden: false)
         genresCollectionView.reloadData()
         networksCollectionView.reloadData()
         productionCompaniesCollectionView.reloadData()
@@ -431,9 +435,25 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         genres = item.genres
         networks = item.networks
         productionCompanies = item.productionCompanies
+        setGroup(.genres, hidden: genres.isEmpty)
+        setGroup(.networks, hidden: networks.isEmpty)
+        setGroup(.productionCompanies, hidden: productionCompanies.isEmpty)
         genresCollectionView.reloadData()
         networksCollectionView.reloadData()
         productionCompaniesCollectionView.reloadData()
+    }
+
+    private func setGroup(_ group: AttributeGroup, hidden: Bool) {
+        switch group {
+        case .genres:
+            genresRowStackView.isHidden = hidden
+
+        case .networks:
+            networksRowStackView.isHidden = hidden
+
+        case .productionCompanies:
+            productionCompaniesRowStackView.isHidden = hidden
+        }
     }
 
     private func makeCollectionView(layout: UICollectionViewFlowLayout) -> UICollectionView {
@@ -448,6 +468,30 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
             forCellWithReuseIdentifier: TVDetailAttributePillCollectionViewCell.reuseIdentifier
         )
         return collectionView
+    }
+
+    private func makeRowStackView(
+        titleLabel: UILabel,
+        collectionView: UICollectionView
+    ) -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, collectionView])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = Layout.titleCollectionSpacing
+        return stackView
+    }
+
+    static func fittingHeight(for item: TVDetailAttributeSectionItem) -> CGFloat {
+        let groupCount = [
+            item.genres.isEmpty,
+            item.networks.isEmpty,
+            item.productionCompanies.isEmpty
+        ].filter { !$0 }.count
+
+        guard groupCount > 0 else { return 0 }
+
+        return (CGFloat(groupCount) * Layout.collectionHeight)
+            + (CGFloat(groupCount - 1) * Layout.groupSpacing)
     }
 
     private func group(for collectionView: UICollectionView) -> AttributeGroup {
@@ -721,14 +765,18 @@ private final class TVDetailCastPersonCell: BaseCollectionViewCell {
         profileImageView.image = nil
         nameLabel.text = nil
         characterLabel.text = nil
+        characterLabel.isHidden = false
         episodeCountLabel.text = nil
+        episodeCountLabel.isHidden = false
     }
 
     func configure(with item: TVDetailCastItem) {
         profileImageView.sd_setImage(with: item.profileURL)
         nameLabel.text = item.name
         characterLabel.text = item.characterText
+        characterLabel.isHidden = item.characterText.isEmpty
         episodeCountLabel.text = item.episodeCountText
+        episodeCountLabel.isHidden = item.episodeCountText.isEmpty
     }
 
 }
@@ -845,12 +893,14 @@ private final class TVDetailVideoThumbnailCell: BaseCollectionViewCell {
         thumbnailImageView.image = nil
         titleLabel.text = nil
         subtitleLabel.text = nil
+        subtitleLabel.isHidden = false
     }
 
     func configure(with item: TVDetailVideoItem) {
         thumbnailImageView.sd_setImage(with: item.thumbnailURL)
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
+        subtitleLabel.isHidden = item.subtitle.isEmpty
     }
 }
 
@@ -966,12 +1016,14 @@ private final class TVDetailSeasonPosterCell: BaseCollectionViewCell {
         posterImageView.image = nil
         titleLabel.text = nil
         subtitleLabel.text = nil
+        subtitleLabel.isHidden = false
     }
 
     func configure(with item: TVDetailSeasonItem) {
         posterImageView.sd_setImage(with: item.posterURL)
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
+        subtitleLabel.isHidden = item.subtitle.isEmpty
     }
 }
 
@@ -1087,12 +1139,19 @@ private final class TVDetailRecommendationPosterCell: BaseCollectionViewCell {
         posterImageView.image = nil
         titleLabel.text = nil
         scoreLabel.text = nil
+        scoreLabel.isHidden = false
     }
 
     func configure(with item: TVDetailRecommendationItem) {
         posterImageView.sd_setImage(with: item.posterURL)
         titleLabel.text = item.title
-        scoreLabel.text = "評分 \(item.scoreText)"
+        if let scoreText = item.scoreText {
+            scoreLabel.text = "評分 \(scoreText)"
+            scoreLabel.isHidden = false
+        } else {
+            scoreLabel.text = nil
+            scoreLabel.isHidden = true
+        }
     }
 }
 

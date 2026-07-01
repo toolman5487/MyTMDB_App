@@ -111,9 +111,13 @@ nonisolated enum TVDetailSectionBuilder {
                     hero: TVDetailHeroItem(detail: detailItem),
                     overview: detailItem.overview
                 )
-            ),
-            .facts(makeFacts(detail: detailItem))
+            )
         ]
+
+        let facts = makeFacts(detail: detailItem)
+        if !facts.isEmpty {
+            sections.append(.facts(facts))
+        }
 
         let videoItems = content.videos.results
             .filter { !$0.key.isEmpty }
@@ -158,14 +162,19 @@ nonisolated enum TVDetailSectionBuilder {
 
     private static func makeFacts(detail: TVDetailItem) -> [TVDetailFactItem] {
         [
-            TVDetailFactItem(title: "首播日", value: detail.firstAirDateText),
-            TVDetailFactItem(title: "最後播出", value: detail.lastAirDateText),
-            TVDetailFactItem(title: "季數", value: detail.seasonCountText),
-            TVDetailFactItem(title: "集數", value: detail.episodeCountText),
-            TVDetailFactItem(title: "單集長度", value: detail.episodeRunTimeText),
-            TVDetailFactItem(title: "狀態", value: detail.statusText),
-            TVDetailFactItem(title: "類型", value: detail.typeText)
-        ]
+            makeFact(title: "首播日", value: detail.firstAirDateText),
+            makeFact(title: "最後播出", value: detail.lastAirDateText),
+            makeFact(title: "季數", value: detail.seasonCountText),
+            makeFact(title: "集數", value: detail.episodeCountText),
+            makeFact(title: "單集長度", value: detail.episodeRunTimeText),
+            makeFact(title: "狀態", value: detail.statusText),
+            makeFact(title: "類型", value: detail.typeText)
+        ].compactMap { $0 }
+    }
+
+    private static func makeFact(title: String, value: String?) -> TVDetailFactItem? {
+        guard let value, !value.isEmpty else { return nil }
+        return TVDetailFactItem(title: title, value: value)
     }
 
     private static func makeAttributes(detail: TVDetail) -> TVDetailAttributeSectionItem? {

@@ -425,41 +425,46 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         return collectionView
     }()
 
+    private let verticalStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = Layout.groupSpacing
+        return stackView
+    }()
+
+    private lazy var genresRowStackView = makeRowStackView(
+        titleLabel: genresTitleLabel,
+        collectionView: genresCollectionView
+    )
+
+    private lazy var productionCompaniesRowStackView = makeRowStackView(
+        titleLabel: productionCompaniesTitleLabel,
+        collectionView: productionCompaniesCollectionView
+    )
+
     override func configureView() {
         containerView.backgroundColor = .clear
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(genresTitleLabel)
-        containerView.addSubview(genresCollectionView)
-        containerView.addSubview(productionCompaniesTitleLabel)
-        containerView.addSubview(productionCompaniesCollectionView)
+        containerView.addSubview(verticalStackView)
+        verticalStackView.addArrangedSubview(genresRowStackView)
+        verticalStackView.addArrangedSubview(productionCompaniesRowStackView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
-        genresTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(genresCollectionView)
+        verticalStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         genresCollectionView.snp.makeConstraints { make in
-            make.top.trailing.equalToSuperview()
-            make.leading.equalTo(genresTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
             make.height.equalTo(Layout.collectionHeight)
         }
 
-        productionCompaniesTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(productionCompaniesCollectionView)
-        }
-
         productionCompaniesCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(genresCollectionView.snp.bottom).offset(Layout.groupSpacing)
-            make.leading.equalTo(productionCompaniesTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
-            make.trailing.bottom.equalToSuperview()
             make.height.equalTo(Layout.collectionHeight)
         }
     }
@@ -467,6 +472,8 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     override func resetForReuse() {
         genres = []
         productionCompanies = []
+        setGroup(.genres, hidden: false)
+        setGroup(.productionCompanies, hidden: false)
         genresCollectionView.reloadData()
         productionCompaniesCollectionView.reloadData()
     }
@@ -474,8 +481,43 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     func configure(with item: MovieDetailAttributeSectionItem) {
         genres = item.genres
         productionCompanies = item.productionCompanies
+        setGroup(.genres, hidden: genres.isEmpty)
+        setGroup(.productionCompanies, hidden: productionCompanies.isEmpty)
         genresCollectionView.reloadData()
         productionCompaniesCollectionView.reloadData()
+    }
+
+    private func setGroup(_ group: AttributeGroup, hidden: Bool) {
+        switch group {
+        case .genres:
+            genresRowStackView.isHidden = hidden
+
+        case .productionCompanies:
+            productionCompaniesRowStackView.isHidden = hidden
+        }
+    }
+
+    private func makeRowStackView(
+        titleLabel: UILabel,
+        collectionView: UICollectionView
+    ) -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, collectionView])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = Layout.titleCollectionSpacing
+        return stackView
+    }
+
+    static func fittingHeight(for item: MovieDetailAttributeSectionItem) -> CGFloat {
+        let groupCount = [
+            item.genres.isEmpty,
+            item.productionCompanies.isEmpty
+        ].filter { !$0 }.count
+
+        guard groupCount > 0 else { return 0 }
+
+        return (CGFloat(groupCount) * Layout.collectionHeight)
+            + (CGFloat(groupCount - 1) * Layout.groupSpacing)
     }
 
     private func group(for collectionView: UICollectionView) -> AttributeGroup {
@@ -738,12 +780,14 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
         profileImageView.image = nil
         nameLabel.text = nil
         characterLabel.text = nil
+        characterLabel.isHidden = false
     }
 
     func configure(with item: MovieDetailCastItem) {
         profileImageView.sd_setImage(with: item.profileURL)
         nameLabel.text = item.name
         characterLabel.text = item.characterText
+        characterLabel.isHidden = item.characterText.isEmpty
     }
 }
 
@@ -878,12 +922,14 @@ private final class MovieDetailVideoThumbnailCell: BaseCollectionViewCell {
         thumbnailImageView.image = nil
         titleLabel.text = nil
         subtitleLabel.text = nil
+        subtitleLabel.isHidden = false
     }
 
     func configure(with item: MovieDetailVideoItem) {
         thumbnailImageView.sd_setImage(with: item.thumbnailURL)
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
+        subtitleLabel.isHidden = item.subtitle.isEmpty
     }
 }
 
@@ -1018,11 +1064,18 @@ private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell 
         posterImageView.image = nil
         titleLabel.text = nil
         scoreLabel.text = nil
+        scoreLabel.isHidden = false
     }
 
     func configure(with item: MovieDetailRecommendationItem) {
         posterImageView.sd_setImage(with: item.posterURL)
         titleLabel.text = item.title
-        scoreLabel.text = "評分 \(item.scoreText)"
+        if let scoreText = item.scoreText {
+            scoreLabel.text = "評分 \(scoreText)"
+            scoreLabel.isHidden = false
+        } else {
+            scoreLabel.text = nil
+            scoreLabel.isHidden = true
+        }
     }
 }

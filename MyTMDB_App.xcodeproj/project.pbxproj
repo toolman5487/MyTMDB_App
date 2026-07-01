@@ -369,9 +369,9 @@
 		15606CA12FF4E12A0036898B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				15606CC42FF520000036898B /* TVDetailCells.swift */,
 				15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */,
 				15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */,
+				15606CC42FF520000036898B /* TVDetailCells.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

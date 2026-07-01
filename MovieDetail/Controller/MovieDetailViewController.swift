@@ -65,7 +65,6 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
-        static let attributesSectionHeight: CGFloat = 84
         static let castSectionHeight: CGFloat = 220
         static let videosSectionHeight: CGFloat = 148
         static let recommendationsSectionHeight: CGFloat = 220
@@ -352,8 +351,8 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         case .facts:
             return Layout.factsSectionHeight
 
-        case .attributes:
-            return Layout.attributesSectionHeight
+        case .attributes(let item):
+            return MovieDetailAttributesCollectionViewCell.fittingHeight(for: item)
 
         case .cast:
             return Layout.castSectionHeight

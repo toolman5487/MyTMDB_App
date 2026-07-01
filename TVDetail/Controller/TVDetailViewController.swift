@@ -66,7 +66,6 @@ final class TVDetailViewController: DetailBaseViewController {
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
-        static let attributesSectionHeight: CGFloat = 132
         static let castSectionHeight: CGFloat = 220
         static let videosSectionHeight: CGFloat = 148
         static let seasonsSectionHeight: CGFloat = 220
@@ -370,8 +369,8 @@ extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
         case .videos:
             return Layout.videosSectionHeight
 
-        case .attributes:
-            return Layout.attributesSectionHeight
+        case .attributes(let item):
+            return TVDetailAttributesCollectionViewCell.fittingHeight(for: item)
 
         case .cast:
             return Layout.castSectionHeight

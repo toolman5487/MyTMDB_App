@@ -107,9 +107,13 @@ nonisolated enum MovieDetailSectionBuilder {
                     hero: MovieDetailHeroItem(detail: detailItem),
                     overview: detailItem.overview
                 )
-            ),
-            .facts(makeFacts(detail: detailItem))
+            )
         ]
+
+        let facts = makeFacts(detail: detailItem)
+        if !facts.isEmpty {
+            sections.append(.facts(facts))
+        }
 
         let videoItems = content.videos.results
             .filter { !$0.key.isEmpty }
@@ -146,12 +150,17 @@ nonisolated enum MovieDetailSectionBuilder {
 
     private static func makeFacts(detail: MovieDetailItem) -> [MovieDetailFactItem] {
         [
-            MovieDetailFactItem(title: "上映日", value: detail.releaseDateText),
-            MovieDetailFactItem(title: "片長", value: detail.runtimeText),
-            MovieDetailFactItem(title: "狀態", value: detail.statusText),
-            MovieDetailFactItem(title: "預算", value: detail.budgetText),
-            MovieDetailFactItem(title: "票房", value: detail.revenueText)
-        ]
+            makeFact(title: "上映日", value: detail.releaseDateText),
+            makeFact(title: "片長", value: detail.runtimeText),
+            makeFact(title: "狀態", value: detail.statusText),
+            makeFact(title: "預算", value: detail.budgetText),
+            makeFact(title: "票房", value: detail.revenueText)
+        ].compactMap { $0 }
+    }
+
+    private static func makeFact(title: String, value: String?) -> MovieDetailFactItem? {
+        guard let value, !value.isEmpty else { return nil }
+        return MovieDetailFactItem(title: title, value: value)
     }
 
     private static func makeAttributes(detail: MovieDetail) -> MovieDetailAttributeSectionItem? {
@@ -204,13 +213,13 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     let overview: String?
     let posterURL: URL?
     let backdropURL: URL?
-    let releaseDateText: String
-    let runtimeText: String
-    let scoreText: String
-    let voteCountText: String
-    let statusText: String
-    let budgetText: String
-    let revenueText: String
+    let releaseDateText: String?
+    let runtimeText: String?
+    let scoreText: String?
+    let voteCountText: String?
+    let statusText: String?
+    let budgetText: String?
+    let revenueText: String?
     let homepageURL: URL?
     let imdbURL: URL?
 
@@ -226,19 +235,19 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.releaseDateText = detail.releaseDate.isEmpty ? "尚未公布" : detail.releaseDate
+        self.releaseDateText = Self.nonEmptyText(from: detail.releaseDate)
         self.runtimeText = Self.formatRuntime(detail.runtime)
-        self.scoreText = String(format: "%.1f", detail.voteAverage)
-        self.voteCountText = "\(detail.voteCount)"
-        self.statusText = detail.status.isEmpty ? "未知" : detail.status
+        self.scoreText = detail.voteCount > 0 ? String(format: "%.1f", detail.voteAverage) : nil
+        self.voteCountText = detail.voteCount > 0 ? "\(detail.voteCount)" : nil
+        self.statusText = Self.nonEmptyText(from: detail.status)
         self.budgetText = Self.formatCurrency(detail.budget)
         self.revenueText = Self.formatCurrency(detail.revenue)
         self.homepageURL = Self.makeURL(from: detail.homepage)
         self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
     }
 
-    private static func formatRuntime(_ runtime: Int?) -> String {
-        guard let runtime, runtime > 0 else { return "片長未知" }
+    private static func formatRuntime(_ runtime: Int?) -> String? {
+        guard let runtime, runtime > 0 else { return nil }
 
         let hours = runtime / 60
         let minutes = runtime % 60
@@ -254,8 +263,8 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         return "\(hours) 小時 \(minutes) 分鐘"
     }
 
-    private static func formatCurrency(_ value: Int) -> String {
-        guard value > 0 else { return "未公開" }
+    private static func formatCurrency(_ value: Int) -> String? {
+        guard value > 0 else { return nil }
 
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
@@ -292,9 +301,9 @@ nonisolated struct MovieDetailHeroItem: Sendable, Equatable, Identifiable {
     let tagline: String?
     let posterURL: URL?
     let backdropURL: URL?
-    let scoreText: String
-    let voteCountText: String
-    let metadataText: String
+    let scoreText: String?
+    let voteCountText: String?
+    let metadataText: String?
 
     init(detail: MovieDetailItem) {
         self.id = detail.id
@@ -305,7 +314,11 @@ nonisolated struct MovieDetailHeroItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropURL
         self.scoreText = detail.scoreText
         self.voteCountText = detail.voteCountText
-        self.metadataText = "\(detail.releaseDateText) · \(detail.runtimeText)"
+        let metadataValues = [
+            detail.releaseDateText,
+            detail.runtimeText
+        ].compactMap { $0 }
+        self.metadataText = metadataValues.isEmpty ? nil : metadataValues.joined(separator: " · ")
     }
 }
 
@@ -374,7 +387,7 @@ nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
     init(cast: MovieCreditCast) {
         self.id = cast.id
         self.name = cast.name
-        self.characterText = cast.character.isEmpty ? "角色未公開" : cast.character
+        self.characterText = cast.character.trimmingCharacters(in: .whitespacesAndNewlines)
         self.profileURL = cast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -411,14 +424,14 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
     let id: Int
     let title: String
     let releaseDateText: String
-    let scoreText: String
+    let scoreText: String?
     let posterURL: URL?
 
     init(recommendation: MovieRecommendation) {
         self.id = recommendation.id
         self.title = recommendation.title
-        self.releaseDateText = recommendation.releaseDate.isEmpty ? "尚未公布" : recommendation.releaseDate
-        self.scoreText = String(format: "%.1f", recommendation.voteAverage)
+        self.releaseDateText = recommendation.releaseDate
+        self.scoreText = recommendation.voteCount > 0 ? String(format: "%.1f", recommendation.voteAverage) : nil
         self.posterURL = recommendation.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

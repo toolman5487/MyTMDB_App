@@ -698,15 +698,15 @@ nonisolated struct TVDetailItem: Sendable, Equatable, Identifiable {
     let overview: String?
     let posterURL: URL?
     let backdropURL: URL?
-    let firstAirDateText: String
-    let lastAirDateText: String
-    let episodeRunTimeText: String
-    let seasonCountText: String
-    let episodeCountText: String
-    let scoreText: String
-    let voteCountText: String
-    let statusText: String
-    let typeText: String
+    let firstAirDateText: String?
+    let lastAirDateText: String?
+    let episodeRunTimeText: String?
+    let seasonCountText: String?
+    let episodeCountText: String?
+    let scoreText: String?
+    let voteCountText: String?
+    let statusText: String?
+    let typeText: String?
     let homepageURL: URL?
 
     init(detail: TVDetail) {
@@ -721,20 +721,20 @@ nonisolated struct TVDetailItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.firstAirDateText = detail.firstAirDate.isEmpty ? "尚未公布" : detail.firstAirDate
-        self.lastAirDateText = detail.lastAirDate.isEmpty ? "尚未公布" : detail.lastAirDate
+        self.firstAirDateText = Self.nonEmptyText(from: detail.firstAirDate)
+        self.lastAirDateText = Self.nonEmptyText(from: detail.lastAirDate)
         self.episodeRunTimeText = Self.formatEpisodeRunTime(detail.episodeRunTime)
-        self.seasonCountText = detail.numberOfSeasons > 0 ? "\(detail.numberOfSeasons) 季" : "未知"
-        self.episodeCountText = detail.numberOfEpisodes > 0 ? "\(detail.numberOfEpisodes) 集" : "未知"
-        self.scoreText = String(format: "%.1f", detail.voteAverage)
-        self.voteCountText = "\(detail.voteCount)"
-        self.statusText = detail.status.isEmpty ? "未知" : detail.status
-        self.typeText = detail.type.isEmpty ? "未知" : detail.type
+        self.seasonCountText = detail.numberOfSeasons > 0 ? "\(detail.numberOfSeasons) 季" : nil
+        self.episodeCountText = detail.numberOfEpisodes > 0 ? "\(detail.numberOfEpisodes) 集" : nil
+        self.scoreText = detail.voteCount > 0 ? String(format: "%.1f", detail.voteAverage) : nil
+        self.voteCountText = detail.voteCount > 0 ? "\(detail.voteCount)" : nil
+        self.statusText = Self.nonEmptyText(from: detail.status)
+        self.typeText = Self.nonEmptyText(from: detail.type)
         self.homepageURL = Self.makeURL(from: detail.homepage)
     }
 
-    private static func formatEpisodeRunTime(_ values: [Int]) -> String {
-        guard let runtime = values.first(where: { $0 > 0 }) else { return "單集長度未知" }
+    private static func formatEpisodeRunTime(_ values: [Int]) -> String? {
+        guard let runtime = values.first(where: { $0 > 0 }) else { return nil }
         return "\(runtime) 分鐘"
     }
 
@@ -758,9 +758,9 @@ nonisolated struct TVDetailHeroItem: Sendable, Equatable, Identifiable {
     let tagline: String?
     let posterURL: URL?
     let backdropURL: URL?
-    let scoreText: String
-    let voteCountText: String
-    let metadataText: String
+    let scoreText: String?
+    let voteCountText: String?
+    let metadataText: String?
 
     init(detail: TVDetailItem) {
         self.id = detail.id
@@ -771,7 +771,11 @@ nonisolated struct TVDetailHeroItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropURL
         self.scoreText = detail.scoreText
         self.voteCountText = detail.voteCountText
-        self.metadataText = "\(detail.firstAirDateText) · \(detail.seasonCountText)"
+        let metadataValues = [
+            detail.firstAirDateText,
+            detail.seasonCountText
+        ].compactMap { $0 }
+        self.metadataText = metadataValues.isEmpty ? nil : metadataValues.joined(separator: " · ")
     }
 }
 
@@ -855,7 +859,7 @@ nonisolated struct TVDetailCastItem: Sendable, Equatable, Identifiable {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
-        guard !characters.isEmpty else { return "角色未公開" }
+        guard !characters.isEmpty else { return "" }
         return Array(Set(characters)).sorted().joined(separator: " / ")
     }
 }
@@ -878,8 +882,9 @@ nonisolated struct TVDetailSeasonItem: Sendable, Equatable, Identifiable {
     }
 
     private static func makeSubtitle(season: TVDetailSeason) -> String {
-        let episodeText = season.episodeCount > 0 ? "\(season.episodeCount) 集" : "集數未知"
-        guard !season.airDate.isEmpty else { return episodeText }
+        let episodeText = season.episodeCount > 0 ? "\(season.episodeCount) 集" : nil
+        guard !season.airDate.isEmpty else { return episodeText ?? "" }
+        guard let episodeText else { return season.airDate }
         return "\(season.airDate) · \(episodeText)"
     }
 }
@@ -910,14 +915,14 @@ nonisolated struct TVDetailRecommendationItem: Sendable, Equatable, Identifiable
     let id: Int
     let title: String
     let firstAirDateText: String
-    let scoreText: String
+    let scoreText: String?
     let posterURL: URL?
 
     init(recommendation: TVRecommendation) {
         self.id = recommendation.id
         self.title = recommendation.name
-        self.firstAirDateText = recommendation.firstAirDate.isEmpty ? "尚未公布" : recommendation.firstAirDate
-        self.scoreText = String(format: "%.1f", recommendation.voteAverage)
+        self.firstAirDateText = recommendation.firstAirDate
+        self.scoreText = recommendation.voteCount > 0 ? String(format: "%.1f", recommendation.voteAverage) : nil
         self.posterURL = recommendation.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

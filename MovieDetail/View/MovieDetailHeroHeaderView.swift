@@ -189,7 +189,9 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
         taglineLabel.text = nil
         taglineLabel.isHidden = false
         metadataLabel.text = nil
+        metadataLabel.isHidden = false
         scoreLabel.text = nil
+        scoreLabel.isHidden = false
     }
 
     func configure(with item: MovieDetailHeroItem) {
@@ -200,7 +202,16 @@ final class MovieDetailHeroHeaderView: UICollectionReusableView {
         taglineLabel.text = tagline
         taglineLabel.isHidden = tagline?.isEmpty != false
         metadataLabel.text = item.metadataText
-        scoreLabel.text = "評分 \(item.scoreText) (\(item.voteCountText))"
+        metadataLabel.isHidden = item.metadataText?.isEmpty != false
+
+        if let scoreText = item.scoreText,
+           let voteCountText = item.voteCountText {
+            scoreLabel.text = "評分 \(scoreText) (\(voteCountText))"
+            scoreLabel.isHidden = false
+        } else {
+            scoreLabel.text = nil
+            scoreLabel.isHidden = true
+        }
     }
 }
 
