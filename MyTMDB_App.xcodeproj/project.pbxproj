@@ -32,6 +32,12 @@
 		15606CB12FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
 		15606CB22FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
 		15606CB32FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
+		15606CBE2FF520000036898B /* TVDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC42FF520000036898B /* TVDetailCells.swift */; };
+		15606CBF2FF520000036898B /* TVDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC42FF520000036898B /* TVDetailCells.swift */; };
+		15606CC02FF520000036898B /* TVDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC42FF520000036898B /* TVDetailCells.swift */; };
+		15606CC12FF520000036898B /* TVDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */; };
+		15606CC22FF520000036898B /* TVDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */; };
+		15606CC32FF520000036898B /* TVDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */; };
 		1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA7E2DC4B6D1005E972C /* SDWebImage */; };
 		1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA812DC4B6DF005E972C /* SnapKit */; };
 		1598AA852DC4B6F8005E972C /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA842DC4B6F8005E972C /* CombineCocoa */; };
@@ -170,6 +176,8 @@
 		15606CAF2FF4F0000036898B /* TVDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailService.swift; sourceTree = "<group>"; };
 		15606CB02FF4F0000036898B /* TVDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailViewModel.swift; sourceTree = "<group>"; };
 		15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailHeroHeaderView.swift; sourceTree = "<group>"; };
+		15606CC42FF520000036898B /* TVDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailCells.swift; sourceTree = "<group>"; };
+		15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailSectionHeaderView.swift; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -361,7 +369,9 @@
 		15606CA12FF4E12A0036898B /* View */ = {
 			isa = PBXGroup;
 			children = (
+				15606CC42FF520000036898B /* TVDetailCells.swift */,
 				15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */,
+				15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -909,6 +919,8 @@
 				15606CA82FF4F0000036898B /* TVDetailService.swift in Sources */,
 				15606CAB2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
 				15606CB12FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
+				15606CBE2FF520000036898B /* TVDetailCells.swift in Sources */,
+				15606CC12FF520000036898B /* TVDetailSectionHeaderView.swift in Sources */,
 				15D198132FF2201000545A85 /* SessionStore.swift in Sources */,
 				150336A52FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				150336B22FF35E00003125EC /* ErrorMessage.swift in Sources */,
@@ -970,6 +982,8 @@
 				15606CAA2FF4F0000036898B /* TVDetailService.swift in Sources */,
 				15606CAD2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
 				15606CB32FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
+				15606CC02FF520000036898B /* TVDetailCells.swift in Sources */,
+				15606CC32FF520000036898B /* TVDetailSectionHeaderView.swift in Sources */,
 				15CF9A192FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A152FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D196E12FF35F1000545A85 /* NetworkError.swift in Sources */,
@@ -1004,6 +1018,8 @@
 				15606CA92FF4F0000036898B /* TVDetailService.swift in Sources */,
 				15606CAC2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
 				15606CB22FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
+				15606CBF2FF520000036898B /* TVDetailCells.swift in Sources */,
+				15606CC22FF520000036898B /* TVDetailSectionHeaderView.swift in Sources */,
 				15D196E22FF35F1000545A85 /* NetworkError.swift in Sources */,
 				15D196E62FF3900000545A85 /* AppLocalization.swift in Sources */,
 				15D1969D2FF1238E00545A85 /* APIConfig.swift in Sources */,
@@ -1056,6 +1072,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1084,6 +1101,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

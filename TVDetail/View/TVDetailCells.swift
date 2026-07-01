@@ -1,20 +1,20 @@
 //
-//  MovieDetailCells.swift
+//  TVDetailCells.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/6/30.
+//  Created by Willy Hsu on 2026/7/1.
 //
 
 import SDWebImage
 import SnapKit
 import UIKit
 
-// MARK: - MovieDetailOverviewCollectionViewCell
+// MARK: - TVDetailOverviewCollectionViewCell
 
 @MainActor
-final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
+final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailOverviewCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailOverviewCollectionViewCell.self)
 
     private enum Layout {
         static let contentInset: CGFloat = 16
@@ -108,18 +108,18 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     }
 }
 
-// MARK: - MovieDetailFactsCollectionViewCell
+// MARK: - TVDetailFactsCollectionViewCell
 
 @MainActor
-final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailFactsCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailFactsCollectionViewCell.self)
 
     private enum Layout {
         static let itemHeight: CGFloat = 96
     }
 
-    private var facts: [MovieDetailFactItem] = []
+    private var facts: [TVDetailFactItem] = []
     private var previousCollectionWidth: CGFloat = 0
 
     override func configureView() {
@@ -127,8 +127,8 @@ final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
-            MovieDetailFactCardCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailFactCardCollectionViewCell.reuseIdentifier
+            TVDetailFactCardCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailFactCardCollectionViewCell.reuseIdentifier
         )
     }
 
@@ -159,14 +159,14 @@ final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.reloadData()
     }
 
-    func configure(facts: [MovieDetailFactItem]) {
+    func configure(facts: [TVDetailFactItem]) {
         self.facts = facts
         collectionViewFlowLayout.invalidateLayout()
         collectionView.reloadData()
     }
 }
 
-extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension TVDetailFactsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         facts.count
@@ -174,11 +174,11 @@ extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource, UIColl
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailFactCardCollectionViewCell.reuseIdentifier,
+            withReuseIdentifier: TVDetailFactCardCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MovieDetailFactCardCollectionViewCell {
+        if let cell = cell as? TVDetailFactCardCollectionViewCell {
             cell.configure(with: facts[indexPath.item])
         }
 
@@ -194,7 +194,7 @@ extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource, UIColl
             return .zero
         }
 
-        return MovieDetailFactCardCollectionViewCell.fittingSize(
+        return TVDetailFactCardCollectionViewCell.fittingSize(
             for: facts[indexPath.item],
             height: Layout.itemHeight,
             maximumWidth: maximumCardWidth(in: collectionView)
@@ -215,9 +215,9 @@ extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource, UIColl
 }
 
 @MainActor
-private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCell {
+private final class TVDetailFactCardCollectionViewCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailFactCardCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailFactCardCollectionViewCell.self)
 
     private enum Layout {
         static let accentWidth: CGFloat = 4
@@ -300,13 +300,13 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
         valueLabel.text = nil
     }
 
-    func configure(with item: MovieDetailFactItem) {
+    func configure(with item: TVDetailFactItem) {
         titleLabel.text = item.title
         valueLabel.text = item.value
     }
 
     static func fittingSize(
-        for item: MovieDetailFactItem,
+        for item: TVDetailFactItem,
         height: CGFloat,
         maximumWidth: CGFloat
     ) -> CGSize {
@@ -329,12 +329,12 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
     }
 }
 
-// MARK: - MovieDetailAttributesCollectionViewCell
+// MARK: - TVDetailAttributesCollectionViewCell
 
 @MainActor
-final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
+final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailAttributesCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailAttributesCollectionViewCell.self)
 
     private enum Layout {
         static let collectionHeight: CGFloat = 36
@@ -345,85 +345,25 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     private enum AttributeGroup {
         case genres
+        case networks
         case productionCompanies
     }
 
-    private var genres: [MovieDetailAttributeItem] = []
-    private var productionCompanies: [MovieDetailAttributeItem] = []
+    private var genres: [TVDetailAttributeItem] = []
+    private var networks: [TVDetailAttributeItem] = []
+    private var productionCompanies: [TVDetailAttributeItem] = []
 
-    private let genresTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        label.text = "種類"
-        label.setContentHuggingPriority(.required, for: .horizontal)
-        label.setContentCompressionResistancePriority(.required, for: .horizontal)
-        return label
-    }()
+    private let genresTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "種類")
+    private let networksTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "平台")
+    private let productionCompaniesTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "製作公司")
 
-    private let productionCompaniesTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        label.text = "製作公司"
-        label.setContentHuggingPriority(.required, for: .horizontal)
-        label.setContentCompressionResistancePriority(.required, for: .horizontal)
-        return label
-    }()
+    private let genresCollectionViewFlowLayout = TVDetailCellStyle.makeFlowLayout()
+    private let networksCollectionViewFlowLayout = TVDetailCellStyle.makeFlowLayout()
+    private let productionCompaniesCollectionViewFlowLayout = TVDetailCellStyle.makeFlowLayout()
 
-    private let genresCollectionViewFlowLayout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = Layout.itemSpacing
-        layout.minimumInteritemSpacing = Layout.itemSpacing
-        return layout
-    }()
-
-    private let productionCompaniesCollectionViewFlowLayout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = Layout.itemSpacing
-        layout.minimumInteritemSpacing = Layout.itemSpacing
-        return layout
-    }()
-
-    private lazy var genresCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(
-            frame: .zero,
-            collectionViewLayout: genresCollectionViewFlowLayout
-        )
-        collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.alwaysBounceHorizontal = true
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            MovieDetailAttributePillCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailAttributePillCollectionViewCell.reuseIdentifier
-        )
-        return collectionView
-    }()
-
-    private lazy var productionCompaniesCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(
-            frame: .zero,
-            collectionViewLayout: productionCompaniesCollectionViewFlowLayout
-        )
-        collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.alwaysBounceHorizontal = true
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            MovieDetailAttributePillCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailAttributePillCollectionViewCell.reuseIdentifier
-        )
-        return collectionView
-    }()
+    private lazy var genresCollectionView = makeCollectionView(layout: genresCollectionViewFlowLayout)
+    private lazy var networksCollectionView = makeCollectionView(layout: networksCollectionViewFlowLayout)
+    private lazy var productionCompaniesCollectionView = makeCollectionView(layout: productionCompaniesCollectionViewFlowLayout)
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -433,6 +373,8 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         super.setupHierarchy()
         containerView.addSubview(genresTitleLabel)
         containerView.addSubview(genresCollectionView)
+        containerView.addSubview(networksTitleLabel)
+        containerView.addSubview(networksCollectionView)
         containerView.addSubview(productionCompaniesTitleLabel)
         containerView.addSubview(productionCompaniesCollectionView)
     }
@@ -451,13 +393,25 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
             make.height.equalTo(Layout.collectionHeight)
         }
 
+        networksTitleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalTo(networksCollectionView)
+        }
+
+        networksCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(genresCollectionView.snp.bottom).offset(Layout.groupSpacing)
+            make.leading.equalTo(networksTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
+            make.trailing.equalToSuperview()
+            make.height.equalTo(Layout.collectionHeight)
+        }
+
         productionCompaniesTitleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.centerY.equalTo(productionCompaniesCollectionView)
         }
 
         productionCompaniesCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(genresCollectionView.snp.bottom).offset(Layout.groupSpacing)
+            make.top.equalTo(networksCollectionView.snp.bottom).offset(Layout.groupSpacing)
             make.leading.equalTo(productionCompaniesTitleLabel.snp.trailing).offset(Layout.titleCollectionSpacing)
             make.trailing.bottom.equalToSuperview()
             make.height.equalTo(Layout.collectionHeight)
@@ -466,26 +420,56 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     override func resetForReuse() {
         genres = []
+        networks = []
         productionCompanies = []
         genresCollectionView.reloadData()
+        networksCollectionView.reloadData()
         productionCompaniesCollectionView.reloadData()
     }
 
-    func configure(with item: MovieDetailAttributeSectionItem) {
+    func configure(with item: TVDetailAttributeSectionItem) {
         genres = item.genres
+        networks = item.networks
         productionCompanies = item.productionCompanies
         genresCollectionView.reloadData()
+        networksCollectionView.reloadData()
         productionCompaniesCollectionView.reloadData()
+    }
+
+    private func makeCollectionView(layout: UICollectionViewFlowLayout) -> UICollectionView {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.alwaysBounceHorizontal = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(
+            TVDetailAttributePillCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailAttributePillCollectionViewCell.reuseIdentifier
+        )
+        return collectionView
     }
 
     private func group(for collectionView: UICollectionView) -> AttributeGroup {
-        collectionView === genresCollectionView ? .genres : .productionCompanies
+        switch collectionView {
+        case genresCollectionView:
+            return .genres
+
+        case networksCollectionView:
+            return .networks
+
+        default:
+            return .productionCompanies
+        }
     }
 
-    private func items(for group: AttributeGroup) -> [MovieDetailAttributeItem] {
+    private func items(for group: AttributeGroup) -> [TVDetailAttributeItem] {
         switch group {
         case .genres:
             return genres
+
+        case .networks:
+            return networks
 
         case .productionCompanies:
             return productionCompanies
@@ -493,7 +477,7 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     }
 }
 
-extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension TVDetailAttributesCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items(for: group(for: collectionView)).count
@@ -501,12 +485,12 @@ extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, U
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailAttributePillCollectionViewCell.reuseIdentifier,
+            withReuseIdentifier: TVDetailAttributePillCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
         let items = items(for: group(for: collectionView))
 
-        if let cell = cell as? MovieDetailAttributePillCollectionViewCell {
+        if let cell = cell as? TVDetailAttributePillCollectionViewCell {
             cell.configure(with: items[indexPath.item])
         }
 
@@ -523,7 +507,7 @@ extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, U
             return .zero
         }
 
-        return MovieDetailAttributePillCollectionViewCell.fittingSize(
+        return TVDetailAttributePillCollectionViewCell.fittingSize(
             for: items[indexPath.item],
             maximumWidth: collectionView.bounds.width
         )
@@ -531,9 +515,9 @@ extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, U
 }
 
 @MainActor
-private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionViewCell {
+private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailAttributePillCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailAttributePillCollectionViewCell.self)
 
     private enum Layout {
         static let height: CGFloat = 36
@@ -582,11 +566,11 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
         titleLabel.text = nil
     }
 
-    func configure(with item: MovieDetailAttributeItem) {
+    func configure(with item: TVDetailAttributeItem) {
         titleLabel.text = item.title
     }
 
-    static func fittingSize(for item: MovieDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {
+    static func fittingSize(for item: TVDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {
         let measuredWidth = (item.title as NSString).size(withAttributes: [.font: titleFont]).width
         let fittingWidth = ceil(measuredWidth) + (Layout.horizontalInset * 2)
         let width = min(
@@ -598,18 +582,18 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
     }
 }
 
-// MARK: - MovieDetailCastCollectionViewCell
+// MARK: - Shared Horizontal Poster Cells
 
 @MainActor
-final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailCastCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailCastCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 112, height: 220)
     }
 
-    private var items: [MovieDetailCastItem] = []
+    private var items: [TVDetailCastItem] = []
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -617,8 +601,8 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
-            MovieDetailCastPersonCell.self,
-            forCellWithReuseIdentifier: MovieDetailCastPersonCell.reuseIdentifier
+            TVDetailCastPersonCell.self,
+            forCellWithReuseIdentifier: TVDetailCastPersonCell.reuseIdentifier
         )
     }
 
@@ -640,13 +624,13 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.reloadData()
     }
 
-    func configure(items: [MovieDetailCastItem]) {
+    func configure(items: [TVDetailCastItem]) {
         self.items = items
         collectionView.reloadData()
     }
 }
 
-extension MovieDetailCastCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
+extension TVDetailCastCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items.count
@@ -654,11 +638,11 @@ extension MovieDetailCastCollectionViewCell: UICollectionViewDataSource, UIColle
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailCastPersonCell.reuseIdentifier,
+            withReuseIdentifier: TVDetailCastPersonCell.reuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MovieDetailCastPersonCell {
+        if let cell = cell as? TVDetailCastPersonCell {
             cell.configure(with: items[indexPath.item])
         }
 
@@ -667,9 +651,9 @@ extension MovieDetailCastCollectionViewCell: UICollectionViewDataSource, UIColle
 }
 
 @MainActor
-private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
+private final class TVDetailCastPersonCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailCastPersonCell.self)
+    static let reuseIdentifier = String(describing: TVDetailCastPersonCell.self)
 
     private enum Layout {
         static let profileImageHeight: CGFloat = 168
@@ -686,31 +670,25 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
         return imageView
     }()
 
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
-
-    private let characterLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
+    private let nameLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption1),
+        color: ThemeColor.textPrimary
+    )
+    private let characterLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption2),
+        color: ThemeColor.textSecondary
+    )
+    private let episodeCountLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption2),
+        color: ThemeColor.textSecondary
+    )
 
     override func setupHierarchy() {
         super.setupHierarchy()
         containerView.addSubview(profileImageView)
         containerView.addSubview(nameLabel)
         containerView.addSubview(characterLabel)
+        containerView.addSubview(episodeCountLabel)
     }
 
     override func setupConstraints() {
@@ -731,6 +709,11 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
             make.top.equalTo(nameLabel.snp.bottom).offset(Layout.subtitleTopBottomSpacing)
             make.leading.trailing.equalToSuperview()
         }
+
+        episodeCountLabel.snp.makeConstraints { make in
+            make.top.equalTo(characterLabel.snp.bottom).offset(Layout.subtitleTopBottomSpacing)
+            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
+        }
     }
 
     override func resetForReuse() {
@@ -738,27 +721,28 @@ private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
         profileImageView.image = nil
         nameLabel.text = nil
         characterLabel.text = nil
+        episodeCountLabel.text = nil
     }
 
-    func configure(with item: MovieDetailCastItem) {
+    func configure(with item: TVDetailCastItem) {
         profileImageView.sd_setImage(with: item.profileURL)
         nameLabel.text = item.name
         characterLabel.text = item.characterText
+        episodeCountLabel.text = item.episodeCountText
     }
+
 }
 
-// MARK: - MovieDetailVideosCollectionViewCell
-
 @MainActor
-final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailVideosCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailVideosCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 220, height: 148)
     }
 
-    private var items: [MovieDetailVideoItem] = []
+    private var items: [TVDetailVideoItem] = []
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -766,8 +750,8 @@ final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
-            MovieDetailVideoThumbnailCell.self,
-            forCellWithReuseIdentifier: MovieDetailVideoThumbnailCell.reuseIdentifier
+            TVDetailVideoThumbnailCell.self,
+            forCellWithReuseIdentifier: TVDetailVideoThumbnailCell.reuseIdentifier
         )
     }
 
@@ -789,13 +773,13 @@ final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
         collectionView.reloadData()
     }
 
-    func configure(items: [MovieDetailVideoItem]) {
+    func configure(items: [TVDetailVideoItem]) {
         self.items = items
         collectionView.reloadData()
     }
 }
 
-extension MovieDetailVideosCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
+extension TVDetailVideosCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items.count
@@ -803,11 +787,11 @@ extension MovieDetailVideosCollectionViewCell: UICollectionViewDataSource, UICol
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailVideoThumbnailCell.reuseIdentifier,
+            withReuseIdentifier: TVDetailVideoThumbnailCell.reuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MovieDetailVideoThumbnailCell {
+        if let cell = cell as? TVDetailVideoThumbnailCell {
             cell.configure(with: items[indexPath.item])
         }
 
@@ -816,36 +800,19 @@ extension MovieDetailVideosCollectionViewCell: UICollectionViewDataSource, UICol
 }
 
 @MainActor
-private final class MovieDetailVideoThumbnailCell: BaseCollectionViewCell {
+private final class TVDetailVideoThumbnailCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailVideoThumbnailCell.self)
+    static let reuseIdentifier = String(describing: TVDetailVideoThumbnailCell.self)
 
-    private let thumbnailImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let thumbnailImageView: UIImageView = TVDetailCellStyle.makeImageView()
+    private let titleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption1),
+        color: ThemeColor.textPrimary
+    )
+    private let subtitleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption2),
+        color: ThemeColor.textSecondary
+    )
 
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -880,25 +847,23 @@ private final class MovieDetailVideoThumbnailCell: BaseCollectionViewCell {
         subtitleLabel.text = nil
     }
 
-    func configure(with item: MovieDetailVideoItem) {
+    func configure(with item: TVDetailVideoItem) {
         thumbnailImageView.sd_setImage(with: item.thumbnailURL)
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
     }
 }
 
-// MARK: - MovieDetailRecommendationsCollectionViewCell
-
 @MainActor
-final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailSeasonsCollectionViewCell: BaseNestedCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailRecommendationsCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: TVDetailSeasonsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
     }
 
-    private var items: [MovieDetailRecommendationItem] = []
+    private var items: [TVDetailSeasonItem] = []
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -906,8 +871,8 @@ final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionVi
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
-            MovieDetailRecommendationPosterCell.self,
-            forCellWithReuseIdentifier: MovieDetailRecommendationPosterCell.reuseIdentifier
+            TVDetailSeasonPosterCell.self,
+            forCellWithReuseIdentifier: TVDetailSeasonPosterCell.reuseIdentifier
         )
     }
 
@@ -929,13 +894,13 @@ final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionVi
         collectionView.reloadData()
     }
 
-    func configure(items: [MovieDetailRecommendationItem]) {
+    func configure(items: [TVDetailSeasonItem]) {
         self.items = items
         collectionView.reloadData()
     }
 }
 
-extension MovieDetailRecommendationsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
+extension TVDetailSeasonsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items.count
@@ -943,11 +908,11 @@ extension MovieDetailRecommendationsCollectionViewCell: UICollectionViewDataSour
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailRecommendationPosterCell.reuseIdentifier,
+            withReuseIdentifier: TVDetailSeasonPosterCell.reuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MovieDetailRecommendationPosterCell {
+        if let cell = cell as? TVDetailSeasonPosterCell {
             cell.configure(with: items[indexPath.item])
         }
 
@@ -956,36 +921,140 @@ extension MovieDetailRecommendationsCollectionViewCell: UICollectionViewDataSour
 }
 
 @MainActor
-private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell {
+private final class TVDetailSeasonPosterCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailRecommendationPosterCell.self)
+    static let reuseIdentifier = String(describing: TVDetailSeasonPosterCell.self)
 
-    private let posterImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
+    private let posterImageView: UIImageView = TVDetailCellStyle.makeImageView()
+    private let titleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption1),
+        color: ThemeColor.textPrimary
+    )
+    private let subtitleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption2),
+        color: ThemeColor.textSecondary
+    )
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        containerView.addSubview(posterImageView)
+        containerView.addSubview(titleLabel)
+        containerView.addSubview(subtitleLabel)
+    }
 
-    private let scoreLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        posterImageView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(168)
+        }
+
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(posterImageView.snp.bottom).offset(6)
+            make.leading.trailing.equalToSuperview()
+        }
+
+        subtitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(2)
+            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
+        }
+    }
+
+    override func resetForReuse() {
+        posterImageView.sd_cancelCurrentImageLoad()
+        posterImageView.image = nil
+        titleLabel.text = nil
+        subtitleLabel.text = nil
+    }
+
+    func configure(with item: TVDetailSeasonItem) {
+        posterImageView.sd_setImage(with: item.posterURL)
+        titleLabel.text = item.title
+        subtitleLabel.text = item.subtitle
+    }
+}
+
+@MainActor
+final class TVDetailRecommendationsCollectionViewCell: BaseNestedCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: TVDetailRecommendationsCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 124, height: 220)
+    }
+
+    private var items: [TVDetailRecommendationItem] = []
+
+    override func configureView() {
+        containerView.backgroundColor = .clear
+        collectionViewFlowLayout.itemSize = Layout.itemSize
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(
+            TVDetailRecommendationPosterCell.self,
+            forCellWithReuseIdentifier: TVDetailRecommendationPosterCell.reuseIdentifier
+        )
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        containerView.addSubview(collectionView)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
+    override func resetForReuse() {
+        items = []
+        collectionView.reloadData()
+    }
+
+    func configure(items: [TVDetailRecommendationItem]) {
+        self.items = items
+        collectionView.reloadData()
+    }
+}
+
+extension TVDetailRecommendationsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        items.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: TVDetailRecommendationPosterCell.reuseIdentifier,
+            for: indexPath
+        )
+
+        if let cell = cell as? TVDetailRecommendationPosterCell {
+            cell.configure(with: items[indexPath.item])
+        }
+
+        return cell
+    }
+}
+
+@MainActor
+private final class TVDetailRecommendationPosterCell: BaseCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: TVDetailRecommendationPosterCell.self)
+
+    private let posterImageView: UIImageView = TVDetailCellStyle.makeImageView()
+    private let titleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption1),
+        color: ThemeColor.textPrimary
+    )
+    private let scoreLabel: UILabel = TVDetailCellStyle.makeTextLabel(
+        font: .preferredFont(forTextStyle: .caption2),
+        color: ThemeColor.textSecondary
+    )
 
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -1020,9 +1089,54 @@ private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell 
         scoreLabel.text = nil
     }
 
-    func configure(with item: MovieDetailRecommendationItem) {
+    func configure(with item: TVDetailRecommendationItem) {
         posterImageView.sd_setImage(with: item.posterURL)
         titleLabel.text = item.title
         scoreLabel.text = "評分 \(item.scoreText)"
+    }
+}
+
+private enum TVDetailCellStyle {
+
+    private enum Layout {
+        static let itemSpacing: CGFloat = 8
+    }
+
+    static func makeImageView() -> UIImageView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = ThemeColor.fillSecondary
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        return imageView
+    }
+
+    static func makeTextLabel(font: UIFont, color: UIColor) -> UILabel {
+        let label = UILabel()
+        label.font = font
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = color
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }
+
+    static func makeGroupTitleLabel(text: String) -> UILabel {
+        let label = makeTextLabel(
+            font: .preferredFont(forTextStyle: .caption1),
+            color: ThemeColor.textSecondary
+        )
+        label.text = text
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }
+
+    static func makeFlowLayout() -> UICollectionViewFlowLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = Layout.itemSpacing
+        layout.minimumInteritemSpacing = Layout.itemSpacing
+        return layout
     }
 }

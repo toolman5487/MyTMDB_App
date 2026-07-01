@@ -61,7 +61,16 @@ final class TVDetailViewController: DetailBaseViewController {
     // MARK: - Setup
 
     private enum Layout {
+        static let headerHeight: CGFloat = 28
+        static let headerContentSpacing: CGFloat = 8
+        static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
+        static let factsSectionHeight: CGFloat = 96
+        static let attributesSectionHeight: CGFloat = 132
+        static let castSectionHeight: CGFloat = 220
+        static let videosSectionHeight: CGFloat = 148
+        static let seasonsSectionHeight: CGFloat = 220
+        static let recommendationsSectionHeight: CGFloat = 220
     }
 
     private func configureCollectionView() {
@@ -69,7 +78,41 @@ final class TVDetailViewController: DetailBaseViewController {
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
         collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.sectionInset = .zero
+        collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+
+        collectionView.register(
+            TVDetailOverviewCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailOverviewCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailFactsCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailFactsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailAttributesCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailAttributesCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailCastCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailCastCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailVideosCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailVideosCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailSeasonsCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailSeasonsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailRecommendationsCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailRecommendationsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailSectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: TVDetailSectionHeaderView.reuseIdentifier
+        )
 
         collectionView.register(
             TVDetailHeroHeaderView.self,
@@ -106,10 +149,7 @@ final class TVDetailViewController: DetailBaseViewController {
             collectionView.backgroundView = nil
 
         case .loaded(let loadedSections):
-            sections = loadedSections.filter { section in
-                if case .overview = section { return true }
-                return false
-            }
+            sections = loadedSections
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
@@ -134,14 +174,74 @@ extension TVDetailViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        0
+        if case .overview(let item) = sections[section] {
+            return item.overview == nil ? 0 : 1
+        }
+
+        return 1
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        UICollectionViewCell()
+        switch sections[indexPath.section] {
+        case .overview(let item):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailOverviewCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            return cell
+
+        case .facts(let facts):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailFactsCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailFactsCollectionViewCell)?.configure(facts: facts)
+            return cell
+
+        case .videos(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailVideosCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailVideosCollectionViewCell)?.configure(items: items)
+            return cell
+
+        case .attributes(let item):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailAttributesCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailAttributesCollectionViewCell)?.configure(with: item)
+            return cell
+
+        case .cast(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailCastCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailCastCollectionViewCell)?.configure(items: items)
+            return cell
+
+        case .seasons(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailSeasonsCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailSeasonsCollectionViewCell)?.configure(items: items)
+            return cell
+
+        case .recommendations(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailRecommendationsCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailRecommendationsCollectionViewCell)?.configure(items: items)
+            return cell
+        }
     }
 
     func collectionView(
@@ -153,15 +253,28 @@ extension TVDetailViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
 
+        if case .overview(let item) = sections[indexPath.section] {
+            let reusableView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: TVDetailHeroHeaderView.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let headerView = reusableView as? TVDetailHeroHeaderView {
+                headerView.configure(with: item.hero)
+            }
+
+            return reusableView
+        }
+
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: TVDetailHeroHeaderView.reuseIdentifier,
+            withReuseIdentifier: TVDetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if case .overview(let item) = sections[indexPath.section],
-           let headerView = reusableView as? TVDetailHeroHeaderView {
-            headerView.configure(with: item.hero)
+        if let headerView = reusableView as? TVDetailSectionHeaderView {
+            headerView.configure(title: sections[indexPath.section].title)
         }
 
         return reusableView
@@ -187,7 +300,14 @@ extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        return .zero
+        guard sections[section].title != nil else {
+            return .zero
+        }
+
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: Layout.headerHeight
+        )
     }
 
     func collectionView(
@@ -195,16 +315,7 @@ extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        if case .overview = sections[section] {
-            return UIEdgeInsets(
-                top: 0,
-                left: 0,
-                bottom: Layout.defaultSectionBottomInset,
-                right: 0
-            )
-        }
-
-        return .zero
+        sectionInset(for: section)
     }
 
     func collectionView(
@@ -212,9 +323,64 @@ extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        CGSize(
-            width: collectionView.bounds.width,
-            height: 0
+        let sectionInsets = sectionInset(for: indexPath.section)
+        let width = collectionView.bounds.width
+            - sectionInsets.left
+            - sectionInsets.right
+
+        return CGSize(
+            width: max(width, 0),
+            height: height(for: sections[indexPath.section], width: max(width, 0))
         )
+    }
+
+    private func sectionInset(for section: Int) -> UIEdgeInsets {
+        if case .overview(let item) = sections[section] {
+            return UIEdgeInsets(
+                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
+                left: Layout.defaultHorizontalInset,
+                bottom: Layout.defaultSectionBottomInset,
+                right: Layout.defaultHorizontalInset
+            )
+        }
+
+        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+
+        return UIEdgeInsets(
+            top: topInset,
+            left: Layout.defaultHorizontalInset,
+            bottom: Layout.defaultSectionBottomInset,
+            right: Layout.defaultHorizontalInset
+        )
+    }
+
+    private func height(for section: TVDetailSectionItem, width: CGFloat) -> CGFloat {
+        switch section {
+        case .overview(let item):
+            guard let overview = item.overview else { return 0 }
+
+            return TVDetailOverviewCollectionViewCell.fittingHeight(
+                for: overview,
+                width: width
+            )
+
+        case .facts:
+            return Layout.factsSectionHeight
+
+        case .videos:
+            return Layout.videosSectionHeight
+
+        case .attributes:
+            return Layout.attributesSectionHeight
+
+        case .cast:
+            return Layout.castSectionHeight
+
+        case .seasons:
+            return Layout.seasonsSectionHeight
+
+        case .recommendations:
+            return Layout.recommendationsSectionHeight
+        }
     }
 }
