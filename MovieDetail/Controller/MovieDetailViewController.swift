@@ -50,6 +50,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     override func configureView() {
         super.configureView()
         navigationItem.largeTitleDisplayMode = .never
+        configureNavigationBar()
         configureCollectionView()
     }
 
@@ -68,6 +69,15 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let castSectionHeight: CGFloat = 220
         static let videosSectionHeight: CGFloat = 148
         static let recommendationsSectionHeight: CGFloat = 220
+    }
+
+    private func configureNavigationBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "text.bubble"),
+            style: .plain,
+            target: self,
+            action: #selector(handleReviewButtonTapped)
+        )
     }
 
     private func configureCollectionView() {
@@ -154,6 +164,13 @@ final class MovieDetailViewController: DetailBaseViewController {
         }
 
         collectionView.reloadData()
+    }
+
+    // MARK: - Actions
+
+    @objc private func handleReviewButtonTapped() {
+        let viewController = MovieDetailReviewViewController(movieID: movieID)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

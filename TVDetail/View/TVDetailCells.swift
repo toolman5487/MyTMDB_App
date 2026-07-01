@@ -339,6 +339,7 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     private enum Layout {
         static let collectionHeight: CGFloat = 36
         static let titleCollectionSpacing: CGFloat = 12
+        static let titleWidth: CGFloat = 64
         static let groupSpacing: CGFloat = 12
         static let itemSpacing: CGFloat = 8
     }
@@ -478,6 +479,9 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Layout.titleCollectionSpacing
+        titleLabel.snp.makeConstraints { make in
+            make.width.equalTo(Layout.titleWidth)
+        }
         return stackView
     }
 
