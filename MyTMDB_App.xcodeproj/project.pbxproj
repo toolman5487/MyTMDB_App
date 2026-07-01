@@ -31,6 +31,9 @@
 		15A94F4C2FF26D7900FCBB0F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F492FF26D7900FCBB0F /* BaseViewController.swift */; };
 		15A94F4D2FF26D7900FCBB0F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F492FF26D7900FCBB0F /* BaseViewController.swift */; };
 		15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F492FF26D7900FCBB0F /* BaseViewController.swift */; };
+		15E000012FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
+		15E000022FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
+		15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
 		15A94F642FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */; };
 		15A94F652FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */; };
 		15A94F662FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */; };
@@ -153,6 +156,7 @@
 		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		15A94F492FF26D7900FCBB0F /* BaseViewController.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
+		15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollTrackingBaseViewController.swift; sourceTree = "<group>"; };
 		15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
@@ -368,6 +372,7 @@
 				15CF99CE2FF370970041F4CC /* DetailBase */,
 				15A94F622FF26FA000FCBB0F /* MainBase */,
 				15A94F4A2FF26D7900FCBB0F /* Root */,
+				15E000052FF400000000001 /* ScrollTrackingBase */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -378,6 +383,14 @@
 				15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */,
 			);
 			path = MainBase;
+			sourceTree = "<group>";
+		};
+		15E000052FF400000000001 /* ScrollTrackingBase */ = {
+			isa = PBXGroup;
+			children = (
+				15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */,
+			);
+			path = ScrollTrackingBase;
 			sourceTree = "<group>";
 		};
 		15A94F672FF26FCE00FCBB0F /* MainTabBar */ = {
@@ -796,6 +809,7 @@
 				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
+				15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
 				15D1974A2FF1695000545A85 /* RegisterPageView.swift in Sources */,
 				1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */,
 				15D198112FF2200000545A85 /* AuthSession.swift in Sources */,
@@ -858,6 +872,7 @@
 				15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15A950292FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4C2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
+				15E000012FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
 				15A94F662FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
 				15D197302FF1683D00545A85 /* ThemeColor.swift in Sources */,
 			);
@@ -884,6 +899,7 @@
 				150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A94F4D2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
+				15E000022FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
 				15A94F652FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
 				15D197312FF1683D00545A85 /* ThemeColor.swift in Sources */,
 				15CF99CD2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,

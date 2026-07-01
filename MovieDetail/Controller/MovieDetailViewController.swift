@@ -49,7 +49,6 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     override func configureView() {
         super.configureView()
-        hidesBottomBarWhenPushed = true
         navigationItem.largeTitleDisplayMode = .never
         configureCollectionView()
     }
