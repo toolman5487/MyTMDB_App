@@ -10,7 +10,7 @@ import SnapKit
 import UIKit
 
 @MainActor
-final class MovieDetailReviewViewController: GlassScrollTrackingBaseViewController {
+final class MovieDetailReviewViewController: ScrollTrackingBaseViewController {
 
     // MARK: - Properties
 
@@ -207,6 +207,19 @@ final class MovieDetailReviewViewController: GlassScrollTrackingBaseViewControll
             loadNextPageTask = nil
         }
     }
+
+    private func presentReviewDetail(for review: MovieDetailReviewItem) {
+        let viewController = MovieDetailReviewDetailViewController(review: review)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .pageSheet
+
+        if let sheet = navigationController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        present(navigationController, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -284,6 +297,11 @@ extension MovieDetailReviewViewController: UICollectionViewDelegateFlowLayout {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateTabBarVisibilityTracking(for: scrollView)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        presentReviewDetail(for: reviews[indexPath.item])
     }
 
     func collectionView(
