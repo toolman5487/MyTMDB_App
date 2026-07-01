@@ -61,15 +61,16 @@ final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
     static let reuseIdentifier = String(describing: MovieDetailFactsCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 156, height: 104)
+        static let itemHeight: CGFloat = 96
     }
 
     private var facts: [MovieDetailFactItem] = []
+    private var previousCollectionWidth: CGFloat = 0
 
     override func configureView() {
         containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.register(
             MovieDetailFactCardCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailFactCardCollectionViewCell.reuseIdentifier
@@ -89,6 +90,15 @@ final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
         }
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard collectionView.bounds.width != previousCollectionWidth else { return }
+
+        previousCollectionWidth = collectionView.bounds.width
+        collectionViewFlowLayout.invalidateLayout()
+    }
+
     override func resetForReuse() {
         facts = []
         collectionView.reloadData()
@@ -96,11 +106,12 @@ final class MovieDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
 
     func configure(facts: [MovieDetailFactItem]) {
         self.facts = facts
+        collectionViewFlowLayout.invalidateLayout()
         collectionView.reloadData()
     }
 }
 
-extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource {
+extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         facts.count
@@ -118,12 +129,56 @@ extension MovieDetailFactsCollectionViewCell: UICollectionViewDataSource {
 
         return cell
     }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        guard facts.indices.contains(indexPath.item) else {
+            return .zero
+        }
+
+        return MovieDetailFactCardCollectionViewCell.fittingSize(
+            for: facts[indexPath.item],
+            height: Layout.itemHeight,
+            maximumWidth: maximumCardWidth(in: collectionView)
+        )
+    }
+
+    private func maximumCardWidth(in collectionView: UICollectionView) -> CGFloat {
+        let availableWidth = collectionView.bounds.width > 0
+            ? collectionView.bounds.width
+            : bounds.width
+        let sectionInset = collectionViewFlowLayout.sectionInset
+
+        return max(
+            availableWidth - sectionInset.left - sectionInset.right,
+            0
+        )
+    }
 }
 
 @MainActor
 private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailFactCardCollectionViewCell.self)
+
+    private enum Layout {
+        static let accentWidth: CGFloat = 4
+        static let titleTopInset: CGFloat = 12
+        static let contentLeadingInset: CGFloat = 16
+        static let contentTrailingInset: CGFloat = 12
+        static let valueBottomInset: CGFloat = 12
+    }
+
+    private static var titleFont: UIFont {
+        .preferredFont(forTextStyle: .caption1)
+    }
+
+    private static var valueFont: UIFont {
+        .preferredFont(forTextStyle: .title3)
+    }
 
     private let accentView: UIView = {
         let view = UIView()
@@ -133,7 +188,7 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
+        label.font = titleFont
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -142,7 +197,7 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
 
     private let valueLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
+        label.font = valueFont
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -153,7 +208,7 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
 
     override func configureView() {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
-        containerView.layer.cornerRadius = 16
+        containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
     }
 
@@ -169,18 +224,19 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
 
         accentView.snp.makeConstraints { make in
             make.top.leading.bottom.equalToSuperview()
-            make.width.equalTo(8)
+            make.width.equalTo(Layout.accentWidth)
         }
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(12)
-            make.leading.equalToSuperview().inset(16)
-            make.trailing.equalToSuperview().inset(12)
+            make.top.equalToSuperview().inset(Layout.titleTopInset)
+            make.leading.equalToSuperview().inset(Layout.contentLeadingInset)
+            make.trailing.equalToSuperview().inset(Layout.contentTrailingInset)
         }
 
         valueLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel)
-            make.trailing.bottom.equalToSuperview().inset(12)
+            make.trailing.equalToSuperview().inset(Layout.contentTrailingInset)
+            make.bottom.equalToSuperview().inset(Layout.valueBottomInset)
         }
     }
 
@@ -192,6 +248,29 @@ private final class MovieDetailFactCardCollectionViewCell: BaseCollectionViewCel
     func configure(with item: MovieDetailFactItem) {
         titleLabel.text = item.title
         valueLabel.text = item.value
+    }
+
+    static func fittingSize(
+        for item: MovieDetailFactItem,
+        height: CGFloat,
+        maximumWidth: CGFloat
+    ) -> CGSize {
+        let textWidth = max(
+            measuredWidth(for: item.title, font: titleFont),
+            measuredWidth(for: item.value, font: valueFont)
+        )
+        let fittingWidth = ceil(
+            textWidth + Layout.contentLeadingInset + Layout.contentTrailingInset
+        )
+        let width = maximumWidth > 0
+            ? min(fittingWidth, maximumWidth)
+            : fittingWidth
+
+        return CGSize(width: width, height: height)
+    }
+
+    private static func measuredWidth(for text: String, font: UIFont) -> CGFloat {
+        (text as NSString).size(withAttributes: [.font: font]).width
     }
 }
 
