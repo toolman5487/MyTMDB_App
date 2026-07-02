@@ -64,7 +64,7 @@ final class DetailRouter: DetailRouting {
     }
 
     func openExternalURL(_ url: URL) {
-        UIApplication.shared.open(url)
+        push(BaseWebViewController(url: url))
     }
 
     // MARK: - Private Methods

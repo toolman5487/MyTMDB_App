@@ -136,6 +136,9 @@
 		15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
 		15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
 		15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
+		15CF99DE2FF621000041F4CC /* BaseWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99E12FF621000041F4CC /* BaseWebViewController.swift */; };
+		15CF99DF2FF621000041F4CC /* BaseWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99E12FF621000041F4CC /* BaseWebViewController.swift */; };
+		15CF99E02FF621000041F4CC /* BaseWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99E12FF621000041F4CC /* BaseWebViewController.swift */; };
 		15CF9A012FF380000041F4CC /* MovieDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */; };
 		15CF9A022FF380000041F4CC /* MovieDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */; };
 		15CF9A032FF380000041F4CC /* MovieDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */; };
@@ -264,6 +267,7 @@
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
 		15CF99DD2FF620000041F4CC /* DetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
+		15CF99E12FF621000041F4CC /* BaseWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseWebViewController.swift; sourceTree = "<group>"; };
 		15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailModels.swift; sourceTree = "<group>"; };
 		15CF9A0B2FF380000041F4CC /* MovieDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailService.swift; sourceTree = "<group>"; };
 		15CF9A0C2FF380000041F4CC /* MovieDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewModel.swift; sourceTree = "<group>"; };
@@ -606,8 +610,17 @@
 				15A94F622FF26FA000FCBB0F /* MainBase */,
 				15A94F4A2FF26D7900FCBB0F /* Root */,
 				15E000052FF400000000001 /* ScrollTrackingBase */,
+				15CF99E22FF621000041F4CC /* WebView */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		15CF99E22FF621000041F4CC /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				15CF99E12FF621000041F4CC /* BaseWebViewController.swift */,
+			);
+			path = WebView;
 			sourceTree = "<group>";
 		};
 		15A94F622FF26FA000FCBB0F /* MainBase */ = {
@@ -1159,6 +1172,7 @@
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */,
+				15CF99DF2FF621000041F4CC /* BaseWebViewController.swift in Sources */,
 				15A94F9C2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1182,6 +1196,7 @@
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */,
+				15CF99E02FF621000041F4CC /* BaseWebViewController.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
@@ -1232,6 +1247,7 @@
 				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */,
+				15CF99DE2FF621000041F4CC /* BaseWebViewController.swift in Sources */,
 				15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
 				15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
