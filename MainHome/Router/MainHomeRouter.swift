@@ -39,6 +39,8 @@ final class MainHomeRouter: BaseRouter, MainHomeRouting {
             detailViewController = TVDetailViewController(seriesID: item.id)
         }
 
+        let trimmedTitle = item.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        detailViewController.title = trimmedTitle.isEmpty ? nil : trimmedTitle
         show(detailViewController, using: .push)
     }
 }

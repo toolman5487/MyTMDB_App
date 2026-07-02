@@ -97,6 +97,11 @@ final class MainHomeViewController: MainBaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier
         )
+        collectionView.register(
+            MainHomeFeaturedHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: MainHomeFeaturedHeaderView.reuseIdentifier
+        )
     }
 
     // MARK: - Data Loading
@@ -202,24 +207,39 @@ extension MainHomeViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
 
-        let reusableView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier,
-            for: indexPath
-        )
+        let shouldShowCarousel = indexPath.section == 0 && !carouselItems.isEmpty
 
-        if let headerView = reusableView as? MainHomeSectionHeaderView {
-            let shouldShowCarousel = indexPath.section == 0
-            headerView.configure(
-                title: sections[indexPath.section].title,
-                carouselItems: shouldShowCarousel ? carouselItems : []
+        if shouldShowCarousel {
+            let reusableView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: MainHomeFeaturedHeaderView.reuseIdentifier,
+                for: indexPath
             )
-            headerView.onCarouselSelected = { [weak self] item in
-                self?.showDetail(for: item)
-            }
-        }
 
-        return reusableView
+            if let headerView = reusableView as? MainHomeFeaturedHeaderView {
+                headerView.configure(
+                    title: sections[indexPath.section].title,
+                    carouselItems: carouselItems
+                )
+                headerView.onCarouselSelected = { [weak self] item in
+                    self?.showDetail(for: item)
+                }
+            }
+
+            return reusableView
+        } else {
+            let reusableView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let headerView = reusableView as? MainHomeSectionHeaderView {
+                headerView.configure(title: sections[indexPath.section].title)
+            }
+
+            return reusableView
+        }
     }
 }
 
@@ -256,7 +276,7 @@ extension MainHomeViewController: UICollectionViewDelegateFlowLayout {
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
         let height = section == 0 && !carouselItems.isEmpty
-            ? MainHomeSectionHeaderView.featuredHeight
+            ? MainHomeFeaturedHeaderView.featuredHeight
             : MainHomeSectionHeaderView.standardHeight
 
         return CGSize(

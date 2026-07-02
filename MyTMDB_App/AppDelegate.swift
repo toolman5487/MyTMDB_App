@@ -25,13 +25,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ]
 
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = ThemeColor.backgroundSecondary
-        appearance.shadowColor = ThemeColor.separator
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
         appearance.titleTextAttributes = titleAttributes
         appearance.largeTitleTextAttributes = titleAttributes
 
         let navigationBar = UINavigationBar.appearance()
+        navigationBar.isTranslucent = true
+        navigationBar.backgroundColor = .clear
         navigationBar.tintColor = ThemeColor.primary
         navigationBar.standardAppearance = appearance
         navigationBar.compactAppearance = appearance

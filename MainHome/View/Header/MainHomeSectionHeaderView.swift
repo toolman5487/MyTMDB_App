@@ -8,15 +8,14 @@
 import SnapKit
 import UIKit
 
-// MARK: - MainHomeSectionHeaderView
+// MARK: - MainHomeFeaturedHeaderView
 
 @MainActor
-final class MainHomeSectionHeaderView: UICollectionReusableView {
+final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     // MARK: - Constants
 
-    static let reuseIdentifier = String(describing: MainHomeSectionHeaderView.self)
-    static let standardHeight: CGFloat = 32
+    static let reuseIdentifier = String(describing: MainHomeFeaturedHeaderView.self)
     static let featuredHeight: CGFloat = 264
 
     private enum Layout {
@@ -39,8 +38,6 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
     }()
 
     private let carouselView = MainHomeCarouselView()
-    private let titleContainerView = UIView()
-
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .title3)
@@ -70,7 +67,8 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        configure(title: nil, carouselItems: [])
+        titleLabel.text = nil
+        carouselView.configure(items: [])
         onCarouselSelected = nil
     }
 
@@ -83,8 +81,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
     private func setupHierarchy() {
         addSubview(stackView)
         stackView.addArrangedSubview(carouselView)
-        stackView.addArrangedSubview(titleContainerView)
-        titleContainerView.addSubview(titleLabel)
+        stackView.addArrangedSubview(titleLabel)
     }
 
     private func setupConstraints() {
@@ -96,13 +93,9 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
             make.height.equalTo(Layout.carouselHeight)
         }
 
-        titleContainerView.snp.makeConstraints { make in
-            make.height.equalTo(Self.standardHeight)
-        }
-
         titleLabel.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(Layout.horizontalInset)
+            make.height.equalTo(MainHomeSectionHeaderView.standardHeight)
         }
     }
 
@@ -114,5 +107,56 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         carouselView.onItemSelected = { [weak self] item in
             self?.onCarouselSelected?(item)
         }
+    }
+}
+
+// MARK: - MainHomeSectionHeaderView
+
+@MainActor
+final class MainHomeSectionHeaderView: UICollectionReusableView {
+
+    // MARK: - Constants
+
+    static let reuseIdentifier = String(describing: MainHomeSectionHeaderView.self)
+    static let standardHeight: CGFloat = 32
+
+    // MARK: - UI Components
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .title3)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 1
+        return label
+    }()
+
+    // MARK: - Initialization
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        backgroundColor = .clear
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.text = nil
+    }
+
+    func configure(title: String?) {
+        titleLabel.text = title
     }
 }
