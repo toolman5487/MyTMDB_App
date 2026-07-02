@@ -1,8 +1,8 @@
 //
-//  MovieReviewDetailViewController.swift
+//  TVReviewDetailViewController.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/7/1.
+//  Created by Willy Hsu on 2026/7/2.
 //
 
 import SDWebImage
@@ -10,14 +10,12 @@ import SnapKit
 import UIKit
 
 @MainActor
-final class MovieReviewDetailViewController: GlassBaseViewController {
+final class TVReviewDetailViewController: GlassBaseViewController {
 
     // MARK: - Properties
 
-    private let review: MovieDetailReviewItem
+    private let review: TVReviewDetailItem
     private let navigationTitle: String
-    private var lastTableViewHeight: CGFloat = 0
-    private var containerContentHeight: CGFloat = 0
     private var isShowingCompactTitle = false
 
     // MARK: - Layout
@@ -39,17 +37,17 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(
-            MovieReviewDetailContainerTableViewCell.self,
-            forCellReuseIdentifier: MovieReviewDetailContainerTableViewCell.reuseIdentifier
+            TVReviewDetailContainerTableViewCell.self,
+            forCellReuseIdentifier: TVReviewDetailContainerTableViewCell.reuseIdentifier
         )
         return tableView
     }()
 
-    private lazy var compactTitleView = MovieReviewDetailNavigationTitleView()
+    private lazy var compactTitleView = TVReviewDetailNavigationTitleView()
 
     // MARK: - Initialization
 
-    init(review: MovieDetailReviewItem, title: String = "評論") {
+    init(review: TVReviewDetailItem, title: String = "評論") {
         self.review = review
         self.navigationTitle = title
         super.init(nibName: nil, bundle: nil)
@@ -92,16 +90,6 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
         refreshNavigationTitle()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        let height = tableView.bounds.height
-        guard height > 0, height != lastTableViewHeight else { return }
-
-        lastTableViewHeight = height
-        tableView.reloadData()
-    }
-
     // MARK: - Actions
 
     @objc private func handleCloseButtonTapped() {
@@ -131,7 +119,7 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
 
     private func updateNavigationTitleForScroll() {
         guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0))
-            as? MovieReviewDetailContainerTableViewCell else {
+            as? TVReviewDetailContainerTableViewCell else {
             return
         }
 
@@ -150,7 +138,7 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
 
 // MARK: - UITableViewDataSource
 
-extension MovieReviewDetailViewController: UITableViewDataSource {
+extension TVReviewDetailViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
@@ -158,28 +146,20 @@ extension MovieReviewDetailViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: MovieReviewDetailContainerTableViewCell.reuseIdentifier,
+            withIdentifier: TVReviewDetailContainerTableViewCell.reuseIdentifier,
             for: indexPath
         )
-        (cell as? MovieReviewDetailContainerTableViewCell)?.configure(with: review)
-        (cell as? MovieReviewDetailContainerTableViewCell)?.onContentHeightChange = { [weak self] height in
-            guard let self, self.containerContentHeight != height else { return }
-            self.containerContentHeight = height
-            self.tableView.beginUpdates()
-            self.tableView.endUpdates()
-        }
+        (cell as? TVReviewDetailContainerTableViewCell)?.configure(with: review)
         return cell
     }
 }
 
 // MARK: - UITableViewDelegate
 
-extension MovieReviewDetailViewController: UITableViewDelegate {
+extension TVReviewDetailViewController: UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let verticalInset = tableView.adjustedContentInset.top + tableView.adjustedContentInset.bottom
-        let visibleHeight = max(tableView.bounds.height - verticalInset, 0)
-        return max(visibleHeight, containerContentHeight)
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        Layout.estimatedContainerHeight
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -188,33 +168,19 @@ extension MovieReviewDetailViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - ReviewDetailInnerRow
-
-private enum ReviewDetailInnerRow: Int, CaseIterable {
-    case author
-    case content
-}
-
-// MARK: - MovieReviewDetailContainerTableViewCell
+// MARK: - TVReviewDetailContainerTableViewCell
 
 @MainActor
-private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
+private final class TVReviewDetailContainerTableViewCell: UITableViewCell {
 
-    static let reuseIdentifier = String(describing: MovieReviewDetailContainerTableViewCell.self)
+    static let reuseIdentifier = String(describing: TVReviewDetailContainerTableViewCell.self)
 
     // MARK: - Layout
 
     private enum Layout {
         static let contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        static let estimatedAuthorHeight: CGFloat = 72
-        static let estimatedContentHeight: CGFloat = 200
+        static let contentSpacing: CGFloat = 12
     }
-
-    // MARK: - Properties
-
-    private var review: MovieDetailReviewItem?
-    private var contentTableViewHeightConstraint: Constraint?
-    var onContentHeightChange: ((CGFloat) -> Void)?
 
     // MARK: - UI Components
 
@@ -224,26 +190,17 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
         return view
     }()
 
-    private lazy var contentTableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .plain)
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
-        tableView.isScrollEnabled = false
-        tableView.showsVerticalScrollIndicator = false
-        tableView.sectionHeaderTopPadding = 0
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = Layout.estimatedContentHeight
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(
-            MovieReviewDetailAuthorTableViewCell.self,
-            forCellReuseIdentifier: MovieReviewDetailAuthorTableViewCell.reuseIdentifier
-        )
-        tableView.register(
-            MovieReviewDetailContentTableViewCell.self,
-            forCellReuseIdentifier: MovieReviewDetailContentTableViewCell.reuseIdentifier
-        )
-        return tableView
+    private let authorView = TVReviewDetailAuthorView()
+    private let reviewContentView = TVReviewDetailContentView()
+
+    private lazy var contentStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            authorView,
+            reviewContentView
+        ])
+        stackView.axis = .vertical
+        stackView.spacing = Layout.contentSpacing
+        return stackView
     }()
 
     // MARK: - Initialization
@@ -265,39 +222,25 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        review = nil
-        onContentHeightChange = nil
-        contentTableView.reloadData()
-        updateContentTableViewHeight()
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateContentTableViewHeight()
+        authorView.prepareForReuse()
+        reviewContentView.prepareForReuse()
     }
 
     // MARK: - Configuration
 
-    func configure(with review: MovieDetailReviewItem) {
-        self.review = review
-        contentTableView.reloadData()
-        contentTableView.layoutIfNeeded()
-        updateContentTableViewHeight()
+    func configure(with review: TVReviewDetailItem) {
+        authorView.configure(with: review)
+        reviewContentView.configure(content: review.content)
     }
 
     func isAuthorRowScrolledOff(in tableView: UITableView) -> Bool {
         guard let containerIndexPath = tableView.indexPath(for: self) else { return false }
-
-        let authorIndexPath = IndexPath(row: ReviewDetailInnerRow.author.rawValue, section: 0)
-        guard contentTableView.numberOfRows(inSection: 0) > authorIndexPath.row else { return false }
-
-        contentTableView.layoutIfNeeded()
+        contentView.layoutIfNeeded()
 
         let cellFrame = tableView.rectForRow(at: containerIndexPath)
         guard cellFrame.height > 0 else { return false }
 
-        let authorRect = contentTableView.rectForRow(at: authorIndexPath)
-        let authorBottomY = cellFrame.minY + Layout.contentInset.top + authorRect.maxY
+        let authorBottomY = cellFrame.minY + Layout.contentInset.top + authorView.frame.maxY
         let visibleTop = tableView.contentOffset.y + tableView.adjustedContentInset.top
 
         return authorBottomY <= visibleTop
@@ -307,7 +250,7 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
 
     private func setupHierarchy() {
         contentView.addSubview(glassBackgroundView)
-        contentView.addSubview(contentTableView)
+        contentView.addSubview(contentStackView)
     }
 
     private func setupConstraints() {
@@ -315,88 +258,22 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
             make.edges.equalToSuperview()
         }
 
-        contentTableView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(glassBackgroundView).inset(Layout.contentInset)
-            contentTableViewHeightConstraint = make.height.equalTo(0).constraint
-        }
-    }
-
-    private func updateContentTableViewHeight() {
-        contentTableView.layoutIfNeeded()
-        let innerHeight = max(contentTableView.contentSize.height, 1)
-        contentTableViewHeightConstraint?.update(offset: innerHeight)
-
-        let totalHeight = Layout.contentInset.top + innerHeight + Layout.contentInset.bottom
-        onContentHeightChange?(totalHeight)
-    }
-}
-
-// MARK: - MovieReviewDetailContainerTableViewCell + UITableViewDataSource
-
-extension MovieReviewDetailContainerTableViewCell: UITableViewDataSource {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        ReviewDetailInnerRow.allCases.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let review,
-              let row = ReviewDetailInnerRow(rawValue: indexPath.row) else {
-            return UITableViewCell()
-        }
-
-        switch row {
-        case .author:
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: MovieReviewDetailAuthorTableViewCell.reuseIdentifier,
-                for: indexPath
-            )
-            (cell as? MovieReviewDetailAuthorTableViewCell)?.configure(with: review)
-            return cell
-
-        case .content:
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: MovieReviewDetailContentTableViewCell.reuseIdentifier,
-                for: indexPath
-            )
-            (cell as? MovieReviewDetailContentTableViewCell)?.configure(content: review.content)
-            return cell
+        contentStackView.snp.makeConstraints { make in
+            make.edges.equalTo(glassBackgroundView).inset(Layout.contentInset)
         }
     }
 }
 
-// MARK: - MovieReviewDetailContainerTableViewCell + UITableViewDelegate
-
-extension MovieReviewDetailContainerTableViewCell: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let row = ReviewDetailInnerRow(rawValue: indexPath.row) else {
-            return UITableView.automaticDimension
-        }
-
-        switch row {
-        case .author:
-            return Layout.estimatedAuthorHeight
-
-        case .content:
-            return Layout.estimatedContentHeight
-        }
-    }
-}
-
-// MARK: - MovieReviewDetailAuthorTableViewCell
+// MARK: - TVReviewDetailAuthorView
 
 @MainActor
-private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
-
-    static let reuseIdentifier = String(describing: MovieReviewDetailAuthorTableViewCell.self)
+private final class TVReviewDetailAuthorView: UIView {
 
     // MARK: - Layout
 
     private enum Layout {
         static let avatarSize: CGFloat = 44
         static let headerSpacing: CGFloat = 12
-        static let bottomInset: CGFloat = 12
     }
 
     // MARK: - UI Components
@@ -453,12 +330,9 @@ private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
 
     // MARK: - Initialization
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        selectionStyle = .none
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         backgroundColor = .clear
-        contentView.backgroundColor = .clear
-        backgroundConfiguration = .clear()
         setupHierarchy()
         setupConstraints()
     }
@@ -467,8 +341,7 @@ private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
         nil
     }
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
+    func prepareForReuse() {
         avatarImageView.sd_cancelCurrentImageLoad()
         avatarImageView.image = nil
         avatarImageView.isHidden = false
@@ -480,7 +353,7 @@ private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
     // MARK: - Setup
 
     private func setupHierarchy() {
-        contentView.addSubview(contentStackView)
+        addSubview(contentStackView)
     }
 
     private func setupConstraints() {
@@ -489,8 +362,7 @@ private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
         }
 
         contentStackView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(Layout.bottomInset)
+            make.edges.equalToSuperview()
         }
 
         authorLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -501,7 +373,7 @@ private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
 
     // MARK: - Configuration
 
-    func configure(with item: MovieDetailReviewItem) {
+    func configure(with item: TVReviewDetailItem) {
         authorLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
         dateLabel.text = item.updatedDateText
         dateLabel.isHidden = item.updatedDateText == nil
@@ -516,12 +388,10 @@ private final class MovieReviewDetailAuthorTableViewCell: UITableViewCell {
     }
 }
 
-// MARK: - MovieReviewDetailContentTableViewCell
+// MARK: - TVReviewDetailContentView
 
 @MainActor
-private final class MovieReviewDetailContentTableViewCell: UITableViewCell {
-
-    static let reuseIdentifier = String(describing: MovieReviewDetailContentTableViewCell.self)
+private final class TVReviewDetailContentView: UIView {
 
     // MARK: - Layout
 
@@ -541,12 +411,9 @@ private final class MovieReviewDetailContentTableViewCell: UITableViewCell {
 
     // MARK: - Initialization
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        selectionStyle = .none
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         backgroundColor = .clear
-        contentView.backgroundColor = .clear
-        backgroundConfiguration = .clear()
         setupHierarchy()
         setupConstraints()
     }
@@ -555,8 +422,7 @@ private final class MovieReviewDetailContentTableViewCell: UITableViewCell {
         nil
     }
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
+    func prepareForReuse() {
         contentLabel.text = nil
         contentLabel.attributedText = nil
     }
@@ -564,7 +430,7 @@ private final class MovieReviewDetailContentTableViewCell: UITableViewCell {
     // MARK: - Setup
 
     private func setupHierarchy() {
-        contentView.addSubview(contentLabel)
+        addSubview(contentLabel)
     }
 
     private func setupConstraints() {
@@ -594,10 +460,10 @@ private final class MovieReviewDetailContentTableViewCell: UITableViewCell {
     }
 }
 
-// MARK: - MovieReviewDetailNavigationTitleView
+// MARK: - TVReviewDetailNavigationTitleView
 
 @MainActor
-private final class MovieReviewDetailNavigationTitleView: UIView {
+private final class TVReviewDetailNavigationTitleView: UIView {
 
     // MARK: - Layout
 
@@ -632,7 +498,7 @@ private final class MovieReviewDetailNavigationTitleView: UIView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .subheadline)
         label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
+        label.textColor = ThemeColor.highlight
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
@@ -677,7 +543,7 @@ private final class MovieReviewDetailNavigationTitleView: UIView {
 
     // MARK: - Configuration
 
-    func configure(with item: MovieDetailReviewItem) {
+    func configure(with item: TVReviewDetailItem) {
         nameLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
         ratingLabel.text = item.ratingText.map { "評分 \($0)" }
         ratingLabel.isHidden = item.ratingText == nil

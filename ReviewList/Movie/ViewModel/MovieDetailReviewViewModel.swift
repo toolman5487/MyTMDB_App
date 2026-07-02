@@ -86,14 +86,18 @@ final class MovieDetailReviewViewModel {
 
         guard isLoadingNextPage || beginLoadingNextPage() else { return }
 
+        let nextPage = currentPage + 1
+
         do {
             let page = try await service.fetchMovieReviews(
                 movieID: movieID,
-                page: currentPage + 1
+                page: nextPage
             )
             apply(page: page, replacingCurrentReviews: false)
         } catch {
-            // Keep the existing reviews visible and stop the pagination indicator.
+            AppLogger.network.warning(
+                "Failed to load next movie review page. movieID: \(movieID), page: \(nextPage), error: \(error.localizedDescription)"
+            )
         }
 
         isLoadingNextPage = false

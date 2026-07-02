@@ -52,6 +52,7 @@ final class TVDetailViewController: DetailBaseViewController {
     override func configureView() {
         super.configureView()
         navigationItem.largeTitleDisplayMode = .never
+        configureNavigationBar()
         configureCollectionView()
     }
 
@@ -71,6 +72,15 @@ final class TVDetailViewController: DetailBaseViewController {
         static let videosSectionHeight: CGFloat = 148
         static let seasonsSectionHeight: CGFloat = 220
         static let recommendationsSectionHeight: CGFloat = 220
+    }
+
+    private func configureNavigationBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "text.bubble"),
+            style: .plain,
+            target: self,
+            action: #selector(handleReviewButtonTapped)
+        )
     }
 
     private func configureCollectionView() {
@@ -162,6 +172,13 @@ final class TVDetailViewController: DetailBaseViewController {
         }
 
         collectionView.reloadData()
+    }
+
+    // MARK: - Actions
+
+    @objc private func handleReviewButtonTapped() {
+        let viewController = TVReviewListViewController(seriesID: seriesID)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 
