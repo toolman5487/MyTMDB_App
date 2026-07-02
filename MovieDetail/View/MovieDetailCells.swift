@@ -713,85 +713,23 @@ extension MovieDetailCastCollectionViewCell: UICollectionViewDataSource, UIColle
 }
 
 @MainActor
-private final class MovieDetailCastPersonCell: BaseCollectionViewCell {
+private final class MovieDetailCastPersonCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailCastPersonCell.self)
 
-    private enum Layout {
-        static let profileImageHeight: CGFloat = 168
-        static let textTopSpacing: CGFloat = 4
-        static let subtitleTopBottomSpacing: CGFloat = 2
-    }
-
-    private let profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
-
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
-
-    private let characterLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(profileImageView)
-        containerView.addSubview(nameLabel)
-        containerView.addSubview(characterLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        profileImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.left.right.equalToSuperview()
-            make.height.equalTo(Layout.profileImageHeight)
-        }
-
-        nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(Layout.textTopSpacing)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        characterLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(Layout.subtitleTopBottomSpacing)
-            make.leading.trailing.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        profileImageView.sd_cancelCurrentImageLoad()
-        profileImageView.image = nil
-        nameLabel.text = nil
-        characterLabel.text = nil
-        characterLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 168
+        )
     }
 
     func configure(with item: MovieDetailCastItem) {
-        profileImageView.sd_setImage(with: item.profileURL)
-        nameLabel.text = item.name
-        characterLabel.text = item.characterText
-        characterLabel.isHidden = item.characterText.isEmpty
+        configure(
+            imageURL: item.profileURL,
+            title: item.name,
+            subtitle: item.characterText
+        )
     }
 }
 
@@ -864,76 +802,23 @@ extension MovieDetailVideosCollectionViewCell: UICollectionViewDataSource, UICol
 }
 
 @MainActor
-private final class MovieDetailVideoThumbnailCell: BaseCollectionViewCell {
+private final class MovieDetailVideoThumbnailCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailVideoThumbnailCell.self)
 
-    private let thumbnailImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(thumbnailImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(subtitleLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        thumbnailImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(112)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(thumbnailImageView.snp.bottom).offset(6)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(2)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        thumbnailImageView.sd_cancelCurrentImageLoad()
-        thumbnailImageView.image = nil
-        titleLabel.text = nil
-        subtitleLabel.text = nil
-        subtitleLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 120
+        )
     }
 
     func configure(with item: MovieDetailVideoItem) {
-        thumbnailImageView.sd_setImage(with: item.thumbnailURL)
-        titleLabel.text = item.title
-        subtitleLabel.text = item.subtitle
-        subtitleLabel.isHidden = item.subtitle.isEmpty
+        configure(
+            imageURL: item.thumbnailURL,
+            title: item.title,
+            subtitle: item.subtitle
+        )
     }
 }
 
@@ -1006,80 +891,29 @@ extension MovieDetailRecommendationsCollectionViewCell: UICollectionViewDataSour
 }
 
 @MainActor
-private final class MovieDetailRecommendationPosterCell: BaseCollectionViewCell {
+private final class MovieDetailRecommendationPosterCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailRecommendationPosterCell.self)
 
-    private let posterImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let scoreLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(posterImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(scoreLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        posterImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(168)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(posterImageView.snp.bottom).offset(6)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        scoreLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(2)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        posterImageView.sd_cancelCurrentImageLoad()
-        posterImageView.image = nil
-        titleLabel.text = nil
-        scoreLabel.text = nil
-        scoreLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 168
+        )
     }
 
     func configure(with item: MovieDetailRecommendationItem) {
-        posterImageView.sd_setImage(with: item.posterURL)
-        titleLabel.text = item.title
+        let subtitle: String?
         if let scoreText = item.scoreText {
-            scoreLabel.text = "評分 \(scoreText)"
-            scoreLabel.isHidden = false
+            subtitle = "評分 \(scoreText)"
         } else {
-            scoreLabel.text = nil
-            scoreLabel.isHidden = true
+            subtitle = nil
         }
+
+        configure(
+            imageURL: item.posterURL,
+            title: item.title,
+            subtitle: subtitle
+        )
     }
 }

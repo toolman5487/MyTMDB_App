@@ -16,6 +16,9 @@
 		150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
 		150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
 		150336C22FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */; };
+		150337102FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
+		150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
+		150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
 		152BE7242FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
 		152BE7252FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
 		152BE7262FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
@@ -195,6 +198,7 @@
 		150336A22FF35D4C003125EC /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
 		150336B32FF35E00003125EC /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError+ErrorMessage.swift"; sourceTree = "<group>"; };
+		150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTitleBaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassBaseViewController.swift; sourceTree = "<group>"; };
 		152BE73E2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassScrollTrackingBaseViewController.swift; sourceTree = "<group>"; };
 		152BE76C2FF56000006681A5 /* MovieDetailReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailReviewViewController.swift; sourceTree = "<group>"; };
@@ -562,6 +566,7 @@
 			isa = PBXGroup;
 			children = (
 				15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */,
+				150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */,
 				15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */,
 				15A94F492FF26D7900FCBB0F /* BaseViewController.swift */,
 			);
@@ -1020,6 +1025,7 @@
 				15CF9A142FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
 				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
+				150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
@@ -1092,6 +1098,7 @@
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
+				150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
 				15CF9A022FF380000041F4CC /* MovieDetailModels.swift in Sources */,
@@ -1138,6 +1145,7 @@
 				15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
+				150337102FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15A9502A2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15D196D92FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C32FF14A2100545A85 /* NetworkService.swift in Sources */,

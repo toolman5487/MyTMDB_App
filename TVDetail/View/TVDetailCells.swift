@@ -699,90 +699,33 @@ extension TVDetailCastCollectionViewCell: UICollectionViewDataSource, UICollecti
 }
 
 @MainActor
-private final class TVDetailCastPersonCell: BaseCollectionViewCell {
+private final class TVDetailCastPersonCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailCastPersonCell.self)
 
-    private enum Layout {
-        static let profileImageHeight: CGFloat = 168
-        static let textTopSpacing: CGFloat = 4
-        static let subtitleTopBottomSpacing: CGFloat = 2
-    }
-
-    private let profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
-        return imageView
-    }()
-
-    private let nameLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption1),
-        color: ThemeColor.textPrimary
-    )
-    private let characterLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption2),
-        color: ThemeColor.textSecondary
-    )
-    private let episodeCountLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption2),
-        color: ThemeColor.textSecondary
-    )
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(profileImageView)
-        containerView.addSubview(nameLabel)
-        containerView.addSubview(characterLabel)
-        containerView.addSubview(episodeCountLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        profileImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.left.right.equalToSuperview()
-            make.height.equalTo(Layout.profileImageHeight)
-        }
-
-        nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(Layout.textTopSpacing)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        characterLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(Layout.subtitleTopBottomSpacing)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        episodeCountLabel.snp.makeConstraints { make in
-            make.top.equalTo(characterLabel.snp.bottom).offset(Layout.subtitleTopBottomSpacing)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        profileImageView.sd_cancelCurrentImageLoad()
-        profileImageView.image = nil
-        nameLabel.text = nil
-        characterLabel.text = nil
-        characterLabel.isHidden = false
-        episodeCountLabel.text = nil
-        episodeCountLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 168
+        )
     }
 
     func configure(with item: TVDetailCastItem) {
-        profileImageView.sd_setImage(with: item.profileURL)
-        nameLabel.text = item.name
-        characterLabel.text = item.characterText
-        characterLabel.isHidden = item.characterText.isEmpty
-        episodeCountLabel.text = item.episodeCountText
-        episodeCountLabel.isHidden = item.episodeCountText.isEmpty
+        configure(
+            imageURL: item.profileURL,
+            title: item.name,
+            subtitle: Self.makeSubtitle(for: item)
+        )
     }
 
+    private static func makeSubtitle(for item: TVDetailCastItem) -> String? {
+        let values = [
+            item.characterText,
+            item.episodeCountText
+        ].filter { !$0.isEmpty }
+
+        return values.isEmpty ? nil : values.joined(separator: " · ")
+    }
 }
 
 @MainActor
@@ -852,59 +795,23 @@ extension TVDetailVideosCollectionViewCell: UICollectionViewDataSource, UICollec
 }
 
 @MainActor
-private final class TVDetailVideoThumbnailCell: BaseCollectionViewCell {
+private final class TVDetailVideoThumbnailCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailVideoThumbnailCell.self)
 
-    private let thumbnailImageView: UIImageView = TVDetailCellStyle.makeImageView()
-    private let titleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption1),
-        color: ThemeColor.textPrimary
-    )
-    private let subtitleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption2),
-        color: ThemeColor.textSecondary
-    )
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(thumbnailImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(subtitleLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        thumbnailImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(112)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(thumbnailImageView.snp.bottom).offset(6)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(2)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        thumbnailImageView.sd_cancelCurrentImageLoad()
-        thumbnailImageView.image = nil
-        titleLabel.text = nil
-        subtitleLabel.text = nil
-        subtitleLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 112
+        )
     }
 
     func configure(with item: TVDetailVideoItem) {
-        thumbnailImageView.sd_setImage(with: item.thumbnailURL)
-        titleLabel.text = item.title
-        subtitleLabel.text = item.subtitle
-        subtitleLabel.isHidden = item.subtitle.isEmpty
+        configure(
+            imageURL: item.thumbnailURL,
+            title: item.title,
+            subtitle: item.subtitle
+        )
     }
 }
 
@@ -975,59 +882,23 @@ extension TVDetailSeasonsCollectionViewCell: UICollectionViewDataSource, UIColle
 }
 
 @MainActor
-private final class TVDetailSeasonPosterCell: BaseCollectionViewCell {
+private final class TVDetailSeasonPosterCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailSeasonPosterCell.self)
 
-    private let posterImageView: UIImageView = TVDetailCellStyle.makeImageView()
-    private let titleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption1),
-        color: ThemeColor.textPrimary
-    )
-    private let subtitleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption2),
-        color: ThemeColor.textSecondary
-    )
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(posterImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(subtitleLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        posterImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(168)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(posterImageView.snp.bottom).offset(6)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(2)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        posterImageView.sd_cancelCurrentImageLoad()
-        posterImageView.image = nil
-        titleLabel.text = nil
-        subtitleLabel.text = nil
-        subtitleLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 168
+        )
     }
 
     func configure(with item: TVDetailSeasonItem) {
-        posterImageView.sd_setImage(with: item.posterURL)
-        titleLabel.text = item.title
-        subtitleLabel.text = item.subtitle
-        subtitleLabel.isHidden = item.subtitle.isEmpty
+        configure(
+            imageURL: item.posterURL,
+            title: item.title,
+            subtitle: item.subtitle
+        )
     }
 }
 
@@ -1098,64 +969,30 @@ extension TVDetailRecommendationsCollectionViewCell: UICollectionViewDataSource,
 }
 
 @MainActor
-private final class TVDetailRecommendationPosterCell: BaseCollectionViewCell {
+private final class TVDetailRecommendationPosterCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailRecommendationPosterCell.self)
 
-    private let posterImageView: UIImageView = TVDetailCellStyle.makeImageView()
-    private let titleLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption1),
-        color: ThemeColor.textPrimary
-    )
-    private let scoreLabel: UILabel = TVDetailCellStyle.makeTextLabel(
-        font: .preferredFont(forTextStyle: .caption2),
-        color: ThemeColor.textSecondary
-    )
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(posterImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(scoreLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        posterImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(168)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(posterImageView.snp.bottom).offset(6)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        scoreLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(2)
-            make.leading.trailing.bottom.lessThanOrEqualToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        posterImageView.sd_cancelCurrentImageLoad()
-        posterImageView.image = nil
-        titleLabel.text = nil
-        scoreLabel.text = nil
-        scoreLabel.isHidden = false
+    override func configureView() {
+        super.configureView()
+        configureLayout(
+            imageHeight: 168
+        )
     }
 
     func configure(with item: TVDetailRecommendationItem) {
-        posterImageView.sd_setImage(with: item.posterURL)
-        titleLabel.text = item.title
+        let subtitle: String?
         if let scoreText = item.scoreText {
-            scoreLabel.text = "評分 \(scoreText)"
-            scoreLabel.isHidden = false
+            subtitle = "評分 \(scoreText)"
         } else {
-            scoreLabel.text = nil
-            scoreLabel.isHidden = true
+            subtitle = nil
         }
+
+        configure(
+            imageURL: item.posterURL,
+            title: item.title,
+            subtitle: subtitle
+        )
     }
 }
 

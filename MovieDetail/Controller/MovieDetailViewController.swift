@@ -67,7 +67,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
         static let castSectionHeight: CGFloat = 220
-        static let videosSectionHeight: CGFloat = 148
+        static let videosSectionHeight: CGFloat = 160
         static let recommendationsSectionHeight: CGFloat = 220
     }
 
