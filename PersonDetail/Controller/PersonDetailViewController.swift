@@ -16,6 +16,7 @@ final class PersonDetailViewController: DetailBaseViewController {
     private let viewModel: PersonDetailViewModel
     private var sections: [PersonDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
+    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
 
     // MARK: - Initialization
 
@@ -198,7 +199,9 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailCreditsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailCreditsCollectionViewCell)?.configure(items: items)
+            (cell as? PersonDetailCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
+                self?.router.showCreditDetail(item)
+            }
             return cell
 
         case .profileImages(let items):
@@ -223,7 +226,7 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? PersonDetailExternalLinksCollectionViewCell)?.configure(items: items) { [weak self] url in
-                self?.openExternalURL(url)
+                self?.router.openExternalURL(url)
             }
             return cell
         }
@@ -361,14 +364,5 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
         case .externalLinks(let items):
             return PersonDetailExternalLinksCollectionViewCell.fittingHeight(for: items)
         }
-    }
-}
-
-// MARK: - External URL
-
-private extension PersonDetailViewController {
-
-    func openExternalURL(_ url: URL) {
-        UIApplication.shared.open(url)
     }
 }

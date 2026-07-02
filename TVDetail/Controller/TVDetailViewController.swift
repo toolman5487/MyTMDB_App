@@ -17,6 +17,7 @@ final class TVDetailViewController: DetailBaseViewController {
     private let viewModel: TVDetailViewModel
     private var sections: [TVDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
+    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
 
     // MARK: - Initialization
 
@@ -223,7 +224,7 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailCastCollectionViewCell)?.configure(items: items) { [weak self] personID in
-                self?.showPersonDetail(personID: personID)
+                self?.router.showPersonDetail(personID: personID)
             }
             return cell
 
@@ -240,7 +241,9 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailRecommendationsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? TVDetailRecommendationsCollectionViewCell)?.configure(items: items)
+            (cell as? TVDetailRecommendationsCollectionViewCell)?.configure(items: items) { [weak self] seriesID in
+                self?.router.showTVDetail(seriesID: seriesID)
+            }
             return cell
         }
     }
@@ -279,18 +282,6 @@ extension TVDetailViewController: UICollectionViewDataSource {
         }
 
         return reusableView
-    }
-}
-
-// MARK: - Navigation
-
-private extension TVDetailViewController {
-
-    func showPersonDetail(personID: Int) {
-        guard personID > 0 else { return }
-
-        let viewController = PersonDetailViewController(personID: personID)
-        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

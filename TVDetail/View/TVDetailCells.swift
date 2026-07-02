@@ -227,14 +227,6 @@ private final class TVDetailFactCardCollectionViewCell: BaseCollectionViewCell {
         static let valueBottomInset: CGFloat = 12
     }
 
-    private static var titleFont: UIFont {
-        .preferredFont(forTextStyle: .callout)
-    }
-
-    private static var valueFont: UIFont {
-        .preferredFont(forTextStyle: .title3)
-    }
-
     private let accentView: UIView = {
         let view = UIView()
         view.backgroundColor = ThemeColor.highlight
@@ -243,7 +235,7 @@ private final class TVDetailFactCardCollectionViewCell: BaseCollectionViewCell {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = titleFont
+        label.font = .preferredFont(forTextStyle: .callout)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -252,7 +244,7 @@ private final class TVDetailFactCardCollectionViewCell: BaseCollectionViewCell {
 
     private let valueLabel: UILabel = {
         let label = UILabel()
-        label.font = valueFont
+        label.font = .preferredFont(forTextStyle: .title3)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -311,8 +303,8 @@ private final class TVDetailFactCardCollectionViewCell: BaseCollectionViewCell {
         maximumWidth: CGFloat
     ) -> CGSize {
         let textWidth = max(
-            measuredWidth(for: item.title, font: titleFont),
-            measuredWidth(for: item.value, font: valueFont)
+            measuredWidth(for: item.title, font: .preferredFont(forTextStyle: .callout)),
+            measuredWidth(for: item.value, font: .preferredFont(forTextStyle: .title3))
         )
         let fittingWidth = ceil(
             textWidth + Layout.contentLeadingInset + Layout.contentTrailingInset
@@ -573,13 +565,9 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
         static let horizontalInset: CGFloat = 16
     }
 
-    private static var titleFont: UIFont {
-        .preferredFont(forTextStyle: .caption1)
-    }
-
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = titleFont
+        label.font = .preferredFont(forTextStyle: .caption1)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -619,7 +607,9 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
     }
 
     static func fittingSize(for item: TVDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {
-        let measuredWidth = (item.title as NSString).size(withAttributes: [.font: titleFont]).width
+        let measuredWidth = (item.title as NSString).size(
+            withAttributes: [.font: UIFont.preferredFont(forTextStyle: .caption1)]
+        ).width
         let fittingWidth = ceil(measuredWidth) + (Layout.horizontalInset * 2)
         let width = min(
             max(Layout.minimumWidth, fittingWidth),
@@ -923,6 +913,7 @@ final class TVDetailRecommendationsCollectionViewCell: BaseNestedCollectionViewC
     }
 
     private var items: [TVDetailRecommendationItem] = []
+    private var onRecommendationSelected: ((Int) -> Void)?
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -950,11 +941,16 @@ final class TVDetailRecommendationsCollectionViewCell: BaseNestedCollectionViewC
 
     override func resetForReuse() {
         items = []
+        onRecommendationSelected = nil
         collectionView.reloadData()
     }
 
-    func configure(items: [TVDetailRecommendationItem]) {
+    func configure(
+        items: [TVDetailRecommendationItem],
+        onRecommendationSelected: @escaping (Int) -> Void
+    ) {
         self.items = items
+        self.onRecommendationSelected = onRecommendationSelected
         collectionView.reloadData()
     }
 }
@@ -976,6 +972,11 @@ extension TVDetailRecommendationsCollectionViewCell: UICollectionViewDataSource,
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard items.indices.contains(indexPath.item) else { return }
+        onRecommendationSelected?(items[indexPath.item].id)
     }
 }
 

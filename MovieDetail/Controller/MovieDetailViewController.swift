@@ -16,6 +16,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     private let viewModel: MovieDetailViewModel
     private var sections: [MovieDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
+    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
 
     // MARK: - Initialization
 
@@ -225,7 +226,7 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailCastCollectionViewCell)?.configure(items: items) { [weak self] personID in
-                self?.showPersonDetail(personID: personID)
+                self?.router.showPersonDetail(personID: personID)
             }
             return cell
 
@@ -242,7 +243,9 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(items: items)
+            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(items: items) { [weak self] movieID in
+                self?.router.showMovieDetail(movieID: movieID)
+            }
             return cell
         }
     }
@@ -384,16 +387,4 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         }
     }
 
-}
-
-// MARK: - Navigation
-
-private extension MovieDetailViewController {
-
-    func showPersonDetail(personID: Int) {
-        guard personID > 0 else { return }
-
-        let viewController = PersonDetailViewController(personID: personID)
-        navigationController?.pushViewController(viewController, animated: true)
-    }
 }

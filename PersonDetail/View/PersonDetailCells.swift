@@ -390,14 +390,6 @@ private final class PersonDetailFactCardCollectionViewCell: BaseCollectionViewCe
         static let valueBottomInset: CGFloat = 12
     }
 
-    private static var titleFont: UIFont {
-        .preferredFont(forTextStyle: .callout)
-    }
-
-    private static var valueFont: UIFont {
-        .preferredFont(forTextStyle: .title3)
-    }
-
     private let accentView: UIView = {
         let view = UIView()
         view.backgroundColor = ThemeColor.highlight
@@ -406,7 +398,7 @@ private final class PersonDetailFactCardCollectionViewCell: BaseCollectionViewCe
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = titleFont
+        label.font = .preferredFont(forTextStyle: .callout)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -415,7 +407,7 @@ private final class PersonDetailFactCardCollectionViewCell: BaseCollectionViewCe
 
     private let valueLabel: UILabel = {
         let label = UILabel()
-        label.font = valueFont
+        label.font = .preferredFont(forTextStyle: .title3)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -474,8 +466,8 @@ private final class PersonDetailFactCardCollectionViewCell: BaseCollectionViewCe
         maximumWidth: CGFloat
     ) -> CGSize {
         let textWidth = max(
-            measuredWidth(for: item.title, font: titleFont),
-            measuredWidth(for: item.value, font: valueFont)
+            measuredWidth(for: item.title, font: .preferredFont(forTextStyle: .callout)),
+            measuredWidth(for: item.value, font: .preferredFont(forTextStyle: .title3))
         )
         let fittingWidth = ceil(
             textWidth + Layout.contentLeadingInset + Layout.contentTrailingInset
@@ -504,6 +496,7 @@ final class PersonDetailCreditsCollectionViewCell: BaseNestedCollectionViewCell 
     }
 
     private var items: [PersonDetailCreditItem] = []
+    private var onCreditSelected: ((PersonDetailCreditItem) -> Void)?
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -531,11 +524,16 @@ final class PersonDetailCreditsCollectionViewCell: BaseNestedCollectionViewCell 
 
     override func resetForReuse() {
         items = []
+        onCreditSelected = nil
         collectionView.reloadData()
     }
 
-    func configure(items: [PersonDetailCreditItem]) {
+    func configure(
+        items: [PersonDetailCreditItem],
+        onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
+    ) {
         self.items = items
+        self.onCreditSelected = onCreditSelected
         collectionView.reloadData()
     }
 }
@@ -557,6 +555,11 @@ extension PersonDetailCreditsCollectionViewCell: UICollectionViewDataSource, UIC
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard items.indices.contains(indexPath.item) else { return }
+        onCreditSelected?(items[indexPath.item])
     }
 }
 
@@ -777,13 +780,9 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
         static let horizontalInset: CGFloat = 16
     }
 
-    private static var titleFont: UIFont {
-        .preferredFont(forTextStyle: .callout)
-    }
-
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = titleFont
+        label.font = .preferredFont(forTextStyle: .callout)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -827,7 +826,9 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
         height: CGFloat,
         maximumWidth: CGFloat
     ) -> CGSize {
-        let measuredWidth = (item.name as NSString).size(withAttributes: [.font: titleFont]).width
+        let measuredWidth = (item.name as NSString).size(
+            withAttributes: [.font: UIFont.preferredFont(forTextStyle: .callout)]
+        ).width
         let fittingWidth = ceil(measuredWidth) + (Layout.horizontalInset * 2)
         let width = min(
             max(Layout.minimumWidth, fittingWidth),

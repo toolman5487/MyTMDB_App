@@ -133,6 +133,9 @@
 		15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
 		15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
 		15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
+		15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
+		15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
+		15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
 		15CF9A012FF380000041F4CC /* MovieDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */; };
 		15CF9A022FF380000041F4CC /* MovieDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */; };
 		15CF9A032FF380000041F4CC /* MovieDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */; };
@@ -260,6 +263,7 @@
 		15BAE97E2FF60C80006B0E15 /* PersonDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCells.swift; sourceTree = "<group>"; };
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
+		15CF99DD2FF620000041F4CC /* DetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
 		15CF9A0A2FF380000041F4CC /* MovieDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailModels.swift; sourceTree = "<group>"; };
 		15CF9A0B2FF380000041F4CC /* MovieDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailService.swift; sourceTree = "<group>"; };
 		15CF9A0C2FF380000041F4CC /* MovieDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewModel.swift; sourceTree = "<group>"; };
@@ -503,9 +507,9 @@
 		15606CA12FF4E12A0036898B /* View */ = {
 			isa = PBXGroup;
 			children = (
+				15606CC42FF520000036898B /* TVDetailCells.swift */,
 				15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */,
 				15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */,
-				15606CC42FF520000036898B /* TVDetailCells.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -807,6 +811,7 @@
 			isa = PBXGroup;
 			children = (
 				15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */,
+				15CF99DD2FF620000041F4CC /* DetailRouter.swift */,
 			);
 			path = DetailBase;
 			sourceTree = "<group>";
@@ -1153,6 +1158,7 @@
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
+				15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15A94F9C2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1175,6 +1181,7 @@
 				150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
+				15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
@@ -1224,6 +1231,7 @@
 				15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
 				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
+				15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
 				15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A950052FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
