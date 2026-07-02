@@ -209,7 +209,8 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
     }
 
     private func presentReviewDetail(for review: MovieDetailReviewItem) {
-        let viewController = MovieReviewDetailViewController(review: review)
+        let title = review.ratingText.map { "評分 \($0)" } ?? "評論"
+        let viewController = MovieReviewDetailViewController(review: review, title: title)
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.modalPresentationStyle = .pageSheet
 

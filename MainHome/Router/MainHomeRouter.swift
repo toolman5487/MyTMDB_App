@@ -17,19 +17,9 @@ protocol MainHomeRouting {
 // MARK: - MainHomeRouter
 
 @MainActor
-final class MainHomeRouter: MainHomeRouting {
+final class MainHomeRouter: BaseRouter, MainHomeRouting {
 
-    // MARK: - Properties
-
-    private weak var sourceViewController: UIViewController?
-
-    // MARK: - Initialization
-
-    init(sourceViewController: UIViewController) {
-        self.sourceViewController = sourceViewController
-    }
-
-    // MARK: - MainHomeRouting
+    // MARK: - Push
 
     func showDetail(for item: MainHomeContentItem) {
         let detailViewController: UIViewController
@@ -42,9 +32,6 @@ final class MainHomeRouter: MainHomeRouting {
             detailViewController = TVDetailViewController(seriesID: item.id)
         }
 
-        sourceViewController?.navigationController?.pushViewController(
-            detailViewController,
-            animated: true
-        )
+        show(detailViewController, using: .push)
     }
 }

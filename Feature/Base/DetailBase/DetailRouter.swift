@@ -11,39 +11,27 @@ import UIKit
 
 @MainActor
 protocol DetailRouting {
+
+    // MARK: Push
+
     func showMovieDetail(movieID: Int)
     func showTVDetail(seriesID: Int)
     func showPersonDetail(personID: Int)
     func showCreditDetail(_ item: PersonDetailCreditItem)
-    func showYouTubeVideo(videoKey: String, title: String?)
     func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
+
+    // MARK: Page Sheet
+
+    func showYouTubeVideo(videoKey: String, title: String?)
 }
 
 // MARK: - DetailRouter
 
 @MainActor
-final class DetailRouter: DetailRouting {
+final class DetailRouter: BaseRouter, DetailRouting {
 
-    // MARK: - DetailPresentation
-
-    private enum DetailPresentation {
-        case push
-        case present
-        case pageSheet(detents: [UISheetPresentationController.Detent])
-    }
-
-    // MARK: - Properties
-
-    private weak var sourceViewController: UIViewController?
-
-    // MARK: - Initialization
-
-    init(sourceViewController: UIViewController) {
-        self.sourceViewController = sourceViewController
-    }
-
-    // MARK: - DetailRouting
+    // MARK: - Push
 
     func showMovieDetail(movieID: Int) {
         guard movieID > 0 else { return }
@@ -73,13 +61,6 @@ final class DetailRouter: DetailRouting {
         }
     }
 
-    func showYouTubeVideo(videoKey: String, title: String?) {
-        guard !videoKey.isEmpty else { return }
-
-        let viewController = YouTubePlayerViewController(videoKey: videoKey, title: title)
-        show(viewController, using: .pageSheet(detents: [.medium()]))
-    }
-
     func showWebVideo(url: URL, title: String?) {
         show(BaseWebViewController(url: url, title: title), using: .push)
     }
@@ -88,32 +69,12 @@ final class DetailRouter: DetailRouting {
         show(BaseWebViewController(url: url), using: .push)
     }
 
-    // MARK: - Private Methods
+    // MARK: - Page Sheet
 
-    private func show(
-        _ viewController: UIViewController,
-        using presentation: DetailPresentation
-    ) {
-        switch presentation {
-        case .push:
-            sourceViewController?.navigationController?.pushViewController(
-                viewController,
-                animated: true
-            )
+    func showYouTubeVideo(videoKey: String, title: String?) {
+        guard !videoKey.isEmpty else { return }
 
-        case .present:
-            sourceViewController?.present(viewController, animated: true)
-
-        case .pageSheet(let detents):
-            let navigationController = UINavigationController(rootViewController: viewController)
-            navigationController.modalPresentationStyle = .pageSheet
-
-            if let sheet = navigationController.sheetPresentationController {
-                sheet.detents = detents
-                sheet.prefersGrabberVisible = true
-            }
-
-            sourceViewController?.present(navigationController, animated: true)
-        }
+        let viewController = YouTubePlayerViewController(videoKey: videoKey, title: title)
+        show(viewController, using: .pageSheet(.medium))
     }
 }
