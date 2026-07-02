@@ -9,13 +9,13 @@ import Foundation
 import SnapKit
 import UIKit
 
+@MainActor
 enum GlassBackgroundEffect {
 
-    @MainActor
     static func make(
         tintColor: UIColor? = ThemeColor.background.withAlphaComponent(0.18),
         fallbackStyle: UIBlurEffect.Style = .systemUltraThinMaterial
-    ) -> UIVisualEffect? {
+    ) -> UIVisualEffect {
         if #available(iOS 26.0, *) {
             let effect = UIGlassEffect(style: .regular)
             effect.tintColor = tintColor
@@ -53,10 +53,7 @@ class GlassBaseViewController: BaseViewController {
     override func configureView() {
         super.configureView()
         view.backgroundColor = .clear
-        glassBackgroundView.effect = GlassBackgroundEffect.make(
-            tintColor: glassTintColor,
-            fallbackStyle: fallbackBlurEffectStyle
-        )
+        glassBackgroundView.effect = makeGlassBackgroundEffect()
     }
 
     override func setupHierarchy() {
@@ -70,5 +67,18 @@ class GlassBaseViewController: BaseViewController {
         glassBackgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    // MARK: - Private Methods
+
+    private func makeGlassBackgroundEffect() -> UIVisualEffect {
+        if #available(iOS 26.0, *) {
+            let effect = UIGlassEffect(style: .regular)
+            effect.tintColor = glassTintColor
+            effect.isInteractive = false
+            return effect
+        }
+
+        return UIBlurEffect(style: fallbackBlurEffectStyle)
     }
 }

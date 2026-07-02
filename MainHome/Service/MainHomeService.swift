@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-nonisolated protocol MainHomeServicing {
+nonisolated protocol MainHomeServicing: Sendable {
     func fetchContent(
         for category: MainHomeContentCategory,
         page: Int
@@ -59,16 +59,30 @@ nonisolated final class MainHomeService: MainHomeServicing {
 
     func fetchHomeSections() async throws -> [MainHomeContentSection] {
         var sections: [MainHomeContentSection] = []
+        var firstError: Error?
 
         for category in MainHomeContentCategory.allCases {
-            let page = try await fetchContent(for: category, page: 1)
-            sections.append(
-                MainHomeContentSection(
-                    category: category,
-                    totalResults: page.totalResults,
-                    contents: page.contents
+            do {
+                let page = try await fetchContent(for: category, page: 1)
+                sections.append(
+                    MainHomeContentSection(
+                        category: category,
+                        totalResults: page.totalResults,
+                        contents: page.contents
+                    )
                 )
-            )
+            } catch {
+                if firstError == nil {
+                    firstError = error
+                }
+                AppLogger.network.warning(
+                    "Failed to load home section \(String(describing: category), privacy: .public): \(error.localizedDescription, privacy: .public)"
+                )
+            }
+        }
+
+        if sections.isEmpty, let firstError {
+            throw firstError
         }
 
         return sections

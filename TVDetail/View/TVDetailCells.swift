@@ -1019,6 +1019,7 @@ private final class TVDetailRecommendationPosterCell: ImageTitleBaseCollectionVi
     }
 }
 
+@MainActor
 private enum TVDetailCellStyle {
 
     private enum Layout {

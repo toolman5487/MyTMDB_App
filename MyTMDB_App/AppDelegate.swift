@@ -5,10 +5,11 @@
 //  Created by Willy Hsu on 2025/5/2.
 //
 
-import SkeletonView
+@preconcurrency import SkeletonView
 import UIKit
 
 @main
+@MainActor
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 

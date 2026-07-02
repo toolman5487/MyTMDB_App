@@ -66,6 +66,64 @@ struct AuthSessionValidator: Sendable {
     }
 }
 
+// MARK: - AuthFlowCoordinating
+
+@MainActor
+protocol AuthFlowCoordinating {
+    func finishUserLogin(sessionId: String, from sourceViewController: UIViewController) async throws
+    func finishGuestLogin(sessionId: String, from sourceViewController: UIViewController)
+}
+
+// MARK: - AuthFlowCoordinator
+
+@MainActor
+final class AuthFlowCoordinator: AuthFlowCoordinating {
+
+    // MARK: - Properties
+
+    private let sessionStore: SessionStoring
+    private let accountService: AccountServiceProtocol
+
+    // MARK: - Initialization
+
+    init(
+        sessionStore: SessionStoring = SessionStore(),
+        accountService: AccountServiceProtocol = AccountService()
+    ) {
+        self.sessionStore = sessionStore
+        self.accountService = accountService
+    }
+
+    // MARK: - AuthFlowCoordinating
+
+    func finishUserLogin(sessionId: String, from sourceViewController: UIViewController) async throws {
+        let session = AuthSession.user(sessionId: sessionId)
+        sessionStore.save(session)
+
+        _ = try await accountService.fetchAccount(sessionId: sessionId)
+        replaceRoot(from: sourceViewController, for: session)
+    }
+
+    func finishGuestLogin(sessionId: String, from sourceViewController: UIViewController) {
+        let session = AuthSession.guest(sessionId: sessionId)
+        sessionStore.save(session)
+        replaceRoot(from: sourceViewController, for: session)
+    }
+
+    // MARK: - Private Methods
+
+    private func replaceRoot(from sourceViewController: UIViewController, for session: AuthSession) {
+        guard let window = sourceViewController.view.window else {
+            AppLogger.navigation.warning(
+                "Auth flow root replacement failed because source view has no window."
+            )
+            return
+        }
+
+        AppRootFactory.replaceRoot(in: window, for: session)
+    }
+}
+
 // MARK: - RootLoadingViewController
 
 @MainActor

@@ -17,18 +17,21 @@ protocol MainHomeRouting {
 // MARK: - MainHomeRouter
 
 @MainActor
-final class MainHomeRouter: BaseRouter, MainHomeRouting {
+final class MainHomeRouter: MainHomeRouting {
 
-    // MARK: - Push
+    // MARK: - Properties
+
+    private weak var sourceViewController: UIViewController?
+
+    // MARK: - Initialization
+
+    init(sourceViewController: UIViewController) {
+        self.sourceViewController = sourceViewController
+    }
+
+    // MARK: - MainHomeRouting
 
     func showDetail(for item: MainHomeContentItem) {
-        guard item.id > 0 else {
-            AppLogger.navigation.warning(
-                "MainHomeRouter ignored detail navigation because item id is invalid."
-            )
-            return
-        }
-
         let detailViewController: UIViewController
 
         switch item.mediaType {
@@ -39,8 +42,9 @@ final class MainHomeRouter: BaseRouter, MainHomeRouting {
             detailViewController = TVDetailViewController(seriesID: item.id)
         }
 
-        let trimmedTitle = item.title.trimmingCharacters(in: .whitespacesAndNewlines)
-        detailViewController.title = trimmedTitle.isEmpty ? nil : trimmedTitle
-        show(detailViewController, using: .push)
+        sourceViewController?.navigationController?.pushViewController(
+            detailViewController,
+            animated: true
+        )
     }
 }

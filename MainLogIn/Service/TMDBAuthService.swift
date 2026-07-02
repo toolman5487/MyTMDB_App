@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-protocol TMDBAuthServicing {
+protocol TMDBAuthServicing: Sendable {
     func login(username: String, password: String) async throws -> String
     func createGuestSession() async throws -> String
 }

@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - RouterPresentation
 
+@MainActor
 enum RouterPresentation {
     case push
     case present
@@ -21,6 +22,7 @@ enum RouterPresentation {
 
 // MARK: - RouterPageSheetConfiguration
 
+@MainActor
 struct RouterPageSheetConfiguration {
     let detents: [UISheetPresentationController.Detent]
     let prefersGrabber: Bool
@@ -43,6 +45,7 @@ struct RouterPageSheetConfiguration {
 
 // MARK: - RouterPopoverConfiguration
 
+@MainActor
 struct RouterPopoverConfiguration {
     let sourceView: UIView
     let sourceRect: CGRect

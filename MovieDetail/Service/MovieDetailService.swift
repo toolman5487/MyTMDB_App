@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-nonisolated protocol MovieDetailServicing {
+nonisolated protocol MovieDetailServicing: Sendable {
     func fetchMovieDetailContent(id: Int, recommendationPage: Int) async throws -> MovieDetailContent
 
     func fetchMovieDetail(id: Int) async throws -> MovieDetail
@@ -62,11 +62,41 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
         recommendationPage: Int = 1
     ) async throws -> MovieDetailContent {
         async let detail = fetchMovieDetail(id: id)
-        async let credits = fetchMovieCredits(id: id)
-        async let videos = fetchMovieVideos(id: id)
-        async let images = fetchMovieImages(id: id)
-        async let recommendations = fetchMovieRecommendations(id: id, page: recommendationPage)
-        async let watchProviders = fetchMovieWatchProviders(id: id)
+        async let credits = fetchAuxiliaryContent(
+            name: "movie credits",
+            id: id,
+            fallback: MovieCreditsResponse(id: id)
+        ) {
+            try await fetchMovieCredits(id: id)
+        }
+        async let videos = fetchAuxiliaryContent(
+            name: "movie videos",
+            id: id,
+            fallback: MovieVideosResponse(id: id)
+        ) {
+            try await fetchMovieVideos(id: id)
+        }
+        async let images = fetchAuxiliaryContent(
+            name: "movie images",
+            id: id,
+            fallback: MovieImagesResponse(id: id)
+        ) {
+            try await fetchMovieImages(id: id)
+        }
+        async let recommendations = fetchAuxiliaryContent(
+            name: "movie recommendations",
+            id: id,
+            fallback: MovieRecommendationsPage(page: recommendationPage)
+        ) {
+            try await fetchMovieRecommendations(id: id, page: recommendationPage)
+        }
+        async let watchProviders = fetchAuxiliaryContent(
+            name: "movie watch providers",
+            id: id,
+            fallback: MovieWatchProvidersResponse(id: id)
+        ) {
+            try await fetchMovieWatchProviders(id: id)
+        }
 
         return try await MovieDetailContent(
             detail: detail,
@@ -143,5 +173,21 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
             URLQueryItem(name: "language", value: localization.languageParameter),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
+    }
+
+    private func fetchAuxiliaryContent<T: Sendable>(
+        name: String,
+        id: Int,
+        fallback: T,
+        operation: @Sendable () async throws -> T
+    ) async -> T {
+        do {
+            return try await operation()
+        } catch {
+            AppLogger.network.warning(
+                "Failed to load \(name, privacy: .public) for movie \(id, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
+            return fallback
+        }
     }
 }

@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - Auth Page Style
 
+@MainActor
 enum AuthPageStyle {
 
     // MARK: - Layout

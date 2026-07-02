@@ -19,7 +19,7 @@ enum HTTPMethod: String, Sendable {
 
 // MARK: - Protocol
 
-protocol NetworkServicing {
+protocol NetworkServicing: Sendable {
     func get<T: Decodable>(
         path: String,
         queryItems: [URLQueryItem]
@@ -95,21 +95,15 @@ final class NetworkService: NetworkServicing {
 
     private let baseURL: String
     private let session: URLSession
-    private let decoder: JSONDecoder
-    private let encoder: JSONEncoder
 
     // MARK: - Initialization
 
     init(
         baseURL: String = APIConfig.tmdbBaseURL,
-        session: URLSession = NetworkService.makeSession(),
-        decoder: JSONDecoder = JSONDecoder(),
-        encoder: JSONEncoder = JSONEncoder()
+        session: URLSession = NetworkService.makeSession()
     ) {
         self.baseURL = baseURL
         self.session = session
-        self.decoder = decoder
-        self.encoder = encoder
     }
 
     // MARK: - Public Methods
@@ -202,7 +196,7 @@ final class NetworkService: NetworkServicing {
 
         if let body {
             do {
-                urlRequest.httpBody = try encoder.encode(AnyEncodable(body))
+                urlRequest.httpBody = try JSONEncoder().encode(AnyEncodable(body))
             } catch {
                 throw NetworkError.encodingFailed
             }
@@ -227,11 +221,14 @@ final class NetworkService: NetworkServicing {
         }
 
         if T.self == EmptyResponse.self, data.isEmpty {
-            return EmptyResponse() as! T
+            guard let emptyResponse = EmptyResponse() as? T else {
+                throw NetworkError.decodingFailed
+            }
+            return emptyResponse
         }
 
         do {
-            return try decoder.decode(T.self, from: data)
+            return try JSONDecoder().decode(T.self, from: data)
         } catch {
             throw NetworkError.decodingFailed
         }
@@ -258,7 +255,7 @@ final class NetworkService: NetworkServicing {
     }
 
     private func makeHTTPError(statusCode: Int, data: Data) -> NetworkError {
-        guard let response = try? decoder.decode(TMDBErrorResponse.self, from: data),
+        guard let response = try? JSONDecoder().decode(TMDBErrorResponse.self, from: data),
               let statusMessage = response.statusMessage else {
             return .httpError(statusCode: statusCode)
         }

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-nonisolated protocol TVDetailReviewServicing {
+nonisolated protocol TVDetailReviewServicing: Sendable {
     func fetchTVReviews(seriesID: Int, page: Int) async throws -> TVDetailReviewsPage
 }
 

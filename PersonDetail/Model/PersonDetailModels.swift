@@ -119,6 +119,16 @@ nonisolated struct PersonCombinedCreditsResponse: Decodable, Sendable, Equatable
         case crew
     }
 
+    init(
+        id: Int,
+        cast: [PersonCombinedCreditCast] = [],
+        crew: [PersonCombinedCreditCrew] = []
+    ) {
+        self.id = id
+        self.cast = cast
+        self.crew = crew
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -319,6 +329,11 @@ nonisolated struct PersonImagesResponse: Decodable, Sendable, Equatable, Identif
         case profiles
     }
 
+    init(id: Int, profiles: [PersonProfileImage] = []) {
+        self.id = id
+        self.profiles = profiles
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -386,5 +401,29 @@ nonisolated struct PersonExternalIDs: Decodable, Sendable, Equatable, Identifiab
         case twitterID = "twitter_id"
         case wikidataID = "wikidata_id"
         case youtubeID = "youtube_id"
+    }
+
+    init(
+        id: Int,
+        facebookID: String? = nil,
+        freebaseID: String? = nil,
+        freebaseMID: String? = nil,
+        imdbID: String? = nil,
+        instagramID: String? = nil,
+        tiktokID: String? = nil,
+        twitterID: String? = nil,
+        wikidataID: String? = nil,
+        youtubeID: String? = nil
+    ) {
+        self.id = id
+        self.facebookID = facebookID
+        self.freebaseID = freebaseID
+        self.freebaseMID = freebaseMID
+        self.imdbID = imdbID
+        self.instagramID = instagramID
+        self.tiktokID = tiktokID
+        self.twitterID = twitterID
+        self.wikidataID = wikidataID
+        self.youtubeID = youtubeID
     }
 }

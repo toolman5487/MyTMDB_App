@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-protocol AccountServiceProtocol {
+protocol AccountServiceProtocol: Sendable {
     func fetchAccount(sessionId: String) async throws -> Account
 }
 

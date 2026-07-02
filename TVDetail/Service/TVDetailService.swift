@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-nonisolated protocol TVDetailServicing {
+nonisolated protocol TVDetailServicing: Sendable {
     func fetchTVDetailContent(seriesID: Int, recommendationPage: Int) async throws -> TVDetailContent
 
     func fetchTVDetail(seriesID: Int) async throws -> TVDetail
@@ -62,11 +62,41 @@ nonisolated final class TVDetailService: TVDetailServicing {
         recommendationPage: Int = 1
     ) async throws -> TVDetailContent {
         async let detail = fetchTVDetail(seriesID: seriesID)
-        async let aggregateCredits = fetchTVAggregateCredits(seriesID: seriesID)
-        async let videos = fetchTVVideos(seriesID: seriesID)
-        async let images = fetchTVImages(seriesID: seriesID)
-        async let recommendations = fetchTVRecommendations(seriesID: seriesID, page: recommendationPage)
-        async let watchProviders = fetchTVWatchProviders(seriesID: seriesID)
+        async let aggregateCredits = fetchAuxiliaryContent(
+            name: "TV aggregate credits",
+            seriesID: seriesID,
+            fallback: TVAggregateCreditsResponse(id: seriesID)
+        ) {
+            try await fetchTVAggregateCredits(seriesID: seriesID)
+        }
+        async let videos = fetchAuxiliaryContent(
+            name: "TV videos",
+            seriesID: seriesID,
+            fallback: TVVideosResponse(id: seriesID)
+        ) {
+            try await fetchTVVideos(seriesID: seriesID)
+        }
+        async let images = fetchAuxiliaryContent(
+            name: "TV images",
+            seriesID: seriesID,
+            fallback: TVImagesResponse(id: seriesID)
+        ) {
+            try await fetchTVImages(seriesID: seriesID)
+        }
+        async let recommendations = fetchAuxiliaryContent(
+            name: "TV recommendations",
+            seriesID: seriesID,
+            fallback: TVRecommendationsPage(page: recommendationPage)
+        ) {
+            try await fetchTVRecommendations(seriesID: seriesID, page: recommendationPage)
+        }
+        async let watchProviders = fetchAuxiliaryContent(
+            name: "TV watch providers",
+            seriesID: seriesID,
+            fallback: TVWatchProvidersResponse(id: seriesID)
+        ) {
+            try await fetchTVWatchProviders(seriesID: seriesID)
+        }
 
         return try await TVDetailContent(
             detail: detail,
@@ -150,5 +180,21 @@ nonisolated final class TVDetailService: TVDetailServicing {
             URLQueryItem(name: "language", value: localization.languageParameter),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
+    }
+
+    private func fetchAuxiliaryContent<T: Sendable>(
+        name: String,
+        seriesID: Int,
+        fallback: T,
+        operation: @Sendable () async throws -> T
+    ) async -> T {
+        do {
+            return try await operation()
+        } catch {
+            AppLogger.network.warning(
+                "Failed to load \(name, privacy: .public) for TV series \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
+            return fallback
+        }
     }
 }

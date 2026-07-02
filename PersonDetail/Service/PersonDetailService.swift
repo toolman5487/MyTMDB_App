@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-nonisolated protocol PersonDetailServicing {
+nonisolated protocol PersonDetailServicing: Sendable {
     func fetchPersonDetailContent(id: Int) async throws -> PersonDetailContent
 
     func fetchPersonDetail(id: Int) async throws -> PersonDetail
@@ -44,9 +44,27 @@ nonisolated final class PersonDetailService: PersonDetailServicing {
 
     func fetchPersonDetailContent(id: Int) async throws -> PersonDetailContent {
         async let detail = fetchPersonDetail(id: id)
-        async let combinedCredits = fetchPersonCombinedCredits(id: id)
-        async let images = fetchPersonImages(id: id)
-        async let externalIDs = fetchPersonExternalIDs(id: id)
+        async let combinedCredits = fetchAuxiliaryContent(
+            name: "person combined credits",
+            id: id,
+            fallback: PersonCombinedCreditsResponse(id: id)
+        ) {
+            try await fetchPersonCombinedCredits(id: id)
+        }
+        async let images = fetchAuxiliaryContent(
+            name: "person images",
+            id: id,
+            fallback: PersonImagesResponse(id: id)
+        ) {
+            try await fetchPersonImages(id: id)
+        }
+        async let externalIDs = fetchAuxiliaryContent(
+            name: "person external IDs",
+            id: id,
+            fallback: PersonExternalIDs(id: id)
+        ) {
+            try await fetchPersonExternalIDs(id: id)
+        }
 
         return try await PersonDetailContent(
             detail: detail,
@@ -90,5 +108,21 @@ nonisolated final class PersonDetailService: PersonDetailServicing {
         [
             URLQueryItem(name: "language", value: localization.languageParameter)
         ]
+    }
+
+    private func fetchAuxiliaryContent<T: Sendable>(
+        name: String,
+        id: Int,
+        fallback: T,
+        operation: @Sendable () async throws -> T
+    ) async -> T {
+        do {
+            return try await operation()
+        } catch {
+            AppLogger.network.warning(
+                "Failed to load \(name, privacy: .public) for person \(id, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
+            return fallback
+        }
     }
 }

@@ -73,7 +73,9 @@ final class MainHomeCarouselView: UIView {
     }
 
     deinit {
-        autoScrollTimer?.invalidate()
+        MainActor.assumeIsolated {
+            autoScrollTimer?.invalidate()
+        }
     }
 
     // MARK: - Lifecycle
@@ -134,7 +136,7 @@ final class MainHomeCarouselView: UIView {
         guard autoScrollTimer == nil else { return }
 
         let timer = Timer.scheduledTimer(withTimeInterval: AutoScroll.interval, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+            Task(priority: .userInitiated) { @MainActor in
                 self?.scrollToNextItem()
             }
         }

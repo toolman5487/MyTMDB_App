@@ -193,6 +193,16 @@ nonisolated struct MovieCreditsResponse: Decodable, Sendable, Equatable, Identif
         case crew
     }
 
+    init(
+        id: Int,
+        cast: [MovieCreditCast] = [],
+        crew: [MovieCreditCrew] = []
+    ) {
+        self.id = id
+        self.cast = cast
+        self.crew = crew
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -302,6 +312,11 @@ nonisolated struct MovieVideosResponse: Decodable, Sendable, Equatable, Identifi
         case results
     }
 
+    init(id: Int, results: [MovieVideo] = []) {
+        self.id = id
+        self.results = results
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -368,6 +383,18 @@ nonisolated struct MovieImagesResponse: Decodable, Sendable, Equatable, Identifi
         case posters
     }
 
+    init(
+        id: Int,
+        backdrops: [MovieImage] = [],
+        logos: [MovieImage] = [],
+        posters: [MovieImage] = []
+    ) {
+        self.id = id
+        self.backdrops = backdrops
+        self.logos = logos
+        self.posters = posters
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -425,6 +452,18 @@ nonisolated struct MovieRecommendationsPage: Decodable, Sendable, Equatable {
         case results
         case totalPages = "total_pages"
         case totalResults = "total_results"
+    }
+
+    init(
+        page: Int = 1,
+        results: [MovieRecommendation] = [],
+        totalPages: Int = 1,
+        totalResults: Int = 0
+    ) {
+        self.page = page
+        self.results = results
+        self.totalPages = totalPages
+        self.totalResults = totalResults
     }
 
     init(from decoder: Decoder) throws {
@@ -501,6 +540,11 @@ nonisolated struct MovieWatchProvidersResponse: Decodable, Sendable, Equatable, 
     enum CodingKeys: String, CodingKey {
         case id
         case results
+    }
+
+    init(id: Int, results: [String: MovieWatchProviderCountry] = [:]) {
+        self.id = id
+        self.results = results
     }
 
     init(from decoder: Decoder) throws {

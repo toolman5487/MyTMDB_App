@@ -17,11 +17,11 @@ final class LoginViewController: BaseViewController {
 
     // MARK: - Properties
 
-    private let loginVM = LoginViewModel()
-    let accountVM = AccountViewModel()
-    private let sessionStore: SessionStoring = SessionStore()
+    private let loginVM: LoginViewModel
+    private let authCoordinator: AuthFlowCoordinating
 
     private var currentPage: AuthPage = .login
+    private var authFlowTask: Task<Void, Never>?
 
     private lazy var loginPageView = LoginPageView()
     private lazy var guestPageView = GuestPageView()
@@ -32,6 +32,27 @@ final class LoginViewController: BaseViewController {
         guestPageView,
         registerPageView,
     ]
+
+    // MARK: - Initialization
+
+    init(
+        loginViewModel: LoginViewModel = LoginViewModel(),
+        authCoordinator: AuthFlowCoordinating = AuthFlowCoordinator()
+    ) {
+        self.loginVM = loginViewModel
+        self.authCoordinator = authCoordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        self.loginVM = LoginViewModel()
+        self.authCoordinator = AuthFlowCoordinator()
+        super.init(coder: coder)
+    }
+
+    deinit {
+        authFlowTask?.cancel()
+    }
 
     // MARK: - UI Components
 
@@ -145,9 +166,7 @@ final class LoginViewController: BaseViewController {
         pageControl.addTarget(self, action: #selector(pageControlChanged), for: .valueChanged)
 
         handleLoginState(loginVM.state)
-        handleAccountState(accountVM.state)
         observeLoginState()
-        observeAccountState()
     }
 
     // MARK: - Setup
@@ -186,18 +205,6 @@ final class LoginViewController: BaseViewController {
         }
     }
 
-    private func observeAccountState() {
-        withObservationTracking {
-            _ = accountVM.state
-        } onChange: { [weak self] in
-            Task(priority: .userInitiated) { @MainActor in
-                guard let self else { return }
-                self.handleAccountState(self.accountVM.state)
-                self.observeAccountState()
-            }
-        }
-    }
-
     // MARK: - State Handling
 
     private func handleLoginState(_ state: LoginState) {
@@ -215,39 +222,13 @@ final class LoginViewController: BaseViewController {
             hideErrorMessage()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
-            sessionStore.save(.user(sessionId: sessionId))
-            Task(priority: .userInitiated) {
-                await accountVM.loadAccount(sessionId: sessionId)
-            }
+            finishUserLogin(sessionId: sessionId)
 
         case .guestSuccess(let guestSessionId):
             hideErrorMessage()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
-            sessionStore.save(.guest(sessionId: guestSessionId))
-            navigateToMainScreen()
-
-        case .failed(let message):
-            setLoadingOverlayVisible(false)
-            setActionButtonsEnabled(true)
-            showErrorMessage(message)
-        }
-    }
-
-    private func handleAccountState(_ state: AccountState) {
-        switch state {
-        case .idle:
-            break
-
-        case .loading:
-            hideErrorMessage()
-            setLoadingOverlayVisible(true)
-            setActionButtonsEnabled(false)
-
-        case .loaded:
-            hideErrorMessage()
-            setLoadingOverlayVisible(false)
-            navigateToMainScreen()
+            finishGuestLogin(sessionId: guestSessionId)
 
         case .failed(let message):
             setLoadingOverlayVisible(false)
@@ -257,6 +238,27 @@ final class LoginViewController: BaseViewController {
     }
 
     // MARK: - Helpers
+
+    private func finishUserLogin(sessionId: String) {
+        authFlowTask?.cancel()
+        authFlowTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            do {
+                try await authCoordinator.finishUserLogin(sessionId: sessionId, from: self)
+            } catch {
+                guard !Task.isCancelled else { return }
+                setLoadingOverlayVisible(false)
+                setActionButtonsEnabled(true)
+                showErrorMessage(error.errorMessage)
+            }
+        }
+    }
+
+    private func finishGuestLogin(sessionId: String) {
+        authFlowTask?.cancel()
+        authCoordinator.finishGuestLogin(sessionId: sessionId, from: self)
+    }
 
     private func scrollToPage(_ page: AuthPage, animated: Bool) {
         let offsetX = CGFloat(page.rawValue) * pageScrollView.bounds.width
@@ -312,17 +314,6 @@ final class LoginViewController: BaseViewController {
         case .register:
             break
         }
-    }
-
-    private func navigateToMainScreen() {
-        guard let windowScene = view.window?.windowScene,
-              let sceneDelegate = windowScene.delegate as? SceneDelegate,
-              let window = sceneDelegate.window else {
-            return
-        }
-        let session = sessionStore.load()
-        window.rootViewController = AppRootFactory.makeRootViewController(for: session)
-        window.makeKeyAndVisible()
     }
 
     private func setLoadingOverlayVisible(_ visible: Bool) {
