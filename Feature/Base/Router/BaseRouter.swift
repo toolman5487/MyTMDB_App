@@ -17,7 +17,6 @@ enum RouterPresentation {
     case formSheet
     case pageSheet(RouterPageSheetConfiguration)
     case popover(RouterPopoverConfiguration)
-    case safari(URL)
 }
 
 // MARK: - RouterPageSheetConfiguration
@@ -78,32 +77,41 @@ class BaseRouter {
     // MARK: - Presentation
 
     func show(_ viewController: UIViewController, using presentation: RouterPresentation) {
-        guard let sourceViewController else { return }
+        guard let sourceViewController else {
+            AppLogger.navigation.warning(
+                "Router presentation failed because sourceViewController was released."
+            )
+            return
+        }
 
         switch presentation {
         case .push:
-            sourceViewController.navigationController?.pushViewController(
-                viewController,
-                animated: true
-            )
+            guard let navigationController = sourceViewController.navigationController else {
+                AppLogger.navigation.warning(
+                    "Router push failed because sourceViewController is not embedded in a navigation controller."
+                )
+                return
+            }
+
+            navigationController.pushViewController(viewController, animated: true)
 
         case .present:
-            sourceViewController.present(viewController, animated: true)
+            present(viewController, from: sourceViewController)
 
         case .fullScreen:
             viewController.modalPresentationStyle = .fullScreen
-            sourceViewController.present(viewController, animated: true)
+            present(viewController, from: sourceViewController)
 
         case .formSheet:
             viewController.modalPresentationStyle = .formSheet
-            sourceViewController.present(viewController, animated: true)
+            present(viewController, from: sourceViewController)
 
         case .pageSheet(let configuration):
             let presentedViewController = makePageSheetViewController(
                 from: viewController,
                 configuration: configuration
             )
-            sourceViewController.present(presentedViewController, animated: true)
+            present(presentedViewController, from: sourceViewController)
 
         case .popover(let configuration):
             viewController.modalPresentationStyle = .popover
@@ -114,12 +122,20 @@ class BaseRouter {
                 popover.permittedArrowDirections = configuration.permittedArrowDirections
             }
 
-            sourceViewController.present(viewController, animated: true)
-
-        case .safari(let url):
-            let safariViewController = SFSafariViewController(url: url)
-            sourceViewController.present(safariViewController, animated: true)
+            present(viewController, from: sourceViewController)
         }
+    }
+
+    func openSafari(_ url: URL) {
+        guard let sourceViewController else {
+            AppLogger.navigation.warning(
+                "Router Safari presentation failed because sourceViewController was released."
+            )
+            return
+        }
+
+        let safariViewController = SFSafariViewController(url: url)
+        present(safariViewController, from: sourceViewController)
     }
 
     // MARK: - Private Methods
@@ -144,5 +160,24 @@ class BaseRouter {
         }
 
         return presentedViewController
+    }
+
+    private func present(
+        _ viewController: UIViewController,
+        from sourceViewController: UIViewController
+    ) {
+        let presenter = topPresenter(from: sourceViewController)
+        presenter.present(viewController, animated: true)
+    }
+
+    private func topPresenter(from sourceViewController: UIViewController) -> UIViewController {
+        var presenter = sourceViewController
+
+        while let presentedViewController = presenter.presentedViewController,
+              !presentedViewController.isBeingDismissed {
+            presenter = presentedViewController
+        }
+
+        return presenter
     }
 }

@@ -22,6 +22,13 @@ final class MainHomeRouter: BaseRouter, MainHomeRouting {
     // MARK: - Push
 
     func showDetail(for item: MainHomeContentItem) {
+        guard item.id > 0 else {
+            AppLogger.navigation.warning(
+                "MainHomeRouter ignored detail navigation because item id is invalid."
+            )
+            return
+        }
+
         let detailViewController: UIViewController
 
         switch item.mediaType {

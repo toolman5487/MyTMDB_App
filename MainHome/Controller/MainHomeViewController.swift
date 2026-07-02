@@ -17,7 +17,6 @@ final class MainHomeViewController: MainBaseViewController {
     }
 
     private enum Layout {
-        static let headerHeight: CGFloat = 32
         static let itemHeight: CGFloat = 232
         static let headerContentSpacing: CGFloat = 8
         static let sectionBottomSpacing: CGFloat = 16
@@ -27,6 +26,7 @@ final class MainHomeViewController: MainBaseViewController {
 
     private let viewModel: MainHomeViewModel
     private var sections: [MainHomeSectionItem] = []
+    private var carouselItems: [MainHomeContentItem] = []
     private var loadTask: Task<Void, Never>?
     private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
 
@@ -55,11 +55,25 @@ final class MainHomeViewController: MainBaseViewController {
 
     override func configureView() {
         super.configureView()
+        title = nil
+        navigationItem.largeTitleDisplayMode = .never
         configureCollectionView()
     }
 
     override func bindViewModel() {
         loadHome()
+    }
+
+    // MARK: - Navigation Bar
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup
@@ -104,26 +118,33 @@ final class MainHomeViewController: MainBaseViewController {
         switch state {
         case .idle:
             sections = []
+            carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
             sections = []
+            carouselItems = []
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let loadedSections):
-            sections = loadedSections
+            carouselItems = loadedSections
+                .first { $0.category == .nowPlayingMovies }?
+                .contents ?? []
+            sections = loadedSections.filter { $0.category != .nowPlayingMovies }
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .empty:
             sections = []
+            carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: .emptyContent)
 
         case .failed(let message):
             sections = []
+            carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadHome()
@@ -188,7 +209,14 @@ extension MainHomeViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainHomeSectionHeaderView {
-            headerView.configure(title: sections[indexPath.section].title)
+            let shouldShowCarousel = indexPath.section == 0
+            headerView.configure(
+                title: sections[indexPath.section].title,
+                carouselItems: shouldShowCarousel ? carouselItems : []
+            )
+            headerView.onCarouselSelected = { [weak self] item in
+                self?.showDetail(for: item)
+            }
         }
 
         return reusableView
@@ -227,9 +255,13 @@ extension MainHomeViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        CGSize(
+        let height = section == 0 && !carouselItems.isEmpty
+            ? MainHomeSectionHeaderView.featuredHeight
+            : MainHomeSectionHeaderView.standardHeight
+
+        return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.headerHeight
+            height: height
         )
     }
 }

@@ -14,8 +14,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        configureNavigationBarAppearance()
         configureSkeletonAppearance()
         return true
+    }
+
+    private func configureNavigationBarAppearance() {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: ThemeColor.highlight
+        ]
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = ThemeColor.backgroundSecondary
+        appearance.shadowColor = ThemeColor.separator
+        appearance.titleTextAttributes = titleAttributes
+        appearance.largeTitleTextAttributes = titleAttributes
+
+        let navigationBar = UINavigationBar.appearance()
+        navigationBar.tintColor = ThemeColor.primary
+        navigationBar.standardAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
     }
 
     private func configureSkeletonAppearance() {
@@ -39,4 +59,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-
