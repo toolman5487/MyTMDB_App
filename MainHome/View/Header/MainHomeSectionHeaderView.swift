@@ -38,6 +38,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     }()
 
     private let carouselView = MainHomeCarouselView()
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .title3)
@@ -45,6 +46,20 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
         return label
+    }()
+
+    private let titleRowStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: Layout.horizontalInset,
+            bottom: 0,
+            trailing: Layout.horizontalInset
+        )
+        return stackView
     }()
 
     // MARK: - Initialization
@@ -81,7 +96,8 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     private func setupHierarchy() {
         addSubview(stackView)
         stackView.addArrangedSubview(carouselView)
-        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(titleRowStackView)
+        titleRowStackView.addArrangedSubview(titleLabel)
     }
 
     private func setupConstraints() {
@@ -93,8 +109,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
             make.height.equalTo(Layout.carouselHeight)
         }
 
-        titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(Layout.horizontalInset)
+        titleRowStackView.snp.makeConstraints { make in
             make.height.equalTo(MainHomeSectionHeaderView.standardHeight)
         }
     }

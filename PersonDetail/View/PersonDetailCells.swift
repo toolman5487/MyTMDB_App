@@ -847,8 +847,9 @@ final class PersonDetailExternalLinksCollectionViewCell: BaseNestedCollectionVie
     static let reuseIdentifier = String(describing: PersonDetailExternalLinksCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 196, height: 96)
-        static let sectionHeight: CGFloat = 96
+        static let itemSize = CGSize(width: 72, height: 88)
+        static let sectionHeight: CGFloat = 88
+        static let itemSpacing: CGFloat = 16
     }
 
     private var items: [PersonDetailExternalLinkItem] = []
@@ -857,8 +858,9 @@ final class PersonDetailExternalLinksCollectionViewCell: BaseNestedCollectionVie
     override func configureView() {
         containerView.backgroundColor = .clear
         collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.minimumInteritemSpacing = 8
+        collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
+        collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
+        collectionViewFlowLayout.sectionInset = .zero
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
@@ -932,17 +934,25 @@ private final class PersonDetailExternalLinkCollectionViewCell: BaseCollectionVi
     static let reuseIdentifier = String(describing: PersonDetailExternalLinkCollectionViewCell.self)
 
     private enum Layout {
-        static let iconContainerSize: CGFloat = 36
-        static let iconSize: CGFloat = 18
-        static let horizontalInset: CGFloat = 12
-        static let contentSpacing: CGFloat = 12
-        static let textSpacing: CGFloat = 4
-        static let arrowSize: CGFloat = 16
+        static let iconContainerSize: CGFloat = 56
+        static let iconSize: CGFloat = 26
+        static let titleTopSpacing: CGFloat = 8
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            UIView.animate(withDuration: 0.18) {
+                self.containerView.alpha = self.isHighlighted ? 0.72 : 1
+                self.containerView.transform = self.isHighlighted
+                    ? CGAffineTransform(scaleX: 0.98, y: 0.98)
+                    : .identity
+            }
+        }
     }
 
     private let iconContainerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = Layout.iconContainerSize / 2
+        view.layer.cornerRadius = 8
         view.clipsToBounds = true
         return view
     }()
@@ -955,46 +965,33 @@ private final class PersonDetailExternalLinkCollectionViewCell: BaseCollectionVi
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
+        label.font = .preferredFont(forTextStyle: .caption1)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
+        label.textAlignment = .center
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
-    private let valueLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingMiddle
-        return label
-    }()
-
-    private let arrowImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "arrow.up.forward"))
-        imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = ThemeColor.textTertiary
-        return imageView
-    }()
-
     func configure(with item: PersonDetailExternalLinkItem) {
         let style = PersonDetailExternalLinkStyle(id: item.id)
-        iconImageView.image = UIImage(systemName: style.symbolName)
-        iconImageView.tintColor = style.tintColor
-        iconContainerView.backgroundColor = style.tintColor.withAlphaComponent(0.16)
+
+        if let imageName = style.imageName,
+           let image = UIImage(named: imageName) {
+            iconImageView.image = image.withRenderingMode(.alwaysOriginal)
+            iconImageView.tintColor = nil
+        } else {
+            iconImageView.image = UIImage(systemName: style.symbolName)
+            iconImageView.tintColor = style.tintColor
+        }
+
+        iconContainerView.backgroundColor = .clear
         titleLabel.text = item.title
-        valueLabel.text = displayValue(for: item)
     }
 
     override func configureView() {
-        containerView.backgroundColor = ThemeColor.backgroundSecondary
-        containerView.layer.cornerRadius = 8
-        containerView.layer.borderColor = ThemeColor.separator.withAlphaComponent(0.36).cgColor
-        containerView.layer.borderWidth = 1
-        containerView.clipsToBounds = true
+        containerView.backgroundColor = .clear
     }
 
     override func setupHierarchy() {
@@ -1002,16 +999,13 @@ private final class PersonDetailExternalLinkCollectionViewCell: BaseCollectionVi
         containerView.addSubview(iconContainerView)
         iconContainerView.addSubview(iconImageView)
         containerView.addSubview(titleLabel)
-        containerView.addSubview(valueLabel)
-        containerView.addSubview(arrowImageView)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
         iconContainerView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(Layout.horizontalInset)
-            make.centerY.equalToSuperview()
+            make.top.centerX.equalToSuperview()
             make.width.height.equalTo(Layout.iconContainerSize)
         }
 
@@ -1020,83 +1014,73 @@ private final class PersonDetailExternalLinkCollectionViewCell: BaseCollectionVi
             make.width.height.equalTo(Layout.iconSize)
         }
 
-        arrowImageView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(Layout.horizontalInset)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(Layout.arrowSize)
-        }
-
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconContainerView.snp.trailing).offset(Layout.contentSpacing)
-            make.trailing.equalTo(arrowImageView.snp.leading).offset(-Layout.contentSpacing)
-            make.bottom.equalTo(containerView.snp.centerY).offset(-Layout.textSpacing / 2)
-        }
-
-        valueLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(titleLabel)
-            make.top.equalTo(containerView.snp.centerY).offset(Layout.textSpacing / 2)
+            make.top.equalTo(iconContainerView.snp.bottom).offset(Layout.titleTopSpacing)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 
     override func resetForReuse() {
+        containerView.alpha = 1
+        containerView.transform = .identity
+        containerView.layer.borderColor = nil
         iconImageView.image = nil
         iconImageView.tintColor = nil
         iconContainerView.backgroundColor = nil
         titleLabel.text = nil
-        valueLabel.text = nil
-    }
-
-    private func displayValue(for item: PersonDetailExternalLinkItem) -> String {
-        switch item.id {
-        case "homepage":
-            return item.url.host ?? item.value
-
-        default:
-            return item.value
-        }
     }
 }
 
 private struct PersonDetailExternalLinkStyle {
+    let imageName: String?
     let symbolName: String
     let tintColor: UIColor
 
     init(id: String) {
         switch id {
         case "homepage":
-            self.symbolName = "link"
+            self.imageName = nil
+            self.symbolName = "link.circle.fill"
             self.tintColor = ThemeColor.systemBlue
 
         case "imdb":
-            self.symbolName = "film"
+            self.imageName = nil
+            self.symbolName = "film.circle.fill"
             self.tintColor = ThemeColor.spotlightGold
 
         case "instagram":
-            self.symbolName = "camera"
+            self.imageName = "instagram_icon"
+            self.symbolName = "camera.circle.fill"
             self.tintColor = ThemeColor.systemPink
 
         case "twitter":
-            self.symbolName = "bubble.left.and.bubble.right"
+            self.imageName = "twitter_icon"
+            self.symbolName = "xmark.circle.fill"
             self.tintColor = ThemeColor.textPrimary
 
         case "facebook":
-            self.symbolName = "f.circle"
+            self.imageName = "facebook_icon"
+            self.symbolName = "f.circle.fill"
             self.tintColor = ThemeColor.systemBlue
 
         case "tiktok":
+            self.imageName = nil
             self.symbolName = "music.note"
             self.tintColor = ThemeColor.textPrimary
 
         case "youtube":
-            self.symbolName = "play.rectangle"
+            self.imageName = "youtube_icon"
+            self.symbolName = "play.circle.fill"
             self.tintColor = ThemeColor.systemRed
 
         case "wikidata":
-            self.symbolName = "book"
+            self.imageName = nil
+            self.symbolName = "w.circle.fill"
             self.tintColor = ThemeColor.systemGreen
 
         default:
-            self.symbolName = "arrow.up.forward.app"
+            self.imageName = nil
+            self.symbolName = "arrow.up.forward.circle.fill"
             self.tintColor = ThemeColor.primary
         }
     }
