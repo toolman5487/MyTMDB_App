@@ -170,7 +170,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     // MARK: - Actions
 
     @objc private func handleReviewButtonTapped() {
-        let viewController = MovieDetailReviewViewController(movieID: movieID)
+        let viewController = MovieReviewListViewController(movieID: movieID)
         navigationController?.pushViewController(viewController, animated: true)
     }
 }
@@ -236,7 +236,13 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailVideosCollectionViewCell)?.configure(items: items) { [weak self] item in
-                self?.showVideo(item)
+                guard let self else { return }
+
+                if let youtubeVideoKey = item.youtubeVideoKey {
+                    router.showYouTubeVideo(videoKey: youtubeVideoKey, title: item.title)
+                } else if let videoURL = item.videoURL {
+                    router.showWebVideo(url: videoURL, title: item.title)
+                }
             }
             return cell
 
@@ -389,20 +395,4 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         }
     }
 
-}
-
-// MARK: - Video Playback
-
-private extension MovieDetailViewController {
-
-    func showVideo(_ item: MovieDetailVideoItem) {
-        if let youtubeVideoKey = item.youtubeVideoKey {
-            router.showYouTubePlayer(videoKey: youtubeVideoKey, title: item.title)
-            return
-        }
-
-        if let videoURL = item.videoURL {
-            router.openExternalURL(videoURL)
-        }
-    }
 }

@@ -10,7 +10,7 @@ import SnapKit
 import UIKit
 
 @MainActor
-final class MovieDetailReviewDetailViewController: GlassBaseViewController {
+final class MovieReviewDetailViewController: GlassBaseViewController {
 
     // MARK: - Properties
 
@@ -97,7 +97,7 @@ final class MovieDetailReviewDetailViewController: GlassBaseViewController {
 
 // MARK: - UITableViewDataSource
 
-extension MovieDetailReviewDetailViewController: UITableViewDataSource {
+extension MovieReviewDetailViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
@@ -115,7 +115,7 @@ extension MovieDetailReviewDetailViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension MovieDetailReviewDetailViewController: UITableViewDelegate {
+extension MovieReviewDetailViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = tableView.dequeueReusableHeaderFooterView(

@@ -15,7 +15,8 @@ protocol DetailRouting {
     func showTVDetail(seriesID: Int)
     func showPersonDetail(personID: Int)
     func showCreditDetail(_ item: PersonDetailCreditItem)
-    func showYouTubePlayer(videoKey: String, title: String?)
+    func showYouTubeVideo(videoKey: String, title: String?)
+    func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
 }
 
@@ -23,6 +24,14 @@ protocol DetailRouting {
 
 @MainActor
 final class DetailRouter: DetailRouting {
+
+    // MARK: - DetailPresentation
+
+    private enum DetailPresentation {
+        case push
+        case present
+        case pageSheet(detents: [UISheetPresentationController.Detent])
+    }
 
     // MARK: - Properties
 
@@ -38,17 +47,17 @@ final class DetailRouter: DetailRouting {
 
     func showMovieDetail(movieID: Int) {
         guard movieID > 0 else { return }
-        push(MovieDetailViewController(movieID: movieID))
+        show(MovieDetailViewController(movieID: movieID), using: .push)
     }
 
     func showTVDetail(seriesID: Int) {
         guard seriesID > 0 else { return }
-        push(TVDetailViewController(seriesID: seriesID))
+        show(TVDetailViewController(seriesID: seriesID), using: .push)
     }
 
     func showPersonDetail(personID: Int) {
         guard personID > 0 else { return }
-        push(PersonDetailViewController(personID: personID))
+        show(PersonDetailViewController(personID: personID), using: .push)
     }
 
     func showCreditDetail(_ item: PersonDetailCreditItem) {
@@ -64,31 +73,47 @@ final class DetailRouter: DetailRouting {
         }
     }
 
-    func showYouTubePlayer(videoKey: String, title: String?) {
+    func showYouTubeVideo(videoKey: String, title: String?) {
         guard !videoKey.isEmpty else { return }
 
         let viewController = YouTubePlayerViewController(videoKey: videoKey, title: title)
-        let navigationController = UINavigationController(rootViewController: viewController)
-        navigationController.modalPresentationStyle = .pageSheet
+        show(viewController, using: .pageSheet(detents: [.medium()]))
+    }
 
-        if let sheet = navigationController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
-        }
-
-        sourceViewController?.present(navigationController, animated: true)
+    func showWebVideo(url: URL, title: String?) {
+        show(BaseWebViewController(url: url, title: title), using: .push)
     }
 
     func openExternalURL(_ url: URL) {
-        push(BaseWebViewController(url: url))
+        show(BaseWebViewController(url: url), using: .push)
     }
 
     // MARK: - Private Methods
 
-    private func push(_ viewController: UIViewController) {
-        sourceViewController?.navigationController?.pushViewController(
-            viewController,
-            animated: true
-        )
+    private func show(
+        _ viewController: UIViewController,
+        using presentation: DetailPresentation
+    ) {
+        switch presentation {
+        case .push:
+            sourceViewController?.navigationController?.pushViewController(
+                viewController,
+                animated: true
+            )
+
+        case .present:
+            sourceViewController?.present(viewController, animated: true)
+
+        case .pageSheet(let detents):
+            let navigationController = UINavigationController(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .pageSheet
+
+            if let sheet = navigationController.sheetPresentationController {
+                sheet.detents = detents
+                sheet.prefersGrabberVisible = true
+            }
+
+            sourceViewController?.present(navigationController, animated: true)
+        }
     }
 }

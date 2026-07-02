@@ -208,7 +208,13 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailVideosCollectionViewCell)?.configure(items: items) { [weak self] item in
-                self?.showVideo(item)
+                guard let self else { return }
+
+                if let youtubeVideoKey = item.youtubeVideoKey {
+                    router.showYouTubeVideo(videoKey: youtubeVideoKey, title: item.title)
+                } else if let videoURL = item.videoURL {
+                    router.showWebVideo(url: videoURL, title: item.title)
+                }
             }
             return cell
 
@@ -387,22 +393,6 @@ extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
 
         case .recommendations:
             return Layout.recommendationsSectionHeight
-        }
-    }
-}
-
-// MARK: - Video Playback
-
-private extension TVDetailViewController {
-
-    func showVideo(_ item: TVDetailVideoItem) {
-        if let youtubeVideoKey = item.youtubeVideoKey {
-            router.showYouTubePlayer(videoKey: youtubeVideoKey, title: item.title)
-            return
-        }
-
-        if let videoURL = item.videoURL {
-            router.openExternalURL(videoURL)
         }
     }
 }
