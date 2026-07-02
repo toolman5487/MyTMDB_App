@@ -125,7 +125,7 @@ final class TVDetailViewController: DetailBaseViewController {
 
     private func loadTVDetail() {
         loadTask?.cancel()
-        loadTask = Task { [weak self] in
+        loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             render(state: .loading)
@@ -207,7 +207,9 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? TVDetailVideosCollectionViewCell)?.configure(items: items)
+            (cell as? TVDetailVideosCollectionViewCell)?.configure(items: items) { [weak self] item in
+                self?.showVideo(item)
+            }
             return cell
 
         case .attributes(let item):
@@ -385,6 +387,22 @@ extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
 
         case .recommendations:
             return Layout.recommendationsSectionHeight
+        }
+    }
+}
+
+// MARK: - Video Playback
+
+private extension TVDetailViewController {
+
+    func showVideo(_ item: TVDetailVideoItem) {
+        if let youtubeVideoKey = item.youtubeVideoKey {
+            router.showYouTubePlayer(videoKey: youtubeVideoKey, title: item.title)
+            return
+        }
+
+        if let videoURL = item.videoURL {
+            router.openExternalURL(videoURL)
         }
     }
 }

@@ -30,7 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func validateStoredSession(in window: UIWindow) {
         let storedSession = sessionStore.load()
 
-        Task { @MainActor in
+        Task(priority: .userInitiated) { @MainActor in
             let validatedSession = await sessionValidator.validatedSession(storedSession)
 
             if validatedSession == .loggedOut {

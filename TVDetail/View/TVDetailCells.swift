@@ -739,6 +739,7 @@ final class TVDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
     }
 
     private var items: [TVDetailVideoItem] = []
+    private var onVideoSelected: ((TVDetailVideoItem) -> Void)?
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -766,11 +767,16 @@ final class TVDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func resetForReuse() {
         items = []
+        onVideoSelected = nil
         collectionView.reloadData()
     }
 
-    func configure(items: [TVDetailVideoItem]) {
+    func configure(
+        items: [TVDetailVideoItem],
+        onVideoSelected: @escaping (TVDetailVideoItem) -> Void
+    ) {
         self.items = items
+        self.onVideoSelected = onVideoSelected
         collectionView.reloadData()
     }
 }
@@ -792,6 +798,11 @@ extension TVDetailVideosCollectionViewCell: UICollectionViewDataSource, UICollec
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard items.indices.contains(indexPath.item) else { return }
+        onVideoSelected?(items[indexPath.item])
     }
 }
 

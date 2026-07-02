@@ -401,6 +401,7 @@ nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
     let title: String
     let subtitle: String
     let thumbnailURL: URL?
+    let youtubeVideoKey: String?
     let videoURL: URL?
 
     init(video: MovieVideo) {
@@ -408,10 +409,12 @@ nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
         self.title = video.name
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
-        if video.site.lowercased() == "youtube" {
+        if video.site.lowercased() == "youtube", !video.key.isEmpty {
+            self.youtubeVideoKey = video.key
             self.thumbnailURL = URL(string: "https://img.youtube.com/vi/\(video.key)/hqdefault.jpg")
             self.videoURL = URL(string: "https://www.youtube.com/watch?v=\(video.key)")
         } else {
+            self.youtubeVideoKey = nil
             self.thumbnailURL = nil
             self.videoURL = nil
         }

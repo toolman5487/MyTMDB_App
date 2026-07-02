@@ -128,7 +128,7 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     private func loadMovieDetail() {
         loadTask?.cancel()
-        loadTask = Task { [weak self] in
+        loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             render(state: .loading)
@@ -235,7 +235,9 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailVideosCollectionViewCell)?.configure(items: items)
+            (cell as? MovieDetailVideosCollectionViewCell)?.configure(items: items) { [weak self] item in
+                self?.showVideo(item)
+            }
             return cell
 
         case .recommendations(let items):
@@ -387,4 +389,20 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         }
     }
 
+}
+
+// MARK: - Video Playback
+
+private extension MovieDetailViewController {
+
+    func showVideo(_ item: MovieDetailVideoItem) {
+        if let youtubeVideoKey = item.youtubeVideoKey {
+            router.showYouTubePlayer(videoKey: youtubeVideoKey, title: item.title)
+            return
+        }
+
+        if let videoURL = item.videoURL {
+            router.openExternalURL(videoURL)
+        }
+    }
 }

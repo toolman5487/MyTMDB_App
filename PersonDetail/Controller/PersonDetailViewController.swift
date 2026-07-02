@@ -117,7 +117,7 @@ final class PersonDetailViewController: DetailBaseViewController {
 
     private func loadPersonDetail() {
         loadTask?.cancel()
-        loadTask = Task { [weak self] in
+        loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             render(state: .loading)

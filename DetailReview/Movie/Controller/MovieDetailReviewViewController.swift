@@ -112,7 +112,7 @@ final class MovieDetailReviewViewController: ScrollTrackingBaseViewController {
 
     private func loadReviews() {
         loadTask?.cancel()
-        loadTask = Task { [weak self] in
+        loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             render(state: .loading)
@@ -197,7 +197,7 @@ final class MovieDetailReviewViewController: ScrollTrackingBaseViewController {
 
         render(state: viewModel.state)
 
-        loadNextPageTask = Task { [weak self] in
+        loadNextPageTask = Task(priority: .utility) { [weak self] in
             guard let self else { return }
 
             await viewModel.loadNextPage(movieID: movieID)

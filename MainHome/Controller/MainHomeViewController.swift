@@ -89,7 +89,7 @@ final class MainHomeViewController: MainBaseViewController {
 
     private func loadHome() {
         loadTask?.cancel()
-        loadTask = Task { [weak self] in
+        loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             render(state: .loading)

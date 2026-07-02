@@ -15,6 +15,7 @@ protocol DetailRouting {
     func showTVDetail(seriesID: Int)
     func showPersonDetail(personID: Int)
     func showCreditDetail(_ item: PersonDetailCreditItem)
+    func showYouTubePlayer(videoKey: String, title: String?)
     func openExternalURL(_ url: URL)
 }
 
@@ -61,6 +62,21 @@ final class DetailRouter: DetailRouting {
         case .unknown:
             return
         }
+    }
+
+    func showYouTubePlayer(videoKey: String, title: String?) {
+        guard !videoKey.isEmpty else { return }
+
+        let viewController = YouTubePlayerViewController(videoKey: videoKey, title: title)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .pageSheet
+
+        if let sheet = navigationController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        sourceViewController?.present(navigationController, animated: true)
     }
 
     func openExternalURL(_ url: URL) {
