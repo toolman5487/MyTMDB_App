@@ -222,7 +222,9 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? TVDetailCastCollectionViewCell)?.configure(items: items)
+            (cell as? TVDetailCastCollectionViewCell)?.configure(items: items) { [weak self] personID in
+                self?.showPersonDetail(personID: personID)
+            }
             return cell
 
         case .seasons(let items):
@@ -277,6 +279,18 @@ extension TVDetailViewController: UICollectionViewDataSource {
         }
 
         return reusableView
+    }
+}
+
+// MARK: - Navigation
+
+private extension TVDetailViewController {
+
+    func showPersonDetail(personID: Int) {
+        guard personID > 0 else { return }
+
+        let viewController = PersonDetailViewController(personID: personID)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

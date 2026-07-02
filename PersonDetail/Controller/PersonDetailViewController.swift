@@ -1,43 +1,43 @@
 //
-//  MovieDetailViewController.swift
+//  PersonDetailViewController.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/6/30.
+//  Created by Willy Hsu on 2026/7/2.
 //
 
 import UIKit
 
 @MainActor
-final class MovieDetailViewController: DetailBaseViewController {
+final class PersonDetailViewController: DetailBaseViewController {
 
     // MARK: - Properties
 
-    private let movieID: Int
-    private let viewModel: MovieDetailViewModel
-    private var sections: [MovieDetailSectionItem] = []
+    private let personID: Int
+    private let viewModel: PersonDetailViewModel
+    private var sections: [PersonDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
 
     // MARK: - Initialization
 
-    convenience init(movieID: Int) {
+    convenience init(personID: Int) {
         self.init(
-            movieID: movieID,
-            viewModel: MovieDetailViewModel()
+            personID: personID,
+            viewModel: PersonDetailViewModel()
         )
     }
 
     init(
-        movieID: Int,
-        viewModel: MovieDetailViewModel
+        personID: Int,
+        viewModel: PersonDetailViewModel
     ) {
-        self.movieID = movieID
+        self.personID = personID
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        self.movieID = 0
-        self.viewModel = MovieDetailViewModel()
+        self.personID = 0
+        self.viewModel = PersonDetailViewModel()
         super.init(coder: coder)
     }
 
@@ -50,12 +50,11 @@ final class MovieDetailViewController: DetailBaseViewController {
     override func configureView() {
         super.configureView()
         navigationItem.largeTitleDisplayMode = .never
-        configureNavigationBar()
         configureCollectionView()
     }
 
     override func bindViewModel() {
-        loadMovieDetail()
+        loadPersonDetail()
     }
 
     // MARK: - Setup
@@ -66,18 +65,8 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
-        static let castSectionHeight: CGFloat = 220
-        static let videosSectionHeight: CGFloat = 160
-        static let recommendationsSectionHeight: CGFloat = 220
-    }
-
-    private func configureNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "text.bubble"),
-            style: .plain,
-            target: self,
-            action: #selector(handleReviewButtonTapped)
-        )
+        static let creditsSectionHeight: CGFloat = 220
+        static let profileImagesSectionHeight: CGFloat = 220
     }
 
     private func configureCollectionView() {
@@ -88,57 +77,57 @@ final class MovieDetailViewController: DetailBaseViewController {
         collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
 
         collectionView.register(
-            MovieDetailOverviewCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailOverviewCollectionViewCell.reuseIdentifier
+            PersonDetailBiographyCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailBiographyCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailFactsCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailFactsCollectionViewCell.reuseIdentifier
+            PersonDetailFactsCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailFactsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailAttributesCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailAttributesCollectionViewCell.reuseIdentifier
+            PersonDetailCreditsCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailCreditsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailCastCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailCastCollectionViewCell.reuseIdentifier
+            PersonDetailProfileImagesCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailProfileImagesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailVideosCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailVideosCollectionViewCell.reuseIdentifier
+            PersonDetailAliasesCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailAliasesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailRecommendationsCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier
+            PersonDetailExternalLinksCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailExternalLinksCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailSectionHeaderView.self,
+            PersonDetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: MovieDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: PersonDetailSectionHeaderView.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailHeroHeaderView.self,
+            PersonDetailHeroHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: MovieDetailHeroHeaderView.reuseIdentifier
+            withReuseIdentifier: PersonDetailHeroHeaderView.reuseIdentifier
         )
     }
 
     // MARK: - Data Loading
 
-    private func loadMovieDetail() {
+    private func loadPersonDetail() {
         loadTask?.cancel()
         loadTask = Task { [weak self] in
             guard let self else { return }
 
             render(state: .loading)
-            await viewModel.loadMovieDetail(id: movieID)
+            await viewModel.loadPersonDetail(id: personID)
 
             guard !Task.isCancelled else { return }
             render(state: viewModel.state)
         }
     }
 
-    private func render(state: MovieDetailViewState) {
+    private func render(state: PersonDetailViewState) {
         switch state {
         case .idle:
             sections = []
@@ -159,32 +148,25 @@ final class MovieDetailViewController: DetailBaseViewController {
             sections = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadMovieDetail()
+                self?.loadPersonDetail()
             }
         }
 
         collectionView.reloadData()
     }
-
-    // MARK: - Actions
-
-    @objc private func handleReviewButtonTapped() {
-        let viewController = MovieDetailReviewViewController(movieID: movieID)
-        navigationController?.pushViewController(viewController, animated: true)
-    }
 }
 
 // MARK: - UICollectionViewDataSource
 
-extension MovieDetailViewController: UICollectionViewDataSource {
+extension PersonDetailViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         sections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if case .overview(let item) = sections[section] {
-            return item.overview == nil ? 0 : 1
+        if case .biography(let item) = sections[section] {
+            return item.biography == nil ? 0 : 1
         }
 
         return 1
@@ -195,54 +177,54 @@ extension MovieDetailViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch sections[indexPath.section] {
-        case .overview(let item):
+        case .biography(let item):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MovieDetailOverviewCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailBiographyCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            (cell as? PersonDetailBiographyCollectionViewCell)?.configure(biography: item.biography ?? "")
             return cell
 
         case .facts(let facts):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MovieDetailFactsCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailFactsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailFactsCollectionViewCell)?.configure(facts: facts)
+            (cell as? PersonDetailFactsCollectionViewCell)?.configure(facts: facts)
             return cell
 
-        case .attributes(let item):
+        case .knownFor(let items), .crew(let items):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MovieDetailAttributesCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailCreditsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailAttributesCollectionViewCell)?.configure(with: item)
+            (cell as? PersonDetailCreditsCollectionViewCell)?.configure(items: items)
             return cell
 
-        case .cast(let items):
+        case .profileImages(let items):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MovieDetailCastCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailProfileImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailCastCollectionViewCell)?.configure(items: items) { [weak self] personID in
-                self?.showPersonDetail(personID: personID)
+            (cell as? PersonDetailProfileImagesCollectionViewCell)?.configure(items: items)
+            return cell
+
+        case .aliases(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PersonDetailAliasesCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? PersonDetailAliasesCollectionViewCell)?.configure(items: items)
+            return cell
+
+        case .externalLinks(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PersonDetailExternalLinksCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? PersonDetailExternalLinksCollectionViewCell)?.configure(items: items) { [weak self] url in
+                self?.openExternalURL(url)
             }
-            return cell
-
-        case .videos(let items):
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MovieDetailVideosCollectionViewCell.reuseIdentifier,
-                for: indexPath
-            )
-            (cell as? MovieDetailVideosCollectionViewCell)?.configure(items: items)
-            return cell
-
-        case .recommendations(let items):
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier,
-                for: indexPath
-            )
-            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(items: items)
             return cell
         }
     }
@@ -256,14 +238,14 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
 
-        if case .overview(let item) = sections[indexPath.section] {
+        if case .biography(let item) = sections[indexPath.section] {
             let reusableView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
-                withReuseIdentifier: MovieDetailHeroHeaderView.reuseIdentifier,
+                withReuseIdentifier: PersonDetailHeroHeaderView.reuseIdentifier,
                 for: indexPath
             )
 
-            if let headerView = reusableView as? MovieDetailHeroHeaderView {
+            if let headerView = reusableView as? PersonDetailHeroHeaderView {
                 headerView.configure(with: item.hero)
             }
 
@@ -272,11 +254,11 @@ extension MovieDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: MovieDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: PersonDetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if let headerView = reusableView as? MovieDetailSectionHeaderView {
+        if let headerView = reusableView as? PersonDetailSectionHeaderView {
             headerView.configure(title: sections[indexPath.section].title)
         }
 
@@ -286,20 +268,17 @@ extension MovieDetailViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
-extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
+extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        if case .overview(let item) = sections[section] {
+        if case .biography = sections[section] {
             return CGSize(
                 width: collectionView.bounds.width,
-                height: MovieDetailHeroHeaderView.headerHeight(
-                    for: item.hero,
-                    width: collectionView.bounds.width
-                )
+                height: PersonDetailHeroHeaderView.headerHeight()
             )
         }
 
@@ -326,10 +305,10 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let sectionInset = sectionInset(for: indexPath.section)
+        let sectionInsets = sectionInset(for: indexPath.section)
         let width = collectionView.bounds.width
-            - sectionInset.left
-            - sectionInset.right
+            - sectionInsets.left
+            - sectionInsets.right
 
         return CGSize(
             width: max(width, 0),
@@ -338,9 +317,9 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
     }
 
     private func sectionInset(for section: Int) -> UIEdgeInsets {
-        if case .overview(let item) = sections[section] {
+        if case .biography(let item) = sections[section] {
             return UIEdgeInsets(
-                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
+                top: item.biography == nil ? 0 : Layout.headerContentSpacing,
                 left: Layout.defaultHorizontalInset,
                 bottom: Layout.defaultSectionBottomInset,
                 right: Layout.defaultHorizontalInset
@@ -357,43 +336,39 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
         )
     }
 
-    private func height(for section: MovieDetailSectionItem, width: CGFloat) -> CGFloat {
+    private func height(for section: PersonDetailSectionItem, width: CGFloat) -> CGFloat {
         switch section {
-        case .overview(let item):
-            guard let overview = item.overview else { return 0 }
+        case .biography(let item):
+            guard let biography = item.biography else { return 0 }
 
-            return MovieDetailOverviewCollectionViewCell.fittingHeight(
-                for: overview,
+            return PersonDetailBiographyCollectionViewCell.fittingHeight(
+                for: biography,
                 width: width
             )
 
         case .facts:
             return Layout.factsSectionHeight
 
-        case .attributes(let item):
-            return MovieDetailAttributesCollectionViewCell.fittingHeight(for: item)
+        case .knownFor, .crew:
+            return Layout.creditsSectionHeight
 
-        case .cast:
-            return Layout.castSectionHeight
+        case .profileImages:
+            return Layout.profileImagesSectionHeight
 
-        case .videos:
-            return Layout.videosSectionHeight
+        case .aliases(let items):
+            return PersonDetailAliasesCollectionViewCell.fittingHeight(for: items)
 
-        case .recommendations:
-            return Layout.recommendationsSectionHeight
+        case .externalLinks(let items):
+            return PersonDetailExternalLinksCollectionViewCell.fittingHeight(for: items)
         }
     }
-
 }
 
-// MARK: - Navigation
+// MARK: - External URL
 
-private extension MovieDetailViewController {
+private extension PersonDetailViewController {
 
-    func showPersonDetail(personID: Int) {
-        guard personID > 0 else { return }
-
-        let viewController = PersonDetailViewController(personID: personID)
-        navigationController?.pushViewController(viewController, animated: true)
+    func openExternalURL(_ url: URL) {
+        UIApplication.shared.open(url)
     }
 }

@@ -656,6 +656,7 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
     }
 
     private var items: [MovieDetailCastItem] = []
+    private var onPersonSelected: ((Int) -> Void)?
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -683,11 +684,16 @@ final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func resetForReuse() {
         items = []
+        onPersonSelected = nil
         collectionView.reloadData()
     }
 
-    func configure(items: [MovieDetailCastItem]) {
+    func configure(
+        items: [MovieDetailCastItem],
+        onPersonSelected: @escaping (Int) -> Void
+    ) {
         self.items = items
+        self.onPersonSelected = onPersonSelected
         collectionView.reloadData()
     }
 }
@@ -709,6 +715,11 @@ extension MovieDetailCastCollectionViewCell: UICollectionViewDataSource, UIColle
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard items.indices.contains(indexPath.item) else { return }
+        onPersonSelected?(items[indexPath.item].id)
     }
 }
 
