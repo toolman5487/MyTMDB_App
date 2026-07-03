@@ -23,6 +23,7 @@ final class MainMovieListViewController: MainBaseViewController {
     private let viewModel: MainMovieListViewModel
     private lazy var router: MainMovieListRouting = MainMovieListRouter(sourceViewController: self)
     private var filters: [MainMovieGenreItem] = []
+    private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
     private var searchTask: Task<Void, Never>?
@@ -120,11 +121,17 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private func render(state: MainMovieListViewState) {
         switch state {
-        case .idle, .loading, .empty, .failed, .searchResults:
+        case .idle, .loading:
             filters = []
+            isFilterSkeletonVisible = true
+
+        case .empty, .failed, .searchResults:
+            filters = []
+            isFilterSkeletonVisible = false
 
         case .loaded(let content):
             filters = content.genres
+            isFilterSkeletonVisible = false
         }
 
         collectionView.reloadData()
@@ -149,7 +156,7 @@ final class MainMovieListViewController: MainBaseViewController {
 extension MainMovieListViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        filters.isEmpty ? 0 : 1
+        shouldShowFilterHeader ? 1 : 0
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -179,7 +186,11 @@ extension MainMovieListViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainMovieListFilterHeaderView {
-            headerView.configure(filters: filters, isExpanded: isFilterPageSheetPresented)
+            headerView.configure(
+                filters: filters,
+                isExpanded: isFilterPageSheetPresented,
+                isShowingSkeleton: isFilterSkeletonVisible
+            )
             headerView.onFilterSelected = { [weak self] id in
                 self?.selectFilter(id: id)
             }
@@ -203,7 +214,7 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         CGSize(
             width: collectionView.bounds.width,
-            height: filters.isEmpty ? 0 : Layout.filterHeaderHeight
+            height: shouldShowFilterHeader ? Layout.filterHeaderHeight : 0
         )
     }
 }
@@ -232,6 +243,10 @@ extension MainMovieListViewController: UISearchBarDelegate {
 // MARK: - Page Sheet
 
 private extension MainMovieListViewController {
+
+    var shouldShowFilterHeader: Bool {
+        isFilterSkeletonVisible || !filters.isEmpty
+    }
 
     func presentFilterPageSheet() {
         guard !filters.isEmpty else { return }

@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/7/3.
 //
 
+import SkeletonView
 import SnapKit
 import UIKit
 
@@ -19,6 +20,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
 
     private var filters: [MainMovieGenreItem] = []
     private var isShowAllButtonExpanded = false
+    private var isShowingSkeleton = false
     var onFilterSelected: ((Int) -> Void)?
     var onShowAllFilters: (() -> Void)?
 
@@ -31,6 +33,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         static let itemHeight: CGFloat = 36
         static let buttonSize: CGFloat = 36
         static let buttonCollectionSpacing: CGFloat = 8
+        static let skeletonItemWidths: [CGFloat] = [72, 96, 80, 104, 88]
     }
 
     // MARK: - UI Components
@@ -97,6 +100,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         filters = []
         onFilterSelected = nil
         onShowAllFilters = nil
+        isShowingSkeleton = false
         setShowAllButtonExpanded(false)
         collectionView.reloadData()
     }
@@ -127,12 +131,21 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
 
     // MARK: - Configuration
 
-    func configure(filters: [MainMovieGenreItem], isExpanded: Bool) {
+    func configure(
+        filters: [MainMovieGenreItem],
+        isExpanded: Bool,
+        isShowingSkeleton: Bool = false
+    ) {
         self.filters = filters
+        self.isShowingSkeleton = isShowingSkeleton
+        showAllButton.isHidden = isShowingSkeleton
+        showAllButton.isEnabled = !isShowingSkeleton
+        collectionView.isUserInteractionEnabled = !isShowingSkeleton
         setShowAllButtonExpanded(isExpanded)
         collectionView.reloadData()
 
-        if let selectedIndex = filters.firstIndex(where: \.isSelected) {
+        if !isShowingSkeleton,
+           let selectedIndex = filters.firstIndex(where: \.isSelected) {
             collectionView.scrollToItem(
                 at: IndexPath(item: selectedIndex, section: 0),
                 at: .centeredHorizontally,
@@ -176,7 +189,17 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         )
     }
 
+    private static func skeletonItemSize(at index: Int) -> CGSize {
+        let width = Layout.skeletonItemWidths[index % Layout.skeletonItemWidths.count]
+
+        return CGSize(
+            width: width,
+            height: Layout.itemHeight
+        )
+    }
+
     @objc private func handleShowAllButtonTapped() {
+        guard !isShowingSkeleton else { return }
         onShowAllFilters?()
     }
 }
@@ -186,7 +209,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
 extension MainMovieListFilterHeaderView: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        filters.count
+        isShowingSkeleton ? Layout.skeletonItemWidths.count : filters.count
     }
 
     func collectionView(
@@ -197,7 +220,15 @@ extension MainMovieListFilterHeaderView: UICollectionViewDataSource {
             withReuseIdentifier: MainMovieListFilterCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
-        (cell as? MainMovieListFilterCollectionViewCell)?.configure(with: filters[indexPath.item])
+
+        if let cell = cell as? MainMovieListFilterCollectionViewCell {
+            if isShowingSkeleton {
+                cell.configureSkeleton()
+            } else {
+                cell.configure(with: filters[indexPath.item])
+            }
+        }
+
         return cell
     }
 }
@@ -207,6 +238,7 @@ extension MainMovieListFilterHeaderView: UICollectionViewDataSource {
 extension MainMovieListFilterHeaderView: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard !isShowingSkeleton else { return }
         onFilterSelected?(filters[indexPath.item].id)
     }
 
@@ -215,7 +247,11 @@ extension MainMovieListFilterHeaderView: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        Self.filterItemSize(for: filters[indexPath.item].name)
+        if isShowingSkeleton {
+            return Self.skeletonItemSize(at: indexPath.item)
+        }
+
+        return Self.filterItemSize(for: filters[indexPath.item].name)
     }
 }
 
@@ -241,6 +277,8 @@ private final class MainMovieListFilterCollectionViewCell: BaseCollectionViewCel
 
     override func configureView() {
         super.configureView()
+        contentView.isSkeletonable = true
+        containerView.isSkeletonable = true
         containerView.layer.cornerRadius = 18
         containerView.layer.masksToBounds = true
         containerView.layer.borderWidth = 2
@@ -267,6 +305,8 @@ private final class MainMovieListFilterCollectionViewCell: BaseCollectionViewCel
     }
 
     override func resetForReuse() {
+        hideSkeletonIfNeeded()
+        titleLabel.isHidden = false
         titleLabel.text = nil
         containerView.backgroundColor = ThemeColor.backgroundTertiary
         containerView.layer.borderColor = UIColor.clear.cgColor
@@ -274,7 +314,16 @@ private final class MainMovieListFilterCollectionViewCell: BaseCollectionViewCel
 
     // MARK: - Configuration
 
+    func configureSkeleton() {
+        titleLabel.isHidden = true
+        containerView.backgroundColor = ThemeColor.backgroundTertiary
+        containerView.layer.borderColor = UIColor.clear.cgColor
+        showSkeletonIfNeeded()
+    }
+
     func configure(with item: MainMovieGenreItem) {
+        hideSkeletonIfNeeded()
+        titleLabel.isHidden = false
         titleLabel.text = item.name
         titleLabel.textColor = item.isSelected ? .white : ThemeColor.textPrimary
         containerView.backgroundColor = item.isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
@@ -283,5 +332,15 @@ private final class MainMovieListFilterCollectionViewCell: BaseCollectionViewCel
 
     private func borderColor(isSelected: Bool) -> UIColor {
         isSelected ? ThemeColor.highlight : ThemeColor.highlight.withAlphaComponent(0.36)
+    }
+
+    private func showSkeletonIfNeeded() {
+        guard !containerView.sk.isSkeletonActive else { return }
+        containerView.showAnimatedGradientSkeleton()
+    }
+
+    private func hideSkeletonIfNeeded() {
+        guard containerView.sk.isSkeletonActive else { return }
+        containerView.hideSkeleton()
     }
 }
