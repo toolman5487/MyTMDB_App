@@ -18,6 +18,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
     // MARK: - Properties
 
     private var filters: [MainMovieGenreItem] = []
+    private var isShowAllButtonExpanded = false
     var onFilterSelected: ((Int) -> Void)?
     var onShowAllFilters: (() -> Void)?
 
@@ -140,8 +141,28 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         }
     }
 
-    func setShowAllButtonExpanded(_ isExpanded: Bool) {
-        showAllButton.configuration?.image = UIImage(systemName: isExpanded ? "chevron.down" : "chevron.up")
+    func setShowAllButtonExpanded(_ isExpanded: Bool, animated: Bool = false) {
+        guard isShowAllButtonExpanded != isExpanded else { return }
+        isShowAllButtonExpanded = isExpanded
+
+        let updateTransform: () -> Void = { [weak self] in
+            guard let self else { return }
+            showAllButton.imageView?.transform = isExpanded
+                ? CGAffineTransform(rotationAngle: .pi)
+                : .identity
+        }
+
+        guard animated else {
+            updateTransform()
+            return
+        }
+
+        UIView.animate(
+            withDuration: 0.22,
+            delay: 0,
+            options: [.curveEaseInOut, .allowUserInteraction],
+            animations: updateTransform
+        )
     }
 
     private static func filterItemSize(for title: String) -> CGSize {

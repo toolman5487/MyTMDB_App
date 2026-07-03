@@ -171,13 +171,6 @@ private final class MainMovieGenrePageSheetCell: UICollectionViewCell {
         return label
     }()
 
-    private let checkmarkImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
-        imageView.tintColor = ThemeColor.highlight
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
     // MARK: - Initialization
 
     override init(frame: CGRect) {
@@ -197,7 +190,6 @@ private final class MainMovieGenrePageSheetCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = nil
-        checkmarkImageView.isHidden = true
         contentView.backgroundColor = ThemeColor.backgroundTertiary
         contentView.layer.borderColor = ThemeColor.highlight.withAlphaComponent(0.36).cgColor
     }
@@ -212,22 +204,15 @@ private final class MainMovieGenrePageSheetCell: UICollectionViewCell {
 
     private func setupHierarchy() {
         contentView.addSubview(titleLabel)
-        contentView.addSubview(checkmarkImageView)
     }
 
     private func setupConstraints() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        checkmarkImageView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-
-            checkmarkImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            checkmarkImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
-            checkmarkImageView.widthAnchor.constraint(equalToConstant: 16),
-            checkmarkImageView.heightAnchor.constraint(equalToConstant: 16)
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
 
@@ -236,7 +221,6 @@ private final class MainMovieGenrePageSheetCell: UICollectionViewCell {
     func configure(with item: MainMovieGenreItem) {
         titleLabel.text = item.name
         titleLabel.textColor = item.isSelected ? .white : ThemeColor.textPrimary
-        checkmarkImageView.isHidden = !item.isSelected
         contentView.backgroundColor = item.isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
         contentView.layer.borderColor = borderColor(isSelected: item.isSelected).cgColor
     }

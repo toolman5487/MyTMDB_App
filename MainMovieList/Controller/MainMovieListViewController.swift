@@ -258,7 +258,10 @@ private extension MainMovieListViewController {
                 forElementKind: UICollectionView.elementKindSectionHeader,
                 at: indexPath
             )
-            (reusableView as? MainMovieListFilterHeaderView)?.setShowAllButtonExpanded(isPresented)
+            (reusableView as? MainMovieListFilterHeaderView)?.setShowAllButtonExpanded(
+                isPresented,
+                animated: true
+            )
         }
     }
 }
