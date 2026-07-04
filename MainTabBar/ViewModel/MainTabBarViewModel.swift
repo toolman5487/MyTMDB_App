@@ -33,6 +33,46 @@ struct MainTabBarViewModel: Sendable {
     init(session: AuthSession) {
         self.session = session
     }
+
+    // MARK: - Tab Selection
+
+    func selectionTransition(
+        from currentIndex: Int,
+        direction: MainTabNavigationDirection
+    ) -> MainTabSelectionTransition? {
+        let targetIndex: Int
+
+        switch direction {
+        case .previous:
+            targetIndex = currentIndex - 1
+
+        case .next:
+            targetIndex = currentIndex + 1
+        }
+
+        guard items.indices.contains(currentIndex),
+              items.indices.contains(targetIndex) else {
+            return nil
+        }
+
+        return MainTabSelectionTransition(
+            targetIndex: targetIndex,
+            direction: direction
+        )
+    }
+
+    func transitionDirection(
+        from currentIndex: Int,
+        to targetIndex: Int
+    ) -> MainTabNavigationDirection? {
+        guard items.indices.contains(currentIndex),
+              items.indices.contains(targetIndex),
+              currentIndex != targetIndex else {
+            return nil
+        }
+
+        return targetIndex > currentIndex ? .next : .previous
+    }
 }
 
 // MARK: - MainTabItem
@@ -42,6 +82,20 @@ struct MainTabItem: Sendable {
     let title: String
     let imageName: String
     let selectedImageName: String
+}
+
+// MARK: - MainTabNavigationDirection
+
+enum MainTabNavigationDirection: Sendable, Equatable {
+    case previous
+    case next
+}
+
+// MARK: - MainTabSelectionTransition
+
+struct MainTabSelectionTransition: Sendable, Equatable {
+    let targetIndex: Int
+    let direction: MainTabNavigationDirection
 }
 
 // MARK: - MainTabKind

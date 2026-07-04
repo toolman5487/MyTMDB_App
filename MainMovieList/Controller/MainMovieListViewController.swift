@@ -261,6 +261,14 @@ extension MainMovieListViewController: UICollectionViewDataSource {
 
 extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
 
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        beginTabBarVisibilityTracking(for: scrollView)
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateTabBarVisibilityTracking(for: scrollView)
+    }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard movies.indices.contains(indexPath.item) else { return }
         collectionView.deselectItem(at: indexPath, animated: true)
