@@ -19,6 +19,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
     // MARK: - Properties
 
     private var filters: [MainMovieGenreItem] = []
+    private var selectedFilterID: Int?
     private var isShowAllButtonExpanded = false
     private var isShowingSkeleton = false
     var onFilterSelected: ((Int) -> Void)?
@@ -60,6 +61,8 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
+        collectionView.delaysContentTouches = false
+        collectionView.decelerationRate = .fast
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
@@ -98,6 +101,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         filters = []
+        selectedFilterID = nil
         onFilterSelected = nil
         onShowAllFilters = nil
         isShowingSkeleton = false
@@ -137,6 +141,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         isShowingSkeleton: Bool = false
     ) {
         self.filters = filters
+        selectedFilterID = filters.first(where: \.isSelected)?.id
         self.isShowingSkeleton = isShowingSkeleton
         showAllButton.isHidden = isShowingSkeleton
         showAllButton.isEnabled = !isShowingSkeleton
@@ -225,7 +230,11 @@ extension MainMovieListFilterHeaderView: UICollectionViewDataSource {
             if isShowingSkeleton {
                 cell.configureSkeleton()
             } else {
-                cell.configure(with: filters[indexPath.item])
+                let item = filters[indexPath.item]
+                cell.configure(
+                    title: item.name,
+                    isSelected: item.id == selectedFilterID
+                )
             }
         }
 
@@ -238,8 +247,16 @@ extension MainMovieListFilterHeaderView: UICollectionViewDataSource {
 extension MainMovieListFilterHeaderView: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard !isShowingSkeleton else { return }
-        onFilterSelected?(filters[indexPath.item].id)
+        guard !isShowingSkeleton,
+              filters.indices.contains(indexPath.item) else {
+            return
+        }
+
+        let selectedID = filters[indexPath.item].id
+        guard selectedID != selectedFilterID else { return }
+
+        updateSelectedFilter(id: selectedID, at: indexPath)
+        onFilterSelected?(selectedID)
     }
 
     func collectionView(
@@ -252,6 +269,19 @@ extension MainMovieListFilterHeaderView: UICollectionViewDelegateFlowLayout {
         }
 
         return Self.filterItemSize(for: filters[indexPath.item].name)
+    }
+
+    private func updateSelectedFilter(id: Int, at indexPath: IndexPath) {
+        let previousSelectedID = selectedFilterID
+        selectedFilterID = id
+
+        var indexPathsToReload = [indexPath]
+        if let previousSelectedIndex = filters.firstIndex(where: { $0.id == previousSelectedID }),
+           previousSelectedIndex != indexPath.item {
+            indexPathsToReload.append(IndexPath(item: previousSelectedIndex, section: indexPath.section))
+        }
+
+        collectionView.reloadItems(at: indexPathsToReload)
     }
 }
 
@@ -321,13 +351,16 @@ private final class MainMovieListFilterCollectionViewCell: BaseCollectionViewCel
         showSkeletonIfNeeded()
     }
 
-    func configure(with item: MainMovieGenreItem) {
+    func configure(
+        title: String,
+        isSelected: Bool
+    ) {
         hideSkeletonIfNeeded()
         titleLabel.isHidden = false
-        titleLabel.text = item.name
-        titleLabel.textColor = item.isSelected ? .white : ThemeColor.textPrimary
-        containerView.backgroundColor = item.isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
-        containerView.layer.borderColor = borderColor(isSelected: item.isSelected).cgColor
+        titleLabel.text = title
+        titleLabel.textColor = isSelected ? .white : ThemeColor.textPrimary
+        containerView.backgroundColor = isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
+        containerView.layer.borderColor = borderColor(isSelected: isSelected).cgColor
     }
 
     private func borderColor(isSelected: Bool) -> UIColor {

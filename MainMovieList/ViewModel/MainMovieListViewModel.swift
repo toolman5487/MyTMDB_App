@@ -155,7 +155,10 @@ final class MainMovieListViewModel {
                     isSelected: genre.id == selectedGenre.id
                 )
             },
-            selectedGenre: MainMovieGenreItem(genre: selectedGenre, isSelected: true),
+            selectedGenre: MainMovieGenreItem(
+                genre: selectedGenre,
+                isSelected: true
+            ),
             movies: page.movies.map(MainMovieListMovieItem.init(movie:)),
             currentPage: page.page,
             totalPages: page.totalPages,

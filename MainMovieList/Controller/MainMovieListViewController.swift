@@ -16,6 +16,11 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private enum Layout {
         static let filterHeaderHeight: CGFloat = 56
+        static let horizontalInset: CGFloat = 16
+        static let itemSpacing: CGFloat = 12
+        static let movieColumnCount: CGFloat = 3
+        static let moviePosterAspectRatio: CGFloat = 1.5
+        static let movieTextHeight: CGFloat = 40
     }
 
     // MARK: - Properties
@@ -23,6 +28,7 @@ final class MainMovieListViewController: MainBaseViewController {
     private let viewModel: MainMovieListViewModel
     private lazy var router: MainMovieListRouting = MainMovieListRouter(sourceViewController: self)
     private var filters: [MainMovieGenreItem] = []
+    private var movies: [MainMovieListMovieItem] = []
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
@@ -62,6 +68,7 @@ final class MainMovieListViewController: MainBaseViewController {
 
     override func configureView() {
         super.configureView()
+        configureNavigationBarAppearance()
         configureCollectionView()
         configureSearchBar()
     }
@@ -72,6 +79,25 @@ final class MainMovieListViewController: MainBaseViewController {
 
     // MARK: - Setup
 
+    private func configureNavigationBarAppearance() {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: ThemeColor.highlight
+        ]
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = ThemeColor.background
+        appearance.shadowColor = nil
+        appearance.titleTextAttributes = titleAttributes
+        appearance.largeTitleTextAttributes = titleAttributes
+
+        navigationItem.standardAppearance = appearance
+        navigationItem.compactAppearance = appearance
+        navigationItem.scrollEdgeAppearance = appearance
+        navigationItem.compactScrollEdgeAppearance = appearance
+        navigationItem.largeTitleDisplayMode = .never
+    }
+
     private func configureCollectionView() {
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -79,16 +105,22 @@ final class MainMovieListViewController: MainBaseViewController {
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true
         collectionViewFlowLayout.sectionInset = .zero
+        collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
+        collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
         collectionView.register(
             MainMovieListFilterHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: MainMovieListFilterHeaderView.reuseIdentifier
         )
+        collectionView.register(
+            MainMovieListMovieCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainMovieListMovieCollectionViewCell.reuseIdentifier
+        )
     }
 
     private func configureSearchBar() {
         navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
     }
 
@@ -123,15 +155,24 @@ final class MainMovieListViewController: MainBaseViewController {
         switch state {
         case .idle, .loading:
             filters = []
+            movies = []
             isFilterSkeletonVisible = true
 
-        case .empty, .failed, .searchResults:
+        case .empty, .failed:
             filters = []
+            movies = []
+            isFilterSkeletonVisible = false
+
+        case .searchResults(let content):
+            filters = []
+            movies = content.movies
             isFilterSkeletonVisible = false
 
         case .loaded(let content):
             filters = content.genres
+            movies = content.movies
             isFilterSkeletonVisible = false
+            navigationItem.title = "\(content.selectedGenre.name)電影"
         }
 
         collectionView.reloadData()
@@ -160,14 +201,27 @@ extension MainMovieListViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        0
+        isFilterSkeletonVisible ? 0 : movies.count
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        UICollectionViewCell()
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: MainMovieListMovieCollectionViewCell.reuseIdentifier,
+            for: indexPath
+        )
+
+        if let cell = cell as? MainMovieListMovieCollectionViewCell,
+           movies.indices.contains(indexPath.item) {
+            cell.configure(
+                with: movies[indexPath.item],
+                imageHeight: moviePosterHeight(in: collectionView)
+            )
+        }
+
+        return cell
     }
 
     func collectionView(
@@ -207,6 +261,12 @@ extension MainMovieListViewController: UICollectionViewDataSource {
 
 extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
 
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard movies.indices.contains(indexPath.item) else { return }
+        collectionView.deselectItem(at: indexPath, animated: true)
+        router.showMovieDetail(movieID: movies[indexPath.item].id)
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -216,6 +276,50 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
             width: collectionView.bounds.width,
             height: shouldShowFilterHeader ? Layout.filterHeaderHeight : 0
         )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let itemWidth = movieItemWidth(in: collectionView)
+
+        return CGSize(
+            width: itemWidth,
+            height: moviePosterHeight(in: collectionView) + Layout.movieTextHeight
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        guard !isFilterSkeletonVisible else { return .zero }
+
+        return UIEdgeInsets(
+            top: 12,
+            left: Layout.horizontalInset,
+            bottom: 24,
+            right: Layout.horizontalInset
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        Layout.itemSpacing
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        Layout.itemSpacing
     }
 }
 
@@ -246,6 +350,18 @@ private extension MainMovieListViewController {
 
     var shouldShowFilterHeader: Bool {
         isFilterSkeletonVisible || !filters.isEmpty
+    }
+
+    func movieItemWidth(in collectionView: UICollectionView) -> CGFloat {
+        let totalHorizontalInsets = Layout.horizontalInset * 2
+        let totalItemSpacing = Layout.itemSpacing * (Layout.movieColumnCount - 1)
+        let availableWidth = collectionView.bounds.width - totalHorizontalInsets - totalItemSpacing
+
+        return floor(max(availableWidth, 0) / Layout.movieColumnCount)
+    }
+
+    func moviePosterHeight(in collectionView: UICollectionView) -> CGFloat {
+        movieItemWidth(in: collectionView) * Layout.moviePosterAspectRatio
     }
 
     func presentFilterPageSheet() {

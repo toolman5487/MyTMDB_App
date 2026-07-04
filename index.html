@@ -76,7 +76,7 @@
     <h2>專案簡介</h2>
     <p>
       <strong>MyTMDB_App</strong>  
-      一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + Combine + MVVM 架構，  
+      一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + MVVM 架構，
       提供電影列表瀏覽、詳細資訊、收藏與評分功能。
     </p>
 
@@ -107,11 +107,11 @@
       <li>「評分」功能：點擊愛心按鈕後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後即時顯示實心愛心，並在幕後同步到 TMDB。</li>
     </ul>
 
-    <h3>5. MVVM + Combine 架構</h3>
+    <h3>5. MVVM 架構</h3>
     <ul>
       <li><strong>Service 層</strong>：封裝所有 TMDB API 呼叫（搜尋、詳情、最愛、評分、帳號狀態）。</li>
-      <li><strong>ViewModel 層</strong>：負責呼叫 Service、處理回傳並透過 <code>@Published</code> 將資料推送給 View 層。</li>
-      <li><strong>View 層</strong>：僅處理畫面與使用者互動，採用 <code>CombineCocoa</code> 監聽 UI 事件與綁定 ViewModel。</li>
+      <li><strong>ViewModel 層</strong>：負責呼叫 Service、處理回傳並整理畫面狀態。</li>
+      <li><strong>View 層</strong>：僅處理畫面顯示、使用者互動與 ViewModel 狀態綁定。</li>
     </ul>
 
     <h2>環境需求</h2>
@@ -124,7 +124,6 @@
         <li>SnapKit</li>
         <li>SDWebImage</li>
         <li>YouTube-Player-iOS-Helper</li>
-        <li>CombineCocoa</li>
       </ul>
     </ul>
 
@@ -144,7 +143,6 @@
           <li>SnapKit</li>
           <li>SDWebImage</li>
           <li>YouTube-Player-iOS-Helper</li>
-          <li>CombineCocoa</li>
         </ul>
       </li>
       <li>
@@ -196,9 +194,8 @@
       <li><strong>半頁評分介面</strong><br />
         採用 iOS 15+ 的 <code>UISheetPresentationController.Detent</code> 自訂 1/4 螢幕高度，並以 SnapKit 排版滑桿與按鈕，  
         滑動時即時顯示數值並動態調整字體大小。</li>
-      <li><strong>Combine 資料流</strong><br />
-        所有 Service 層呼叫皆回傳 <code>AnyPublisher&lt;T, Error&gt;</code>，並在 ViewModel 中使用 <code>.map</code>、<code>.tryMap</code>、<code>.receive(on: DispatchQueue.main)</code> 等操作。  
-        在 View 層使用 CombineCocoa 的 <code>textPublisher</code>、<code>tapPublisher</code> 監聽文字輸入與按鈕點擊，並利用 <code>@Published</code> 在 ViewModel 更新資料後自動更新 UI。</li>
+      <li><strong>資料載入流程</strong><br />
+        Service 層封裝 TMDB API request，ViewModel 負責整理畫面狀態並提供 View 綁定。</li>
       <li><strong>本地收藏資料庫</strong><br />
         使用 <code>FavoritesLocalService</code> 搭配 Core Data 儲存電影最愛清單，並使用 <code>NSFetchedResultsController</code> 在收藏頁面實現動態更新。</li>
     </ul>
