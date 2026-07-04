@@ -132,21 +132,25 @@ final class PersonDetailViewController: DetailBaseViewController {
         switch state {
         case .idle:
             sections = []
+            setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
             sections = []
+            setDetailNavigationTitle(nil)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let loadedSections):
             sections = loadedSections
+            setDetailNavigationTitle(detailNavigationTitle(from: loadedSections))
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .failed(let message):
             sections = []
+            setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadPersonDetail()
@@ -154,6 +158,11 @@ final class PersonDetailViewController: DetailBaseViewController {
         }
 
         collectionView.reloadData()
+    }
+
+    private func detailNavigationTitle(from sections: [PersonDetailSectionItem]) -> String? {
+        guard case .biography(let item) = sections.first else { return nil }
+        return item.hero.name
     }
 }
 
@@ -272,6 +281,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateDetailNavigationTitleVisibility(for: scrollView)
+    }
 
     func collectionView(
         _ collectionView: UICollectionView,

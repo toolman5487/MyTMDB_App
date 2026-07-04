@@ -56,11 +56,25 @@ final class MainHomeViewController: MainBaseViewController {
 
     override func configureView() {
         super.configureView()
+        title = nil
+        navigationItem.largeTitleDisplayMode = .never
         configureCollectionView()
     }
 
     override func bindViewModel() {
         loadHome()
+    }
+
+    // MARK: - Lifecycle
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup

@@ -131,9 +131,7 @@ final class MainTabBarController: UITabBarController {
     private func makeContentViewController(for item: MainTabItem) -> UIViewController {
         switch item.kind {
         case .home:
-            let viewController = MainHomeViewController()
-            viewController.title = item.title
-            return viewController
+            return MainHomeViewController()
 
         case .movie:
             let viewController = MainMovieListViewController()

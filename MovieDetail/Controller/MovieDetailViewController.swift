@@ -143,21 +143,25 @@ final class MovieDetailViewController: DetailBaseViewController {
         switch state {
         case .idle:
             sections = []
+            setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
             sections = []
+            setDetailNavigationTitle(nil)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let loadedSections):
             sections = loadedSections
+            setDetailNavigationTitle(detailNavigationTitle(from: loadedSections))
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .failed(let message):
             sections = []
+            setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadMovieDetail()
@@ -172,6 +176,11 @@ final class MovieDetailViewController: DetailBaseViewController {
     @objc private func handleReviewButtonTapped() {
         let viewController = MovieReviewListViewController(movieID: movieID)
         navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func detailNavigationTitle(from sections: [MovieDetailSectionItem]) -> String? {
+        guard case .overview(let item) = sections.first else { return nil }
+        return item.hero.title.isEmpty ? item.hero.originalTitle : item.hero.title
     }
 }
 
@@ -298,6 +307,10 @@ extension MovieDetailViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateDetailNavigationTitleVisibility(for: scrollView)
+    }
 
     func collectionView(
         _ collectionView: UICollectionView,
