@@ -2,15 +2,6 @@
   "originHash" : "33545091063bf9605f71872b33b77897ee57e0990d9fabc71555416d4ed10537",
   "pins" : [
     {
-      "identity" : "combinecocoa",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/CombineCommunity/CombineCocoa",
-      "state" : {
-        "revision" : "7300c75ff9e072aa7fd0fccefcc88f74aae9bf56",
-        "version" : "0.4.1"
-      }
-    },
-    {
       "identity" : "lottie-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/airbnb/lottie-ios",

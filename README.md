@@ -1,5 +1,5 @@
 # MyTMDB_App
-一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + Combine + MVVM 架構，提供電影列表瀏覽、詳細資訊、收藏與評分功能。
+一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + MVVM 架構，提供電影列表瀏覽、詳細資訊、收藏與評分功能。
 
 ## 功能特色
 - **電影列表與搜尋**  
@@ -19,10 +19,10 @@
   - 「收藏」功能：點擊書籤按鈕即可將電影加入或移除最愛，按鈕會即時切換填滿狀態。  
   - 「評分」功能：點擊愛心按鈕後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後即時顯示實心愛心，並在幕後同步到 TMDB。
 
-- **MVVM + Combine 架構**  
+- **MVVM 架構**
   - **Service 層**：封裝所有 TMDB API 呼叫（搜尋、詳情、最愛、評分、帳號狀態）。  
   - **ViewModel 層**：負責呼叫 Service、處理回傳並透過 `@Published` 將資料推送給 View 層。  
-  - **View 層**：僅處理畫面與使用者互動，採用 `CombineCocoa` 監聽 UI 事件與綁定 ViewModel。
+  - **View 層**：僅處理畫面顯示、使用者互動與 ViewModel 狀態綁定。
 
 ## 環境需求
 - iOS 15.0 以上  
@@ -32,7 +32,6 @@
   - SnapKit  
   - SDWebImage  
   - YouTube-Player-iOS-Helper  
-  - CombineCocoa
 
 # 安裝與執行
 	•	Clone 專案
@@ -45,7 +44,6 @@ cd MyTMDB_App
   	•	SnapKit
   	•	SDWebImage
   	•	YouTube-Player-iOS-Helper
-  	•	CombineCocoa
 	•	設定 TMDB API Key
 	•	在專案中開啟 Constants.swift，找到：
 struct TMDB 
@@ -76,9 +74,8 @@ static let baseURL = "https://api.themoviedb.org/3"
 # 技術細節
 •	半頁評分介面
 •	採用 iOS 15+ 的 UISheetPresentationController.Detent 自訂 1/4 螢幕高度，並以 SnapKit 排版滑桿與按鈕，滑動時即時顯示數值並動態調整字體大小。
-•	Combine 資料流
-•	所有 Service 層呼叫皆回傳 AnyPublisher<T, Error>，並在 ViewModel 中使用 .map、.tryMap、.receive(on: DispatchQueue.main) 等操作。
-•	在 View 層使用 CombineCocoa 的 textPublisher、tapPublisher 監聽文字輸入與按鈕點擊，並利用 @Published 在 ViewModel 更新資料後自動更新 UI。
+•	資料載入流程
+•	Service 層封裝 TMDB API request，ViewModel 負責整理畫面狀態並提供 View 綁定。
 •	本地收藏資料庫
 •	FavoritesLocalService 使用 Core Data 儲存電影最愛清單，並搭配 NSFetchedResultsController 在收藏頁面實現動態更新。
 
@@ -88,4 +85,3 @@ static let baseURL = "https://api.themoviedb.org/3"
 ## 授權條款
 本專案以 MIT Licence 授權，詳細條款請見專案根目錄中的文件。  
 您可以自由使用、修改、合佈及轉載本專案程式碼，但需保留原作者版權聲明與本許可聲明。
-
