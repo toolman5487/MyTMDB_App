@@ -14,6 +14,9 @@ nonisolated enum MainHomePresentationBuilder {
     static func makeSections(from sections: [MainHomeContentSection]) -> [MainHomeSectionItem] {
         sections
             .filter { !$0.contents.isEmpty }
+            .sorted { lhs, rhs in
+                lhs.category.displayPriority < rhs.category.displayPriority
+            }
             .map(MainHomeSectionItem.init(section:))
     }
 }
@@ -72,6 +75,40 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
 // MARK: - MainHomeContentCategory Presentation
 
 private extension MainHomeContentCategory {
+
+    var displayPriority: Int {
+        switch self {
+        case .upcomingMovies:
+            return 0
+
+        case .nowPlayingMovies:
+            return 1
+
+        case .trendingMovies:
+            return 2
+
+        case .popularMovies:
+            return 3
+
+        case .topRatedMovies:
+            return 4
+
+        case .trendingTV:
+            return 5
+
+        case .popularTV:
+            return 6
+
+        case .onTheAirTV:
+            return 7
+
+        case .airingTodayTV:
+            return 8
+
+        case .topRatedTV:
+            return 9
+        }
+    }
 
     var title: String {
         switch self {

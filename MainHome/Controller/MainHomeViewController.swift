@@ -27,6 +27,7 @@ final class MainHomeViewController: MainBaseViewController {
 
     private let viewModel: MainHomeViewModel
     private var sections: [MainHomeSectionItem] = []
+    private var carouselItems: [MainHomeContentItem] = []
     private var loadTask: Task<Void, Never>?
     private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
 
@@ -83,6 +84,11 @@ final class MainHomeViewController: MainBaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier
         )
+        collectionView.register(
+            MainHomeFeaturedHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: MainHomeFeaturedHeaderView.reuseIdentifier
+        )
     }
 
     // MARK: - Data Loading
@@ -104,26 +110,33 @@ final class MainHomeViewController: MainBaseViewController {
         switch state {
         case .idle:
             sections = []
+            carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
             sections = []
+            carouselItems = []
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let loadedSections):
-            sections = loadedSections
+            carouselItems = loadedSections
+                .first { $0.category == .nowPlayingMovies }?
+                .contents ?? []
+            sections = loadedSections.filter { $0.category != .nowPlayingMovies }
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .empty:
             sections = []
+            carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: .emptyContent)
 
         case .failed(let message):
             sections = []
+            carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadHome()
@@ -181,6 +194,28 @@ extension MainHomeViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
 
+        let shouldShowCarousel = indexPath.section == 0 && !carouselItems.isEmpty
+
+        if shouldShowCarousel {
+            let reusableView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: MainHomeFeaturedHeaderView.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let headerView = reusableView as? MainHomeFeaturedHeaderView {
+                headerView.configure(
+                    title: sections[indexPath.section].title,
+                    carouselItems: carouselItems
+                )
+                headerView.onCarouselSelected = { [weak self] item in
+                    self?.showDetail(for: item)
+                }
+            }
+
+            return reusableView
+        }
+
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier,
@@ -227,9 +262,13 @@ extension MainHomeViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        CGSize(
+        let height = section == 0 && !carouselItems.isEmpty
+            ? MainHomeFeaturedHeaderView.featuredHeight
+            : Layout.headerHeight
+
+        return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.headerHeight
+            height: height
         )
     }
 }
