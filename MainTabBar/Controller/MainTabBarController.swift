@@ -77,9 +77,7 @@ final class MainTabBarController: UITabBarController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
-        guard tabBarVisibilityState == .hiddenByScroll else { return }
-        applyTabBarVisibility(.hiddenByScroll)
+        applyTabBarVisibility(tabBarVisibilityState)
     }
 
     // MARK: - Tab Bar Visibility
@@ -106,7 +104,9 @@ final class MainTabBarController: UITabBarController {
             delay: 0,
             options: [.beginFromCurrentState, .curveEaseInOut],
             animations: updates
-        )
+        ) { _ in
+            self.applyTabBarVisibility(visibilityState)
+        }
     }
 
     // MARK: - Setup
@@ -256,9 +256,23 @@ final class MainTabBarController: UITabBarController {
 
     private func applyTabBarVisibility(_ visibilityState: MainTabBarVisibilityState) {
         let isHidden = visibilityState == .hiddenByScroll
+
+        tabBar.transform = .identity
+        tabBar.frame = visibleTabBarFrame()
         tabBar.transform = isHidden ? hiddenTabBarTransform() : .identity
         tabBar.alpha = isHidden ? 0 : 1
         tabBar.isUserInteractionEnabled = !isHidden
+    }
+
+    private func visibleTabBarFrame() -> CGRect {
+        let height = tabBar.bounds.height > 0 ? tabBar.bounds.height : tabBar.frame.height
+
+        return CGRect(
+            x: 0,
+            y: view.bounds.height - height,
+            width: view.bounds.width,
+            height: height
+        )
     }
 }
 
