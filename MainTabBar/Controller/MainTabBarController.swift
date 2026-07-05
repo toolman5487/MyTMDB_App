@@ -7,6 +7,13 @@
 
 import UIKit
 
+// MARK: - MainTabBarVisibilityState
+
+enum MainTabBarVisibilityState: Equatable {
+    case visible
+    case hiddenByScroll
+}
+
 // MARK: - MainTabBarController
 
 @MainActor
@@ -29,7 +36,7 @@ final class MainTabBarController: UITabBarController {
 
     private let session: AuthSession
     private let viewModel: MainTabBarViewModel
-    private var isTabBarHiddenByScroll = false
+    private var tabBarVisibilityState: MainTabBarVisibilityState = .visible
     private var pendingTransitionDirection: MainTabNavigationDirection?
 
     // MARK: - UI Components
@@ -71,33 +78,26 @@ final class MainTabBarController: UITabBarController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        guard isTabBarHiddenByScroll else { return }
-        tabBar.transform = hiddenTabBarTransform()
+        guard tabBarVisibilityState == .hiddenByScroll else { return }
+        applyTabBarVisibility(.hiddenByScroll)
     }
 
     // MARK: - Tab Bar Visibility
 
-    func setTabBarHiddenByScroll(_ isHidden: Bool, animated: Bool) {
-        guard isTabBarHiddenByScroll != isHidden else { return }
+    func setTabBarVisibility(_ visibilityState: MainTabBarVisibilityState, animated: Bool) {
+        guard tabBarVisibilityState != visibilityState else {
+            applyTabBarVisibility(visibilityState)
+            return
+        }
 
-        isTabBarHiddenByScroll = isHidden
+        tabBarVisibilityState = visibilityState
 
         let updates = {
-            self.tabBar.transform = isHidden ? self.hiddenTabBarTransform() : .identity
-            self.tabBar.alpha = isHidden ? 0 : 1
-        }
-
-        let completion: (Bool) -> Void = { _ in
-            self.tabBar.isUserInteractionEnabled = !isHidden
-        }
-
-        if isHidden {
-            tabBar.isUserInteractionEnabled = false
+            self.applyTabBarVisibility(visibilityState)
         }
 
         guard animated else {
             updates()
-            completion(true)
             return
         }
 
@@ -105,8 +105,7 @@ final class MainTabBarController: UITabBarController {
             withDuration: TabBarVisibilityAnimation.duration,
             delay: 0,
             options: [.beginFromCurrentState, .curveEaseInOut],
-            animations: updates,
-            completion: completion
+            animations: updates
         )
     }
 
@@ -194,6 +193,7 @@ final class MainTabBarController: UITabBarController {
     private func selectTab(at index: Int, direction: MainTabNavigationDirection) {
         guard index != selectedIndex else { return }
 
+        setTabBarVisibility(.visible, animated: false)
         pendingTransitionDirection = direction
         selectedIndex = index
     }
@@ -250,8 +250,15 @@ final class MainTabBarController: UITabBarController {
     private func hiddenTabBarTransform() -> CGAffineTransform {
         CGAffineTransform(
             translationX: 0,
-            y: tabBar.bounds.height + view.safeAreaInsets.bottom
+            y: tabBar.bounds.height
         )
+    }
+
+    private func applyTabBarVisibility(_ visibilityState: MainTabBarVisibilityState) {
+        let isHidden = visibilityState == .hiddenByScroll
+        tabBar.transform = isHidden ? hiddenTabBarTransform() : .identity
+        tabBar.alpha = isHidden ? 0 : 1
+        tabBar.isUserInteractionEnabled = !isHidden
     }
 }
 
@@ -304,6 +311,10 @@ extension MainTabBarController: UITabBarControllerDelegate {
         guard let targetIndex = viewControllers?.firstIndex(of: viewController) else {
             pendingTransitionDirection = nil
             return true
+        }
+
+        if targetIndex != selectedIndex {
+            setTabBarVisibility(.visible, animated: false)
         }
 
         pendingTransitionDirection = viewModel.transitionDirection(
