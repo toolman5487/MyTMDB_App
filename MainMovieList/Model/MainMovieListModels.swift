@@ -104,18 +104,103 @@ nonisolated struct MainMovieListMovieItem: Sendable, Equatable, Identifiable {
     let title: String
     let overview: String
     let posterURL: URL?
+    let releaseDate: String?
+    let voteAverage: Double
+    let voteCount: Int
     let releaseDateText: String
     let scoreText: String
 
     init(movie: MainMovieListMovie) {
+        let releaseDate = movie.releaseDate?.isEmpty == false ? movie.releaseDate : nil
+
         self.id = movie.id
         self.title = movie.title
         self.overview = movie.overview.isEmpty ? "目前沒有簡介。" : movie.overview
         self.posterURL = movie.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
-        self.releaseDateText = movie.releaseDate?.isEmpty == false ? movie.releaseDate ?? "" : "尚未公布"
+        self.releaseDate = releaseDate
+        self.voteAverage = movie.voteAverage
+        self.voteCount = movie.voteCount
+        self.releaseDateText = releaseDate ?? "尚未公布"
         self.scoreText = String(format: "%.1f", movie.voteAverage)
+    }
+}
+
+// MARK: - MainMovieSearchFilter
+
+nonisolated enum MainMovieSearchFilter: CaseIterable, Sendable, Hashable, Identifiable {
+    case relevance
+    case highestRated
+    case newestRelease
+    case oldestRelease
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .relevance:
+            return "相關度"
+
+        case .highestRated:
+            return "最高評分"
+
+        case .newestRelease:
+            return "最新上映"
+
+        case .oldestRelease:
+            return "最早上映"
+        }
+    }
+
+    func sorted(_ movies: [MainMovieListMovieItem]) -> [MainMovieListMovieItem] {
+        switch self {
+        case .relevance:
+            return movies
+
+        case .highestRated:
+            return movies.sorted { lhs, rhs in
+                if lhs.voteAverage == rhs.voteAverage {
+                    if lhs.voteCount == rhs.voteCount {
+                        return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
+                    }
+
+                    return lhs.voteCount > rhs.voteCount
+                }
+
+                return lhs.voteAverage > rhs.voteAverage
+            }
+
+        case .newestRelease:
+            return movies.sorted {
+                Self.releaseDatePrecedes(lhs: $0, rhs: $1, ascending: false)
+            }
+
+        case .oldestRelease:
+            return movies.sorted {
+                Self.releaseDatePrecedes(lhs: $0, rhs: $1, ascending: true)
+            }
+        }
+    }
+
+    private static func releaseDatePrecedes(
+        lhs: MainMovieListMovieItem,
+        rhs: MainMovieListMovieItem,
+        ascending: Bool
+    ) -> Bool {
+        switch (lhs.releaseDate, rhs.releaseDate) {
+        case let (.some(lhsDate), .some(rhsDate)) where lhsDate != rhsDate:
+            return ascending ? lhsDate < rhsDate : lhsDate > rhsDate
+
+        case (.some, .none):
+            return true
+
+        case (.none, .some):
+            return false
+
+        default:
+            return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
+        }
     }
 }
 
@@ -168,6 +253,7 @@ nonisolated struct MainMovieSearchContent: Sendable, Equatable {
     let totalPages: Int
     let totalResults: Int
     let isLoadingNextPage: Bool
+    let selectedFilter: MainMovieSearchFilter
 
     var canLoadNextPage: Bool {
         currentPage < totalPages
@@ -180,18 +266,22 @@ nonisolated struct MainMovieSearchContent: Sendable, Equatable {
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,
-            isLoadingNextPage: isLoading
+            isLoadingNextPage: isLoading,
+            selectedFilter: selectedFilter
         )
     }
 
     func appending(page: MainMovieSearchResultPage) -> MainMovieSearchContent {
-        MainMovieSearchContent(
+        let appendedMovies = movies + page.movies.map(MainMovieListMovieItem.init(movie:))
+
+        return MainMovieSearchContent(
             keyword: keyword,
-            movies: movies + page.movies.map(MainMovieListMovieItem.init(movie:)),
+            movies: selectedFilter.sorted(appendedMovies),
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
-            isLoadingNextPage: false
+            isLoadingNextPage: false,
+            selectedFilter: selectedFilter
         )
     }
 }
