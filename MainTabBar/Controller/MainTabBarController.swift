@@ -137,7 +137,12 @@ final class MainTabBarController: UITabBarController {
             viewController.title = item.title
             return viewController
 
-        case .series, .memberCenter:
+        case .series:
+            let viewController = MainTVListViewController()
+            viewController.title = item.title
+            return viewController
+
+        case .memberCenter:
             return ViewController(
                 displayTitle: item.title,
                 tabKind: item.kind,
