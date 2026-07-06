@@ -5,6 +5,7 @@
 //  Created by Willy Hsu on 2026/7/2.
 //
 
+import Observation
 import UIKit
 
 // MARK: - MainMovieListViewController
@@ -23,14 +24,13 @@ final class MainMovieListViewController: MainBaseViewController {
     private let viewModel: MainMovieListViewModel
     private lazy var router: MainMovieListRouting = MainMovieListRouter(sourceViewController: self)
     private var filters: [MainMovieGenreItem] = []
-    private var movies: [MainMovieListMovieItem] = []
+    private var movies: [MovieGridMovieItem] = []
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
     private var filterSelectionTask: Task<Void, Never>?
     private var loadNextPageTask: Task<Void, Never>?
     private var loadNextPageGeneration = 0
-    private var isRoutingSearchResult = false
 
     // MARK: - UI Components
 
@@ -39,8 +39,11 @@ final class MainMovieListViewController: MainBaseViewController {
         viewController.onMovieSelected = { [weak self] movieID in
             self?.showSearchResultMovieDetail(movieID: movieID)
         }
-        viewController.onSortBarButtonItemChanged = { [weak self] barButtonItem in
-            self?.updateSearchSortBarButtonItem(barButtonItem)
+        viewController.onSortBarButtonVisibilityChanged = { [weak self] isVisible, selectedOption in
+            self?.updateSearchSortBarButtonVisibility(
+                isVisible: isVisible,
+                selectedSortOption: selectedOption
+            )
         }
         return viewController
     }()
@@ -54,14 +57,12 @@ final class MainMovieListViewController: MainBaseViewController {
         return searchController
     }()
 
-    private lazy var sortBarButtonItem: UIBarButtonItem = {
-        let barButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "arrow.up.arrow.down"),
-            menu: makeSortMenu(selectedSortOption: nil)
-        )
-        barButtonItem.tintColor = ThemeColor.textPrimary
-        return barButtonItem
-    }()
+    private lazy var sortBarButtonItem = MovieSortMenuFactory.makeBarButtonItem(
+        selectedOption: nil,
+        onSelect: { [weak self] option in
+            self?.selectSortOption(option)
+        }
+    )
 
     // MARK: - Initialization
 
@@ -91,6 +92,8 @@ final class MainMovieListViewController: MainBaseViewController {
     }
 
     override func bindViewModel() {
+        render(state: viewModel.state)
+        observeViewModelState()
         loadInitialContent()
     }
 
@@ -148,12 +151,7 @@ final class MainMovieListViewController: MainBaseViewController {
         cancelLoadNextPageTask()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
-            render(state: .loading)
             await viewModel.loadInitialContent()
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
         }
     }
 
@@ -162,41 +160,52 @@ final class MainMovieListViewController: MainBaseViewController {
         cancelLoadNextPageTask()
         filterSelectionTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
             await viewModel.selectGenre(id: id)
+        }
+    }
 
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
+    private func observeViewModelState() {
+        withObservationTracking {
+            _ = viewModel.state
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                render(state: viewModel.state)
+                observeViewModelState()
+            }
         }
     }
 
     private func render(state: MainMovieListViewState) {
         switch state {
-        case .idle:
+        case .idle, .loading:
             filters = []
             movies = []
             isFilterSkeletonVisible = true
             collectionView.backgroundView = nil
             hideSortBarButtonItem()
 
-        case .loading:
-            filters = []
+        case .refreshing(let content):
+            filters = content.genres
             movies = []
-            isFilterSkeletonVisible = true
+            isFilterSkeletonVisible = false
+            navigationItem.title = "\(content.selectedGenre.name)電影"
             collectionView.backgroundView = nil
             hideSortBarButtonItem()
 
         case .empty:
             renderUnavailableListState(
                 title: "沒有電影資料",
-                message: "目前沒有可顯示的電影。"
+                message: "目前沒有可顯示的電影。",
+                systemImageName: "film"
             )
             hideSortBarButtonItem()
 
         case .failed(let errorMessage):
             renderUnavailableListState(
-                title: "載入失敗",
-                message: errorMessage.message
+                title: errorMessage.title,
+                message: errorMessage.message,
+                systemImageName: errorMessage.systemImageName
             )
             hideSortBarButtonItem()
 
@@ -233,106 +242,44 @@ final class MainMovieListViewController: MainBaseViewController {
         hideSortBarButtonItem()
     }
 
-    private func showSortBarButtonItem(selectedSortOption: MainMovieListSortOption?) {
-        sortBarButtonItem.menu = makeSortMenu(selectedSortOption: selectedSortOption)
-        navigationItem.rightBarButtonItem = sortBarButtonItem
+    private func showSortBarButtonItem(
+        selectedSortOption: MovieSortOption?,
+        isSearchMode: Bool = false
+    ) {
+        sortBarButtonItem.menu = MovieSortMenuFactory.makeMenu(
+            selectedOption: selectedSortOption,
+            onSelect: { [weak self] option in
+                self?.selectSortOption(option, isSearchMode: isSearchMode)
+            }
+        )
+        applySortBarButtonItem(isSearchMode: isSearchMode)
     }
 
     private func hideSortBarButtonItem() {
         navigationItem.rightBarButtonItem = nil
+        searchResultsViewController.navigationItem.rightBarButtonItem = nil
     }
 
-    private func makeSortMenu(selectedSortOption: MainMovieListSortOption?) -> UIMenu {
-        let actions = MainMovieListSortOption.allCases.map { option in
-            UIAction(
-                title: option.title,
-                state: selectedSortOption == option ? .on : .off
-            ) { [weak self] _ in
-                Task { @MainActor [weak self] in
-                    self?.selectSortOption(option)
-                }
-            }
+    private func applySortBarButtonItem(isSearchMode: Bool) {
+        if isSearchMode {
+            searchResultsViewController.navigationItem.rightBarButtonItem = sortBarButtonItem
+            navigationItem.rightBarButtonItem = sortBarButtonItem
+        } else {
+            navigationItem.rightBarButtonItem = sortBarButtonItem
+            searchResultsViewController.navigationItem.rightBarButtonItem = nil
+        }
+    }
+
+    private func selectSortOption(
+        _ option: MovieSortOption,
+        isSearchMode: Bool = false
+    ) {
+        if isSearchMode {
+            searchResultsViewController.selectSortOption(option)
+            return
         }
 
-        return UIMenu(
-            title: "篩選排序",
-            options: .singleSelection,
-            children: actions
-        )
-    }
-
-    private func selectSortOption(_ option: MainMovieListSortOption) {
         viewModel.selectSortOption(option)
-        render(state: viewModel.state)
-    }
-}
-
-// MARK: - MainMovieListMessageView
-
-@MainActor
-private final class MainMovieListMessageView: UIView {
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            messageLabel
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 8
-        return stackView
-    }()
-
-    init(
-        title: String,
-        message: String
-    ) {
-        super.init(frame: .zero)
-        titleLabel.text = title
-        messageLabel.text = message
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    private func setupHierarchy() {
-        addSubview(stackView)
-    }
-
-    private func setupConstraints() {
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 24),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -24)
-        ])
     }
 }
 
@@ -418,7 +365,7 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
         let movieID = movies[indexPath.item].id
 
         collectionView.deselectItem(at: indexPath, animated: true)
-        showMovieDetail(movieID: movieID)
+        router.showMovieDetail(movieID: movieID)
     }
 
     func collectionView(
@@ -485,7 +432,7 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
 extension MainMovieListViewController: UISearchResultsUpdating {
 
     func updateSearchResults(for searchController: UISearchController) {
-        guard !isRoutingSearchResult else { return }
+        guard !router.shouldIgnoreSearchCancellation else { return }
 
         let keyword = (searchController.searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -509,12 +456,12 @@ extension MainMovieListViewController: UISearchBarDelegate {
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        guard !isRoutingSearchResult else { return }
+        guard !router.shouldIgnoreSearchCancellation else { return }
         restoreListAfterSearch()
     }
 }
 
-// MARK: - Page Sheet
+// MARK: - Private Methods
 
 private extension MainMovieListViewController {
 
@@ -547,16 +494,17 @@ private extension MainMovieListViewController {
                 }
             }
 
+            guard !Task.isCancelled, loadNextPageGeneration == generation else { return }
+
             switch viewModel.state {
             case .loaded:
                 await viewModel.loadNextPageIfNeeded(currentMovieID: currentMovieID)
 
-            case .idle, .loading, .empty, .failed:
+            case .idle, .loading, .refreshing, .empty, .failed:
                 break
             }
 
             guard !Task.isCancelled, loadNextPageGeneration == generation else { return }
-            render(state: viewModel.state)
         }
     }
 
@@ -568,49 +516,31 @@ private extension MainMovieListViewController {
 
     func renderUnavailableListState(
         title: String,
-        message: String
+        message: String,
+        systemImageName: String
     ) {
         filters = []
         movies = []
         isFilterSkeletonVisible = false
-        collectionView.backgroundView = MainMovieListMessageView(
-            title: title,
-            message: message
+        collectionView.backgroundView = ErrorMessageView(
+            message: ErrorMessage(
+                title: title,
+                message: message,
+                systemImageName: systemImageName
+            )
         )
     }
 
-    func showMovieDetail(movieID: Int) {
-        router.showMovieDetail(movieID: movieID)
-    }
-
     func showSearchResultMovieDetail(movieID: Int) {
-        isRoutingSearchResult = true
-        searchController.searchBar.resignFirstResponder()
-
-        let routeToMovieDetail = { [weak self] in
-            guard let self else { return }
-            isRoutingSearchResult = false
-            searchResultsViewController.reset()
-            render(state: viewModel.state)
-            router.showMovieDetailFromSearch(movieID: movieID)
-        }
-
-        guard searchController.isActive else {
-            routeToMovieDetail()
-            return
-        }
-
-        searchController.isActive = false
-
-        if let transitionCoordinator = transitionCoordinator ?? searchController.transitionCoordinator {
-            transitionCoordinator.animate(alongsideTransition: nil) { _ in
-                routeToMovieDetail()
+        router.showMovieDetailFromSearch(
+            movieID: movieID,
+            searchController: searchController,
+            onSearchDismissed: { [weak self] in
+                guard let self else { return }
+                searchResultsViewController.reset()
+                render(state: viewModel.state)
             }
-        } else {
-            Task { @MainActor in
-                routeToMovieDetail()
-            }
-        }
+        )
     }
 
     func restoreListAfterSearch() {
@@ -618,11 +548,17 @@ private extension MainMovieListViewController {
         render(state: viewModel.state)
     }
 
-    func updateSearchSortBarButtonItem(_ barButtonItem: UIBarButtonItem?) {
+    func updateSearchSortBarButtonVisibility(
+        isVisible: Bool,
+        selectedSortOption: MovieSortOption?
+    ) {
         guard searchController.isActive else { return }
 
-        if let barButtonItem {
-            navigationItem.rightBarButtonItem = barButtonItem
+        if isVisible {
+            showSortBarButtonItem(
+                selectedSortOption: selectedSortOption,
+                isSearchMode: true
+            )
         } else {
             hideSortBarButtonItem()
         }

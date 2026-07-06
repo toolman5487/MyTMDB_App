@@ -1,18 +1,18 @@
 //
-//  MainMovieListMovieCollectionViewCell.swift
+//  MainMovieSearchResultCollectionViewCell.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/3.
+//  Created by Codex on 2026/7/6.
 //
 
 import UIKit
 
-// MARK: - MainMovieListMovieCollectionViewCell
+// MARK: - MainMovieSearchResultCollectionViewCell
 
 @MainActor
-final class MainMovieListMovieCollectionViewCell: ImageTitleBaseCollectionViewCell {
+final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MainMovieListMovieCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: MainMovieSearchResultCollectionViewCell.self)
 
     private enum Layout {
         static let imageCornerRadius: CGFloat = 8

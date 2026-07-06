@@ -1,0 +1,75 @@
+//
+//  MainMovieSearchSubmittedLoadingView.swift
+//  MyTMDB_App
+//
+//  Created by Codex on 2026/7/6.
+//
+
+import SnapKit
+import UIKit
+
+// MARK: - MainMovieSearchSubmittedLoadingView
+
+@MainActor
+final class MainMovieSearchSubmittedLoadingView: UIView {
+
+    private let indicatorView: UIActivityIndicatorView = {
+        let indicatorView = UIActivityIndicatorView(style: .medium)
+        indicatorView.color = ThemeColor.primary
+        indicatorView.startAnimating()
+        return indicatorView
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.text = "正在搜尋"
+        return label
+    }()
+
+    private let messageLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            indicatorView,
+            titleLabel,
+            messageLabel
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 8
+        return stackView
+    }()
+
+    init(keyword: String) {
+        super.init(frame: .zero)
+        messageLabel.text = "正在搜尋「\(keyword)」"
+        setupUI()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+    }
+
+    private func setupUI() {
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview().offset(24)
+            make.trailing.lessThanOrEqualToSuperview().inset(24)
+        }
+    }
+}

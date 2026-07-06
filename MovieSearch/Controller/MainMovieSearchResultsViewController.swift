@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/7/6.
 //
 
+import SnapKit
 import UIKit
 
 // MARK: - MainMovieSearchResultsViewController
@@ -17,18 +18,14 @@ final class MainMovieSearchResultsViewController: BaseViewController {
     private let viewModel: MainMovieSearchResultsViewModel
 
     var onMovieSelected: ((Int) -> Void)?
-    var onSortBarButtonItemChanged: ((UIBarButtonItem?) -> Void)?
+    var onSortBarButtonVisibilityChanged: ((Bool, MovieSortOption?) -> Void)?
 
-    private var movies: [MainMovieListMovieItem] = []
+    private var movies: [MovieGridMovieItem] = []
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
     private var searchTask: Task<Void, Never>?
     private var loadNextPageTask: Task<Void, Never>?
     private var loadNextPageGeneration = 0
-
-    var selectedSortOption: MainMovieListSortOption? {
-        viewModel.selectedSortOption
-    }
 
     // MARK: - UI Components
 
@@ -54,15 +51,6 @@ final class MainMovieSearchResultsViewController: BaseViewController {
             forCellWithReuseIdentifier: MainMovieSearchResultCollectionViewCell.reuseIdentifier
         )
         return collectionView
-    }()
-
-    private lazy var sortBarButtonItem: UIBarButtonItem = {
-        let barButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "arrow.up.arrow.down"),
-            menu: makeSortMenu(selectedSortOption: nil)
-        )
-        barButtonItem.tintColor = ThemeColor.textPrimary
-        return barButtonItem
     }()
 
     // MARK: - Initialization
@@ -96,14 +84,9 @@ final class MainMovieSearchResultsViewController: BaseViewController {
 
     override func setupConstraints() {
         super.setupConstraints()
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     // MARK: - Rendering
@@ -137,7 +120,7 @@ final class MainMovieSearchResultsViewController: BaseViewController {
         }
     }
 
-    func selectSortOption(_ option: MainMovieListSortOption) {
+    func selectSortOption(_ option: MovieSortOption) {
         viewModel.selectSortOption(option)
         renderCurrentState()
     }
@@ -151,7 +134,7 @@ final class MainMovieSearchResultsViewController: BaseViewController {
 
     private func renderCurrentState() {
         render(state: viewModel.state)
-        updateSortBarButtonItem(for: viewModel.state)
+        updateSortBarButtonVisibility(for: viewModel.state)
     }
 
     private func render(state: MainMovieSearchResultsViewState) {
@@ -184,19 +167,19 @@ final class MainMovieSearchResultsViewController: BaseViewController {
             movies = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = MainMovieSearchMessageView(
-                title: "找不到電影",
-                message: "沒有符合「\(keyword)」的搜尋結果"
+            collectionView.backgroundView = ErrorMessageView(
+                message: ErrorMessage(
+                    title: "找不到電影",
+                    message: "沒有符合「\(keyword)」的搜尋結果",
+                    systemImageName: "magnifyingglass"
+                )
             )
 
         case .failed(let errorMessage):
             movies = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = MainMovieSearchMessageView(
-                title: "搜尋失敗",
-                message: errorMessage.message
-            )
+            collectionView.backgroundView = ErrorMessageView(message: errorMessage)
         }
 
         collectionView.reloadData()
@@ -333,203 +316,13 @@ private extension MainMovieSearchResultsViewController {
         loadNextPageTask = nil
     }
 
-    func updateSortBarButtonItem(for state: MainMovieSearchResultsViewState) {
+    func updateSortBarButtonVisibility(for state: MainMovieSearchResultsViewState) {
         switch state {
         case .results(let content):
-            sortBarButtonItem.menu = makeSortMenu(selectedSortOption: content.selectedSortOption)
-            onSortBarButtonItemChanged?(sortBarButtonItem)
+            onSortBarButtonVisibilityChanged?(true, content.selectedSortOption)
 
         case .idle, .typing, .searching, .empty, .failed:
-            onSortBarButtonItemChanged?(nil)
+            onSortBarButtonVisibilityChanged?(false, nil)
         }
-    }
-
-    func makeSortMenu(selectedSortOption: MainMovieListSortOption?) -> UIMenu {
-        let actions = MainMovieListSortOption.allCases.map { option in
-            UIAction(
-                title: option.title,
-                state: selectedSortOption == option ? .on : .off
-            ) { [weak self] _ in
-                Task { @MainActor [weak self] in
-                    self?.selectSortOption(option)
-                }
-            }
-        }
-
-        return UIMenu(
-            title: "篩選排序",
-            options: .singleSelection,
-            children: actions
-        )
-    }
-}
-
-// MARK: - MainMovieSearchResultCollectionViewCell
-
-@MainActor
-private final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: MainMovieSearchResultCollectionViewCell.self)
-
-    private enum Layout {
-        static let imageCornerRadius: CGFloat = 8
-    }
-
-    func configure(
-        with item: MainMovieListMovieItem,
-        imageHeight: CGFloat
-    ) {
-        configureLayout(
-            imageHeight: imageHeight,
-            imageCornerRadius: Layout.imageCornerRadius
-        )
-        configure(
-            imageURL: item.posterURL,
-            title: item.title,
-            subtitle: "評分 \(item.scoreText)"
-        )
-    }
-}
-
-// MARK: - MainMovieSearchSubmittedLoadingView
-
-@MainActor
-private final class MainMovieSearchSubmittedLoadingView: UIView {
-
-    private let indicatorView: UIActivityIndicatorView = {
-        let indicatorView = UIActivityIndicatorView(style: .medium)
-        indicatorView.color = ThemeColor.primary
-        indicatorView.startAnimating()
-        return indicatorView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.text = "正在搜尋"
-        return label
-    }()
-
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            indicatorView,
-            titleLabel,
-            messageLabel
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 8
-        return stackView
-    }()
-
-    init(keyword: String) {
-        super.init(frame: .zero)
-        messageLabel.text = "正在搜尋「\(keyword)」"
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    private func setupHierarchy() {
-        addSubview(stackView)
-    }
-
-    private func setupConstraints() {
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 24),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -24)
-        ])
-    }
-}
-
-// MARK: - MainMovieSearchMessageView
-
-@MainActor
-private final class MainMovieSearchMessageView: UIView {
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            messageLabel
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 8
-        return stackView
-    }()
-
-    init(
-        title: String,
-        message: String
-    ) {
-        super.init(frame: .zero)
-        titleLabel.text = title
-        messageLabel.text = message
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    private func setupHierarchy() {
-        addSubview(stackView)
-    }
-
-    private func setupConstraints() {
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 24),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -24)
-        ])
     }
 }

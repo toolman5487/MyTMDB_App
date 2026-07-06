@@ -16,11 +16,6 @@ nonisolated protocol MainMovieListServicing: Sendable {
         genreID: Int,
         page: Int
     ) async throws -> MainMovieListMoviePage
-
-    func searchMovies(
-        keyword: String,
-        page: Int
-    ) async throws -> MainMovieSearchResultPage
 }
 
 // MARK: - MainMovieListService
@@ -59,33 +54,13 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
         genreID: Int,
         page: Int = 1
     ) async throws -> MainMovieListMoviePage {
-        let response: TMDBPageResponse<MainMovieListMovie> = try await network.get(
+        let response: TMDBPageResponse<MovieGridMovie> = try await network.get(
             path: APIConfig.Discover.movie,
             queryItems: movieQueryItems(genreID: genreID, page: page)
         )
 
         return MainMovieListMoviePage(
             genreID: genreID,
-            page: response.page,
-            totalPages: response.totalPages,
-            totalResults: response.totalResults,
-            movies: response.results
-        )
-    }
-
-    func searchMovies(
-        keyword: String,
-        page: Int = 1
-    ) async throws -> MainMovieSearchResultPage {
-        let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let response: TMDBPageResponse<MainMovieListMovie> = try await network.get(
-            path: APIConfig.Search.movie,
-            queryItems: searchQueryItems(keyword: trimmedKeyword, page: page)
-        )
-
-        return MainMovieSearchResultPage(
-            keyword: trimmedKeyword,
             page: response.page,
             totalPages: response.totalPages,
             totalResults: response.totalResults,
@@ -103,16 +78,6 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
             URLQueryItem(name: "include_adult", value: "false"),
             URLQueryItem(name: "include_video", value: "false"),
             URLQueryItem(name: "with_genres", value: String(genreID)),
-            URLQueryItem(name: "page", value: String(max(page, 1)))
-        ]
-    }
-
-    private func searchQueryItems(keyword: String, page: Int) -> [URLQueryItem] {
-        [
-            URLQueryItem(name: "language", value: localization.languageParameter),
-            URLQueryItem(name: "region", value: localization.regionCode),
-            URLQueryItem(name: "query", value: keyword),
-            URLQueryItem(name: "include_adult", value: "false"),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
     }

@@ -13,6 +13,7 @@ import Observation
 nonisolated enum MainMovieListViewState: Equatable {
     case idle
     case loading
+    case refreshing(MainMovieListContent)
     case loaded(MainMovieListContent)
     case empty
     case failed(ErrorMessage)
@@ -30,7 +31,7 @@ final class MainMovieListViewModel {
 
     private let service: MainMovieListServicing
     private var genres: [MainMovieGenre] = []
-    private var selectedSortOption: MainMovieListSortOption?
+    private var selectedSortOption: MovieSortOption?
 
     // MARK: - Initialization
 
@@ -60,6 +61,8 @@ final class MainMovieListViewModel {
 
     func selectGenre(id: Int) async {
         guard let selectedGenre = genres.first(where: { $0.id == id }) else { return }
+
+        state = .refreshing(previewContent(for: selectedGenre))
 
         do {
             let page = try await service.fetchMovies(genreID: selectedGenre.id, page: 1)
@@ -96,25 +99,46 @@ final class MainMovieListViewModel {
         }
     }
 
-    func selectSortOption(_ option: MainMovieListSortOption) {
+    func selectSortOption(_ option: MovieSortOption) {
         selectedSortOption = option
 
         switch state {
         case .loaded(let content):
             state = .loaded(content.sorting(by: option))
 
-        case .idle, .loading, .empty, .failed:
+        case .idle, .loading, .refreshing, .empty, .failed:
             break
         }
     }
 
     // MARK: - Private Methods
 
+    private func previewContent(for selectedGenre: MainMovieGenre) -> MainMovieListContent {
+        MainMovieListContent(
+            genres: genres.map { genre in
+                MainMovieGenreItem(
+                    genre: genre,
+                    isSelected: genre.id == selectedGenre.id
+                )
+            },
+            selectedGenre: MainMovieGenreItem(
+                genre: selectedGenre,
+                isSelected: true
+            ),
+            movies: [],
+            currentPage: 0,
+            totalPages: 0,
+            totalResults: 0,
+            isLoadingNextPage: false,
+            selectedSortOption: selectedSortOption
+        )
+    }
+
     private func makeContent(
         selectedGenre: MainMovieGenre,
         page: MainMovieListMoviePage
     ) -> MainMovieListContent {
-        let movies = page.movies.map(MainMovieListMovieItem.init(movie:))
+        let movies = page.movies.map(MovieGridMovieItem.init(movie:))
 
         return MainMovieListContent(
             genres: genres.map { genre in
@@ -138,12 +162,15 @@ final class MainMovieListViewModel {
 
     private func shouldLoadNextPage(
         currentMovieID: Int,
-        movies: [MainMovieListMovieItem]
+        movies: [MovieGridMovieItem]
     ) -> Bool {
         guard let currentIndex = movies.firstIndex(where: { $0.id == currentMovieID }) else {
             return false
         }
 
-        return currentIndex >= max(movies.count - 4, 0)
+        return MovieGridLayoutMetrics.shouldLoadNextPage(
+            currentIndex: currentIndex,
+            itemCount: movies.count
+        )
     }
 }

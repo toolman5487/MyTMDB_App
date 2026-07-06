@@ -14,7 +14,7 @@ nonisolated enum MainMovieSearchResultsViewState: Equatable {
     case idle
     case typing
     case searching(String)
-    case results(MainMovieSearchContent)
+    case results(MovieSearchContent)
     case empty(String)
     case failed(ErrorMessage)
 }
@@ -28,13 +28,13 @@ final class MainMovieSearchResultsViewModel {
     // MARK: - Properties
 
     private(set) var state: MainMovieSearchResultsViewState = .idle
-    private(set) var selectedSortOption: MainMovieListSortOption?
+    private(set) var selectedSortOption: MovieSortOption?
 
-    private let service: MainMovieListServicing
+    private let service: MovieSearchServicing
 
     // MARK: - Initialization
 
-    init(service: MainMovieListServicing = MainMovieListService()) {
+    init(service: MovieSearchServicing = MovieSearchService()) {
         self.service = service
     }
 
@@ -67,7 +67,7 @@ final class MainMovieSearchResultsViewModel {
             let page = try await service.searchMovies(keyword: trimmedKeyword, page: 1)
             let content = makeSearchContent(
                 keyword: page.keyword,
-                movies: page.movies.map(MainMovieListMovieItem.init(movie:)),
+                movies: page.movies.map(MovieGridMovieItem.init(movie:)),
                 currentPage: page.page,
                 totalPages: page.totalPages,
                 totalResults: page.totalResults,
@@ -106,7 +106,7 @@ final class MainMovieSearchResultsViewModel {
         }
     }
 
-    func selectSortOption(_ option: MainMovieListSortOption) {
+    func selectSortOption(_ option: MovieSortOption) {
         selectedSortOption = option
 
         guard case .results(let content) = state else { return }
@@ -117,13 +117,13 @@ final class MainMovieSearchResultsViewModel {
 
     private func makeSearchContent(
         keyword: String,
-        movies: [MainMovieListMovieItem],
+        movies: [MovieGridMovieItem],
         currentPage: Int,
         totalPages: Int,
         totalResults: Int,
         isLoadingNextPage: Bool
-    ) -> MainMovieSearchContent {
-        MainMovieSearchContent(
+    ) -> MovieSearchContent {
+        MovieSearchContent(
             keyword: keyword,
             movies: selectedSortOption?.sorted(movies) ?? movies,
             currentPage: currentPage,
@@ -136,12 +136,15 @@ final class MainMovieSearchResultsViewModel {
 
     private func shouldLoadNextPage(
         currentMovieID: Int,
-        movies: [MainMovieListMovieItem]
+        movies: [MovieGridMovieItem]
     ) -> Bool {
         guard let currentIndex = movies.firstIndex(where: { $0.id == currentMovieID }) else {
             return false
         }
 
-        return currentIndex >= max(movies.count - 4, 0)
+        return MovieGridLayoutMetrics.shouldLoadNextPage(
+            currentIndex: currentIndex,
+            itemCount: movies.count
+        )
     }
 }

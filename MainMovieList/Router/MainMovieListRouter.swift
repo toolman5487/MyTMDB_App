@@ -10,9 +10,15 @@ import UIKit
 // MARK: - MainMovieListRouting
 
 @MainActor
-protocol MainMovieListRouting {
+protocol MainMovieListRouting: AnyObject {
+    var shouldIgnoreSearchCancellation: Bool { get }
+
     func showMovieDetail(movieID: Int)
-    func showMovieDetailFromSearch(movieID: Int)
+    func showMovieDetailFromSearch(
+        movieID: Int,
+        searchController: UISearchController,
+        onSearchDismissed: @escaping () -> Void
+    )
     func showGenrePageSheet(
         filters: [MainMovieGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
@@ -25,6 +31,14 @@ protocol MainMovieListRouting {
 @MainActor
 final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
 
+    // MARK: - Properties
+
+    private(set) var isDismissingSearchForNavigation = false
+
+    var shouldIgnoreSearchCancellation: Bool {
+        isDismissingSearchForNavigation
+    }
+
     // MARK: - Push
 
     func showMovieDetail(movieID: Int) {
@@ -32,8 +46,47 @@ final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
         show(MovieDetailViewController(movieID: movieID), using: .push)
     }
 
-    func showMovieDetailFromSearch(movieID: Int) {
-        showMovieDetail(movieID: movieID)
+    func showMovieDetailFromSearch(
+        movieID: Int,
+        searchController: UISearchController,
+        onSearchDismissed: @escaping () -> Void
+    ) {
+        guard movieID > 0,
+              let sourceViewController,
+              let navigationController = sourceViewController.navigationController else {
+            return
+        }
+
+        isDismissingSearchForNavigation = true
+        searchController.searchBar.resignFirstResponder()
+
+        let finishSearchCleanup = { [weak self] in
+            guard let self else { return }
+
+            if searchController.isActive {
+                searchController.isActive = false
+            }
+
+            isDismissingSearchForNavigation = false
+            onSearchDismissed()
+        }
+
+        show(MovieDetailViewController(movieID: movieID), using: .push)
+
+        if let transitionCoordinator = navigationController.transitionCoordinator {
+            transitionCoordinator.animate(alongsideTransition: nil) { [weak self] context in
+                guard !context.isCancelled else {
+                    self?.isDismissingSearchForNavigation = false
+                    return
+                }
+
+                finishSearchCleanup()
+            }
+        } else {
+            Task { @MainActor in
+                finishSearchCleanup()
+            }
+        }
     }
 
     // MARK: - Page Sheet
