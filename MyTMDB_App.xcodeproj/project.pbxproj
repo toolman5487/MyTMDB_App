@@ -484,10 +484,18 @@
 			isa = PBXGroup;
 			children = (
 				157C4E7A2FFB639E0044BD8E /* Model */,
+				15BAEBC02FF7C000006B0E15 /* View */,
+			);
+			path = MovieGrid;
+			sourceTree = "<group>";
+		};
+		15BAEBC02FF7C000006B0E15 /* View */ = {
+			isa = PBXGroup;
+			children = (
 				15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */,
 				157C4E652FFB639E0044BD8E /* MovieSortMenuFactory.swift */,
 			);
-			path = MovieGrid;
+			path = View;
 			sourceTree = "<group>";
 		};
 		157C4E7A2FFB639E0044BD8E /* Model */ = {
@@ -648,11 +656,27 @@
 		15606CA12FF4E12A0036898B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				15606CC42FF520000036898B /* TVDetailCells.swift */,
+				15BAEBC62FF7C100006B0E15 /* Header */,
+				15BAEBC72FF7C100006B0E15 /* Cell */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		15BAEBC62FF7C100006B0E15 /* Header */ = {
+			isa = PBXGroup;
+			children = (
 				15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */,
 				15606CC52FF520000036898B /* TVDetailSectionHeaderView.swift */,
 			);
-			path = View;
+			path = Header;
+			sourceTree = "<group>";
+		};
+		15BAEBC72FF7C100006B0E15 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				15606CC42FF520000036898B /* TVDetailCells.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		15606CA22FF4E1310036898B /* ViewModel */ = {
@@ -702,11 +726,19 @@
 		157C4E592FFB639E0044BD8E /* View */ = {
 			isa = PBXGroup;
 			children = (
-				157C4E752FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift */,
+				15BAEBC32FF7C100006B0E15 /* Cell */,
 				157C4E712FFB639E0044BD8E /* MainMovieSearchSubmittedLoadingView.swift */,
 				15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		15BAEBC32FF7C100006B0E15 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				157C4E752FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		157C4E7B2FFB639E0044BD8E /* Model */ = {
@@ -832,7 +864,6 @@
 			isa = PBXGroup;
 			children = (
 				15A94F682FF26FE300FCBB0F /* Controller */,
-				15A94F692FF26FF200FCBB0F /* View */,
 				15A950022FF281000FCBB0F /* ViewModel */,
 			);
 			path = MainTabBar;
@@ -844,13 +875,6 @@
 				15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */,
 			);
 			path = Controller;
-			sourceTree = "<group>";
-		};
-		15A94F692FF26FF200FCBB0F /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		15A94F982FF27D0900FCBB0F /* MainHome */ = {
@@ -878,7 +902,7 @@
 			isa = PBXGroup;
 			children = (
 				15BAEB802FF6615A006B0E15 /* Header */,
-				15BAEB7F2FF66152006B0E15 /* Cells */,
+				15BAEB7F2FF66152006B0E15 /* Cell */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -982,18 +1006,23 @@
 		15BAE94F2FF6097E006B0E15 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				15BAE97E2FF60C80006B0E15 /* PersonDetailCells.swift */,
+				15BAEBC82FF7C100006B0E15 /* Cell */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		15BAEBC82FF7C100006B0E15 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				15BAE97E2FF60C80006B0E15 /* PersonDetailCells.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		15BAE9F42FF61D50006B0E15 /* SeasonDetail */ = {
 			isa = PBXGroup;
 			children = (
 				15BAE9F52FF61D5B006B0E15 /* Controller */,
-				15BAE9F82FF61D6D006B0E15 /* Model */,
-				15BAE9F62FF61D62006B0E15 /* View */,
-				15BAE9F72FF61D67006B0E15 /* ViewModel */,
 			);
 			path = SeasonDetail;
 			sourceTree = "<group>";
@@ -1004,27 +1033,6 @@
 				15BAE9F92FF61D8B006B0E15 /* SeasonDetailViewController.swift */,
 			);
 			path = Controller;
-			sourceTree = "<group>";
-		};
-		15BAE9F62FF61D62006B0E15 /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		15BAE9F72FF61D67006B0E15 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		15BAE9F82FF61D6D006B0E15 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		15BAEAE12FF64D22006B0E15 /* Controller */ = {
@@ -1109,10 +1117,26 @@
 		15BAEB642FF6591A006B0E15 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */,
-				15BAEB902FF73000006B0E15 /* MainMovieListFilterHeaderView.swift */,
+				15BAEBC12FF7C100006B0E15 /* Header */,
+				15BAEBC22FF7C100006B0E15 /* Cell */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		15BAEBC12FF7C100006B0E15 /* Header */ = {
+			isa = PBXGroup;
+			children = (
+				15BAEB902FF73000006B0E15 /* MainMovieListFilterHeaderView.swift */,
+			);
+			path = Header;
+			sourceTree = "<group>";
+		};
+		15BAEBC22FF7C100006B0E15 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		15BAEB652FF65921006B0E15 /* ViewModel */ = {
@@ -1139,13 +1163,13 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
-		15BAEB7F2FF66152006B0E15 /* Cells */ = {
+		15BAEB7F2FF66152006B0E15 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
 				15A9503A2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift */,
 				15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */,
 			);
-			path = Cells;
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		15BAEB802FF6615A006B0E15 /* Header */ = {
@@ -1188,11 +1212,27 @@
 		15CF99C92FF370210041F4CC /* View */ = {
 			isa = PBXGroup;
 			children = (
-				15CF9A132FF3A0000041F4CC /* MovieDetailCells.swift */,
+				15BAEBC42FF7C100006B0E15 /* Header */,
+				15BAEBC52FF7C100006B0E15 /* Cell */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		15BAEBC42FF7C100006B0E15 /* Header */ = {
+			isa = PBXGroup;
+			children = (
 				15CF9A1B2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift */,
 				15CF9A172FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift */,
 			);
-			path = View;
+			path = Header;
+			sourceTree = "<group>";
+		};
+		15BAEBC52FF7C100006B0E15 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				15CF9A132FF3A0000041F4CC /* MovieDetailCells.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		15CF99CE2FF370970041F4CC /* DetailBase */ = {
