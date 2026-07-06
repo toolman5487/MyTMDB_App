@@ -484,6 +484,7 @@
 			isa = PBXGroup;
 			children = (
 				157C4E7A2FFB639E0044BD8E /* Model */,
+				15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */,
 				157C4E652FFB639E0044BD8E /* MovieSortMenuFactory.swift */,
 			);
 			path = MovieGrid;
@@ -1110,7 +1111,6 @@
 			children = (
 				15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */,
 				15BAEB902FF73000006B0E15 /* MainMovieListFilterHeaderView.swift */,
-				15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

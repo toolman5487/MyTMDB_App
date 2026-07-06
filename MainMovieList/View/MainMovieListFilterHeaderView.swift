@@ -35,6 +35,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
         static let buttonSize: CGFloat = 36
         static let buttonCollectionSpacing: CGFloat = 8
         static let skeletonItemWidths: [CGFloat] = [72, 96, 80, 104, 88]
+        static let showAllButtonExpandedRotation = -CGFloat.pi / 2
     }
 
     // MARK: - UI Components
@@ -74,7 +75,7 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
 
     private lazy var showAllButton: UIButton = {
         var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(systemName: "chevron.up")
+        configuration.image = UIImage(systemName: "chevron.forward")
         configuration.baseForegroundColor = ThemeColor.textPrimary
         configuration.contentInsets = .zero
         let button = UIButton(configuration: configuration)
@@ -160,17 +161,18 @@ final class MainMovieListFilterHeaderView: UICollectionReusableView {
     }
 
     func setShowAllButtonExpanded(_ isExpanded: Bool, animated: Bool = false) {
-        guard isShowAllButtonExpanded != isExpanded else { return }
+        let didChange = isShowAllButtonExpanded != isExpanded
         isShowAllButtonExpanded = isExpanded
 
+        let transform: CGAffineTransform = isExpanded
+            ? CGAffineTransform(rotationAngle: Layout.showAllButtonExpandedRotation)
+            : .identity
+
         let updateTransform: () -> Void = { [weak self] in
-            guard let self else { return }
-            showAllButton.imageView?.transform = isExpanded
-                ? CGAffineTransform(rotationAngle: .pi)
-                : .identity
+            self?.showAllButton.imageView?.transform = transform
         }
 
-        guard animated else {
+        guard animated, didChange else {
             updateTransform()
             return
         }
