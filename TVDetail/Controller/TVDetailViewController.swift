@@ -267,7 +267,13 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailSeasonsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? TVDetailSeasonsCollectionViewCell)?.configure(items: items)
+            (cell as? TVDetailSeasonsCollectionViewCell)?.configure(items: items) { [weak self] seasonNumber in
+                guard let self else { return }
+                router.showSeasonDetail(
+                    seriesID: seriesID,
+                    seasonNumber: seasonNumber
+                )
+            }
             return cell
 
         case .recommendations(let items):

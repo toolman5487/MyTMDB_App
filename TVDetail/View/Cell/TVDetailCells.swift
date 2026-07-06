@@ -837,6 +837,7 @@ final class TVDetailSeasonsCollectionViewCell: BaseNestedCollectionViewCell {
     }
 
     private var items: [TVDetailSeasonItem] = []
+    private var onSeasonSelected: ((Int) -> Void)?
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -864,11 +865,16 @@ final class TVDetailSeasonsCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func resetForReuse() {
         items = []
+        onSeasonSelected = nil
         collectionView.reloadData()
     }
 
-    func configure(items: [TVDetailSeasonItem]) {
+    func configure(
+        items: [TVDetailSeasonItem],
+        onSeasonSelected: @escaping (Int) -> Void
+    ) {
         self.items = items
+        self.onSeasonSelected = onSeasonSelected
         collectionView.reloadData()
     }
 }
@@ -890,6 +896,11 @@ extension TVDetailSeasonsCollectionViewCell: UICollectionViewDataSource, UIColle
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard items.indices.contains(indexPath.item) else { return }
+        onSeasonSelected?(items[indexPath.item].seasonNumber)
     }
 }
 
