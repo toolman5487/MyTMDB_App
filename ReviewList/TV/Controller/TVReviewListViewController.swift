@@ -20,7 +20,7 @@ final class TVReviewListViewController: ScrollTrackingBaseViewController {
     private var hasNextPage = false
     private var isLoadingNextPage = false
     private var loadTask: Task<Void, Never>?
-    private var loadNextPageTask: Task<Void, Never>?
+    private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - Initialization
 
@@ -48,7 +48,6 @@ final class TVReviewListViewController: ScrollTrackingBaseViewController {
 
     deinit {
         loadTask?.cancel()
-        loadNextPageTask?.cancel()
     }
 
     // MARK: - Layout
@@ -111,6 +110,7 @@ final class TVReviewListViewController: ScrollTrackingBaseViewController {
 
     private func loadReviews() {
         loadTask?.cancel()
+        paginationTaskController.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
@@ -188,7 +188,7 @@ final class TVReviewListViewController: ScrollTrackingBaseViewController {
     private func loadNextPageIfNeeded(for indexPath: IndexPath) {
         guard hasNextPage else { return }
         guard !isLoadingNextPage else { return }
-        guard loadNextPageTask == nil else { return }
+        guard !paginationTaskController.isRunning else { return }
 
         let thresholdIndex = max(reviews.count - Layout.paginationThreshold, 0)
         guard indexPath.item >= thresholdIndex else { return }
@@ -196,14 +196,11 @@ final class TVReviewListViewController: ScrollTrackingBaseViewController {
 
         render(state: viewModel.state)
 
-        loadNextPageTask = Task(priority: .utility) { [weak self] in
+        paginationTaskController.run { [weak self] in
             guard let self else { return }
 
             await viewModel.loadNextPage(seriesID: seriesID)
-
-            guard !Task.isCancelled else { return }
             render(state: viewModel.state)
-            loadNextPageTask = nil
         }
     }
 

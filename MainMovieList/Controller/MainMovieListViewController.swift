@@ -29,8 +29,7 @@ final class MainMovieListViewController: MainBaseViewController {
     private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
     private var filterSelectionTask: Task<Void, Never>?
-    private var loadNextPageTask: Task<Void, Never>?
-    private var loadNextPageGeneration = 0
+    private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components
 
@@ -79,7 +78,6 @@ final class MainMovieListViewController: MainBaseViewController {
     deinit {
         loadTask?.cancel()
         filterSelectionTask?.cancel()
-        loadNextPageTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -475,7 +473,7 @@ private extension MainMovieListViewController {
 
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
         guard movies.indices.contains(indexPath.item) else { return }
-        guard loadNextPageTask == nil else { return }
+        guard !paginationTaskController.isRunning else { return }
 
         guard MovieGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
@@ -483,18 +481,9 @@ private extension MainMovieListViewController {
         ) else { return }
 
         let currentMovieID = movies[indexPath.item].id
-        loadNextPageGeneration += 1
-        let generation = loadNextPageGeneration
 
-        loadNextPageTask = Task(priority: .utility) { [weak self] in
+        paginationTaskController.run { [weak self] in
             guard let self else { return }
-            defer {
-                if loadNextPageGeneration == generation {
-                    loadNextPageTask = nil
-                }
-            }
-
-            guard !Task.isCancelled, loadNextPageGeneration == generation else { return }
 
             switch viewModel.state {
             case .loaded:
@@ -503,15 +492,11 @@ private extension MainMovieListViewController {
             case .idle, .loading, .refreshing, .empty, .failed:
                 break
             }
-
-            guard !Task.isCancelled, loadNextPageGeneration == generation else { return }
         }
     }
 
     func cancelLoadNextPageTask() {
-        loadNextPageGeneration += 1
-        loadNextPageTask?.cancel()
-        loadNextPageTask = nil
+        paginationTaskController.cancel()
     }
 
     func renderUnavailableListState(

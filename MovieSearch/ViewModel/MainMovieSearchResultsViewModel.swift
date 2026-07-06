@@ -65,6 +65,8 @@ final class MainMovieSearchResultsViewModel {
 
         do {
             let page = try await service.searchMovies(keyword: trimmedKeyword, page: 1)
+            guard !Task.isCancelled else { return }
+
             let content = makeSearchContent(
                 keyword: page.keyword,
                 movies: page.movies.map(MovieGridMovieItem.init(movie:)),
@@ -75,6 +77,7 @@ final class MainMovieSearchResultsViewModel {
             )
             state = content.movies.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
+            guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
         }
     }
@@ -95,14 +98,25 @@ final class MainMovieSearchResultsViewModel {
                 page: content.currentPage + 1
             )
 
+            guard !Task.isCancelled else { return }
+
             guard case .results(let currentContent) = state,
-                  currentContent.keyword == content.keyword else {
+                  currentContent.keyword == content.keyword,
+                  currentContent.currentPage == content.currentPage else {
                 return
             }
 
             state = .results(currentContent.appending(page: nextPage))
         } catch {
-            state = .results(content.updatingLoadingNextPage(false))
+            guard !Task.isCancelled else { return }
+
+            guard case .results(let currentContent) = state,
+                  currentContent.keyword == content.keyword,
+                  currentContent.currentPage == content.currentPage else {
+                return
+            }
+
+            state = .results(currentContent.updatingLoadingNextPage(false))
         }
     }
 

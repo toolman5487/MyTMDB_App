@@ -46,15 +46,20 @@ final class MainMovieListViewModel {
 
         do {
             let genres = try await service.fetchGenres()
+            guard !Task.isCancelled else { return }
+
             guard let selectedGenre = genres.first else {
                 state = .empty
                 return
             }
 
             let page = try await service.fetchMovies(genreID: selectedGenre.id, page: 1)
+            guard !Task.isCancelled else { return }
+
             self.genres = genres
             state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
         } catch {
+            guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
         }
     }
@@ -66,8 +71,11 @@ final class MainMovieListViewModel {
 
         do {
             let page = try await service.fetchMovies(genreID: selectedGenre.id, page: 1)
+            guard !Task.isCancelled else { return }
+
             state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
         } catch {
+            guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
         }
     }
@@ -88,14 +96,25 @@ final class MainMovieListViewModel {
                 page: content.currentPage + 1
             )
 
+            guard !Task.isCancelled else { return }
+
             guard case .loaded(let currentContent) = state,
-                  currentContent.selectedGenre.id == content.selectedGenre.id else {
+                  currentContent.selectedGenre.id == content.selectedGenre.id,
+                  currentContent.currentPage == content.currentPage else {
                 return
             }
 
             state = .loaded(currentContent.appending(page: nextPage))
         } catch {
-            state = .loaded(content.updatingLoadingNextPage(false))
+            guard !Task.isCancelled else { return }
+
+            guard case .loaded(let currentContent) = state,
+                  currentContent.selectedGenre.id == content.selectedGenre.id,
+                  currentContent.currentPage == content.currentPage else {
+                return
+            }
+
+            state = .loaded(currentContent.updatingLoadingNextPage(false))
         }
     }
 

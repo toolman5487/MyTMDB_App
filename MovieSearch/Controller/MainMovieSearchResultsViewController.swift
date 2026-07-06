@@ -24,8 +24,7 @@ final class MainMovieSearchResultsViewController: BaseViewController {
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
     private var searchTask: Task<Void, Never>?
-    private var loadNextPageTask: Task<Void, Never>?
-    private var loadNextPageGeneration = 0
+    private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components
 
@@ -67,7 +66,6 @@ final class MainMovieSearchResultsViewController: BaseViewController {
 
     deinit {
         searchTask?.cancel()
-        loadNextPageTask?.cancel()
     }
 
     // MARK: - Template Methods
@@ -284,7 +282,7 @@ private extension MainMovieSearchResultsViewController {
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
         guard movies.indices.contains(indexPath.item) else { return }
         guard canLoadNextPage, !isLoadingNextPage else { return }
-        guard loadNextPageTask == nil else { return }
+        guard !paginationTaskController.isRunning else { return }
 
         guard MovieGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
@@ -292,28 +290,17 @@ private extension MainMovieSearchResultsViewController {
         ) else { return }
 
         let currentMovieID = movies[indexPath.item].id
-        loadNextPageGeneration += 1
-        let generation = loadNextPageGeneration
 
-        loadNextPageTask = Task(priority: .utility) { [weak self] in
+        paginationTaskController.run { [weak self] in
             guard let self else { return }
-            defer {
-                if loadNextPageGeneration == generation {
-                    loadNextPageTask = nil
-                }
-            }
 
             await viewModel.loadNextPageIfNeeded(currentMovieID: currentMovieID)
-
-            guard !Task.isCancelled, loadNextPageGeneration == generation else { return }
             renderCurrentState()
         }
     }
 
     func cancelLoadNextPageTask() {
-        loadNextPageGeneration += 1
-        loadNextPageTask?.cancel()
-        loadNextPageTask = nil
+        paginationTaskController.cancel()
     }
 
     func updateSortBarButtonVisibility(for state: MainMovieSearchResultsViewState) {

@@ -208,8 +208,12 @@ final class NetworkService: NetworkServicing {
 
         do {
             (data, response) = try await session.data(for: urlRequest)
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch let error as URLError {
             throw NetworkError.requestFailed(error.code)
+        } catch is CancellationError {
+            throw CancellationError()
         }
 
         guard let httpResponse = response as? HTTPURLResponse else {
