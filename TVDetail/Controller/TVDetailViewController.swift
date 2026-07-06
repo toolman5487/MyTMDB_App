@@ -17,7 +17,10 @@ final class TVDetailViewController: DetailBaseViewController {
     private let viewModel: TVDetailViewModel
     private var sections: [TVDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
-    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+    private lazy var router: TVDetailRouting = TVDetailRouter(
+        sourceViewController: self,
+        seriesID: seriesID
+    )
 
     // MARK: - Initialization
 
@@ -181,8 +184,7 @@ final class TVDetailViewController: DetailBaseViewController {
     // MARK: - Actions
 
     @objc private func handleReviewButtonTapped() {
-        let viewController = TVReviewListViewController(seriesID: seriesID)
-        navigationController?.pushViewController(viewController, animated: true)
+        router.showReviewList()
     }
 
     private func detailNavigationTitle(from sections: [TVDetailSectionItem]) -> String? {
@@ -268,11 +270,7 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailSeasonsCollectionViewCell)?.configure(items: items) { [weak self] seasonNumber in
-                guard let self else { return }
-                router.showSeasonDetail(
-                    seriesID: seriesID,
-                    seasonNumber: seasonNumber
-                )
+                self?.router.showSeasonDetail(seasonNumber: seasonNumber)
             }
             return cell
 
