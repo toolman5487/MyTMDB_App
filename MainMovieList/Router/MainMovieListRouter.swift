@@ -12,6 +12,7 @@ import UIKit
 @MainActor
 protocol MainMovieListRouting {
     func showMovieDetail(movieID: Int)
+    func showMovieDetailFromSearch(movieID: Int)
     func showGenrePageSheet(
         filters: [MainMovieGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
@@ -29,6 +30,10 @@ final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
     func showMovieDetail(movieID: Int) {
         guard movieID > 0 else { return }
         show(MovieDetailViewController(movieID: movieID), using: .push)
+    }
+
+    func showMovieDetailFromSearch(movieID: Int) {
+        showMovieDetail(movieID: movieID)
     }
 
     // MARK: - Page Sheet

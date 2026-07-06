@@ -177,6 +177,18 @@
 		15BAEBA52FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */; };
 		15BAEBA62FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */; };
 		15BAEBA72FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */; };
+		15BAEBAA2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */; };
+		15BAEBAB2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */; };
+		15BAEBAC2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */; };
+		15BAEBB52FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */; };
+		15BAEBB62FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */; };
+		15BAEBB72FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */; };
+		15BAEBAD2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */; };
+		15BAEBAE2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */; };
+		15BAEBAF2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */; };
+		15BAEBB12FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */; };
+		15BAEBB22FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */; };
+		15BAEBB32FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */; };
 		15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99CD2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
@@ -337,6 +349,10 @@
 		15BAEB972FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieGenrePageSheetViewController.swift; sourceTree = "<group>"; };
 		15BAEBA02FF76000006B0E15 /* MainMovieListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieListRouter.swift; sourceTree = "<group>"; };
 		15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieListMovieCollectionViewCell.swift; sourceTree = "<group>"; };
+		15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchTypingLoadingView.swift; sourceTree = "<group>"; };
+		15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGridLayoutMetrics.swift; sourceTree = "<group>"; };
+		15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchResultsViewController.swift; sourceTree = "<group>"; };
+		15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchResultsViewModel.swift; sourceTree = "<group>"; };
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
 		15CF99DD2FF620000041F4CC /* DetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
@@ -620,6 +636,40 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
+		157C4E572FFB639E0044BD8E /* MovieSearch */ = {
+			isa = PBXGroup;
+			children = (
+				157C4E582FFB639E0044BD8E /* Controller */,
+				157C4E592FFB639E0044BD8E /* View */,
+				157C4E5A2FFB639E0044BD8E /* ViewModel */,
+			);
+			path = MovieSearch;
+			sourceTree = "<group>";
+		};
+		157C4E582FFB639E0044BD8E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		157C4E592FFB639E0044BD8E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		157C4E5A2FFB639E0044BD8E /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		158B2E142FF75F9400E899D2 /* Genre */ = {
 			isa = PBXGroup;
 			children = (
@@ -637,6 +687,7 @@
 				15BAEB622FF658F1006B0E15 /* MainMovieList */,
 				15A94F672FF26FCE00FCBB0F /* MainTabBar */,
 				15CF99C72FF36FEC0041F4CC /* MovieDetail */,
+				157C4E572FFB639E0044BD8E /* MovieSearch */,
 				1598AA4B2DC4B69F005E972C /* MyTMDB_App */,
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
 				1598AA6C2DC4B6A1005E972C /* MyTMDB_AppUITests */,
@@ -997,6 +1048,7 @@
 			children = (
 				15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */,
 				15BAEB902FF73000006B0E15 /* MainMovieListFilterHeaderView.swift */,
+				15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1436,13 +1488,17 @@
 				15D196E42FF3900000545A85 /* AppLocalization.swift in Sources */,
 				1598AB262DC867DA005E972C /* AccountModel.swift in Sources */,
 				15BAEB692FF65A6C006B0E15 /* MainMovieListViewController.swift in Sources */,
+				15BAEBAD2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */,
 				15BAEB842FF72000006B0E15 /* MainMovieListModels.swift in Sources */,
 				15BAEB872FF72000006B0E15 /* MainMovieListService.swift in Sources */,
 				15BAEB8A2FF72000006B0E15 /* MainMovieListViewModel.swift in Sources */,
+				15BAEBB12FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */,
 				15BAEB912FF73000006B0E15 /* MainMovieListFilterHeaderView.swift in Sources */,
 				15BAEB942FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */,
 				15BAEBA12FF76000006B0E15 /* MainMovieListRouter.swift in Sources */,
 				15BAEBA52FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */,
+				15BAEBAA2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */,
+				15BAEBB52FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */,
 				15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
@@ -1506,13 +1562,17 @@
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15BAEB6A2FF65A6C006B0E15 /* MainMovieListViewController.swift in Sources */,
+				15BAEBAE2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */,
 				15BAEB852FF72000006B0E15 /* MainMovieListModels.swift in Sources */,
 				15BAEB882FF72000006B0E15 /* MainMovieListService.swift in Sources */,
 				15BAEB8B2FF72000006B0E15 /* MainMovieListViewModel.swift in Sources */,
+				15BAEBB22FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */,
 				15BAEB922FF73000006B0E15 /* MainMovieListFilterHeaderView.swift in Sources */,
 				15BAEB952FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */,
 				15BAEBA22FF76000006B0E15 /* MainMovieListRouter.swift in Sources */,
 				15BAEBA62FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */,
+				15BAEBAB2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */,
+				15BAEBB62FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
 				15CF9A022FF380000041F4CC /* MovieDetailModels.swift in Sources */,
@@ -1590,13 +1650,17 @@
 				152BE7652FF56000006681A5 /* MovieDetailReviewModels.swift in Sources */,
 				152BE7682FF56000006681A5 /* MovieDetailReviewService.swift in Sources */,
 				15BAEB6B2FF65A6C006B0E15 /* MainMovieListViewController.swift in Sources */,
+				15BAEBAF2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */,
 				15BAEB862FF72000006B0E15 /* MainMovieListModels.swift in Sources */,
 				15BAEB892FF72000006B0E15 /* MainMovieListService.swift in Sources */,
 				15BAEB8C2FF72000006B0E15 /* MainMovieListViewModel.swift in Sources */,
+				15BAEBB32FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */,
 				15BAEB932FF73000006B0E15 /* MainMovieListFilterHeaderView.swift in Sources */,
 				15BAEB962FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */,
 				15BAEBA32FF76000006B0E15 /* MainMovieListRouter.swift in Sources */,
 				15BAEBA72FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */,
+				15BAEBAC2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */,
+				15BAEBB72FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */,
 				152BE76B2FF56000006681A5 /* MovieDetailReviewViewModel.swift in Sources */,
 				15BAEAEB2FF64EBA006B0E15 /* TVReviewListViewController.swift in Sources */,
 				15BAEAF42FF65000006B0E15 /* TVDetailReviewModels.swift in Sources */,

@@ -14,7 +14,6 @@ nonisolated enum MainMovieListViewState: Equatable {
     case idle
     case loading
     case loaded(MainMovieListContent)
-    case searchResults(MainMovieSearchContent)
     case empty
     case failed(ErrorMessage)
 }
@@ -31,8 +30,7 @@ final class MainMovieListViewModel {
 
     private let service: MainMovieListServicing
     private var genres: [MainMovieGenre] = []
-    private var searchResultItems: [MainMovieListMovieItem] = []
-    private var selectedSearchFilter: MainMovieSearchFilter = .relevance
+    private var selectedSortOption: MainMovieListSortOption?
 
     // MARK: - Initialization
 
@@ -44,7 +42,6 @@ final class MainMovieListViewModel {
 
     func loadInitialContent() async {
         state = .loading
-        resetSearchContext()
 
         do {
             let genres = try await service.fetchGenres()
@@ -63,7 +60,6 @@ final class MainMovieListViewModel {
 
     func selectGenre(id: Int) async {
         guard let selectedGenre = genres.first(where: { $0.id == id }) else { return }
-        resetSearchContext()
 
         do {
             let page = try await service.fetchMovies(genreID: selectedGenre.id, page: 1)
@@ -71,52 +67,6 @@ final class MainMovieListViewModel {
         } catch {
             state = .failed(error.errorMessage)
         }
-    }
-
-    func searchMovies(keyword: String) async {
-        let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedKeyword.isEmpty else {
-            await loadInitialContent()
-            return
-        }
-
-        state = .loading
-        selectedSearchFilter = .relevance
-        searchResultItems = []
-
-        do {
-            let page = try await service.searchMovies(keyword: trimmedKeyword, page: 1)
-            searchResultItems = page.movies.map(MainMovieListMovieItem.init(movie:))
-            let content = makeSearchContent(
-                keyword: page.keyword,
-                movies: searchResultItems,
-                currentPage: page.page,
-                totalPages: page.totalPages,
-                totalResults: page.totalResults,
-                isLoadingNextPage: false
-            )
-            state = content.movies.isEmpty ? .empty : .searchResults(content)
-        } catch {
-            state = .failed(error.errorMessage)
-        }
-    }
-
-    func selectSearchFilter(_ filter: MainMovieSearchFilter) {
-        selectedSearchFilter = filter
-
-        guard case .searchResults(let content) = state else { return }
-
-        state = .searchResults(
-            makeSearchContent(
-                keyword: content.keyword,
-                movies: searchResultItems,
-                currentPage: content.currentPage,
-                totalPages: content.totalPages,
-                totalResults: content.totalResults,
-                isLoadingNextPage: content.isLoadingNextPage
-            )
-        )
     }
 
     func loadNextPageIfNeeded(currentMovieID: Int) async {
@@ -146,40 +96,15 @@ final class MainMovieListViewModel {
         }
     }
 
-    func loadNextSearchPageIfNeeded(currentMovieID: Int) async {
-        guard case .searchResults(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentMovieID: currentMovieID, movies: content.movies) else {
-            return
-        }
+    func selectSortOption(_ option: MainMovieListSortOption) {
+        selectedSortOption = option
 
-        state = .searchResults(content.updatingLoadingNextPage(true))
+        switch state {
+        case .loaded(let content):
+            state = .loaded(content.sorting(by: option))
 
-        do {
-            let nextPage = try await service.searchMovies(
-                keyword: content.keyword,
-                page: content.currentPage + 1
-            )
-
-            guard case .searchResults(let currentContent) = state,
-                  currentContent.keyword == content.keyword else {
-                return
-            }
-
-            searchResultItems.append(contentsOf: nextPage.movies.map(MainMovieListMovieItem.init(movie:)))
-            state = .searchResults(
-                makeSearchContent(
-                    keyword: currentContent.keyword,
-                    movies: searchResultItems,
-                    currentPage: nextPage.page,
-                    totalPages: nextPage.totalPages,
-                    totalResults: nextPage.totalResults,
-                    isLoadingNextPage: false
-                )
-            )
-        } catch {
-            state = .searchResults(content.updatingLoadingNextPage(false))
+        case .idle, .loading, .empty, .failed:
+            break
         }
     }
 
@@ -189,7 +114,9 @@ final class MainMovieListViewModel {
         selectedGenre: MainMovieGenre,
         page: MainMovieListMoviePage
     ) -> MainMovieListContent {
-        MainMovieListContent(
+        let movies = page.movies.map(MainMovieListMovieItem.init(movie:))
+
+        return MainMovieListContent(
             genres: genres.map { genre in
                 MainMovieGenreItem(
                     genre: genre,
@@ -200,36 +127,13 @@ final class MainMovieListViewModel {
                 genre: selectedGenre,
                 isSelected: true
             ),
-            movies: page.movies.map(MainMovieListMovieItem.init(movie:)),
+            movies: selectedSortOption?.sorted(movies) ?? movies,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
-            isLoadingNextPage: false
+            isLoadingNextPage: false,
+            selectedSortOption: selectedSortOption
         )
-    }
-
-    private func makeSearchContent(
-        keyword: String,
-        movies: [MainMovieListMovieItem],
-        currentPage: Int,
-        totalPages: Int,
-        totalResults: Int,
-        isLoadingNextPage: Bool
-    ) -> MainMovieSearchContent {
-        MainMovieSearchContent(
-            keyword: keyword,
-            movies: selectedSearchFilter.sorted(movies),
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoadingNextPage,
-            selectedFilter: selectedSearchFilter
-        )
-    }
-
-    private func resetSearchContext() {
-        searchResultItems = []
-        selectedSearchFilter = .relevance
     }
 
     private func shouldLoadNextPage(

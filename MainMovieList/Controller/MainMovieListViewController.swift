@@ -16,12 +16,6 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private enum Layout {
         static let filterHeaderHeight: CGFloat = 56
-        static let horizontalInset: CGFloat = 16
-        static let itemSpacing: CGFloat = 12
-        static let movieColumnCount: CGFloat = 3
-        static let moviePosterAspectRatio: CGFloat = 1.5
-        static let movieTextHeight: CGFloat = 40
-        static let paginationThreshold = 4
     }
 
     // MARK: - Properties
@@ -33,42 +27,40 @@ final class MainMovieListViewController: MainBaseViewController {
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
-    private var searchTask: Task<Void, Never>?
     private var filterSelectionTask: Task<Void, Never>?
     private var loadNextPageTask: Task<Void, Never>?
     private var loadNextPageGeneration = 0
+    private var isRoutingSearchResult = false
 
     // MARK: - UI Components
 
+    private lazy var searchResultsViewController: MainMovieSearchResultsViewController = {
+        let viewController = MainMovieSearchResultsViewController()
+        viewController.onMovieSelected = { [weak self] movieID in
+            self?.showSearchResultMovieDetail(movieID: movieID)
+        }
+        viewController.onSortBarButtonItemChanged = { [weak self] barButtonItem in
+            self?.updateSearchSortBarButtonItem(barButtonItem)
+        }
+        return viewController
+    }()
+
     private lazy var searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: nil)
+        let searchController = UISearchController(searchResultsController: searchResultsViewController)
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "搜尋電影"
-        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = true
         return searchController
     }()
 
-    private lazy var searchFilterBarButtonItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(
-            image: UIImage(systemName: "line.3.horizontal.decrease.circle"),
-            style: .plain,
-            target: nil,
-            action: nil
+    private lazy var sortBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "arrow.up.arrow.down"),
+            menu: makeSortMenu(selectedSortOption: nil)
         )
-        item.accessibilityLabel = "搜尋篩選"
-        item.tintColor = ThemeColor.highlight
-        return item
-    }()
-
-    private lazy var searchFilterButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.frame = CGRect(x: 0, y: 0, width: 36, height: 36)
-        button.setImage(UIImage(systemName: "list.bullet"), for: .normal)
-        button.tintColor = ThemeColor.highlight
-        button.accessibilityLabel = "搜尋篩選"
-        button.showsMenuAsPrimaryAction = true
-        return button
+        barButtonItem.tintColor = ThemeColor.textPrimary
+        return barButtonItem
     }()
 
     // MARK: - Initialization
@@ -85,7 +77,6 @@ final class MainMovieListViewController: MainBaseViewController {
 
     deinit {
         loadTask?.cancel()
-        searchTask?.cancel()
         filterSelectionTask?.cancel()
         loadNextPageTask?.cancel()
     }
@@ -113,7 +104,7 @@ final class MainMovieListViewController: MainBaseViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = ThemeColor.background
-        appearance.shadowColor = nil
+        appearance.shadowColor = ThemeColor.separator
         appearance.titleTextAttributes = titleAttributes
         appearance.largeTitleTextAttributes = titleAttributes
 
@@ -131,8 +122,8 @@ final class MainMovieListViewController: MainBaseViewController {
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true
         collectionViewFlowLayout.sectionInset = .zero
-        collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
-        collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
+        collectionViewFlowLayout.minimumLineSpacing = MovieGridLayoutMetrics.itemSpacing
+        collectionViewFlowLayout.minimumInteritemSpacing = MovieGridLayoutMetrics.itemSpacing
         collectionView.register(
             MainMovieListFilterHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -147,7 +138,6 @@ final class MainMovieListViewController: MainBaseViewController {
     private func configureSearchBar() {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
-        searchController.searchBar.searchTextField.rightViewMode = .never
         definesPresentationContext = true
     }
 
@@ -182,30 +172,41 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private func render(state: MainMovieListViewState) {
         switch state {
-        case .idle, .loading:
+        case .idle:
             filters = []
             movies = []
             isFilterSkeletonVisible = true
-            updateSearchFilterButton(selectedFilter: nil)
+            collectionView.backgroundView = nil
+            hideSortBarButtonItem()
 
-        case .empty, .failed:
+        case .loading:
             filters = []
             movies = []
-            isFilterSkeletonVisible = false
-            updateSearchFilterButton(selectedFilter: nil)
+            isFilterSkeletonVisible = true
+            collectionView.backgroundView = nil
+            hideSortBarButtonItem()
 
-        case .searchResults(let content):
-            filters = []
-            movies = content.movies
-            isFilterSkeletonVisible = false
-            updateSearchFilterButton(selectedFilter: content.selectedFilter)
+        case .empty:
+            renderUnavailableListState(
+                title: "沒有電影資料",
+                message: "目前沒有可顯示的電影。"
+            )
+            hideSortBarButtonItem()
+
+        case .failed(let errorMessage):
+            renderUnavailableListState(
+                title: "載入失敗",
+                message: errorMessage.message
+            )
+            hideSortBarButtonItem()
 
         case .loaded(let content):
             filters = content.genres
             movies = content.movies
             isFilterSkeletonVisible = false
             navigationItem.title = "\(content.selectedGenre.name)電影"
-            updateSearchFilterButton(selectedFilter: nil)
+            collectionView.backgroundView = nil
+            showSortBarButtonItem(selectedSortOption: content.selectedSortOption)
         }
 
         collectionView.reloadData()
@@ -214,20 +215,124 @@ final class MainMovieListViewController: MainBaseViewController {
     // MARK: - Search
 
     private func submitSearch(keyword: String?) {
-        searchTask?.cancel()
         cancelLoadNextPageTask()
-        searchTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-            await viewModel.searchMovies(keyword: keyword ?? "")
+        let trimmedKeyword = (keyword ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
+        guard !trimmedKeyword.isEmpty else {
+            searchResultsViewController.reset()
+            hideSortBarButtonItem()
+            return
         }
+
+        searchResultsViewController.submitSearch(keyword: trimmedKeyword)
     }
 
-    private func selectSearchFilter(_ filter: MainMovieSearchFilter) {
-        viewModel.selectSearchFilter(filter)
+    private func renderSearchTypingLoadingIfNeeded(keyword: String) {
+        guard !keyword.isEmpty else { return }
+        searchResultsViewController.showTypingLoading()
+        hideSortBarButtonItem()
+    }
+
+    private func showSortBarButtonItem(selectedSortOption: MainMovieListSortOption?) {
+        sortBarButtonItem.menu = makeSortMenu(selectedSortOption: selectedSortOption)
+        navigationItem.rightBarButtonItem = sortBarButtonItem
+    }
+
+    private func hideSortBarButtonItem() {
+        navigationItem.rightBarButtonItem = nil
+    }
+
+    private func makeSortMenu(selectedSortOption: MainMovieListSortOption?) -> UIMenu {
+        let actions = MainMovieListSortOption.allCases.map { option in
+            UIAction(
+                title: option.title,
+                state: selectedSortOption == option ? .on : .off
+            ) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    self?.selectSortOption(option)
+                }
+            }
+        }
+
+        return UIMenu(
+            title: "篩選排序",
+            options: .singleSelection,
+            children: actions
+        )
+    }
+
+    private func selectSortOption(_ option: MainMovieListSortOption) {
+        viewModel.selectSortOption(option)
         render(state: viewModel.state)
+    }
+}
+
+// MARK: - MainMovieListMessageView
+
+@MainActor
+private final class MainMovieListMessageView: UIView {
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+
+    private let messageLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            messageLabel
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 8
+        return stackView
+    }()
+
+    init(
+        title: String,
+        message: String
+    ) {
+        super.init(frame: .zero)
+        titleLabel.text = title
+        messageLabel.text = message
+        setupHierarchy()
+        setupConstraints()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupHierarchy()
+        setupConstraints()
+    }
+
+    private func setupHierarchy() {
+        addSubview(stackView)
+    }
+
+    private func setupConstraints() {
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 24),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -24)
+        ])
     }
 }
 
@@ -256,7 +361,7 @@ extension MainMovieListViewController: UICollectionViewDataSource {
            movies.indices.contains(indexPath.item) {
             cell.configure(
                 with: movies[indexPath.item],
-                imageHeight: moviePosterHeight(in: collectionView)
+                imageHeight: MovieGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
             )
         }
 
@@ -310,8 +415,10 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard movies.indices.contains(indexPath.item) else { return }
+        let movieID = movies[indexPath.item].id
+
         collectionView.deselectItem(at: indexPath, animated: true)
-        router.showMovieDetail(movieID: movies[indexPath.item].id)
+        showMovieDetail(movieID: movieID)
     }
 
     func collectionView(
@@ -338,12 +445,7 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let itemWidth = movieItemWidth(in: collectionView)
-
-        return CGSize(
-            width: itemWidth,
-            height: moviePosterHeight(in: collectionView) + Layout.movieTextHeight
-        )
+        MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
     }
 
     func collectionView(
@@ -355,9 +457,9 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
 
         return UIEdgeInsets(
             top: 12,
-            left: Layout.horizontalInset,
+            left: MovieGridLayoutMetrics.horizontalInset,
             bottom: 24,
-            right: Layout.horizontalInset
+            right: MovieGridLayoutMetrics.horizontalInset
         )
     }
 
@@ -366,7 +468,7 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        Layout.itemSpacing
+        MovieGridLayoutMetrics.itemSpacing
     }
 
     func collectionView(
@@ -374,7 +476,7 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
-        Layout.itemSpacing
+        MovieGridLayoutMetrics.itemSpacing
     }
 }
 
@@ -382,7 +484,19 @@ extension MainMovieListViewController: UICollectionViewDelegateFlowLayout {
 
 extension MainMovieListViewController: UISearchResultsUpdating {
 
-    func updateSearchResults(for searchController: UISearchController) {}
+    func updateSearchResults(for searchController: UISearchController) {
+        guard !isRoutingSearchResult else { return }
+
+        let keyword = (searchController.searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !keyword.isEmpty else {
+            searchResultsViewController.reset()
+            hideSortBarButtonItem()
+            return
+        }
+
+        renderSearchTypingLoadingIfNeeded(keyword: keyword)
+    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -395,7 +509,8 @@ extension MainMovieListViewController: UISearchBarDelegate {
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        submitSearch(keyword: nil)
+        guard !isRoutingSearchResult else { return }
+        restoreListAfterSearch()
     }
 }
 
@@ -411,24 +526,14 @@ private extension MainMovieListViewController {
         isFilterSkeletonVisible || !filters.isEmpty
     }
 
-    func movieItemWidth(in collectionView: UICollectionView) -> CGFloat {
-        let totalHorizontalInsets = Layout.horizontalInset * 2
-        let totalItemSpacing = Layout.itemSpacing * (Layout.movieColumnCount - 1)
-        let availableWidth = collectionView.bounds.width - totalHorizontalInsets - totalItemSpacing
-
-        return floor(max(availableWidth, 0) / Layout.movieColumnCount)
-    }
-
-    func moviePosterHeight(in collectionView: UICollectionView) -> CGFloat {
-        movieItemWidth(in: collectionView) * Layout.moviePosterAspectRatio
-    }
-
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
         guard movies.indices.contains(indexPath.item) else { return }
         guard loadNextPageTask == nil else { return }
 
-        let thresholdIndex = max(movies.count - Layout.paginationThreshold, 0)
-        guard indexPath.item >= thresholdIndex else { return }
+        guard MovieGridLayoutMetrics.shouldLoadNextPage(
+            currentIndex: indexPath.item,
+            itemCount: movies.count
+        ) else { return }
 
         let currentMovieID = movies[indexPath.item].id
         loadNextPageGeneration += 1
@@ -446,9 +551,6 @@ private extension MainMovieListViewController {
             case .loaded:
                 await viewModel.loadNextPageIfNeeded(currentMovieID: currentMovieID)
 
-            case .searchResults:
-                await viewModel.loadNextSearchPageIfNeeded(currentMovieID: currentMovieID)
-
             case .idle, .loading, .empty, .failed:
                 break
             }
@@ -464,33 +566,66 @@ private extension MainMovieListViewController {
         loadNextPageTask = nil
     }
 
-    func updateSearchFilterButton(selectedFilter: MainMovieSearchFilter?) {
-        guard let selectedFilter else {
-            navigationItem.rightBarButtonItem = nil
-            searchController.searchBar.searchTextField.rightView = nil
-            searchController.searchBar.searchTextField.rightViewMode = .never
+    func renderUnavailableListState(
+        title: String,
+        message: String
+    ) {
+        filters = []
+        movies = []
+        isFilterSkeletonVisible = false
+        collectionView.backgroundView = MainMovieListMessageView(
+            title: title,
+            message: message
+        )
+    }
+
+    func showMovieDetail(movieID: Int) {
+        router.showMovieDetail(movieID: movieID)
+    }
+
+    func showSearchResultMovieDetail(movieID: Int) {
+        isRoutingSearchResult = true
+        searchController.searchBar.resignFirstResponder()
+
+        let routeToMovieDetail = { [weak self] in
+            guard let self else { return }
+            isRoutingSearchResult = false
+            searchResultsViewController.reset()
+            render(state: viewModel.state)
+            router.showMovieDetailFromSearch(movieID: movieID)
+        }
+
+        guard searchController.isActive else {
+            routeToMovieDetail()
             return
         }
 
-        let menu = makeSearchFilterMenu(selectedFilter: selectedFilter)
-        searchFilterBarButtonItem.menu = menu
-        searchFilterButton.menu = menu
-        searchController.searchBar.searchTextField.rightView = searchFilterButton
-        searchController.searchBar.searchTextField.rightViewMode = .always
-        navigationItem.rightBarButtonItem = searchFilterBarButtonItem
-    }
+        searchController.isActive = false
 
-    func makeSearchFilterMenu(selectedFilter: MainMovieSearchFilter) -> UIMenu {
-        let actions = MainMovieSearchFilter.allCases.map { filter in
-            UIAction(
-                title: filter.title,
-                state: filter == selectedFilter ? .on : .off
-            ) { [weak self] _ in
-                self?.selectSearchFilter(filter)
+        if let transitionCoordinator = transitionCoordinator ?? searchController.transitionCoordinator {
+            transitionCoordinator.animate(alongsideTransition: nil) { _ in
+                routeToMovieDetail()
+            }
+        } else {
+            Task { @MainActor in
+                routeToMovieDetail()
             }
         }
+    }
 
-        return UIMenu(title: "搜尋篩選", options: .singleSelection, children: actions)
+    func restoreListAfterSearch() {
+        searchResultsViewController.reset()
+        render(state: viewModel.state)
+    }
+
+    func updateSearchSortBarButtonItem(_ barButtonItem: UIBarButtonItem?) {
+        guard searchController.isActive else { return }
+
+        if let barButtonItem {
+            navigationItem.rightBarButtonItem = barButtonItem
+        } else {
+            hideSortBarButtonItem()
+        }
     }
 
     func presentFilterPageSheet() {
