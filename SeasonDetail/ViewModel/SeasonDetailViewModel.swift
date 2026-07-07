@@ -123,8 +123,6 @@ nonisolated struct SeasonDetailOverviewSectionItem: Sendable, Equatable {
 
 nonisolated enum SeasonDetailSectionBuilder {
 
-    private static let previewItemLimit = 12
-
     static func makeContent(content: SeasonDetailContent) -> SeasonDetailViewContent {
         let detail = SeasonDetailItem(detail: content.detail)
 
@@ -154,6 +152,7 @@ nonisolated enum SeasonDetailSectionBuilder {
 
         let episodes = content.detail.episodes
             .sorted { $0.episodeNumber < $1.episodeNumber }
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonEpisodeItem.init(episode:))
         if !episodes.isEmpty {
             sections.append(.episodes(episodes))
@@ -162,7 +161,7 @@ nonisolated enum SeasonDetailSectionBuilder {
         let videos = content.videos.results
             .filter { !$0.key.isEmpty }
             .sorted { videoPriority($0) < videoPriority($1) }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonVideoItem.init(video:))
         if !videos.isEmpty {
             sections.append(.videos(Array(videos)))
@@ -214,7 +213,7 @@ nonisolated enum SeasonDetailSectionBuilder {
     private static func makeCastItems(content: SeasonDetailContent) -> [SeasonCastItem] {
         let aggregateCast = content.aggregateCredits.cast
             .sorted { $0.order < $1.order }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonCastItem.init(aggregateCast:))
 
         if !aggregateCast.isEmpty {
@@ -224,7 +223,7 @@ nonisolated enum SeasonDetailSectionBuilder {
         return Array(
             content.credits.cast
                 .sorted { $0.order < $1.order }
-                .prefix(previewItemLimit)
+                .prefix(DetailSectionPreviewLimit.itemCount)
                 .map(SeasonCastItem.init(creditCast:))
         )
     }
@@ -238,7 +237,7 @@ nonisolated enum SeasonDetailSectionBuilder {
 
                 return lhs.name < rhs.name
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonCrewItem.init(aggregateCrew:))
 
         if !aggregateCrew.isEmpty {
@@ -254,7 +253,7 @@ nonisolated enum SeasonDetailSectionBuilder {
 
                     return lhs.name < rhs.name
                 }
-                .prefix(previewItemLimit)
+                .prefix(DetailSectionPreviewLimit.itemCount)
                 .map(SeasonCrewItem.init(creditCrew:))
         )
     }
@@ -262,15 +261,15 @@ nonisolated enum SeasonDetailSectionBuilder {
     private static func makeImageGalleryItem(images: TVImagesResponse) -> SeasonImageGalleryItem? {
         let posters = images.posters
             .filter { !$0.filePath.isEmpty }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonImageItem.init(image:))
         let backdrops = images.backdrops
             .filter { !$0.filePath.isEmpty }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonImageItem.init(image:))
         let logos = images.logos
             .filter { !$0.filePath.isEmpty }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonImageItem.init(image:))
 
         let item = SeasonImageGalleryItem(
@@ -295,7 +294,7 @@ nonisolated enum SeasonDetailSectionBuilder {
                     )
                 }
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map { $0 }
     }
 

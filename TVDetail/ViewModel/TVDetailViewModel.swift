@@ -101,8 +101,6 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
 
 nonisolated enum TVDetailSectionBuilder {
 
-    private static let previewItemLimit = 10
-
     static func makeSections(content: TVDetailContent) -> [TVDetailSectionItem] {
         let detailItem = TVDetailItem(detail: content.detail)
         var sections: [TVDetailSectionItem] = [
@@ -124,7 +122,7 @@ nonisolated enum TVDetailSectionBuilder {
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailVideoItem.init(video:))
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
@@ -136,7 +134,7 @@ nonisolated enum TVDetailSectionBuilder {
 
         let castItems = content.aggregateCredits.cast
             .sorted { $0.order < $1.order }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailCastItem.init(cast:))
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
@@ -144,14 +142,14 @@ nonisolated enum TVDetailSectionBuilder {
 
         let seasonItems = content.detail.seasons
             .sorted { $0.seasonNumber < $1.seasonNumber }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailSeasonItem.init(season:))
         if !seasonItems.isEmpty {
             sections.append(.seasons(Array(seasonItems)))
         }
 
         let recommendationItems = content.recommendations.results
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
@@ -180,10 +178,10 @@ nonisolated enum TVDetailSectionBuilder {
     private static func makeAttributes(detail: TVDetail) -> TVDetailAttributeSectionItem? {
         let genres = detail.genres.map(TVDetailAttributeItem.init(genre:))
         let productionCompanies = detail.productionCompanies
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailAttributeItem.init(productionCompany:))
         let networks = detail.networks
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailAttributeItem.init(network:))
         let section = TVDetailAttributeSectionItem(
             genres: genres,

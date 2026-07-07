@@ -9,6 +9,12 @@ import SDWebImage
 import SnapKit
 import UIKit
 
+// MARK: - DetailSectionPreviewLimit
+
+nonisolated enum DetailSectionPreviewLimit {
+    static let itemCount = 10
+}
+
 // MARK: - DetailImageTitleItem
 
 nonisolated struct DetailImageTitleItem: Sendable, Equatable, Identifiable {

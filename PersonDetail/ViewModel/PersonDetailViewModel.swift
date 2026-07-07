@@ -101,8 +101,6 @@ nonisolated enum PersonDetailSectionItem: Sendable, Equatable {
 
 nonisolated enum PersonDetailSectionBuilder {
 
-    private static let previewItemLimit = 10
-
     static func makeSections(content: PersonDetailContent) -> [PersonDetailSectionItem] {
         let detailItem = PersonDetailItem(detail: content.detail)
         var sections: [PersonDetailSectionItem] = [
@@ -123,7 +121,7 @@ nonisolated enum PersonDetailSectionBuilder {
             .sorted { lhs, rhs in
                 creditPriority(lhs) > creditPriority(rhs)
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(PersonDetailCreditItem.init(cast:))
         if !knownForItems.isEmpty {
             sections.append(.knownFor(Array(knownForItems)))
@@ -133,7 +131,7 @@ nonisolated enum PersonDetailSectionBuilder {
             .sorted { lhs, rhs in
                 creditPriority(lhs) > creditPriority(rhs)
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(PersonDetailCreditItem.init(crew:))
         if !crewItems.isEmpty {
             sections.append(.crew(Array(crewItems)))
@@ -144,7 +142,7 @@ nonisolated enum PersonDetailSectionBuilder {
             .sorted { lhs, rhs in
                 lhs.voteAverage > rhs.voteAverage
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(PersonDetailProfileImageItem.init(image:))
         if !profileImageItems.isEmpty {
             sections.append(.profileImages(Array(profileImageItems)))
@@ -153,7 +151,7 @@ nonisolated enum PersonDetailSectionBuilder {
         let aliasItems = content.detail.alsoKnownAs
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(PersonDetailAliasItem.init(name:))
         if !aliasItems.isEmpty {
             sections.append(.aliases(Array(aliasItems)))

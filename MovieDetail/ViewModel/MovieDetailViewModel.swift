@@ -97,8 +97,6 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
 nonisolated enum MovieDetailSectionBuilder {
 
-    private static let previewItemLimit = 10
-
     static func makeSections(content: MovieDetailContent) -> [MovieDetailSectionItem] {
         let detailItem = MovieDetailItem(detail: content.detail)
         var sections: [MovieDetailSectionItem] = [
@@ -120,7 +118,7 @@ nonisolated enum MovieDetailSectionBuilder {
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailVideoItem.init(video:))
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
@@ -132,14 +130,14 @@ nonisolated enum MovieDetailSectionBuilder {
 
         let castItems = content.credits.cast
             .sorted { $0.order < $1.order }
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailCastItem.init(cast:))
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
         }
 
         let recommendationItems = content.recommendations.results
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
@@ -166,7 +164,7 @@ nonisolated enum MovieDetailSectionBuilder {
     private static func makeAttributes(detail: MovieDetail) -> MovieDetailAttributeSectionItem? {
         let genres = detail.genres.map(MovieDetailAttributeItem.init(genre:))
         let productionCompanies = detail.productionCompanies
-            .prefix(previewItemLimit)
+            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailAttributeItem.init(productionCompany:))
         let section = MovieDetailAttributeSectionItem(
             genres: genres,

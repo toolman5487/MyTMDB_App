@@ -175,7 +175,7 @@ final class SeasonDetailImagesCollectionViewCell: DetailImageTitleStripCollectio
     }
 
     private func detailItems(from gallery: SeasonImageGalleryItem) -> [DetailImageTitleItem] {
-        gallery.posters.map {
+        let items = gallery.posters.map {
             DetailImageTitleItem(
                 id: "poster-\($0.id)",
                 imageURL: $0.imageURL,
@@ -197,6 +197,8 @@ final class SeasonDetailImagesCollectionViewCell: DetailImageTitleStripCollectio
                 subtitle: nil
             )
         }
+
+        return Array(items.prefix(DetailSectionPreviewLimit.itemCount))
     }
 }
 
