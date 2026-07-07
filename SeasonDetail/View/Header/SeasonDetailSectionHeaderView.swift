@@ -41,7 +41,7 @@ final class SeasonDetailSectionHeaderView: UICollectionReusableView {
         titleLabel.text = nil
     }
 
-    func configure(title: String) {
+    func configure(title: String?) {
         titleLabel.text = title
     }
 

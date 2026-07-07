@@ -12,136 +12,16 @@ import UIKit
 // MARK: - SeasonDetailFactsCollectionViewCell
 
 @MainActor
-final class SeasonDetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
+final class SeasonDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
 
     static let reuseIdentifier = String(describing: SeasonDetailFactsCollectionViewCell.self)
 
-    private enum Layout {
-        static let itemHeight: CGFloat = 96
-        static let minimumItemWidth: CGFloat = 112
-    }
-
-    private var facts: [SeasonDetailFactItem] = []
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            SeasonDetailFactCardCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailFactCardCollectionViewCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        facts = []
-        collectionView.reloadData()
-    }
-
     func configure(facts: [SeasonDetailFactItem]) {
-        self.facts = facts
-        collectionView.reloadData()
-    }
-}
-
-extension SeasonDetailFactsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        facts.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: SeasonDetailFactCardCollectionViewCell.reuseIdentifier,
-            for: indexPath
+        configure(
+            facts: facts.map {
+                DetailFactItem(title: $0.title, value: $0.value)
+            }
         )
-        (cell as? SeasonDetailFactCardCollectionViewCell)?.configure(with: facts[indexPath.item])
-        return cell
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        CGSize(width: Layout.minimumItemWidth, height: Layout.itemHeight)
-    }
-}
-
-@MainActor
-private final class SeasonDetailFactCardCollectionViewCell: BaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: SeasonDetailFactCardCollectionViewCell.self)
-
-    private enum Layout {
-        static let contentInset: CGFloat = 12
-        static let itemSpacing: CGFloat = 8
-    }
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let valueLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
-        return label
-    }()
-
-    override func configureView() {
-        containerView.backgroundColor = ThemeColor.backgroundSecondary
-        containerView.layer.cornerRadius = 8
-        containerView.clipsToBounds = true
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(valueLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(Layout.contentInset)
-        }
-
-        valueLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(Layout.itemSpacing)
-            make.leading.trailing.bottom.equalToSuperview().inset(Layout.contentInset)
-        }
-    }
-
-    override func resetForReuse() {
-        titleLabel.text = nil
-        valueLabel.text = nil
-    }
-
-    func configure(with item: SeasonDetailFactItem) {
-        titleLabel.text = item.title
-        valueLabel.text = item.value
     }
 }
 

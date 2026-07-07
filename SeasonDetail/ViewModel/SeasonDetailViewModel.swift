@@ -20,7 +20,6 @@ nonisolated enum SeasonDetailViewState: Equatable {
 // MARK: - SeasonDetailViewContent
 
 nonisolated struct SeasonDetailViewContent: Sendable, Equatable {
-    let detail: SeasonDetailItem
     let sections: [SeasonDetailSectionItem]
     let navigationTitle: String
 }
@@ -79,7 +78,7 @@ final class SeasonDetailViewModel {
 // MARK: - SeasonDetailSectionItem
 
 nonisolated enum SeasonDetailSectionItem: Sendable, Equatable {
-    case overview(String)
+    case overview(SeasonDetailOverviewSectionItem)
     case facts([SeasonDetailFactItem])
     case episodes([SeasonEpisodeItem])
     case videos([SeasonVideoItem])
@@ -89,10 +88,10 @@ nonisolated enum SeasonDetailSectionItem: Sendable, Equatable {
     case watchProviders([SeasonWatchProviderItem])
     case accountState(SeasonAccountStateItem)
 
-    var title: String {
+    var title: String? {
         switch self {
         case .overview:
-            return "簡介"
+            return nil
         case .facts:
             return "資訊"
         case .episodes:
@@ -113,6 +112,13 @@ nonisolated enum SeasonDetailSectionItem: Sendable, Equatable {
     }
 }
 
+// MARK: - SeasonDetailOverviewSectionItem
+
+nonisolated struct SeasonDetailOverviewSectionItem: Sendable, Equatable {
+    let hero: SeasonDetailItem
+    let overview: String?
+}
+
 // MARK: - SeasonDetailSectionBuilder
 
 nonisolated enum SeasonDetailSectionBuilder {
@@ -123,7 +129,6 @@ nonisolated enum SeasonDetailSectionBuilder {
         let detail = SeasonDetailItem(detail: content.detail)
 
         return SeasonDetailViewContent(
-            detail: detail,
             sections: makeSections(content: content, detail: detail),
             navigationTitle: detail.title
         )
@@ -133,11 +138,14 @@ nonisolated enum SeasonDetailSectionBuilder {
         content: SeasonDetailContent,
         detail: SeasonDetailItem
     ) -> [SeasonDetailSectionItem] {
-        var sections: [SeasonDetailSectionItem] = []
-
-        if !detail.overview.isEmpty {
-            sections.append(.overview(detail.overview))
-        }
+        var sections: [SeasonDetailSectionItem] = [
+            .overview(
+                SeasonDetailOverviewSectionItem(
+                    hero: detail,
+                    overview: content.detail.overview.isEmpty ? nil : content.detail.overview
+                )
+            )
+        ]
 
         let facts = makeFacts(detail: content.detail, detailItem: detail)
         if !facts.isEmpty {

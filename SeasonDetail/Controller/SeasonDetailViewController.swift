@@ -15,7 +15,6 @@ final class SeasonDetailViewController: DetailBaseViewController {
     private let seriesID: Int
     private let seasonNumber: Int
     private let viewModel: SeasonDetailViewModel
-    private var detailItem: SeasonDetailItem?
     private var sections: [SeasonDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
     private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
@@ -69,10 +68,10 @@ final class SeasonDetailViewController: DetailBaseViewController {
     // MARK: - Setup
 
     private enum Layout {
+        static let headerHeight: CGFloat = 28
+        static let headerContentSpacing: CGFloat = 8
         static let defaultHorizontalInset: CGFloat = 16
-        static let sectionTopInset: CGFloat = 16
-        static let sectionBottomInset: CGFloat = 24
-        static let sectionHeaderHeight: CGFloat = 28
+        static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
         static let episodesSectionHeight: CGFloat = 236
         static let imageStripSectionHeight: CGFloat = 220
@@ -85,9 +84,9 @@ final class SeasonDetailViewController: DetailBaseViewController {
         collectionView.backgroundColor = ThemeColor.background
         collectionViewFlowLayout.minimumLineSpacing = 8
         collectionViewFlowLayout.sectionInset = UIEdgeInsets(
-            top: Layout.sectionTopInset,
+            top: 0,
             left: Layout.defaultHorizontalInset,
-            bottom: Layout.sectionBottomInset,
+            bottom: 0,
             right: Layout.defaultHorizontalInset
         )
 
@@ -144,28 +143,24 @@ final class SeasonDetailViewController: DetailBaseViewController {
     private func render(state: SeasonDetailViewState) {
         switch state {
         case .idle:
-            detailItem = nil
             sections = []
             setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
-            detailItem = nil
             sections = []
             setDetailNavigationTitle(nil)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let content):
-            detailItem = content.detail
             sections = content.sections
             setDetailNavigationTitle(content.navigationTitle)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .failed(let message):
-            detailItem = nil
             sections = []
             setDetailNavigationTitle(nil)
             setLoadingVisible(false)
@@ -183,11 +178,15 @@ final class SeasonDetailViewController: DetailBaseViewController {
 extension SeasonDetailViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        detailItem == nil ? 0 : sections.count
+        sections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        1
+        if case .overview(let item) = sections[section] {
+            return item.overview == nil ? 0 : 1
+        }
+
+        return 1
     }
 
     func collectionView(
@@ -195,12 +194,12 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch sections[indexPath.section] {
-        case .overview(let overview):
+        case .overview(let item):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: SeasonDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailOverviewCollectionViewCell)?.configure(overview: overview)
+            (cell as? SeasonDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
             return cell
 
         case .facts(let facts):
@@ -298,16 +297,15 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
             return UICollectionReusableView()
         }
 
-        if indexPath.section == 0 {
+        if case .overview(let item) = sections[indexPath.section] {
             let reusableView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: SeasonDetailHeroHeaderView.reuseIdentifier,
                 for: indexPath
             )
 
-            if let headerView = reusableView as? SeasonDetailHeroHeaderView,
-               let detailItem {
-                headerView.configure(with: detailItem)
+            if let headerView = reusableView as? SeasonDetailHeroHeaderView {
+                headerView.configure(with: item.hero)
             }
 
             return reusableView
@@ -336,17 +334,29 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        if section > 0 {
+        if case .overview = sections[section] {
             return CGSize(
                 width: collectionView.bounds.width,
-                height: Layout.sectionHeaderHeight
+                height: SeasonDetailHeroHeaderView.headerHeight
             )
+        }
+
+        guard sections[section].title != nil else {
+            return .zero
         }
 
         return CGSize(
             width: collectionView.bounds.width,
-            height: SeasonDetailHeroHeaderView.headerHeight
+            height: Layout.headerHeight
         )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        sectionInset(for: section)
     }
 
     func collectionView(
@@ -354,13 +364,34 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
+        let sectionInsets = sectionInset(for: indexPath.section)
         let width = collectionView.bounds.width
-            - Layout.defaultHorizontalInset
-            - Layout.defaultHorizontalInset
+            - sectionInsets.left
+            - sectionInsets.right
         let itemWidth = max(width, 0)
         let itemHeight = height(for: sections[indexPath.section], width: itemWidth)
 
         return CGSize(width: itemWidth, height: itemHeight)
+    }
+
+    private func sectionInset(for section: Int) -> UIEdgeInsets {
+        if case .overview(let item) = sections[section] {
+            return UIEdgeInsets(
+                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
+                left: Layout.defaultHorizontalInset,
+                bottom: Layout.defaultSectionBottomInset,
+                right: Layout.defaultHorizontalInset
+            )
+        }
+
+        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+
+        return UIEdgeInsets(
+            top: topInset,
+            left: Layout.defaultHorizontalInset,
+            bottom: Layout.defaultSectionBottomInset,
+            right: Layout.defaultHorizontalInset
+        )
     }
 
     private func height(
@@ -368,7 +399,9 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         width: CGFloat
     ) -> CGFloat {
         switch section {
-        case .overview(let overview):
+        case .overview(let item):
+            guard let overview = item.overview else { return 0 }
+
             return SeasonDetailOverviewCollectionViewCell.fittingHeight(
                 for: overview,
                 width: width
