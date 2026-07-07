@@ -1044,7 +1044,7 @@ private struct PersonDetailExternalLinkStyle {
             self.tintColor = ThemeColor.systemBlue
 
         case "imdb":
-            self.imageName = nil
+            self.imageName = "imdb_icon"
             self.symbolName = "film.circle.fill"
             self.tintColor = ThemeColor.spotlightGold
 
@@ -1064,7 +1064,7 @@ private struct PersonDetailExternalLinkStyle {
             self.tintColor = ThemeColor.systemBlue
 
         case "tiktok":
-            self.imageName = nil
+            self.imageName = "tiktok_icon"
             self.symbolName = "music.note"
             self.tintColor = ThemeColor.textPrimary
 
@@ -1074,7 +1074,7 @@ private struct PersonDetailExternalLinkStyle {
             self.tintColor = ThemeColor.systemRed
 
         case "wikidata":
-            self.imageName = nil
+            self.imageName = "wiki_icon"
             self.symbolName = "w.circle.fill"
             self.tintColor = ThemeColor.systemGreen
 
