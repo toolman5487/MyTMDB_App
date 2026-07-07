@@ -426,100 +426,34 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
 // MARK: - Shared Horizontal Poster Cells
 
 @MainActor
-final class TVDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailCastCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 112, height: 220)
-    }
-
-    private var items: [TVDetailCastItem] = []
-    private var onPersonSelected: ((Int) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            TVDetailCastPersonCell.self,
-            forCellWithReuseIdentifier: TVDetailCastPersonCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onPersonSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(
         items: [TVDetailCastItem],
         onPersonSelected: @escaping (Int) -> Void
     ) {
-        self.items = items
-        self.onPersonSelected = onPersonSelected
-        collectionView.reloadData()
-    }
-}
-
-extension TVDetailCastCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: TVDetailCastPersonCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? TVDetailCastPersonCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onPersonSelected?(items[indexPath.item].id)
-    }
-}
-
-@MainActor
-private final class TVDetailCastPersonCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: TVDetailCastPersonCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 168
-        )
-    }
-
-    func configure(with item: TVDetailCastItem) {
         configure(
-            imageURL: item.profileURL,
-            title: item.name,
-            subtitle: Self.makeSubtitle(for: item)
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.profileURL,
+                    title: $0.name,
+                    subtitle: Self.makeSubtitle(for: $0)
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let personID = Int(item.id) else { return }
+            onPersonSelected(personID)
+        }
     }
 
     private static func makeSubtitle(for item: TVDetailCastItem) -> String? {
@@ -533,303 +467,98 @@ private final class TVDetailCastPersonCell: ImageTitleBaseCollectionViewCell {
 }
 
 @MainActor
-final class TVDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailVideosCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailVideosCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 220, height: 148)
-    }
-
-    private var items: [TVDetailVideoItem] = []
-    private var onVideoSelected: ((TVDetailVideoItem) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            TVDetailVideoThumbnailCell.self,
-            forCellWithReuseIdentifier: TVDetailVideoThumbnailCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onVideoSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 112
     }
 
     func configure(
         items: [TVDetailVideoItem],
         onVideoSelected: @escaping (TVDetailVideoItem) -> Void
     ) {
-        self.items = items
-        self.onVideoSelected = onVideoSelected
-        collectionView.reloadData()
-    }
-}
-
-extension TVDetailVideosCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: TVDetailVideoThumbnailCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? TVDetailVideoThumbnailCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onVideoSelected?(items[indexPath.item])
-    }
-}
-
-@MainActor
-private final class TVDetailVideoThumbnailCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: TVDetailVideoThumbnailCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 112
-        )
-    }
-
-    func configure(with item: TVDetailVideoItem) {
         configure(
-            imageURL: item.thumbnailURL,
-            title: item.title,
-            subtitle: item.subtitle
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.thumbnailURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let video = items.first(where: { $0.id == item.id }) else { return }
+            onVideoSelected(video)
+        }
     }
 }
 
 @MainActor
-final class TVDetailSeasonsCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailSeasonsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailSeasonsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
-    }
-
-    private var items: [TVDetailSeasonItem] = []
-    private var onSeasonSelected: ((Int) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            TVDetailSeasonPosterCell.self,
-            forCellWithReuseIdentifier: TVDetailSeasonPosterCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onSeasonSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(
         items: [TVDetailSeasonItem],
         onSeasonSelected: @escaping (Int) -> Void
     ) {
-        self.items = items
-        self.onSeasonSelected = onSeasonSelected
-        collectionView.reloadData()
-    }
-}
-
-extension TVDetailSeasonsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: TVDetailSeasonPosterCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? TVDetailSeasonPosterCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onSeasonSelected?(items[indexPath.item].seasonNumber)
-    }
-}
-
-@MainActor
-private final class TVDetailSeasonPosterCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: TVDetailSeasonPosterCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 168
-        )
-    }
-
-    func configure(with item: TVDetailSeasonItem) {
         configure(
-            imageURL: item.posterURL,
-            title: item.title,
-            subtitle: item.subtitle
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.seasonNumber),
+                    imageURL: $0.posterURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let seasonNumber = Int(item.id) else { return }
+            onSeasonSelected(seasonNumber)
+        }
     }
 }
 
 @MainActor
-final class TVDetailRecommendationsCollectionViewCell: BaseNestedCollectionViewCell {
+final class TVDetailRecommendationsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailRecommendationsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
-    }
-
-    private var items: [TVDetailRecommendationItem] = []
-    private var onRecommendationSelected: ((Int) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            TVDetailRecommendationPosterCell.self,
-            forCellWithReuseIdentifier: TVDetailRecommendationPosterCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onRecommendationSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(
         items: [TVDetailRecommendationItem],
         onRecommendationSelected: @escaping (Int) -> Void
     ) {
-        self.items = items
-        self.onRecommendationSelected = onRecommendationSelected
-        collectionView.reloadData()
-    }
-}
-
-extension TVDetailRecommendationsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: TVDetailRecommendationPosterCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? TVDetailRecommendationPosterCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onRecommendationSelected?(items[indexPath.item].id)
-    }
-}
-
-@MainActor
-private final class TVDetailRecommendationPosterCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: TVDetailRecommendationPosterCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 168
-        )
-    }
-
-    func configure(with item: TVDetailRecommendationItem) {
-        let subtitle: String?
-        if let scoreText = item.scoreText {
-            subtitle = "評分 \(scoreText)"
-        } else {
-            subtitle = nil
-        }
-
         configure(
-            imageURL: item.posterURL,
-            title: item.title,
-            subtitle: subtitle
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.posterURL,
+                    title: $0.title,
+                    subtitle: $0.scoreText.map { "評分 \($0)" }
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let recommendationID = Int(item.id) else { return }
+            onRecommendationSelected(recommendationID)
+        }
     }
 }
 

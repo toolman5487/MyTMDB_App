@@ -225,6 +225,9 @@
 		157C57302FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C57012FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift */; };
 		157C57312FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C57012FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift */; };
 		157C57322FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C57012FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift */; };
+		157C58202FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */; };
+		157C58212FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */; };
+		157C58222FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */; };
 		15BAEAE32FF64D35006B0E15 /* TVReviewDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEAE22FF64D35006B0E15 /* TVReviewDetailViewController.swift */; };
 		15BAEAE42FF64D35006B0E15 /* TVReviewDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEAE22FF64D35006B0E15 /* TVReviewDetailViewController.swift */; };
 		15BAEAE52FF64D35006B0E15 /* TVReviewDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEAE22FF64D35006B0E15 /* TVReviewDetailViewController.swift */; };
@@ -297,6 +300,9 @@
 		15CFA1012FFAA000041F4CC /* DetailFactsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CFA1002FFAA000041F4CC /* DetailFactsComponents.swift */; };
 		15CFA1022FFAA000041F4CC /* DetailFactsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CFA1002FFAA000041F4CC /* DetailFactsComponents.swift */; };
 		15CFA1032FFAA000041F4CC /* DetailFactsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CFA1002FFAA000041F4CC /* DetailFactsComponents.swift */; };
+		15CFA1052FFAA100041F4CC /* DetailImageTitleStripComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CFA1042FFAA100041F4CC /* DetailImageTitleStripComponents.swift */; };
+		15CFA1062FFAA100041F4CC /* DetailImageTitleStripComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CFA1042FFAA100041F4CC /* DetailImageTitleStripComponents.swift */; };
+		15CFA1072FFAA100041F4CC /* DetailImageTitleStripComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CFA1042FFAA100041F4CC /* DetailImageTitleStripComponents.swift */; };
 		15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
 		15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
 		15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
@@ -467,6 +473,7 @@
 		157C56002FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		157C57002FFB9F000044BD8E /* SeasonDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailCells.swift; sourceTree = "<group>"; };
 		157C57012FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailSectionHeaderView.swift; sourceTree = "<group>"; };
+		157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailRouter.swift; sourceTree = "<group>"; };
 		15BAEAE22FF64D35006B0E15 /* TVReviewDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVReviewDetailViewController.swift; sourceTree = "<group>"; };
 		15BAEAEA2FF64EBA006B0E15 /* TVReviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVReviewListViewController.swift; sourceTree = "<group>"; };
 		15BAEAF02FF65000006B0E15 /* TVDetailReviewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailReviewModels.swift; sourceTree = "<group>"; };
@@ -491,6 +498,7 @@
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
 		15CFA1002FFAA000041F4CC /* DetailFactsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailFactsComponents.swift; sourceTree = "<group>"; };
+		15CFA1042FFAA100041F4CC /* DetailImageTitleStripComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailImageTitleStripComponents.swift; sourceTree = "<group>"; };
 		15CF99DD2FF620000041F4CC /* DetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
 		15CF99E12FF621000041F4CC /* BaseWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseWebViewController.swift; sourceTree = "<group>"; };
 		15CF99E52FF622000041F4CC /* YouTubePlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubePlayerViewController.swift; sourceTree = "<group>"; };
@@ -1263,6 +1271,7 @@
 			children = (
 				15BAE9F52FF61D5B006B0E15 /* Controller */,
 				157C54102FFB95000044BD8E /* Model */,
+				157C58102FFBA000044BD8E /* Router */,
 				157C54112FFB95000044BD8E /* Service */,
 				157C55102FFB99000044BD8E /* View */,
 				157C54122FFB95000044BD8E /* ViewModel */,
@@ -1276,6 +1285,14 @@
 				15BAE9F92FF61D8B006B0E15 /* SeasonDetailViewController.swift */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		157C58102FFBA000044BD8E /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */,
+			);
+			path = Router;
 			sourceTree = "<group>";
 		};
 		157C54102FFB95000044BD8E /* Model */ = {
@@ -1595,6 +1612,7 @@
 			children = (
 				15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */,
 				15CFA1002FFAA000041F4CC /* DetailFactsComponents.swift */,
+				15CFA1042FFAA100041F4CC /* DetailImageTitleStripComponents.swift */,
 				15CF99DD2FF620000041F4CC /* DetailRouter.swift */,
 			);
 			path = DetailBase;
@@ -1942,6 +1960,7 @@
 				157C56202FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift in Sources */,
 				157C57202FFB9F000044BD8E /* SeasonDetailCells.swift in Sources */,
 				157C57302FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */,
+				157C58202FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */,
 				152BE7732FF57000006681A5 /* MovieDetailReviewFilterHeaderView.swift in Sources */,
 				152BE7742FF57000006681A5 /* MovieDetailReviewLoadingFooterView.swift in Sources */,
 				152BE7752FF57000006681A5 /* MovieDetailReviewFilterCollectionViewCell.swift in Sources */,
@@ -2011,6 +2030,7 @@
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15CFA1022FFAA000041F4CC /* DetailFactsComponents.swift in Sources */,
+				15CFA1062FFAA100041F4CC /* DetailImageTitleStripComponents.swift in Sources */,
 				15CF99EB2FF623000041F4CC /* BaseRouter.swift in Sources */,
 				15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99DF2FF621000041F4CC /* BaseWebViewController.swift in Sources */,
@@ -2048,6 +2068,7 @@
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15CFA1032FFAA000041F4CC /* DetailFactsComponents.swift in Sources */,
+				15CFA1072FFAA100041F4CC /* DetailImageTitleStripComponents.swift in Sources */,
 				15CF99E92FF623000041F4CC /* BaseRouter.swift in Sources */,
 				15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99E02FF621000041F4CC /* BaseWebViewController.swift in Sources */,
@@ -2117,6 +2138,7 @@
 				157C56212FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift in Sources */,
 				157C57212FFB9F000044BD8E /* SeasonDetailCells.swift in Sources */,
 				157C57312FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */,
+				157C58212FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */,
 				15606CAD2FF4F0000036898B /* TVDetailViewModel.swift in Sources */,
 				15606CB32FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */,
 				15606CC02FF520000036898B /* TVDetailCells.swift in Sources */,
@@ -2154,6 +2176,7 @@
 				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15CFA1012FFAA000041F4CC /* DetailFactsComponents.swift in Sources */,
+				15CFA1052FFAA100041F4CC /* DetailImageTitleStripComponents.swift in Sources */,
 				15CF99EA2FF623000041F4CC /* BaseRouter.swift in Sources */,
 				15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99DE2FF621000041F4CC /* BaseWebViewController.swift in Sources */,
@@ -2180,6 +2203,7 @@
 				157C56222FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift in Sources */,
 				157C57222FFB9F000044BD8E /* SeasonDetailCells.swift in Sources */,
 				157C57322FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */,
+				157C58222FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */,
 				152BE7652FF56000006681A5 /* MovieDetailReviewModels.swift in Sources */,
 				152BE7682FF56000006681A5 /* MovieDetailReviewService.swift in Sources */,
 				15BAEB6B2FF65A6C006B0E15 /* MainMovieListViewController.swift in Sources */,

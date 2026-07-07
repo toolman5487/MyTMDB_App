@@ -17,7 +17,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
     private let viewModel: SeasonDetailViewModel
     private var sections: [SeasonDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
-    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+    private lazy var router: SeasonDetailRouting = SeasonDetailRouter(sourceViewController: self)
 
     // MARK: - Initialization
 
@@ -73,7 +73,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
-        static let episodesSectionHeight: CGFloat = 236
+        static let trailerStyleSectionHeight: CGFloat = 160
         static let imageStripSectionHeight: CGFloat = 220
         static let textSectionMinimumHeight: CGFloat = 80
     }
@@ -103,8 +103,24 @@ final class SeasonDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: SeasonDetailEpisodesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailImageStripCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailImageStripCollectionViewCell.reuseIdentifier
+            SeasonDetailVideosCollectionViewCell.self,
+            forCellWithReuseIdentifier: SeasonDetailVideosCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            SeasonDetailCastCollectionViewCell.self,
+            forCellWithReuseIdentifier: SeasonDetailCastCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            SeasonDetailCrewCollectionViewCell.self,
+            forCellWithReuseIdentifier: SeasonDetailCrewCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            SeasonDetailImagesCollectionViewCell.self,
+            forCellWithReuseIdentifier: SeasonDetailImagesCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            SeasonDetailWatchProvidersCollectionViewCell.self,
+            forCellWithReuseIdentifier: SeasonDetailWatchProvidersCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             SeasonDetailTextListCollectionViewCell.self,
@@ -220,14 +236,11 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
 
         case .videos(let videos):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailImageStripCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: SeasonDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImageStripCollectionViewCell)?.configure(
-                items: videoStripItems(from: videos)
-            ) { [weak self] item in
-                guard let self, let video = videos.first(where: { $0.id == item.id }) else { return }
-
+            (cell as? SeasonDetailVideosCollectionViewCell)?.configure(videos: videos) { [weak self] video in
+                guard let self else { return }
                 if let youtubeVideoKey = video.youtubeVideoKey {
                     router.showYouTubeVideo(videoKey: youtubeVideoKey, title: video.title)
                 } else if let videoURL = video.videoURL {
@@ -238,44 +251,41 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
 
         case .cast(let cast):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailImageStripCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: SeasonDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImageStripCollectionViewCell)?.configure(
-                items: castStripItems(from: cast)
-            ) { [weak self] item in
-                guard let personID = Int(item.id) else { return }
+            (cell as? SeasonDetailCastCollectionViewCell)?.configure(cast: cast) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
 
         case .crew(let crew):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailImageStripCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: SeasonDetailCrewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImageStripCollectionViewCell)?.configure(
-                items: crewStripItems(from: crew)
-            ) { [weak self] item in
-                guard let personID = Int(item.id) else { return }
+            (cell as? SeasonDetailCrewCollectionViewCell)?.configure(crew: crew) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
 
         case .images(let item):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailImageStripCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: SeasonDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImageStripCollectionViewCell)?.configure(items: imageStripItems(from: item))
+            (cell as? SeasonDetailImagesCollectionViewCell)?.configure(gallery: item)
             return cell
 
         case .watchProviders(let providers):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailImageStripCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: SeasonDetailWatchProvidersCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImageStripCollectionViewCell)?.configure(items: providerStripItems(from: providers))
+            (cell as? SeasonDetailWatchProvidersCollectionViewCell)?.configure(providers: providers) { [weak self] provider in
+                guard let linkURL = provider.linkURL else { return }
+                self?.router.showWatchProvider(url: linkURL, title: provider.title)
+            }
             return cell
 
         case .accountState(let accountState):
@@ -410,10 +420,10 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         case .facts:
             return Layout.factsSectionHeight
 
-        case .episodes:
-            return Layout.episodesSectionHeight
+        case .episodes, .videos:
+            return Layout.trailerStyleSectionHeight
 
-        case .videos, .cast, .crew, .images, .watchProviders:
+        case .cast, .crew, .images, .watchProviders:
             return Layout.imageStripSectionHeight
 
         case .accountState(let accountState):
@@ -431,79 +441,6 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - Presentation Mapping
 
 private extension SeasonDetailViewController {
-
-    func videoStripItems(from videos: [SeasonVideoItem]) -> [SeasonDetailImageStripItem] {
-        videos.map {
-            SeasonDetailImageStripItem(
-                id: $0.id,
-                title: $0.title,
-                subtitle: $0.subtitle,
-                imageURL: $0.thumbnailURL
-            )
-        }
-    }
-
-    func castStripItems(from cast: [SeasonCastItem]) -> [SeasonDetailImageStripItem] {
-        cast.map {
-            SeasonDetailImageStripItem(
-                id: String($0.id),
-                title: $0.title,
-                subtitle: $0.subtitle,
-                imageURL: $0.profileURL
-            )
-        }
-    }
-
-    func crewStripItems(from crew: [SeasonCrewItem]) -> [SeasonDetailImageStripItem] {
-        crew.map {
-            SeasonDetailImageStripItem(
-                id: String($0.personID),
-                title: $0.title,
-                subtitle: $0.subtitle,
-                imageURL: $0.profileURL
-            )
-        }
-    }
-
-    func imageStripItems(from item: SeasonImageGalleryItem) -> [SeasonDetailImageStripItem] {
-        let posters = item.posters.map {
-            SeasonDetailImageStripItem(
-                id: "poster-\($0.id)",
-                title: "海報",
-                subtitle: nil,
-                imageURL: $0.imageURL
-            )
-        }
-        let backdrops = item.backdrops.map {
-            SeasonDetailImageStripItem(
-                id: "backdrop-\($0.id)",
-                title: "劇照",
-                subtitle: nil,
-                imageURL: $0.imageURL
-            )
-        }
-        let logos = item.logos.map {
-            SeasonDetailImageStripItem(
-                id: "logo-\($0.id)",
-                title: "Logo",
-                subtitle: nil,
-                imageURL: $0.imageURL
-            )
-        }
-
-        return posters + backdrops + logos
-    }
-
-    func providerStripItems(from providers: [SeasonWatchProviderItem]) -> [SeasonDetailImageStripItem] {
-        providers.map {
-            SeasonDetailImageStripItem(
-                id: $0.id,
-                title: $0.title,
-                subtitle: "\($0.countryCode) · \($0.category)",
-                imageURL: $0.logoURL
-            )
-        }
-    }
 
     func accountStateRows(from accountState: SeasonAccountStateItem) -> [SeasonDetailTextListItem] {
         [

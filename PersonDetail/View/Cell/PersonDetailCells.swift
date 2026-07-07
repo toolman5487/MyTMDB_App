@@ -287,104 +287,40 @@ final class PersonDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
     }
 }
 
-// MARK: - Horizontal Image Sections
+// MARK: - PersonDetailKnownForCollectionViewCell
 
 @MainActor
-final class PersonDetailCreditsCollectionViewCell: BaseNestedCollectionViewCell {
+final class PersonDetailKnownForCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailCreditsCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: PersonDetailKnownForCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
-    }
-
-    private var items: [PersonDetailCreditItem] = []
-    private var onCreditSelected: ((PersonDetailCreditItem) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            PersonDetailCreditPosterCell.self,
-            forCellWithReuseIdentifier: PersonDetailCreditPosterCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onCreditSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(
         items: [PersonDetailCreditItem],
         onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
     ) {
-        self.items = items
-        self.onCreditSelected = onCreditSelected
-        collectionView.reloadData()
-    }
-}
-
-extension PersonDetailCreditsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: PersonDetailCreditPosterCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? PersonDetailCreditPosterCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onCreditSelected?(items[indexPath.item])
-    }
-}
-
-@MainActor
-private final class PersonDetailCreditPosterCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: PersonDetailCreditPosterCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(imageHeight: 168)
-    }
-
-    func configure(with item: PersonDetailCreditItem) {
         configure(
-            imageURL: item.posterURL,
-            title: item.title,
-            subtitle: makeSubtitle(for: item)
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.posterURL,
+                    title: $0.title,
+                    subtitle: Self.makeSubtitle(for: $0)
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let credit = items.first(where: { $0.id == item.id }) else { return }
+            onCreditSelected(credit)
+        }
     }
 
-    private func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
+    private static func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
         let values = [
             item.dateText,
             item.subtitle
@@ -395,87 +331,74 @@ private final class PersonDetailCreditPosterCell: ImageTitleBaseCollectionViewCe
     }
 }
 
+// MARK: - PersonDetailCrewCollectionViewCell
+
 @MainActor
-final class PersonDetailProfileImagesCollectionViewCell: BaseNestedCollectionViewCell {
+final class PersonDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: PersonDetailCrewCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 124, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(
+        items: [PersonDetailCreditItem],
+        onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
+    ) {
+        configure(
+            items: items.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.posterURL,
+                    title: $0.title,
+                    subtitle: Self.makeSubtitle(for: $0)
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let credit = items.first(where: { $0.id == item.id }) else { return }
+            onCreditSelected(credit)
+        }
+    }
+
+    private static func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
+        let values = [
+            item.dateText,
+            item.subtitle
+        ].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        return values.isEmpty ? nil : values.joined(separator: " · ")
+    }
+}
+
+// MARK: - PersonDetailProfileImagesCollectionViewCell
+
+@MainActor
+final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: PersonDetailProfileImagesCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
-    }
-
-    private var items: [PersonDetailProfileImageItem] = []
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            PersonDetailProfileImageCell.self,
-            forCellWithReuseIdentifier: PersonDetailProfileImageCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(items: [PersonDetailProfileImageItem]) {
-        self.items = items
-        collectionView.reloadData()
-    }
-}
-
-extension PersonDetailProfileImagesCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: PersonDetailProfileImageCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? PersonDetailProfileImageCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-}
-
-@MainActor
-private final class PersonDetailProfileImageCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: PersonDetailProfileImageCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(imageHeight: 168)
-    }
-
-    func configure(with item: PersonDetailProfileImageItem) {
         configure(
-            imageURL: item.imageURL,
-            title: item.sizeText.isEmpty ? "人物照片" : item.sizeText,
-            subtitle: nil
+            items: items.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.imageURL,
+                    title: $0.sizeText.isEmpty ? "人物照片" : $0.sizeText,
+                    subtitle: nil
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
         )
     }
 }

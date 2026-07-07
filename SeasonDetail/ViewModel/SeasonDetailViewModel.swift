@@ -290,7 +290,8 @@ nonisolated enum SeasonDetailSectionBuilder {
                     SeasonWatchProviderItem(
                         countryCode: countryCode,
                         provider: provider,
-                        category: "串流"
+                        category: "串流",
+                        link: country.link
                     )
                 }
             }
@@ -427,17 +428,20 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
     let providerID: Int
     let title: String
     let category: String
+    let linkURL: URL?
     let logoURL: URL?
 
     init(
         countryCode: String,
         provider: TVWatchProvider,
-        category: String
+        category: String,
+        link: String
     ) {
         self.countryCode = countryCode
         self.providerID = provider.id
         self.title = provider.name
         self.category = category
+        self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

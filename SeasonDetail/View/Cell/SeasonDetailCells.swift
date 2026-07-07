@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/7/6.
 //
 
-import SDWebImage
 import SnapKit
 import UIKit
 
@@ -28,242 +27,210 @@ final class SeasonDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
 // MARK: - SeasonDetailEpisodesCollectionViewCell
 
 @MainActor
-final class SeasonDetailEpisodesCollectionViewCell: BaseNestedCollectionViewCell {
+final class SeasonDetailEpisodesCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: SeasonDetailEpisodesCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 260, height: 236)
-    }
-
-    private var episodes: [SeasonEpisodeItem] = []
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.register(
-            SeasonDetailEpisodeCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailEpisodeCollectionViewCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        episodes = []
-        collectionView.reloadData()
+        static let itemSize = CGSize(width: 220, height: 148)
+        static let imageHeight: CGFloat = 120
     }
 
     func configure(episodes: [SeasonEpisodeItem]) {
-        self.episodes = episodes
-        collectionView.reloadData()
-    }
-}
-
-extension SeasonDetailEpisodesCollectionViewCell: UICollectionViewDataSource {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        episodes.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: SeasonDetailEpisodeCollectionViewCell.reuseIdentifier,
-            for: indexPath
-        )
-        (cell as? SeasonDetailEpisodeCollectionViewCell)?.configure(with: episodes[indexPath.item])
-        return cell
-    }
-}
-
-@MainActor
-private final class SeasonDetailEpisodeCollectionViewCell: BaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: SeasonDetailEpisodeCollectionViewCell.self)
-
-    private enum Layout {
-        static let imageHeight: CGFloat = 124
-        static let contentInset: CGFloat = 12
-        static let itemSpacing: CGFloat = 6
-    }
-
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-
-    private let titleLabel = SeasonDetailCellFactory.makeTitleLabel(numberOfLines: 2)
-    private let subtitleLabel = SeasonDetailCellFactory.makeSubtitleLabel(numberOfLines: 1)
-    private let overviewLabel = SeasonDetailCellFactory.makeSubtitleLabel(numberOfLines: 2)
-
-    override func configureView() {
-        containerView.backgroundColor = ThemeColor.backgroundSecondary
-        containerView.layer.cornerRadius = 8
-        containerView.clipsToBounds = true
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(imageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(subtitleLabel)
-        containerView.addSubview(overviewLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        imageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(Layout.imageHeight)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageView.snp.bottom).offset(Layout.contentInset)
-            make.leading.trailing.equalToSuperview().inset(Layout.contentInset)
-        }
-
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(Layout.itemSpacing)
-            make.leading.trailing.equalTo(titleLabel)
-        }
-
-        overviewLabel.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(Layout.itemSpacing)
-            make.leading.trailing.lessThanOrEqualTo(titleLabel)
-            make.bottom.lessThanOrEqualToSuperview().inset(Layout.contentInset)
-        }
-    }
-
-    override func resetForReuse() {
-        imageView.sd_cancelCurrentImageLoad()
-        imageView.image = nil
-        titleLabel.text = nil
-        subtitleLabel.text = nil
-        overviewLabel.text = nil
-    }
-
-    func configure(with item: SeasonEpisodeItem) {
-        imageView.sd_setImage(with: item.stillURL)
-        titleLabel.text = item.title
-        subtitleLabel.text = item.subtitle
-        overviewLabel.text = item.overview
-    }
-}
-
-// MARK: - SeasonDetailImageStripCollectionViewCell
-
-nonisolated struct SeasonDetailImageStripItem: Equatable, Identifiable {
-    let id: String
-    let title: String
-    let subtitle: String?
-    let imageURL: URL?
-}
-
-@MainActor
-final class SeasonDetailImageStripCollectionViewCell: BaseNestedCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: SeasonDetailImageStripCollectionViewCell.self)
-
-    private enum Layout {
-        static let itemSize = CGSize(width: 124, height: 220)
-    }
-
-    private var items: [SeasonDetailImageStripItem] = []
-    private var onItemSelected: ((SeasonDetailImageStripItem) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            SeasonDetailImageStripItemCell.self,
-            forCellWithReuseIdentifier: SeasonDetailImageStripItemCell.reuseIdentifier
+        configure(
+            items: episodes.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.stillURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
         )
     }
+}
 
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
+// MARK: - SeasonDetailVideosCollectionViewCell
 
-    override func setupConstraints() {
-        super.setupConstraints()
+@MainActor
+final class SeasonDetailVideosCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
+    static let reuseIdentifier = String(describing: SeasonDetailVideosCollectionViewCell.self)
 
-    override func resetForReuse() {
-        items = []
-        onItemSelected = nil
-        collectionView.reloadData()
+    private enum Layout {
+        static let itemSize = CGSize(width: 220, height: 148)
+        static let imageHeight: CGFloat = 120
     }
 
     func configure(
-        items: [SeasonDetailImageStripItem],
-        onItemSelected: ((SeasonDetailImageStripItem) -> Void)? = nil
+        videos: [SeasonVideoItem],
+        onVideoSelected: @escaping (SeasonVideoItem) -> Void
     ) {
-        self.items = items
-        self.onItemSelected = onItemSelected
-        collectionView.reloadData()
+        configure(
+            items: videos.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.thumbnailURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let video = videos.first(where: { $0.id == item.id }) else { return }
+            onVideoSelected(video)
+        }
     }
 }
 
-extension SeasonDetailImageStripCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: SeasonDetailImageStripItemCell.reuseIdentifier,
-            for: indexPath
-        )
-        (cell as? SeasonDetailImageStripItemCell)?.configure(with: items[indexPath.item])
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onItemSelected?(items[indexPath.item])
-    }
-}
+// MARK: - SeasonDetailCastCollectionViewCell
 
 @MainActor
-private final class SeasonDetailImageStripItemCell: ImageTitleBaseCollectionViewCell {
+final class SeasonDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: SeasonDetailImageStripItemCell.self)
+    static let reuseIdentifier = String(describing: SeasonDetailCastCollectionViewCell.self)
 
-    override func configureView() {
-        super.configureView()
-        configureLayout(imageHeight: 168)
+    private enum Layout {
+        static let itemSize = CGSize(width: 112, height: 220)
+        static let imageHeight: CGFloat = 168
     }
 
-    func configure(with item: SeasonDetailImageStripItem) {
+    func configure(
+        cast: [SeasonCastItem],
+        onPersonSelected: @escaping (Int) -> Void
+    ) {
         configure(
-            imageURL: item.imageURL,
-            title: item.title,
-            subtitle: item.subtitle
+            items: cast.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.profileURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let personID = Int(item.id) else { return }
+            onPersonSelected(personID)
+        }
+    }
+}
+
+// MARK: - SeasonDetailCrewCollectionViewCell
+
+@MainActor
+final class SeasonDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: SeasonDetailCrewCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 112, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(
+        crew: [SeasonCrewItem],
+        onPersonSelected: @escaping (Int) -> Void
+    ) {
+        configure(
+            items: crew.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.profileURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let personID = crew.first(where: { $0.id == item.id })?.personID else { return }
+            onPersonSelected(personID)
+        }
+    }
+}
+
+// MARK: - SeasonDetailImagesCollectionViewCell
+
+@MainActor
+final class SeasonDetailImagesCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: SeasonDetailImagesCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 124, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(gallery: SeasonImageGalleryItem) {
+        configure(
+            items: detailItems(from: gallery),
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
         )
+    }
+
+    private func detailItems(from gallery: SeasonImageGalleryItem) -> [DetailImageTitleItem] {
+        gallery.posters.map {
+            DetailImageTitleItem(
+                id: "poster-\($0.id)",
+                imageURL: $0.imageURL,
+                title: "海報",
+                subtitle: nil
+            )
+        } + gallery.backdrops.map {
+            DetailImageTitleItem(
+                id: "backdrop-\($0.id)",
+                imageURL: $0.imageURL,
+                title: "劇照",
+                subtitle: nil
+            )
+        } + gallery.logos.map {
+            DetailImageTitleItem(
+                id: "logo-\($0.id)",
+                imageURL: $0.imageURL,
+                title: "Logo",
+                subtitle: nil
+            )
+        }
+    }
+}
+
+// MARK: - SeasonDetailWatchProvidersCollectionViewCell
+
+@MainActor
+final class SeasonDetailWatchProvidersCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: SeasonDetailWatchProvidersCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 124, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(
+        providers: [SeasonWatchProviderItem],
+        onProviderSelected: @escaping (SeasonWatchProviderItem) -> Void
+    ) {
+        configure(
+            items: providers.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.logoURL,
+                    title: $0.title,
+                    subtitle: "\($0.countryCode) · \($0.category)"
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let provider = providers.first(where: { $0.id == item.id }) else { return }
+            onProviderSelected(provider)
+        }
     }
 }
 
@@ -317,7 +284,11 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
 
     func configure(items: [SeasonDetailTextListItem]) {
         removeRows()
-        items.forEach { stackView.addArrangedSubview(makeRow(for: $0)) }
+        items.forEach {
+            let rowView = SeasonDetailTextListRowView()
+            rowView.configure(with: $0)
+            stackView.addArrangedSubview(rowView)
+        }
     }
 
     static func fittingHeight(
@@ -342,24 +313,73 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
         return ceil(textHeight + spacing + (Layout.contentInset * 2))
     }
 
-    private func makeRow(for item: SeasonDetailTextListItem) -> UIView {
-        let titleLabel = SeasonDetailCellFactory.makeTitleLabel(numberOfLines: 2)
-        titleLabel.text = item.title
-
-        let subtitleLabel = SeasonDetailCellFactory.makeSubtitleLabel(numberOfLines: 3)
-        subtitleLabel.text = item.subtitle
-        subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
-
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-        stackView.axis = .vertical
-        stackView.spacing = 4
-        return stackView
-    }
-
     private func removeRows() {
         stackView.arrangedSubviews.forEach { view in
             stackView.removeArrangedSubview(view)
             view.removeFromSuperview()
+        }
+    }
+}
+
+@MainActor
+private final class SeasonDetailTextListRowView: UIView {
+
+    private enum Layout {
+        static let itemSpacing: CGFloat = 4
+    }
+
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = Layout.itemSpacing
+        return stackView
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textPrimary
+        label.numberOfLines = 2
+        return label
+    }()
+
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = ThemeColor.textSecondary
+        label.numberOfLines = 3
+        return label
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupHierarchy()
+        setupConstraints()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupHierarchy()
+        setupConstraints()
+    }
+
+    func configure(with item: SeasonDetailTextListItem) {
+        titleLabel.text = item.title
+        subtitleLabel.text = item.subtitle
+        subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
+    }
+
+    private func setupHierarchy() {
+        addSubview(stackView)
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(subtitleLabel)
+    }
+
+    private func setupConstraints() {
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 }
@@ -412,7 +432,7 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     }
 
     func configure(overview: String) {
-        overviewLabel.attributedText = Self.makeOverviewAttributedText(overview: overview)
+        overviewLabel.attributedText = Self.overviewAttributedText(overview: overview)
     }
 
     static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
@@ -421,7 +441,7 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let attributedText = makeOverviewAttributedText(overview: overview)
+        let attributedText = overviewAttributedText(overview: overview)
         let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -434,7 +454,7 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         )
     }
 
-    private static func makeOverviewAttributedText(overview: String) -> NSAttributedString {
+    private static func overviewAttributedText(overview: String) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
 
@@ -461,30 +481,6 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         )
 
         return attributedText
-    }
-}
-
-// MARK: - Helpers
-
-@MainActor
-private enum SeasonDetailCellFactory {
-
-    static func makeTitleLabel(numberOfLines: Int) -> UILabel {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = numberOfLines
-        return label
-    }
-
-    static func makeSubtitleLabel(numberOfLines: Int) -> UILabel {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = numberOfLines
-        return label
     }
 }
 

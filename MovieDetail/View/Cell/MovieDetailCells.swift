@@ -440,306 +440,101 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
 // MARK: - MovieDetailCastCollectionViewCell
 
 @MainActor
-final class MovieDetailCastCollectionViewCell: BaseNestedCollectionViewCell {
+final class MovieDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailCastCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 112, height: 220)
-    }
-
-    private var items: [MovieDetailCastItem] = []
-    private var onPersonSelected: ((Int) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            MovieDetailCastPersonCell.self,
-            forCellWithReuseIdentifier: MovieDetailCastPersonCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onPersonSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(
         items: [MovieDetailCastItem],
         onPersonSelected: @escaping (Int) -> Void
     ) {
-        self.items = items
-        self.onPersonSelected = onPersonSelected
-        collectionView.reloadData()
-    }
-}
-
-extension MovieDetailCastCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailCastPersonCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? MovieDetailCastPersonCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onPersonSelected?(items[indexPath.item].id)
-    }
-}
-
-@MainActor
-private final class MovieDetailCastPersonCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: MovieDetailCastPersonCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 168
-        )
-    }
-
-    func configure(with item: MovieDetailCastItem) {
         configure(
-            imageURL: item.profileURL,
-            title: item.name,
-            subtitle: item.characterText
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.profileURL,
+                    title: $0.name,
+                    subtitle: $0.characterText
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let personID = Int(item.id) else { return }
+            onPersonSelected(personID)
+        }
     }
 }
 
 // MARK: - MovieDetailVideosCollectionViewCell
 
 @MainActor
-final class MovieDetailVideosCollectionViewCell: BaseNestedCollectionViewCell {
+final class MovieDetailVideosCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailVideosCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 220, height: 148)
-    }
-
-    private var items: [MovieDetailVideoItem] = []
-    private var onVideoSelected: ((MovieDetailVideoItem) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            MovieDetailVideoThumbnailCell.self,
-            forCellWithReuseIdentifier: MovieDetailVideoThumbnailCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onVideoSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 120
     }
 
     func configure(
         items: [MovieDetailVideoItem],
         onVideoSelected: @escaping (MovieDetailVideoItem) -> Void
     ) {
-        self.items = items
-        self.onVideoSelected = onVideoSelected
-        collectionView.reloadData()
-    }
-}
-
-extension MovieDetailVideosCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailVideoThumbnailCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? MovieDetailVideoThumbnailCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onVideoSelected?(items[indexPath.item])
-    }
-}
-
-@MainActor
-private final class MovieDetailVideoThumbnailCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: MovieDetailVideoThumbnailCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 120
-        )
-    }
-
-    func configure(with item: MovieDetailVideoItem) {
         configure(
-            imageURL: item.thumbnailURL,
-            title: item.title,
-            subtitle: item.subtitle
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.thumbnailURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let video = items.first(where: { $0.id == item.id }) else { return }
+            onVideoSelected(video)
+        }
     }
 }
 
 // MARK: - MovieDetailRecommendationsCollectionViewCell
 
 @MainActor
-final class MovieDetailRecommendationsCollectionViewCell: BaseNestedCollectionViewCell {
+final class MovieDetailRecommendationsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MovieDetailRecommendationsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
-    }
-
-    private var items: [MovieDetailRecommendationItem] = []
-    private var onRecommendationSelected: ((Int) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            MovieDetailRecommendationPosterCell.self,
-            forCellWithReuseIdentifier: MovieDetailRecommendationPosterCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onRecommendationSelected = nil
-        collectionView.reloadData()
+        static let imageHeight: CGFloat = 168
     }
 
     func configure(
         items: [MovieDetailRecommendationItem],
         onRecommendationSelected: @escaping (Int) -> Void
     ) {
-        self.items = items
-        self.onRecommendationSelected = onRecommendationSelected
-        collectionView.reloadData()
-    }
-}
-
-extension MovieDetailRecommendationsCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailRecommendationPosterCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? MovieDetailRecommendationPosterCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onRecommendationSelected?(items[indexPath.item].id)
-    }
-}
-
-@MainActor
-private final class MovieDetailRecommendationPosterCell: ImageTitleBaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: MovieDetailRecommendationPosterCell.self)
-
-    override func configureView() {
-        super.configureView()
-        configureLayout(
-            imageHeight: 168
-        )
-    }
-
-    func configure(with item: MovieDetailRecommendationItem) {
-        let subtitle: String?
-        if let scoreText = item.scoreText {
-            subtitle = "評分 \(scoreText)"
-        } else {
-            subtitle = nil
-        }
-
         configure(
-            imageURL: item.posterURL,
-            title: item.title,
-            subtitle: subtitle
-        )
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.posterURL,
+                    title: $0.title,
+                    subtitle: $0.scoreText.map { "評分 \($0)" }
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let recommendationID = Int(item.id) else { return }
+            onRecommendationSelected(recommendationID)
+        }
     }
 }

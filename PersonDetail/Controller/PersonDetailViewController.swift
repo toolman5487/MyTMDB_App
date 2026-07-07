@@ -86,8 +86,12 @@ final class PersonDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: PersonDetailFactsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            PersonDetailCreditsCollectionViewCell.self,
-            forCellWithReuseIdentifier: PersonDetailCreditsCollectionViewCell.reuseIdentifier
+            PersonDetailKnownForCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailKnownForCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            PersonDetailCrewCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailCrewCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             PersonDetailProfileImagesCollectionViewCell.self,
@@ -203,12 +207,22 @@ extension PersonDetailViewController: UICollectionViewDataSource {
             (cell as? PersonDetailFactsCollectionViewCell)?.configure(facts: facts)
             return cell
 
-        case .knownFor(let items), .crew(let items):
+        case .knownFor(let items):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: PersonDetailCreditsCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailKnownForCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
+            (cell as? PersonDetailKnownForCollectionViewCell)?.configure(items: items) { [weak self] item in
+                self?.router.showCreditDetail(item)
+            }
+            return cell
+
+        case .crew(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: PersonDetailCrewCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? PersonDetailCrewCollectionViewCell)?.configure(items: items) { [weak self] item in
                 self?.router.showCreditDetail(item)
             }
             return cell
