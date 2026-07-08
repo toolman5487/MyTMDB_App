@@ -14,10 +14,25 @@ import WebKit
 @MainActor
 final class BaseWebViewController: BaseViewController {
 
+    // MARK: - Layout
+
+    private enum Layout {
+        static let tabBarContentHeight: CGFloat = 49
+        static let tabButtonSize: CGFloat = 44
+        static let horizontalInset: CGFloat = 8
+        static let urlFieldHeight: CGFloat = 36
+        static let urlFieldSpacing: CGFloat = 8
+        static let urlFieldHorizontalPadding: CGFloat = 12
+        static let urlFieldIconSpacing: CGFloat = 8
+        static let urlSecurityIconSize: CGFloat = 14
+    }
+
     // MARK: - Properties
 
     private let url: URL
     private let preferredTitle: String?
+
+    private var bottomTabBarBottomConstraint: Constraint?
 
     private lazy var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
@@ -48,12 +63,12 @@ final class BaseWebViewController: BaseViewController {
         return view
     }()
 
-    private lazy var backButton: UIButton = makeTabBarButton(
+    private lazy var backButton = makeTabBarButton(
         symbolName: "chevron.backward",
         action: #selector(handleBackButtonTapped)
     )
 
-    private lazy var forwardButton: UIButton = makeTabBarButton(
+    private lazy var forwardButton = makeTabBarButton(
         symbolName: "chevron.forward",
         action: #selector(handleForwardButtonTapped)
     )
@@ -61,7 +76,6 @@ final class BaseWebViewController: BaseViewController {
     private let urlFieldContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = ThemeColor.fillSecondary
-        view.layer.cornerRadius = 8
         view.clipsToBounds = true
         return view
     }()
@@ -98,18 +112,6 @@ final class BaseWebViewController: BaseViewController {
         return textField
     }()
 
-    private enum Layout {
-        static let tabBarContentHeight: CGFloat = 49
-        static let horizontalInset: CGFloat = 8
-        static let tabButtonSize: CGFloat = 44
-        static let urlFieldHeight: CGFloat = 36
-        static let urlFieldSpacing: CGFloat = 8
-        static let urlFieldHorizontalPadding: CGFloat = 12
-        static let urlSecurityIconSize: CGFloat = 14
-    }
-
-    private var bottomTabBarBottomConstraint: Constraint?
-
     // MARK: - Initialization
 
     init(url: URL, title: String? = nil) {
@@ -124,19 +126,7 @@ final class BaseWebViewController: BaseViewController {
         super.init(coder: coder)
     }
 
-    // MARK: - BaseViewController
-
-    override func configureView() {
-        super.configureView()
-        title = preferredTitle ?? url.host()
-        navigationItem.largeTitleDisplayMode = .never
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "arrow.clockwise"),
-            style: .plain,
-            target: self,
-            action: #selector(handleReloadButtonTapped)
-        )
-    }
+    // MARK: - Lifecycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -148,71 +138,43 @@ final class BaseWebViewController: BaseViewController {
         unregisterKeyboardNotifications()
     }
 
+    // MARK: - BaseViewController
+
+    override func configureView() {
+        super.configureView()
+
+        title = preferredTitle ?? url.host()
+        navigationItem.largeTitleDisplayMode = .never
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "arrow.clockwise"),
+            style: .plain,
+            target: self,
+            action: #selector(handleReloadButtonTapped)
+        )
+
+        urlFieldContainerView.layer.cornerRadius = Layout.urlFieldHeight / 2
+    }
+
     override func setupHierarchy() {
         view.addSubview(webView)
         view.addSubview(bottomTabBarView)
+
         bottomTabBarView.addSubview(bottomTabBarSeparatorView)
         bottomTabBarView.addSubview(bottomTabBarContentView)
+
         bottomTabBarContentView.addSubview(backButton)
         bottomTabBarContentView.addSubview(urlFieldContainerView)
         bottomTabBarContentView.addSubview(forwardButton)
+
         urlFieldContainerView.addSubview(urlSecurityIconView)
         urlFieldContainerView.addSubview(urlTextField)
     }
 
     override func setupConstraints() {
-        bottomTabBarView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            bottomTabBarBottomConstraint = make.bottom.equalToSuperview().constraint
-        }
-
-        bottomTabBarContentView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomTabBarView.safeAreaLayoutGuide.snp.bottom)
-            make.height.equalTo(Layout.tabBarContentHeight)
-        }
-
-        bottomTabBarSeparatorView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomTabBarContentView.snp.top)
-            make.height.equalTo(1.0 / UIScreen.main.scale)
-        }
-
-        backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(Layout.horizontalInset)
-            make.width.height.equalTo(Layout.tabButtonSize)
-            make.centerY.equalToSuperview()
-        }
-
-        forwardButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(Layout.horizontalInset)
-            make.width.height.equalTo(Layout.tabButtonSize)
-            make.centerY.equalToSuperview()
-        }
-
-        urlFieldContainerView.snp.makeConstraints { make in
-            make.leading.equalTo(backButton.snp.trailing).offset(Layout.urlFieldSpacing)
-            make.trailing.equalTo(forwardButton.snp.leading).offset(-Layout.urlFieldSpacing)
-            make.centerY.equalToSuperview()
-            make.height.equalTo(Layout.urlFieldHeight)
-        }
-
-        urlSecurityIconView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(Layout.urlFieldHorizontalPadding)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(Layout.urlSecurityIconSize)
-        }
-
-        urlTextField.snp.makeConstraints { make in
-            make.leading.equalTo(urlSecurityIconView.snp.trailing).offset(8)
-            make.trailing.equalToSuperview().inset(Layout.urlFieldHorizontalPadding)
-            make.centerY.equalToSuperview()
-        }
-
-        webView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomTabBarView.snp.top)
-        }
+        setupWebViewConstraints()
+        setupBottomTabBarConstraints()
+        setupBottomTabBarContentConstraints()
+        setupURLFieldConstraints()
     }
 
     override func bindViewModel() {
@@ -237,105 +199,6 @@ final class BaseWebViewController: BaseViewController {
         webView.goForward()
     }
 
-    // MARK: - Private Methods
-
-    private func makeTabBarButton(
-        symbolName: String,
-        action: Selector
-    ) -> UIButton {
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(systemName: symbolName)
-        configuration.baseForegroundColor = ThemeColor.highlight
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-
-        let button = UIButton(configuration: configuration)
-        button.isAccessibilityElement = false
-        button.addTarget(self, action: action, for: .touchUpInside)
-        return button
-    }
-
-    private func updateNavigationState() {
-        backButton.isEnabled = webView.canGoBack
-        forwardButton.isEnabled = webView.canGoForward
-
-        guard !urlTextField.isFirstResponder else { return }
-        updateURLField()
-    }
-
-    private func updateURLField() {
-        let currentURL = webView.url ?? url
-        urlTextField.text = displayText(for: currentURL)
-        updateSecurityIcon(for: currentURL)
-    }
-
-    private func updateSecurityIcon(for url: URL) {
-        switch url.scheme?.lowercased() {
-        case "https":
-            urlSecurityIconView.image = UIImage(systemName: "lock.fill")
-
-        case "http":
-            urlSecurityIconView.image = UIImage(systemName: "lock.open.fill")
-
-        default:
-            urlSecurityIconView.image = UIImage(systemName: "globe")
-        }
-    }
-
-    private func displayText(for url: URL) -> String {
-        var text = url.absoluteString
-
-        if text.hasPrefix("https://") {
-            text = String(text.dropFirst("https://".count))
-        } else if text.hasPrefix("http://") {
-            text = String(text.dropFirst("http://".count))
-        }
-
-        if text.hasSuffix("/"), text.count > 1 {
-            text.removeLast()
-        }
-
-        return text
-    }
-
-    private func url(from input: String) -> URL? {
-        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        if trimmed.lowercased().hasPrefix("http://") || trimmed.lowercased().hasPrefix("https://") {
-            return URL(string: trimmed)
-        }
-
-        return URL(string: "https://\(trimmed)")
-    }
-
-    private func loadURL(from input: String? = nil) {
-        if let input,
-           let destinationURL = url(from: input) {
-            webView.load(URLRequest(url: destinationURL))
-            return
-        }
-
-        updateURLField()
-        webView.load(URLRequest(url: url))
-    }
-
-    private func registerKeyboardNotifications() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardFrameChange),
-            name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
-        )
-    }
-
-    private func unregisterKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
-        )
-    }
-
     @objc private func handleKeyboardFrameChange(_ notification: Notification) {
         guard
             let userInfo = notification.userInfo,
@@ -357,6 +220,189 @@ final class BaseWebViewController: BaseViewController {
         ) {
             self.view.layoutIfNeeded()
         }
+    }
+}
+
+// MARK: - Setup
+
+private extension BaseWebViewController {
+
+    func setupWebViewConstraints() {
+        webView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(bottomTabBarView.snp.top)
+        }
+    }
+
+    func setupBottomTabBarConstraints() {
+        bottomTabBarView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            bottomTabBarBottomConstraint = make.bottom.equalToSuperview().constraint
+        }
+
+        bottomTabBarSeparatorView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(bottomTabBarContentView.snp.top)
+            make.height.equalTo(1.0 / UIScreen.main.scale)
+        }
+    }
+
+    func setupBottomTabBarContentConstraints() {
+        bottomTabBarContentView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(bottomTabBarView.safeAreaLayoutGuide.snp.bottom)
+            make.height.equalTo(Layout.tabBarContentHeight)
+        }
+
+        backButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Layout.horizontalInset)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(Layout.tabButtonSize)
+        }
+
+        forwardButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(Layout.horizontalInset)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(Layout.tabButtonSize)
+        }
+
+        urlFieldContainerView.snp.makeConstraints { make in
+            make.leading.equalTo(backButton.snp.trailing).offset(Layout.urlFieldSpacing)
+            make.trailing.equalTo(forwardButton.snp.leading).offset(-Layout.urlFieldSpacing)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(Layout.urlFieldHeight)
+        }
+    }
+
+    func setupURLFieldConstraints() {
+        urlSecurityIconView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Layout.urlFieldHorizontalPadding)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(Layout.urlSecurityIconSize)
+        }
+
+        urlTextField.snp.makeConstraints { make in
+            make.leading.equalTo(urlSecurityIconView.snp.trailing).offset(Layout.urlFieldIconSpacing)
+            make.trailing.equalToSuperview().inset(Layout.urlFieldHorizontalPadding)
+            make.centerY.equalToSuperview()
+        }
+    }
+}
+
+// MARK: - Navigation State
+
+private extension BaseWebViewController {
+
+    func makeTabBarButton(
+        symbolName: String,
+        action: Selector
+    ) -> UIButton {
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: symbolName)
+        configuration.baseForegroundColor = ThemeColor.highlight
+        configuration.contentInsets = NSDirectionalEdgeInsets(
+            top: Layout.horizontalInset,
+            leading: Layout.horizontalInset,
+            bottom: Layout.horizontalInset,
+            trailing: Layout.horizontalInset
+        )
+
+        let button = UIButton(configuration: configuration)
+        button.isAccessibilityElement = false
+        button.addTarget(self, action: action, for: .touchUpInside)
+        return button
+    }
+
+    func updateNavigationState() {
+        backButton.isEnabled = webView.canGoBack
+        forwardButton.isEnabled = webView.canGoForward
+
+        guard !urlTextField.isFirstResponder else { return }
+        updateURLField()
+    }
+
+    func updateURLField() {
+        let currentURL = webView.url ?? url
+        urlTextField.text = displayText(for: currentURL)
+        updateSecurityIcon(for: currentURL)
+    }
+
+    func updateSecurityIcon(for url: URL) {
+        switch url.scheme?.lowercased() {
+        case "https":
+            urlSecurityIconView.image = UIImage(systemName: "lock.fill")
+
+        case "http":
+            urlSecurityIconView.image = UIImage(systemName: "lock.open.fill")
+
+        default:
+            urlSecurityIconView.image = UIImage(systemName: "globe")
+        }
+    }
+
+    func loadURL(from input: String? = nil) {
+        if let input,
+           let destinationURL = url(from: input) {
+            webView.load(URLRequest(url: destinationURL))
+            return
+        }
+
+        updateURLField()
+        webView.load(URLRequest(url: url))
+    }
+}
+
+// MARK: - URL Handling
+
+private extension BaseWebViewController {
+
+    func displayText(for url: URL) -> String {
+        var text = url.absoluteString
+
+        if text.hasPrefix("https://") {
+            text = String(text.dropFirst("https://".count))
+        } else if text.hasPrefix("http://") {
+            text = String(text.dropFirst("http://".count))
+        }
+
+        if text.hasSuffix("/"), text.count > 1 {
+            text.removeLast()
+        }
+
+        return text
+    }
+
+    func url(from input: String) -> URL? {
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        if trimmed.lowercased().hasPrefix("http://") || trimmed.lowercased().hasPrefix("https://") {
+            return URL(string: trimmed)
+        }
+
+        return URL(string: "https://\(trimmed)")
+    }
+}
+
+// MARK: - Keyboard
+
+private extension BaseWebViewController {
+
+    func registerKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardFrameChange),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+    }
+
+    func unregisterKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
     }
 }
 
