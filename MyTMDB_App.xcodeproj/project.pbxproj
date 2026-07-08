@@ -189,9 +189,18 @@
 		15A9500A2FF2A10000FCBB0F /* MainHomeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */; };
 		15A9500B2FF2A10000FCBB0F /* MainHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */; };
 		15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */; };
-		15A950202FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */; };
-		15A950212FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */; };
-		15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */; };
+		15D198112FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */; };
+		15D198122FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */; };
+		15D198132FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */; };
+		15D198212FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */; };
+		15D198222FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */; };
+		15D198232FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */; };
+		15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */; };
+		15D198322FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */; };
+		15D198332FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */; };
+		15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */; };
+		15D198522FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */; };
+		15D198532FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */; };
 		15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
 		15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
 		15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
@@ -488,7 +497,10 @@
 		15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeModels.swift; sourceTree = "<group>"; };
 		15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeService.swift; sourceTree = "<group>"; };
 		15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewModel.swift; sourceTree = "<group>"; };
-		15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeContentCollectionViewCell.swift; sourceTree = "<group>"; };
+		15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomePosterCollectionViewCell.swift; sourceTree = "<group>"; };
+		15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeContentStripCollectionViewCell.swift; sourceTree = "<group>"; };
+		15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionCollectionViewCells.swift; sourceTree = "<group>"; };
+		15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeFeaturedHeaderView.swift; sourceTree = "<group>"; };
 		15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionHeaderView.swift; sourceTree = "<group>"; };
 		15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNestedCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A950362FF5100000FCBB0F /* MainHomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeRouter.swift; sourceTree = "<group>"; };
@@ -1498,19 +1510,54 @@
 		15BAEB7F2FF66152006B0E15 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				15A9503A2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift */,
-				15A950262FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift */,
+				15D198002FF8100000FCBB0F /* Base */,
+				15D198402FF8200000FCBB0F /* Carousel */,
+				15D198432FF8200000FCBB0F /* Section */,
 			);
 			path = Cell;
+			sourceTree = "<group>";
+		};
+		15D198402FF8200000FCBB0F /* Carousel */ = {
+			isa = PBXGroup;
+			children = (
+				15A9503A2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift */,
+			);
+			path = Carousel;
+			sourceTree = "<group>";
+		};
+		15D198432FF8200000FCBB0F /* Section */ = {
+			isa = PBXGroup;
+			children = (
+				15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */,
+			);
+			path = Section;
+			sourceTree = "<group>";
+		};
+		15D198002FF8100000FCBB0F /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */,
+				15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		15BAEB802FF6615A006B0E15 /* Header */ = {
 			isa = PBXGroup;
 			children = (
-				15A950392FF7000000FCBB0F /* MainHomeCarouselView.swift */,
+				15D198442FF8200000FCBB0F /* Carousel */,
+				15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */,
 				15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */,
 			);
 			path = Header;
+			sourceTree = "<group>";
+		};
+		15D198442FF8200000FCBB0F /* Carousel */ = {
+			isa = PBXGroup;
+			children = (
+				15A950392FF7000000FCBB0F /* MainHomeCarouselView.swift */,
+			);
+			path = Carousel;
 			sourceTree = "<group>";
 		};
 		15BAEBA42FF76000006B0E15 /* Router */ = {
@@ -2157,7 +2204,10 @@
 				15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */,
 				15A950302FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
 				15A950332FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
-				15A950202FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+				15D198112FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */,
+				15D198212FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
+				15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
+				15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
 				15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503B2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A9503E2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,
@@ -2198,9 +2248,12 @@
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A94F9D2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 				152BE7242FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */,
-				15A950212FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+				15D198122FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */,
+				15D198222FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
+				15D198322FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
 				15A950312FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
 				15A950342FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
+				15D198522FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
 				15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503C2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A9503F2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,
@@ -2334,7 +2387,10 @@
 				15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99DE2FF621000041F4CC /* BaseWebViewController.swift in Sources */,
 				15CF99E62FF622000041F4CC /* YouTubePlayerViewController.swift in Sources */,
-				15A950222FF2B00000FCBB0F /* MainHomeContentCollectionViewCell.swift in Sources */,
+				15D198132FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */,
+				15D198232FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
+				15D198332FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
+				15D198532FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
 				15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503D2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A950402FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,

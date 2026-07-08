@@ -12,10 +12,6 @@ final class MainHomeViewController: MainBaseViewController {
 
     // MARK: - Constants
 
-    private enum CellIdentifier {
-        static let content = String(describing: MainHomeContentCollectionViewCell.self)
-    }
-
     private enum Layout {
         static let headerHeight: CGFloat = 32
         static let itemHeight: CGFloat = 232
@@ -89,10 +85,7 @@ final class MainHomeViewController: MainBaseViewController {
             bottom: Layout.sectionBottomSpacing,
             right: 0
         )
-        collectionView.register(
-            MainHomeContentCollectionViewCell.self,
-            forCellWithReuseIdentifier: CellIdentifier.content
-        )
+        registerSectionCells()
         collectionView.register(
             MainHomeSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -103,6 +96,27 @@ final class MainHomeViewController: MainBaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: MainHomeFeaturedHeaderView.reuseIdentifier
         )
+    }
+
+    private func registerSectionCells() {
+        let cellTypes: [UICollectionViewCell.Type] = [
+            MainHomeTrendingMoviesSectionCollectionViewCell.self,
+            MainHomeTrendingTVSectionCollectionViewCell.self,
+            MainHomePopularMoviesSectionCollectionViewCell.self,
+            MainHomePopularTVSectionCollectionViewCell.self,
+            MainHomeOnTheAirTVSectionCollectionViewCell.self,
+            MainHomeUpcomingMoviesSectionCollectionViewCell.self,
+            MainHomeAiringTodayTVSectionCollectionViewCell.self,
+            MainHomeTopRatedMoviesSectionCollectionViewCell.self,
+            MainHomeTopRatedTVSectionCollectionViewCell.self
+        ]
+
+        for cellType in cellTypes {
+            collectionView.register(
+                cellType,
+                forCellWithReuseIdentifier: String(describing: cellType)
+            )
+        }
     }
 
     // MARK: - Data Loading
@@ -183,15 +197,14 @@ extension MainHomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        let section = sections[indexPath.section]
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: CellIdentifier.content,
+            withReuseIdentifier: section.category.sectionCellReuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MainHomeContentCollectionViewCell {
-            let section = sections[indexPath.section]
-            cell.configure(contents: section.contents)
-            cell.onContentSelected = { [weak self] item in
+        if let cell = cell as? MainHomeContentStripCollectionViewCell {
+            cell.configure(contents: section.contents) { [weak self] item in
                 self?.showDetail(for: item)
             }
         }
