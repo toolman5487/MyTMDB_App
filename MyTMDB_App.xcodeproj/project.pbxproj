@@ -1193,11 +1193,11 @@
 				15CF99CE2FF370970041F4CC /* DetailBase */,
 				152BE7222FF4FA26006681A5 /* GlassBase */,
 				15A94F622FF26FA000FCBB0F /* MainBase */,
+				15CF99E42FF622000041F4CC /* Player */,
 				15A94F4A2FF26D7900FCBB0F /* Root */,
 				15CF99EE2FF623100041F4CC /* Router */,
 				15E000052FF400000000001 /* ScrollTrackingBase */,
 				15CF99E22FF621000041F4CC /* WebView */,
-				15CF99E42FF622000041F4CC /* Player */,
 			);
 			path = Base;
 			sourceTree = "<group>";
