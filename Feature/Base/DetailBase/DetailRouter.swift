@@ -17,6 +17,7 @@ protocol DetailRouting {
     func showMovieDetail(movieID: Int)
     func showTVDetail(seriesID: Int)
     func showSeasonDetail(seriesID: Int, seasonNumber: Int)
+    func showEpisodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
     func showPersonDetail(personID: Int)
     func showCreditDetail(_ item: PersonDetailCreditItem)
     func showWebVideo(url: URL, title: String?)
@@ -50,6 +51,18 @@ final class DetailRouter: BaseRouter, DetailRouting {
             SeasonDetailViewController(
                 seriesID: seriesID,
                 seasonNumber: seasonNumber
+            ),
+            using: .push
+        )
+    }
+
+    func showEpisodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int) {
+        guard seriesID > 0, seasonNumber >= 0, episodeNumber > 0 else { return }
+        show(
+            EpisodeDetailViewController(
+                seriesID: seriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
             ),
             using: .push
         )

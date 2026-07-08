@@ -36,11 +36,14 @@ final class SeasonDetailEpisodesCollectionViewCell: DetailImageTitleStripCollect
         static let imageHeight: CGFloat = 120
     }
 
-    func configure(episodes: [SeasonEpisodeItem]) {
+    func configure(
+        episodes: [SeasonEpisodeItem],
+        onEpisodeSelected: @escaping (Int) -> Void
+    ) {
         configure(
             items: episodes.map {
                 DetailImageTitleItem(
-                    id: String($0.id),
+                    id: String($0.episodeNumber),
                     imageURL: $0.stillURL,
                     title: $0.title,
                     subtitle: $0.subtitle
@@ -48,7 +51,10 @@ final class SeasonDetailEpisodesCollectionViewCell: DetailImageTitleStripCollect
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight
-        )
+        ) { item in
+            guard let episodeNumber = Int(item.id) else { return }
+            onEpisodeSelected(episodeNumber)
+        }
     }
 }
 

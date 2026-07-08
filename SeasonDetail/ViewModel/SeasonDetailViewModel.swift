@@ -92,22 +92,30 @@ nonisolated enum SeasonDetailSectionItem: Sendable, Equatable {
         switch self {
         case .overview:
             return nil
+
         case .facts:
-            return "資訊"
+            return "季數資訊"
+
         case .episodes:
-            return "集數"
+            return "劇集"
+
         case .videos:
-            return "影片"
+            return "預告與影片"
+
         case .cast:
-            return "演員"
+            return "主要演員"
+
         case .crew:
-            return "製作團隊"
+            return "幕後人員"
+
         case .images:
-            return "圖片"
+            return "劇照與海報"
+
         case .watchProviders:
             return "觀看平台"
+
         case .accountState:
-            return "個人狀態"
+            return "我的評分"
         }
     }
 }

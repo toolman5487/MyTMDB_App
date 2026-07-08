@@ -11,6 +11,7 @@ import UIKit
 
 @MainActor
 protocol SeasonDetailRouting: AnyObject {
+    func showEpisodeDetail(episodeNumber: Int)
     func showYouTubeVideo(videoKey: String, title: String?)
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
@@ -24,16 +25,32 @@ final class SeasonDetailRouter: BaseRouter, SeasonDetailRouting {
 
     // MARK: - Properties
 
+    private let seriesID: Int
+    private let seasonNumber: Int
     private let detailRouter: DetailRouter
 
     // MARK: - Initialization
 
-    override init(sourceViewController: UIViewController) {
+    init(
+        sourceViewController: UIViewController,
+        seriesID: Int,
+        seasonNumber: Int
+    ) {
+        self.seriesID = seriesID
+        self.seasonNumber = seasonNumber
         self.detailRouter = DetailRouter(sourceViewController: sourceViewController)
         super.init(sourceViewController: sourceViewController)
     }
 
     // MARK: - Push
+
+    func showEpisodeDetail(episodeNumber: Int) {
+        detailRouter.showEpisodeDetail(
+            seriesID: seriesID,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber
+        )
+    }
 
     func showYouTubeVideo(videoKey: String, title: String?) {
         detailRouter.showYouTubeVideo(videoKey: videoKey, title: title)

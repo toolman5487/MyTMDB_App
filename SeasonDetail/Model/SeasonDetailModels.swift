@@ -449,6 +449,7 @@ nonisolated struct SeasonDetailItem: Sendable, Equatable, Identifiable {
 
 nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
     let id: Int
+    let episodeNumber: Int
     let title: String
     let subtitle: String
     let overview: String
@@ -457,6 +458,7 @@ nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
 
     init(episode: SeasonEpisode) {
         self.id = episode.id
+        self.episodeNumber = episode.episodeNumber
         self.title = "第 \(episode.episodeNumber) 集 \(episode.name)"
         self.subtitle = Self.makeSubtitle(episode: episode)
         self.overview = episode.overview.isEmpty ? "目前沒有簡介。" : episode.overview

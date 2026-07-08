@@ -1,48 +1,50 @@
 //
-//  SeasonDetailViewController.swift
+//  EpisodeDetailViewController.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/7/2.
+//  Created by Willy Hsu on 2026/7/8.
 //
 
+import Foundation
 import UIKit
 
 @MainActor
-final class SeasonDetailViewController: DetailBaseViewController {
+final class EpisodeDetailViewController: DetailBaseViewController {
 
     // MARK: - Properties
 
     private let seriesID: Int
     private let seasonNumber: Int
-    private let viewModel: SeasonDetailViewModel
-    private var sections: [SeasonDetailSectionItem] = []
+    private let episodeNumber: Int
+    private let viewModel: EpisodeDetailViewModel
+    private var sections: [EpisodeDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
-    private lazy var router: SeasonDetailRouting = SeasonDetailRouter(
-        sourceViewController: self,
-        seriesID: seriesID,
-        seasonNumber: seasonNumber
-    )
+    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
 
     // MARK: - Initialization
 
     convenience init(
         seriesID: Int,
-        seasonNumber: Int
+        seasonNumber: Int,
+        episodeNumber: Int
     ) {
         self.init(
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            viewModel: SeasonDetailViewModel()
+            episodeNumber: episodeNumber,
+            viewModel: EpisodeDetailViewModel()
         )
     }
 
     init(
         seriesID: Int,
         seasonNumber: Int,
-        viewModel: SeasonDetailViewModel
+        episodeNumber: Int,
+        viewModel: EpisodeDetailViewModel
     ) {
         self.seriesID = seriesID
         self.seasonNumber = seasonNumber
+        self.episodeNumber = episodeNumber
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -50,7 +52,8 @@ final class SeasonDetailViewController: DetailBaseViewController {
     required init?(coder: NSCoder) {
         self.seriesID = 0
         self.seasonNumber = 0
-        self.viewModel = SeasonDetailViewModel()
+        self.episodeNumber = 0
+        self.viewModel = EpisodeDetailViewModel()
         super.init(coder: coder)
     }
 
@@ -66,7 +69,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
     }
 
     override func bindViewModel() {
-        loadSeasonDetail()
+        loadEpisodeDetail()
     }
 
     // MARK: - Setup
@@ -95,64 +98,65 @@ final class SeasonDetailViewController: DetailBaseViewController {
         )
 
         collectionView.register(
-            SeasonDetailOverviewCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailOverviewCollectionViewCell.reuseIdentifier
+            EpisodeDetailOverviewCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailOverviewCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailFactsCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailFactsCollectionViewCell.reuseIdentifier
+            EpisodeDetailFactsCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailFactsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailEpisodesCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailEpisodesCollectionViewCell.reuseIdentifier
+            EpisodeDetailVideosCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailVideosCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailVideosCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailVideosCollectionViewCell.reuseIdentifier
+            EpisodeDetailCastCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailCastCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailCastCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailCastCollectionViewCell.reuseIdentifier
+            EpisodeDetailGuestStarsCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailGuestStarsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailCrewCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailCrewCollectionViewCell.reuseIdentifier
+            EpisodeDetailCrewCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailCrewCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailImagesCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailImagesCollectionViewCell.reuseIdentifier
+            EpisodeDetailImagesCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailImagesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailWatchProvidersCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailWatchProvidersCollectionViewCell.reuseIdentifier
+            EpisodeDetailExternalLinksCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailExternalLinksCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailTextListCollectionViewCell.self,
-            forCellWithReuseIdentifier: SeasonDetailTextListCollectionViewCell.reuseIdentifier
+            EpisodeDetailAccountStateCollectionViewCell.self,
+            forCellWithReuseIdentifier: EpisodeDetailAccountStateCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailHeroHeaderView.self,
+            EpisodeDetailHeroHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SeasonDetailHeroHeaderView.reuseIdentifier
+            withReuseIdentifier: EpisodeDetailHeroHeaderView.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailSectionHeaderView.self,
+            EpisodeDetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SeasonDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: EpisodeDetailSectionHeaderView.reuseIdentifier
         )
     }
 
     // MARK: - Data Loading
 
-    private func loadSeasonDetail() {
+    private func loadEpisodeDetail() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             render(state: .loading)
-            await viewModel.loadSeasonDetail(
+            await viewModel.loadEpisodeDetail(
                 seriesID: seriesID,
-                seasonNumber: seasonNumber
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
             )
 
             guard !Task.isCancelled else { return }
@@ -160,7 +164,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
         }
     }
 
-    private func render(state: SeasonDetailViewState) {
+    private func render(state: EpisodeDetailViewState) {
         switch state {
         case .idle:
             sections = []
@@ -185,7 +189,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
             setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadSeasonDetail()
+                self?.loadEpisodeDetail()
             }
         }
 
@@ -195,7 +199,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
 
 // MARK: - UICollectionViewDataSource
 
-extension SeasonDetailViewController: UICollectionViewDataSource {
+extension EpisodeDetailViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         sections.count
@@ -216,36 +220,26 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
         switch sections[indexPath.section] {
         case .overview(let item):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailOverviewCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            (cell as? EpisodeDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
             return cell
 
         case .facts(let facts):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailFactsCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailFactsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailFactsCollectionViewCell)?.configure(facts: facts)
-            return cell
-
-        case .episodes(let episodes):
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailEpisodesCollectionViewCell.reuseIdentifier,
-                for: indexPath
-            )
-            (cell as? SeasonDetailEpisodesCollectionViewCell)?.configure(episodes: episodes) { [weak self] episodeNumber in
-                self?.router.showEpisodeDetail(episodeNumber: episodeNumber)
-            }
+            (cell as? EpisodeDetailFactsCollectionViewCell)?.configure(facts: facts)
             return cell
 
         case .videos(let videos):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailVideosCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailVideosCollectionViewCell)?.configure(videos: videos) { [weak self] video in
+            (cell as? EpisodeDetailVideosCollectionViewCell)?.configure(videos: videos) { [weak self] video in
                 guard let self else { return }
                 if let youtubeVideoKey = video.youtubeVideoKey {
                     router.showYouTubeVideo(videoKey: youtubeVideoKey, title: video.title)
@@ -255,51 +249,60 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
             }
             return cell
 
-        case .cast(let cast):
+        case .cast(let people):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailCastCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailCastCollectionViewCell)?.configure(cast: cast) { [weak self] personID in
+            (cell as? EpisodeDetailCastCollectionViewCell)?.configure(cast: people) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
 
-        case .crew(let crew):
+        case .guestStars(let people):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailCrewCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailGuestStarsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailCrewCollectionViewCell)?.configure(crew: crew) { [weak self] personID in
+            (cell as? EpisodeDetailGuestStarsCollectionViewCell)?.configure(guestStars: people) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
 
-        case .images(let item):
+        case .crew(let people):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailImagesCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailCrewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImagesCollectionViewCell)?.configure(gallery: item)
+            (cell as? EpisodeDetailCrewCollectionViewCell)?.configure(crew: people) { [weak self] personID in
+                self?.router.showPersonDetail(personID: personID)
+            }
             return cell
 
-        case .watchProviders(let providers):
+        case .images(let images):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailWatchProvidersCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailWatchProvidersCollectionViewCell)?.configure(providers: providers) { [weak self] provider in
-                guard let linkURL = provider.linkURL else { return }
-                self?.router.showWatchProvider(url: linkURL, title: provider.title)
+            (cell as? EpisodeDetailImagesCollectionViewCell)?.configure(images: images)
+            return cell
+
+        case .externalLinks(let links):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EpisodeDetailExternalLinksCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? EpisodeDetailExternalLinksCollectionViewCell)?.configure(items: links) { [weak self] url in
+                self?.router.openExternalURL(url)
             }
             return cell
 
         case .accountState(let accountState):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: SeasonDetailTextListCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailAccountStateCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailTextListCollectionViewCell)?.configure(items: accountStateRows(from: accountState))
+            (cell as? EpisodeDetailAccountStateCollectionViewCell)?.configure(items: accountStateRows(from: accountState))
             return cell
         }
     }
@@ -316,11 +319,11 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
         if case .overview(let item) = sections[indexPath.section] {
             let reusableView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
-                withReuseIdentifier: SeasonDetailHeroHeaderView.reuseIdentifier,
+                withReuseIdentifier: EpisodeDetailHeroHeaderView.reuseIdentifier,
                 for: indexPath
             )
 
-            if let headerView = reusableView as? SeasonDetailHeroHeaderView {
+            if let headerView = reusableView as? EpisodeDetailHeroHeaderView {
                 headerView.configure(with: item.hero)
             }
 
@@ -329,17 +332,17 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: SeasonDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: EpisodeDetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        (reusableView as? SeasonDetailSectionHeaderView)?.configure(title: sections[indexPath.section].title)
+        (reusableView as? EpisodeDetailSectionHeaderView)?.configure(title: sections[indexPath.section].title)
         return reusableView
     }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
-extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
+extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateDetailNavigationTitleVisibility(for: scrollView)
@@ -353,7 +356,7 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         if case .overview = sections[section] {
             return CGSize(
                 width: collectionView.bounds.width,
-                height: SeasonDetailHeroHeaderView.headerHeight
+                height: EpisodeDetailHeroHeaderView.headerHeight
             )
         }
 
@@ -411,14 +414,14 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
     }
 
     private func height(
-        for section: SeasonDetailSectionItem,
+        for section: EpisodeDetailSectionItem,
         width: CGFloat
     ) -> CGFloat {
         switch section {
         case .overview(let item):
             guard let overview = item.overview else { return 0 }
 
-            return SeasonDetailOverviewCollectionViewCell.fittingHeight(
+            return EpisodeDetailOverviewCollectionViewCell.fittingHeight(
                 for: overview,
                 width: width
             )
@@ -426,16 +429,19 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         case .facts:
             return Layout.factsSectionHeight
 
-        case .episodes, .videos:
+        case .videos, .images:
             return Layout.trailerStyleSectionHeight
 
-        case .cast, .crew, .images, .watchProviders:
+        case .cast, .guestStars, .crew:
             return Layout.imageStripSectionHeight
+
+        case .externalLinks(let links):
+            return EpisodeDetailExternalLinksCollectionViewCell.fittingHeight(for: links)
 
         case .accountState(let accountState):
             return max(
                 Layout.textSectionMinimumHeight,
-                SeasonDetailTextListCollectionViewCell.fittingHeight(
+                EpisodeDetailAccountStateCollectionViewCell.fittingHeight(
                     for: accountStateRows(from: accountState),
                     width: width
                 )
@@ -446,15 +452,16 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - Presentation Mapping
 
-private extension SeasonDetailViewController {
+private extension EpisodeDetailViewController {
 
-    func accountStateRows(from accountState: SeasonAccountStateItem) -> [SeasonDetailTextListItem] {
+    func accountStateRows(from accountState: EpisodeAccountStateItem) -> [EpisodeDetailTextListItem] {
         [
-            SeasonDetailTextListItem(
+            EpisodeDetailTextListItem(
                 id: "rating",
                 title: "你的評分",
                 subtitle: accountState.ratingText
             )
         ]
     }
+
 }
