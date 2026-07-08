@@ -437,10 +437,7 @@ nonisolated struct EpisodeImageItem: Sendable, Equatable, Identifiable {
 }
 
 nonisolated struct EpisodeExternalLinkItem: Sendable, Equatable, Identifiable {
-    var id: String {
-        title
-    }
-
+    let id: String
     let title: String
     let url: URL
 }

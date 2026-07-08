@@ -1,5 +1,5 @@
 //
-//  DetailImageTitleStripComponents.swift
+//  DetailImageTitleStripCollectionViewCell.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/7.
@@ -8,21 +8,6 @@
 import SDWebImage
 import SnapKit
 import UIKit
-
-// MARK: - DetailSectionPreviewLimit
-
-nonisolated enum DetailSectionPreviewLimit {
-    static let itemCount = 10
-}
-
-// MARK: - DetailImageTitleItem
-
-nonisolated struct DetailImageTitleItem: Sendable, Equatable, Identifiable {
-    let id: String
-    let imageURL: URL?
-    let title: String
-    let subtitle: String?
-}
 
 // MARK: - DetailImageTitleStripCollectionViewCell
 

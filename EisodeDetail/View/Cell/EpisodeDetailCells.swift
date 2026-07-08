@@ -163,217 +163,28 @@ final class EpisodeDetailImagesCollectionViewCell: DetailImageTitleStripCollecti
 // MARK: - EpisodeDetailExternalLinksCollectionViewCell
 
 @MainActor
-final class EpisodeDetailExternalLinksCollectionViewCell: BaseNestedCollectionViewCell {
+final class EpisodeDetailExternalLinksCollectionViewCell: DetailExternalLinkStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: EpisodeDetailExternalLinksCollectionViewCell.self)
-
-    private enum Layout {
-        static let itemSize = CGSize(width: 72, height: 88)
-        static let sectionHeight: CGFloat = 88
-        static let itemSpacing: CGFloat = 16
-    }
-
-    private var items: [EpisodeExternalLinkItem] = []
-    var onLinkSelected: ((URL) -> Void)?
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.itemSize
-        collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
-        collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
-        collectionViewFlowLayout.sectionInset = .zero
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            EpisodeDetailExternalLinkCollectionViewCell.self,
-            forCellWithReuseIdentifier: EpisodeDetailExternalLinkCollectionViewCell.reuseIdentifier
-        )
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        items = []
-        onLinkSelected = nil
-        collectionView.reloadData()
-    }
 
     func configure(
         items: [EpisodeExternalLinkItem],
         onLinkSelected: @escaping (URL) -> Void
     ) {
-        self.items = items
-        self.onLinkSelected = onLinkSelected
-        collectionView.reloadData()
+        configure(
+            items: items.map {
+                DetailExternalLinkItem(id: $0.id, title: $0.title, url: $0.url)
+            },
+            onLinkSelected: onLinkSelected
+        )
     }
 
     static func fittingHeight(for items: [EpisodeExternalLinkItem]) -> CGFloat {
-        guard !items.isEmpty else { return 0 }
-        return Layout.sectionHeight
-    }
-}
-
-extension EpisodeDetailExternalLinksCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: EpisodeDetailExternalLinkCollectionViewCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? EpisodeDetailExternalLinkCollectionViewCell {
-            cell.configure(with: items[indexPath.item])
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onLinkSelected?(items[indexPath.item].url)
-    }
-}
-
-@MainActor
-private final class EpisodeDetailExternalLinkCollectionViewCell: BaseCollectionViewCell {
-
-    static let reuseIdentifier = String(describing: EpisodeDetailExternalLinkCollectionViewCell.self)
-
-    private enum Layout {
-        static let iconContainerSize: CGFloat = 56
-        static let iconSize: CGFloat = 26
-        static let titleTopSpacing: CGFloat = 8
-    }
-
-    override var isHighlighted: Bool {
-        didSet {
-            UIView.animate(withDuration: 0.18) {
-                self.containerView.alpha = self.isHighlighted ? 0.72 : 1
-                self.containerView.transform = self.isHighlighted
-                    ? CGAffineTransform(scaleX: 0.98, y: 0.98)
-                    : .identity
+        DetailExternalLinkStripCollectionViewCell.fittingHeight(
+            for: items.map {
+                DetailExternalLinkItem(id: $0.id, title: $0.title, url: $0.url)
             }
-        }
-    }
-
-    private let iconContainerView: UIView = {
-        let view = UIView()
-        view.layer.cornerRadius = 8
-        view.clipsToBounds = true
-        return view
-    }()
-
-    private let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        label.textAlignment = .center
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
-
-    override func configureView() {
-        containerView.backgroundColor = .clear
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(iconContainerView)
-        iconContainerView.addSubview(iconImageView)
-        containerView.addSubview(titleLabel)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        iconContainerView.snp.makeConstraints { make in
-            make.top.centerX.equalToSuperview()
-            make.width.height.equalTo(Layout.iconContainerSize)
-        }
-
-        iconImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(Layout.iconSize)
-        }
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(iconContainerView.snp.bottom).offset(Layout.titleTopSpacing)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
-    }
-
-    override func resetForReuse() {
-        containerView.alpha = 1
-        containerView.transform = .identity
-        containerView.layer.borderColor = nil
-        iconImageView.image = nil
-        iconImageView.tintColor = nil
-        iconContainerView.backgroundColor = nil
-        titleLabel.text = nil
-    }
-
-    func configure(with item: EpisodeExternalLinkItem) {
-        let style = EpisodeDetailExternalLinkStyle(id: item.id)
-
-        if let imageName = style.imageName,
-           let image = UIImage(named: imageName) {
-            iconImageView.image = image.withRenderingMode(.alwaysOriginal)
-            iconImageView.tintColor = nil
-        } else {
-            iconImageView.image = UIImage(systemName: style.symbolName)
-            iconImageView.tintColor = style.tintColor
-        }
-
-        iconContainerView.backgroundColor = .clear
-        titleLabel.text = item.title
-    }
-}
-
-private struct EpisodeDetailExternalLinkStyle {
-    let imageName: String?
-    let symbolName: String
-    let tintColor: UIColor
-
-    init(id: String) {
-        switch id.lowercased() {
-        case "imdb":
-            self.imageName = "imdb_icon"
-            self.symbolName = "film.circle.fill"
-            self.tintColor = ThemeColor.spotlightGold
-
-        case "wikidata":
-            self.imageName = "wiki_icon"
-            self.symbolName = "w.circle.fill"
-            self.tintColor = ThemeColor.systemGreen
-
-        default:
-            self.imageName = nil
-            self.symbolName = "arrow.up.forward.circle.fill"
-            self.tintColor = ThemeColor.highlight
-        }
+        )
     }
 }
 

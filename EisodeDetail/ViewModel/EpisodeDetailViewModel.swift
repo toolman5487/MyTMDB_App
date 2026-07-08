@@ -298,7 +298,7 @@ nonisolated enum EpisodeDetailSectionBuilder {
             return nil
         }
 
-        return EpisodeExternalLinkItem(title: "IMDb", url: url)
+        return EpisodeExternalLinkItem(id: "imdb", title: "IMDb", url: url)
     }
 
     private static func makeWikidataLink(id: String?) -> EpisodeExternalLinkItem? {
@@ -306,7 +306,7 @@ nonisolated enum EpisodeDetailSectionBuilder {
             return nil
         }
 
-        return EpisodeExternalLinkItem(title: "Wikidata", url: url)
+        return EpisodeExternalLinkItem(id: "wikidata", title: "Wikidata", url: url)
     }
 
     private static func videoPriority(_ video: TVVideo) -> Int {
