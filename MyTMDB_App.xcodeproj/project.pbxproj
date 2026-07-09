@@ -182,6 +182,15 @@
 		1588255C2FFF7A9F0028B219 /* HomeSectionListFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588255B2FFF7A9E0028B219 /* HomeSectionListFilterHeaderView.swift */; };
 		1588255D2FFF7A9F0028B219 /* HomeSectionListFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588255B2FFF7A9E0028B219 /* HomeSectionListFilterHeaderView.swift */; };
 		1588255E2FFF7A9F0028B219 /* HomeSectionListFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588255B2FFF7A9E0028B219 /* HomeSectionListFilterHeaderView.swift */; };
+		158893DB2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */; };
+		158893DC2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */; };
+		158893DD2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */; };
+		158893E32FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */; };
+		158893E42FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */; };
+		158893E52FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */; };
+		158893E62FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E22FFFA8B20028B219 /* MainMemberCenterAccountModels.swift */; };
+		158893E72FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E22FFFA8B20028B219 /* MainMemberCenterAccountModels.swift */; };
+		158893E82FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E22FFFA8B20028B219 /* MainMemberCenterAccountModels.swift */; };
 		1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA7E2DC4B6D1005E972C /* SDWebImage */; };
 		1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA812DC4B6DF005E972C /* SnapKit */; };
 		1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA8F2DC4B93E005E972C /* LoginViewController.swift */; };
@@ -522,6 +531,9 @@
 		158825502FFF7A970028B219 /* HomeSectionListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionListService.swift; sourceTree = "<group>"; };
 		158825512FFF7A980028B219 /* HomeSectionListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionListRouter.swift; sourceTree = "<group>"; };
 		1588255B2FFF7A9E0028B219 /* HomeSectionListFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionListFilterHeaderView.swift; sourceTree = "<group>"; };
+		158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterViewController.swift; sourceTree = "<group>"; };
+		158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterModels.swift; sourceTree = "<group>"; };
+		158893E22FFFA8B20028B219 /* MainMemberCenterAccountModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterAccountModels.swift; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1250,6 +1262,40 @@
 			path = Header;
 			sourceTree = "<group>";
 		};
+		158893D72FFFA7EF0028B219 /* MainMemberCenter */ = {
+			isa = PBXGroup;
+			children = (
+				158893D82FFFA8640028B219 /* Controller */,
+				158893E02FFFA8B00028B219 /* Model */,
+				158893D92FFFA86D0028B219 /* View */,
+			);
+			path = MainMemberCenter;
+			sourceTree = "<group>";
+		};
+		158893D82FFFA8640028B219 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		158893D92FFFA86D0028B219 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		158893E02FFFA8B00028B219 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				158893E22FFFA8B20028B219 /* MainMemberCenterAccountModels.swift */,
+				158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		158B2E142FF75F9400E899D2 /* Genre */ = {
 			isa = PBXGroup;
 			children = (
@@ -1266,6 +1312,7 @@
 				158825292FFF742E0028B219 /* HomeSectionList */,
 				15A94F982FF27D0900FCBB0F /* MainHome */,
 				15D196332FF10EFF00545A85 /* MainLogIn */,
+				158893D72FFFA7EF0028B219 /* MainMemberCenter */,
 				15BAEB622FF658F1006B0E15 /* MainMovieList */,
 				15A94F672FF26FCE00FCBB0F /* MainTabBar */,
 				157C51802FFB91080044BD8E /* MainTVList */,
@@ -2274,6 +2321,9 @@
 				15CF9A182FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A142FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
+				158893DB2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */,
+				158893E32FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */,
+				158893E62FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */,
 				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15E000142FF401000000014 /* BaseFilterHeaderItem.swift in Sources */,
 				15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
@@ -2505,6 +2555,9 @@
 				152BE7792FF58000006681A5 /* MovieReviewDetailViewController.swift in Sources */,
 				152BE7642FF56000006681A5 /* MovieDetailReviewModels.swift in Sources */,
 				158825322FFF789F0028B219 /* BaseListViewController.swift in Sources */,
+				158893DC2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */,
+				158893E42FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */,
+				158893E72FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */,
 				152BE7672FF56000006681A5 /* MovieDetailReviewService.swift in Sources */,
 				15BAE9772FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				152BE76A2FF56000006681A5 /* MovieDetailReviewViewModel.swift in Sources */,
@@ -2601,6 +2654,9 @@
 				157C54222FFB95000044BD8E /* SeasonDetailModels.swift in Sources */,
 				157C54322FFB95000044BD8E /* SeasonDetailService.swift in Sources */,
 				157C54422FFB95000044BD8E /* SeasonDetailViewModel.swift in Sources */,
+				158893DD2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */,
+				158893E52FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */,
+				158893E82FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */,
 				15DAAF122FFDE90009FB88A /* EpisodeDetailModels.swift in Sources */,
 				15DAAF222FFDE90009FB88A /* EpisodeDetailService.swift in Sources */,
 				15DAAF322FFDE90009FB88A /* EpisodeDetailViewModel.swift in Sources */,
