@@ -17,6 +17,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: MainHomeSectionHeaderView.self)
     static let standardHeight: CGFloat = 32
+    private static let titleTrailingSymbolName = "chevron.right.2"
 
     // MARK: - UI Components
 
@@ -52,9 +53,22 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = nil
+        titleLabel.attributedText = nil
     }
 
     func configure(title: String?) {
-        titleLabel.text = title
+        let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
+        titleLabel.attributedText = MainHomeSectionTitleAttributedStringFactory.make(
+            title: title,
+            trailingImage: Self.makeTitleTrailingImage(font: font),
+            font: font
+        )
+    }
+
+    private static func makeTitleTrailingImage(font: UIFont) -> UIImage? {
+        UIImage(
+            systemName: titleTrailingSymbolName,
+            withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
+        )
     }
 }

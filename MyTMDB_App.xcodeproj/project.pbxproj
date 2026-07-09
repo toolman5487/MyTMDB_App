@@ -189,6 +189,9 @@
 		15A9500A2FF2A10000FCBB0F /* MainHomeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */; };
 		15A9500B2FF2A10000FCBB0F /* MainHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */; };
 		15A9500C2FF2A10000FCBB0F /* MainHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */; };
+		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
+		15E1A0022FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
+		15E1A0032FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
 		15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
 		15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */; };
@@ -498,6 +501,7 @@
 		15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeService.swift; sourceTree = "<group>"; };
 		15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewModel.swift; sourceTree = "<group>"; };
 		15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionHeaderView.swift; sourceTree = "<group>"; };
+		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
 		15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNestedCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A950362FF5100000FCBB0F /* MainHomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeRouter.swift; sourceTree = "<group>"; };
 		15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomePresentationBuilder.swift; sourceTree = "<group>"; };
@@ -1263,8 +1267,9 @@
 		15A94F9A2FF27D1F00FCBB0F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				15BAEB802FF6615A006B0E15 /* Header */,
 				15BAEB7F2FF66152006B0E15 /* Cell */,
+				15E1A0102FF9100000FCBB0F /* Factory */,
+				15BAEB802FF6615A006B0E15 /* Header */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1296,10 +1301,18 @@
 		15A950122FF2A10000FCBB0F /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */,
+				15E1A0122FF9100000FCBB0F /* Builder */,
 				15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		15E1A0122FF9100000FCBB0F /* Builder */ = {
+			isa = PBXGroup;
+			children = (
+				15A950372FF5100000FCBB0F /* MainHomePresentationBuilder.swift */,
+			);
+			path = Builder;
 			sourceTree = "<group>";
 		};
 		15A950382FF5100000FCBB0F /* Router */ = {
@@ -1521,9 +1534,25 @@
 			isa = PBXGroup;
 			children = (
 				15D198442FF8200000FCBB0F /* Carousel */,
-				15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */,
+				15E1A0112FF9100000FCBB0F /* Section */,
 			);
 			path = Header;
+			sourceTree = "<group>";
+		};
+		15E1A0102FF9100000FCBB0F /* Factory */ = {
+			isa = PBXGroup;
+			children = (
+				15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */,
+			);
+			path = Factory;
+			sourceTree = "<group>";
+		};
+		15E1A0112FF9100000FCBB0F /* Section */ = {
+			isa = PBXGroup;
+			children = (
+				15A950272FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift */,
+			);
+			path = Section;
 			sourceTree = "<group>";
 		};
 		15BAEBA42FF76000006B0E15 /* Router */ = {
@@ -2208,6 +2237,7 @@
 				15D198212FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
 				15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
 				15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
+				15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */,
 				15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503B2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A9503E2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,
@@ -2254,6 +2284,7 @@
 				15A950312FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
 				15A950342FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15D198522FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
+				15E1A0022FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */,
 				15A950242FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503C2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A9503F2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,
@@ -2391,6 +2422,7 @@
 				15D198232FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
 				15D198332FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
 				15D198532FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
+				15E1A0032FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */,
 				15A950252FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503D2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A950402FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,

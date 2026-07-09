@@ -22,6 +22,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         static let horizontalInset: CGFloat = 16
         static let carouselHeight: CGFloat = 224
         static let carouselTitleSpacing: CGFloat = 8
+        static let titleTrailingSymbolName = "chevron.right.2"
     }
 
     // MARK: - Properties
@@ -83,6 +84,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = nil
+        titleLabel.attributedText = nil
         carouselView.configure(items: [])
         onCarouselSelected = nil
     }
@@ -117,10 +119,22 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     // MARK: - Configuration
 
     func configure(title: String?, carouselItems: [MainHomeContentItem] = []) {
-        titleLabel.text = title
+        let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
+        titleLabel.attributedText = MainHomeSectionTitleAttributedStringFactory.make(
+            title: title,
+            trailingImage: Self.makeTitleTrailingImage(font: font),
+            font: font
+        )
         carouselView.configure(items: carouselItems)
         carouselView.onItemSelected = { [weak self] item in
             self?.onCarouselSelected?(item)
         }
+    }
+
+    private static func makeTitleTrailingImage(font: UIFont) -> UIImage? {
+        UIImage(
+            systemName: Layout.titleTrailingSymbolName,
+            withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
+        )
     }
 }
