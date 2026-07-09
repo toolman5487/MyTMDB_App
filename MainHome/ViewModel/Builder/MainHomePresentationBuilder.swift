@@ -74,6 +74,43 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
 
 // MARK: - MainHomeContentCategory Presentation
 
+extension MainHomeContentCategory {
+
+    var title: String {
+        switch self {
+        case .trendingMovies:
+            return "今日趨勢電影"
+
+        case .trendingTV:
+            return "今日趨勢影集"
+
+        case .popularMovies:
+            return "熱門電影"
+
+        case .popularTV:
+            return "熱門影集"
+
+        case .nowPlayingMovies:
+            return "現正熱映"
+
+        case .onTheAirTV:
+            return "播出中影集"
+
+        case .upcomingMovies:
+            return "即將上映"
+
+        case .airingTodayTV:
+            return "今日播出影集"
+
+        case .topRatedMovies:
+            return "高分電影"
+
+        case .topRatedTV:
+            return "高分影集"
+        }
+    }
+}
+
 private extension MainHomeContentCategory {
 
     var displayPriority: Int {
@@ -107,40 +144,6 @@ private extension MainHomeContentCategory {
 
         case .topRatedTV:
             return 9
-        }
-    }
-
-    var title: String {
-        switch self {
-        case .trendingMovies:
-            return "今日趨勢電影"
-
-        case .trendingTV:
-            return "今日趨勢影集"
-
-        case .popularMovies:
-            return "熱門電影"
-
-        case .popularTV:
-            return "熱門影集"
-
-        case .nowPlayingMovies:
-            return "現正熱映"
-
-        case .onTheAirTV:
-            return "播出中影集"
-
-        case .upcomingMovies:
-            return "即將上映"
-
-        case .airingTodayTV:
-            return "今日播出影集"
-
-        case .topRatedMovies:
-            return "高分電影"
-
-        case .topRatedTV:
-            return "高分影集"
         }
     }
 }

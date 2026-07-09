@@ -28,6 +28,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     // MARK: - Properties
 
     var onCarouselSelected: ((MainHomeContentItem) -> Void)?
+    var onTitleTapped: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -87,12 +88,17 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         titleLabel.attributedText = nil
         carouselView.configure(items: [])
         onCarouselSelected = nil
+        onTitleTapped = nil
     }
 
     // MARK: - Setup
 
     private func configureView() {
         backgroundColor = .clear
+        titleRowStackView.isUserInteractionEnabled = true
+        titleRowStackView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(handleTitleTap))
+        )
     }
 
     private func setupHierarchy() {
@@ -136,5 +142,9 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
             systemName: Layout.titleTrailingSymbolName,
             withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
         )
+    }
+
+    @objc private func handleTitleTap() {
+        onTitleTapped?()
     }
 }

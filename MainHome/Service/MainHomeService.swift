@@ -22,6 +22,10 @@ nonisolated protocol MainHomeServicing: Sendable {
 
 nonisolated final class MainHomeService: MainHomeServicing {
 
+    private enum Configuration {
+        static let homeSectionItemLimit = 10
+    }
+
     // MARK: - Properties
 
     private let network: NetworkServicing
@@ -68,7 +72,7 @@ nonisolated final class MainHomeService: MainHomeServicing {
                     MainHomeContentSection(
                         category: category,
                         totalResults: page.totalResults,
-                        contents: page.contents
+                        contents: Array(page.contents.prefix(Configuration.homeSectionItemLimit))
                     )
                 )
             } catch {

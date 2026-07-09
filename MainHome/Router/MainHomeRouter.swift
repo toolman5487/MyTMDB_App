@@ -12,6 +12,7 @@ import UIKit
 @MainActor
 protocol MainHomeRouting {
     func showDetail(for item: MainHomeContentItem)
+    func showSectionList(for category: MainHomeContentCategory)
 }
 
 // MARK: - MainHomeRouter
@@ -44,6 +45,14 @@ final class MainHomeRouter: MainHomeRouting {
 
         sourceViewController?.navigationController?.pushViewController(
             detailViewController,
+            animated: true
+        )
+    }
+
+    func showSectionList(for category: MainHomeContentCategory) {
+        let viewController = HomeSectionListViewController(category: category)
+        sourceViewController?.navigationController?.pushViewController(
+            viewController,
             animated: true
         )
     }

@@ -19,6 +19,10 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
     static let standardHeight: CGFloat = 32
     private static let titleTrailingSymbolName = "chevron.right.2"
 
+    // MARK: - Properties
+
+    var onTitleTapped: (() -> Void)?
+
     // MARK: - UI Components
 
     private let titleLabel: UILabel = {
@@ -34,6 +38,10 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        isUserInteractionEnabled = true
+        addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(handleTitleTap))
+        )
         backgroundColor = .clear
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
@@ -43,6 +51,10 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        isUserInteractionEnabled = true
+        addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(handleTitleTap))
+        )
         backgroundColor = .clear
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
@@ -54,6 +66,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         super.prepareForReuse()
         titleLabel.text = nil
         titleLabel.attributedText = nil
+        onTitleTapped = nil
     }
 
     func configure(title: String?) {
@@ -70,5 +83,9 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
             systemName: titleTrailingSymbolName,
             withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
         )
+    }
+
+    @objc private func handleTitleTap() {
+        onTitleTapped?()
     }
 }

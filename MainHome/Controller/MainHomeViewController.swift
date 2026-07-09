@@ -179,6 +179,10 @@ final class MainHomeViewController: MainBaseViewController {
     private func showDetail(for item: MainHomeContentItem) {
         router.showDetail(for: item)
     }
+
+    private func showSectionList(for category: MainHomeContentCategory) {
+        router.showSectionList(for: category)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -223,6 +227,8 @@ extension MainHomeViewController: UICollectionViewDataSource {
 
         let shouldShowCarousel = indexPath.section == 0 && !carouselItems.isEmpty
 
+        let section = sections[indexPath.section]
+
         if shouldShowCarousel {
             let reusableView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
@@ -232,11 +238,14 @@ extension MainHomeViewController: UICollectionViewDataSource {
 
             if let headerView = reusableView as? MainHomeFeaturedHeaderView {
                 headerView.configure(
-                    title: sections[indexPath.section].title,
+                    title: section.title,
                     carouselItems: carouselItems
                 )
                 headerView.onCarouselSelected = { [weak self] item in
                     self?.showDetail(for: item)
+                }
+                headerView.onTitleTapped = { [weak self] in
+                    self?.showSectionList(for: section.category)
                 }
             }
 
@@ -250,7 +259,10 @@ extension MainHomeViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainHomeSectionHeaderView {
-            headerView.configure(title: sections[indexPath.section].title)
+            headerView.configure(title: section.title)
+            headerView.onTitleTapped = { [weak self] in
+                self?.showSectionList(for: section.category)
+            }
         }
 
         return reusableView
