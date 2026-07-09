@@ -31,7 +31,7 @@ final class MainTVListViewModel {
 
     private let service: MainTVListServicing
     private var genres: [MainTVGenre] = []
-    private var selectedSortOption: TVSortOption?
+    private var selectedSortOption: TVSortOption = .popularity
 
     // MARK: - Initialization
 
@@ -53,7 +53,11 @@ final class MainTVListViewModel {
                 return
             }
 
-            let page = try await service.fetchSeries(genreID: selectedGenre.id, page: 1)
+            let page = try await service.fetchSeries(
+                genreID: selectedGenre.id,
+                sortOption: selectedSortOption,
+                page: 1
+            )
             guard !Task.isCancelled else { return }
 
             self.genres = genres
@@ -70,7 +74,11 @@ final class MainTVListViewModel {
         state = .refreshing(previewContent(for: selectedGenre))
 
         do {
-            let page = try await service.fetchSeries(genreID: selectedGenre.id, page: 1)
+            let page = try await service.fetchSeries(
+                genreID: selectedGenre.id,
+                sortOption: selectedSortOption,
+                page: 1
+            )
             guard !Task.isCancelled else { return }
 
             state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
@@ -93,6 +101,7 @@ final class MainTVListViewModel {
         do {
             let nextPage = try await service.fetchSeries(
                 genreID: content.selectedGenre.id,
+                sortOption: content.selectedSortOption ?? selectedSortOption,
                 page: content.currentPage + 1
             )
 
@@ -100,7 +109,8 @@ final class MainTVListViewModel {
 
             guard case .loaded(let currentContent) = state,
                   currentContent.selectedGenre.id == content.selectedGenre.id,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.currentPage == content.currentPage,
+                  currentContent.selectedSortOption == content.selectedSortOption else {
                 return
             }
 
@@ -110,7 +120,8 @@ final class MainTVListViewModel {
 
             guard case .loaded(let currentContent) = state,
                   currentContent.selectedGenre.id == content.selectedGenre.id,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.currentPage == content.currentPage,
+                  currentContent.selectedSortOption == content.selectedSortOption else {
                 return
             }
 
@@ -118,12 +129,30 @@ final class MainTVListViewModel {
         }
     }
 
-    func selectSortOption(_ option: TVSortOption) {
+    func selectSortOption(_ option: TVSortOption) async {
+        guard selectedSortOption != option else { return }
+
         selectedSortOption = option
 
         switch state {
         case .loaded(let content):
-            state = .loaded(content.sorting(by: option))
+            state = .refreshing(content.updatingSortOption(option))
+
+            do {
+                let page = try await service.fetchSeries(
+                    genreID: content.selectedGenre.id,
+                    sortOption: option,
+                    page: 1
+                )
+
+                guard !Task.isCancelled, selectedSortOption == option else { return }
+                guard let selectedGenre = genres.first(where: { $0.id == content.selectedGenre.id }) else { return }
+
+                state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
+            } catch {
+                guard !Task.isCancelled, selectedSortOption == option else { return }
+                state = .failed(error.errorMessage)
+            }
 
         case .idle, .loading, .refreshing, .empty, .failed:
             break
@@ -170,7 +199,7 @@ final class MainTVListViewModel {
                 genre: selectedGenre,
                 isSelected: true
             ),
-            series: selectedSortOption?.sorted(series) ?? series,
+            series: series,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,

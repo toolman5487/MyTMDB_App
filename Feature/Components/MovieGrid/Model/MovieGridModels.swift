@@ -57,6 +57,7 @@ nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
     let releaseDate: String?
     let voteAverage: Double
     let voteCount: Int
+    let popularity: Double
     let releaseDateText: String
     let scoreText: String
 
@@ -72,6 +73,7 @@ nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
         self.releaseDate = releaseDate
         self.voteAverage = movie.voteAverage
         self.voteCount = movie.voteCount
+        self.popularity = movie.popularity
         self.releaseDateText = releaseDate ?? "尚未公布"
         self.scoreText = String(format: "%.1f", movie.voteAverage)
     }
@@ -80,6 +82,7 @@ nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
 // MARK: - MovieSortOption
 
 nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable {
+    case popularity
     case ratingHighToLow
     case ratingLowToHigh
     case newestRelease
@@ -93,16 +96,24 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
 
     var title: String {
         switch self {
+        case .popularity:
+            return "人氣最高"
+
         case .ratingHighToLow:
             return "評分最高"
+
         case .ratingLowToHigh:
             return "評分最低"
+
         case .newestRelease:
             return "最新發布"
+
         case .oldestRelease:
             return "最早發布"
+
         case .titleAscending:
             return "名稱 (A → Z)"
+
         case .titleDescending:
             return "名稱 (Z → A)"
         }
@@ -110,6 +121,15 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
 
     func sorted(_ movies: [MovieGridMovieItem]) -> [MovieGridMovieItem] {
         switch self {
+        case .popularity:
+            return movies.sorted { lhs, rhs in
+                if lhs.popularity != rhs.popularity {
+                    return lhs.popularity > rhs.popularity
+                }
+
+                return Self.isTitleAscending(lhs, rhs)
+            }
+
         case .ratingHighToLow:
             return movies.sorted { lhs, rhs in
                 if lhs.voteAverage != rhs.voteAverage {

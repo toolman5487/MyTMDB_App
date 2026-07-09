@@ -29,6 +29,7 @@ final class MainMovieListViewController: MainBaseViewController {
     private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
     private var filterSelectionTask: Task<Void, Never>?
+    private var sortSelectionTask: Task<Void, Never>?
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components
@@ -78,6 +79,7 @@ final class MainMovieListViewController: MainBaseViewController {
     deinit {
         loadTask?.cancel()
         filterSelectionTask?.cancel()
+        sortSelectionTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -146,6 +148,7 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private func loadInitialContent() {
         loadTask?.cancel()
+        sortSelectionTask?.cancel()
         cancelLoadNextPageTask()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
@@ -155,6 +158,7 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private func selectFilter(id: Int) {
         filterSelectionTask?.cancel()
+        sortSelectionTask?.cancel()
         cancelLoadNextPageTask()
         filterSelectionTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
@@ -277,7 +281,12 @@ final class MainMovieListViewController: MainBaseViewController {
             return
         }
 
-        viewModel.selectSortOption(option)
+        sortSelectionTask?.cancel()
+        cancelLoadNextPageTask()
+        sortSelectionTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            await viewModel.selectSortOption(option)
+        }
     }
 }
 

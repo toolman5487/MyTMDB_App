@@ -14,6 +14,7 @@ nonisolated protocol MainMovieListServicing: Sendable {
 
     func fetchMovies(
         genreID: Int,
+        sortOption: MovieSortOption,
         page: Int
     ) async throws -> MainMovieListMoviePage
 }
@@ -52,11 +53,16 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
 
     func fetchMovies(
         genreID: Int,
+        sortOption: MovieSortOption,
         page: Int = 1
     ) async throws -> MainMovieListMoviePage {
         let response: TMDBPageResponse<MovieGridMovie> = try await network.get(
             path: APIConfig.Discover.movie,
-            queryItems: movieQueryItems(genreID: genreID, page: page)
+            queryItems: movieQueryItems(
+                genreID: genreID,
+                sortOption: sortOption,
+                page: page
+            )
         )
 
         return MainMovieListMoviePage(
@@ -70,15 +76,48 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
 
     // MARK: - Private Methods
 
-    private func movieQueryItems(genreID: Int, page: Int) -> [URLQueryItem] {
+    private func movieQueryItems(
+        genreID: Int,
+        sortOption: MovieSortOption,
+        page: Int
+    ) -> [URLQueryItem] {
         [
             URLQueryItem(name: "language", value: localization.languageParameter),
             URLQueryItem(name: "region", value: localization.regionCode),
-            URLQueryItem(name: "sort_by", value: "popularity.desc"),
+            URLQueryItem(name: "sort_by", value: sortOption.discoverSortValue),
             URLQueryItem(name: "include_adult", value: "false"),
             URLQueryItem(name: "include_video", value: "false"),
             URLQueryItem(name: "with_genres", value: String(genreID)),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
+    }
+}
+
+// MARK: - MovieSortOption
+
+private extension MovieSortOption {
+    var discoverSortValue: String {
+        switch self {
+        case .popularity:
+            return "popularity.desc"
+
+        case .ratingHighToLow:
+            return "vote_average.desc"
+
+        case .ratingLowToHigh:
+            return "vote_average.asc"
+
+        case .newestRelease:
+            return "release_date.desc"
+
+        case .oldestRelease:
+            return "release_date.asc"
+
+        case .titleAscending:
+            return "title.asc"
+
+        case .titleDescending:
+            return "title.desc"
+        }
     }
 }

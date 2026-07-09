@@ -70,6 +70,7 @@ nonisolated struct TVGridSeriesItem: Sendable, Equatable, Identifiable {
     let firstAirDate: String?
     let voteAverage: Double
     let voteCount: Int
+    let popularity: Double
     let firstAirDateText: String
     let scoreText: String
 
@@ -85,6 +86,7 @@ nonisolated struct TVGridSeriesItem: Sendable, Equatable, Identifiable {
         self.firstAirDate = firstAirDate
         self.voteAverage = series.voteAverage
         self.voteCount = series.voteCount
+        self.popularity = series.popularity
         self.firstAirDateText = firstAirDate ?? "尚未公布"
         self.scoreText = String(format: "%.1f", series.voteAverage)
     }
@@ -120,6 +122,7 @@ nonisolated struct MainTVGenreItem: Sendable, Equatable, Identifiable {
 // MARK: - TVSortOption
 
 nonisolated enum TVSortOption: CaseIterable, Sendable, Hashable, Identifiable {
+    case popularity
     case ratingHighToLow
     case ratingLowToHigh
     case newestFirstAirDate
@@ -133,16 +136,24 @@ nonisolated enum TVSortOption: CaseIterable, Sendable, Hashable, Identifiable {
 
     var title: String {
         switch self {
+        case .popularity:
+            return "人氣最高"
+
         case .ratingHighToLow:
             return "評分最高"
+
         case .ratingLowToHigh:
             return "評分最低"
+
         case .newestFirstAirDate:
             return "最新開播"
+
         case .oldestFirstAirDate:
             return "最早開播"
+
         case .titleAscending:
             return "名稱 (A → Z)"
+
         case .titleDescending:
             return "名稱 (Z → A)"
         }
@@ -150,6 +161,15 @@ nonisolated enum TVSortOption: CaseIterable, Sendable, Hashable, Identifiable {
 
     func sorted(_ series: [TVGridSeriesItem]) -> [TVGridSeriesItem] {
         switch self {
+        case .popularity:
+            return series.sorted { lhs, rhs in
+                if lhs.popularity != rhs.popularity {
+                    return lhs.popularity > rhs.popularity
+                }
+
+                return Self.isTitleAscending(lhs, rhs)
+            }
+
         case .ratingHighToLow:
             return series.sorted { lhs, rhs in
                 if lhs.voteAverage != rhs.voteAverage {
@@ -277,7 +297,7 @@ nonisolated struct MainTVListContent: Sendable, Equatable {
         return MainTVListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            series: selectedSortOption?.sorted(nextSeries) ?? nextSeries,
+            series: nextSeries,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
@@ -286,11 +306,11 @@ nonisolated struct MainTVListContent: Sendable, Equatable {
         )
     }
 
-    func sorting(by option: TVSortOption) -> MainTVListContent {
+    func updatingSortOption(_ option: TVSortOption) -> MainTVListContent {
         MainTVListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            series: option.sorted(series),
+            series: series,
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,

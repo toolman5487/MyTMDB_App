@@ -31,7 +31,7 @@ final class MainMovieListViewModel {
 
     private let service: MainMovieListServicing
     private var genres: [MainMovieGenre] = []
-    private var selectedSortOption: MovieSortOption?
+    private var selectedSortOption: MovieSortOption = .popularity
 
     // MARK: - Initialization
 
@@ -53,7 +53,11 @@ final class MainMovieListViewModel {
                 return
             }
 
-            let page = try await service.fetchMovies(genreID: selectedGenre.id, page: 1)
+            let page = try await service.fetchMovies(
+                genreID: selectedGenre.id,
+                sortOption: selectedSortOption,
+                page: 1
+            )
             guard !Task.isCancelled else { return }
 
             self.genres = genres
@@ -70,7 +74,11 @@ final class MainMovieListViewModel {
         state = .refreshing(previewContent(for: selectedGenre))
 
         do {
-            let page = try await service.fetchMovies(genreID: selectedGenre.id, page: 1)
+            let page = try await service.fetchMovies(
+                genreID: selectedGenre.id,
+                sortOption: selectedSortOption,
+                page: 1
+            )
             guard !Task.isCancelled else { return }
 
             state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
@@ -93,6 +101,7 @@ final class MainMovieListViewModel {
         do {
             let nextPage = try await service.fetchMovies(
                 genreID: content.selectedGenre.id,
+                sortOption: content.selectedSortOption ?? selectedSortOption,
                 page: content.currentPage + 1
             )
 
@@ -100,7 +109,8 @@ final class MainMovieListViewModel {
 
             guard case .loaded(let currentContent) = state,
                   currentContent.selectedGenre.id == content.selectedGenre.id,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.currentPage == content.currentPage,
+                  currentContent.selectedSortOption == content.selectedSortOption else {
                 return
             }
 
@@ -110,7 +120,8 @@ final class MainMovieListViewModel {
 
             guard case .loaded(let currentContent) = state,
                   currentContent.selectedGenre.id == content.selectedGenre.id,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.currentPage == content.currentPage,
+                  currentContent.selectedSortOption == content.selectedSortOption else {
                 return
             }
 
@@ -118,12 +129,30 @@ final class MainMovieListViewModel {
         }
     }
 
-    func selectSortOption(_ option: MovieSortOption) {
+    func selectSortOption(_ option: MovieSortOption) async {
+        guard selectedSortOption != option else { return }
+
         selectedSortOption = option
 
         switch state {
         case .loaded(let content):
-            state = .loaded(content.sorting(by: option))
+            state = .refreshing(content.updatingSortOption(option))
+
+            do {
+                let page = try await service.fetchMovies(
+                    genreID: content.selectedGenre.id,
+                    sortOption: option,
+                    page: 1
+                )
+
+                guard !Task.isCancelled, selectedSortOption == option else { return }
+                guard let selectedGenre = genres.first(where: { $0.id == content.selectedGenre.id }) else { return }
+
+                state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
+            } catch {
+                guard !Task.isCancelled, selectedSortOption == option else { return }
+                state = .failed(error.errorMessage)
+            }
 
         case .idle, .loading, .refreshing, .empty, .failed:
             break
@@ -170,7 +199,7 @@ final class MainMovieListViewModel {
                 genre: selectedGenre,
                 isSelected: true
             ),
-            movies: selectedSortOption?.sorted(movies) ?? movies,
+            movies: movies,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,

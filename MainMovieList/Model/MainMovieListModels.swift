@@ -82,7 +82,7 @@ nonisolated struct MainMovieListContent: Sendable, Equatable {
         return MainMovieListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            movies: selectedSortOption?.sorted(nextMovies) ?? nextMovies,
+            movies: nextMovies,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
@@ -91,11 +91,11 @@ nonisolated struct MainMovieListContent: Sendable, Equatable {
         )
     }
 
-    func sorting(by option: MovieSortOption) -> MainMovieListContent {
+    func updatingSortOption(_ option: MovieSortOption) -> MainMovieListContent {
         MainMovieListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            movies: option.sorted(movies),
+            movies: movies,
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,
