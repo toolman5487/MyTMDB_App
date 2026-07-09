@@ -13,12 +13,21 @@ import UIKit
 @MainActor
 final class HomeSectionListViewController: BaseListViewController {
 
+    // MARK: - Layout
+
+    private enum Layout {
+        static let filterHeaderHeight: CGFloat = 56
+    }
+
     // MARK: - Properties
 
     private let category: MainHomeContentCategory
     private let viewModel: HomeSectionListViewModel
-    private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
+    private lazy var router: HomeSectionListRouting = HomeSectionListRouter(sourceViewController: self)
+    private var filters: [HomeSectionListGenreItem] = []
     private var items: [MainHomeContentItem] = []
+    private var isFilterSkeletonVisible = true
+    private var isFilterPageSheetPresented = false
     private var loadTask: Task<Void, Never>?
     private let paginationTaskController = MovieGridPaginationTaskController()
 
@@ -54,7 +63,7 @@ final class HomeSectionListViewController: BaseListViewController {
 
     override func configureView() {
         super.configureView()
-        navigationItem.largeTitleDisplayMode = .never
+        configureNavigationBarAppearance()
         title = category.title
         configureCollectionView()
     }
@@ -72,12 +81,37 @@ final class HomeSectionListViewController: BaseListViewController {
 
     // MARK: - Setup
 
+    private func configureNavigationBarAppearance() {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: ThemeColor.highlight
+        ]
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = ThemeColor.background
+        appearance.shadowColor = ThemeColor.separator
+        appearance.titleTextAttributes = titleAttributes
+        appearance.largeTitleTextAttributes = titleAttributes
+
+        navigationItem.standardAppearance = appearance
+        navigationItem.compactAppearance = appearance
+        navigationItem.scrollEdgeAppearance = appearance
+        navigationItem.compactScrollEdgeAppearance = appearance
+        navigationItem.largeTitleDisplayMode = .never
+    }
+
     private func configureCollectionView() {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
+        collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true
         collectionViewFlowLayout.minimumLineSpacing = MovieGridLayoutMetrics.itemSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = MovieGridLayoutMetrics.itemSpacing
+        collectionView.register(
+            HomeSectionListFilterHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: HomeSectionListFilterHeaderView.reuseIdentifier
+        )
         collectionView.register(
             HomeSectionListItemCollectionViewCell.self,
             forCellWithReuseIdentifier: HomeSectionListItemCollectionViewCell.reuseIdentifier
@@ -95,6 +129,11 @@ final class HomeSectionListViewController: BaseListViewController {
         }
     }
 
+    private func selectFilter(id: Int) {
+        cancelLoadNextPageTask()
+        viewModel.selectGenre(id: id)
+    }
+
     private func observeViewModelState() {
         withObservationTracking {
             _ = viewModel.state
@@ -110,26 +149,36 @@ final class HomeSectionListViewController: BaseListViewController {
     private func render(state: HomeSectionListViewState) {
         switch state {
         case .idle, .loading:
+            filters = []
             items = []
+            isFilterSkeletonVisible = true
             setLoadingVisible(state == .loading)
             collectionView.backgroundView = nil
 
         case .empty:
+            filters = []
             items = []
+            isFilterSkeletonVisible = false
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: .emptyContent)
 
         case .failed(let errorMessage):
+            filters = []
             items = []
+            isFilterSkeletonVisible = false
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: errorMessage) { [weak self] in
                 self?.loadInitialContent()
             }
 
         case .loaded(let content):
-            items = content.items
+            filters = content.genres
+            items = content.displayedItems
+            isFilterSkeletonVisible = false
             setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            collectionView.backgroundView = content.displayedItems.isEmpty
+                ? ErrorMessageView(message: .emptyContent)
+                : nil
         }
 
         collectionView.reloadData()
@@ -164,14 +213,67 @@ final class HomeSectionListViewController: BaseListViewController {
     private func cancelLoadNextPageTask() {
         paginationTaskController.cancel()
     }
+
+    private func configureFilterHeader(_ headerView: UICollectionReusableView) {
+        guard let headerView = headerView as? HomeSectionListFilterHeaderView else { return }
+
+        headerView.configure(
+            filters: filters,
+            isExpanded: isFilterPageSheetPresented,
+            isShowingSkeleton: isFilterSkeletonVisible
+        )
+        headerView.onFilterSelected = { [weak self] id in
+            self?.selectFilter(id: id)
+        }
+        headerView.onShowAllFilters = { [weak self] in
+            self?.presentFilterPageSheet()
+        }
+    }
+
+    private func presentFilterPageSheet() {
+        guard !filters.isEmpty else { return }
+        setFilterPageSheetPresented(true)
+
+        router.showGenrePageSheet(
+            filters: filters,
+            onFilterSelected: { [weak self] id in
+                self?.selectFilter(id: id)
+            },
+            onDismiss: { [weak self] in
+                self?.setFilterPageSheetPresented(false)
+            }
+        )
+    }
+
+    private func setFilterPageSheetPresented(_ isPresented: Bool) {
+        isFilterPageSheetPresented = isPresented
+
+        for indexPath in collectionView.indexPathsForVisibleSupplementaryElements(
+            ofKind: UICollectionView.elementKindSectionHeader
+        ) {
+            let reusableView = collectionView.supplementaryView(
+                forElementKind: UICollectionView.elementKindSectionHeader,
+                at: indexPath
+            )
+
+            (reusableView as? HomeSectionListFilterHeaderView)?.setShowAllButtonExpanded(
+                isPresented,
+                animated: true
+            )
+        }
+    }
 }
 
 // MARK: - UICollectionViewDataSource
 
 extension HomeSectionListViewController: UICollectionViewDataSource {
 
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        shouldShowContentSection ? 1 : 0
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
+        isFilterSkeletonVisible ? 0 : items.count
     }
 
     func collectionView(
@@ -192,6 +294,24 @@ extension HomeSectionListViewController: UICollectionViewDataSource {
         }
 
         return cell
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        let reusableView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: HomeSectionListFilterHeaderView.reuseIdentifier,
+            for: indexPath
+        )
+
+        if kind == UICollectionView.elementKindSectionHeader {
+            configureFilterHeader(reusableView)
+        }
+
+        return reusableView
     }
 }
 
@@ -217,6 +337,17 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        CGSize(
+            width: collectionView.bounds.width,
+            height: shouldShowFilterHeader ? Layout.filterHeaderHeight : 0
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
@@ -227,7 +358,9 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        UIEdgeInsets(
+        guard !isFilterSkeletonVisible else { return .zero }
+
+        return UIEdgeInsets(
             top: 12,
             left: MovieGridLayoutMetrics.horizontalInset,
             bottom: 24,
@@ -249,5 +382,18 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
         MovieGridLayoutMetrics.itemSpacing
+    }
+}
+
+// MARK: - Private Helpers
+
+private extension HomeSectionListViewController {
+
+    var shouldShowContentSection: Bool {
+        shouldShowFilterHeader || !items.isEmpty
+    }
+
+    var shouldShowFilterHeader: Bool {
+        isFilterSkeletonVisible || !filters.isEmpty
     }
 }

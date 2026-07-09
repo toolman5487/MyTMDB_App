@@ -13,14 +13,13 @@ import UIKit
 // MARK: - MainHomePosterCollectionViewCell
 
 @MainActor
-class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
+final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MainHomePosterCollectionViewCell.self)
 
     private enum Layout {
         static let posterHeight: CGFloat = 186
-        static let mediaTypeTopSpacing: CGFloat = 4
-        static let titleTopSpacing: CGFloat = 2
+        static let titleTopSpacing: CGFloat = 4
         static let scoreTopSpacing: CGFloat = 2
         static let posterCornerRadius: CGFloat = 8
     }
@@ -34,15 +33,6 @@ class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         imageView.layer.cornerRadius = Layout.posterCornerRadius
         imageView.isSkeletonable = true
         return imageView
-    }()
-
-    private let mediaTypeLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 1
-        return label
     }()
 
     private let titleLabel: UILabel = {
@@ -70,7 +60,6 @@ class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
     override func setupHierarchy() {
         super.setupHierarchy()
         containerView.addSubview(posterImageView)
-        containerView.addSubview(mediaTypeLabel)
         containerView.addSubview(titleLabel)
         containerView.addSubview(scoreLabel)
     }
@@ -83,13 +72,8 @@ class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
             make.height.equalTo(Layout.posterHeight)
         }
 
-        mediaTypeLabel.snp.makeConstraints { make in
-            make.top.equalTo(posterImageView.snp.bottom).offset(Layout.mediaTypeTopSpacing)
-            make.leading.trailing.equalToSuperview()
-        }
-
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(mediaTypeLabel.snp.bottom).offset(Layout.titleTopSpacing)
+            make.top.equalTo(posterImageView.snp.bottom).offset(Layout.titleTopSpacing)
             make.leading.trailing.equalToSuperview()
         }
 
@@ -103,7 +87,6 @@ class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         posterImageView.sd_cancelCurrentImageLoad()
         posterImageView.image = nil
         showPosterSkeletonIfNeeded()
-        mediaTypeLabel.text = nil
         titleLabel.text = nil
         scoreLabel.text = nil
     }
@@ -124,7 +107,6 @@ class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
             }
         }
 
-        mediaTypeLabel.text = item.mediaTypeText
         titleLabel.text = item.title
         scoreLabel.text = "評分 \(item.scoreText)"
     }

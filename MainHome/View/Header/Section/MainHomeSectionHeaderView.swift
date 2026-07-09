@@ -29,7 +29,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .title3)
         label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
+        label.textColor = ThemeColor.highlight
         label.numberOfLines = 1
         return label
     }()
@@ -74,7 +74,8 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         titleLabel.attributedText = MainHomeSectionTitleAttributedStringFactory.make(
             title: title,
             trailingImage: Self.makeTitleTrailingImage(font: font),
-            font: font
+            font: font,
+            textColor: ThemeColor.highlight
         )
     }
 

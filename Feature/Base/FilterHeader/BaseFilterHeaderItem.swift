@@ -1,0 +1,16 @@
+//
+//  BaseFilterHeaderItem.swift
+//  MyTMDB_App
+//
+//  Created by Codex on 2026/7/9.
+//
+
+import Foundation
+
+// MARK: - BaseFilterHeaderItem
+
+nonisolated struct BaseFilterHeaderItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let name: String
+    let isSelected: Bool
+}

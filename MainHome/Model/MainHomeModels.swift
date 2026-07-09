@@ -71,6 +71,7 @@ nonisolated struct MainHomeContent: Decodable, Sendable, Equatable, Identifiable
     let voteAverage: Double
     let voteCount: Int
     let popularity: Double
+    let genreIDs: [Int]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -84,6 +85,7 @@ nonisolated struct MainHomeContent: Decodable, Sendable, Equatable, Identifiable
         case voteAverage = "vote_average"
         case voteCount = "vote_count"
         case popularity
+        case genreIDs = "genre_ids"
     }
 
     init(from decoder: Decoder) throws {
@@ -101,6 +103,7 @@ nonisolated struct MainHomeContent: Decodable, Sendable, Equatable, Identifiable
         self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
         self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
+        self.genreIDs = try container.decodeIfPresent([Int].self, forKey: .genreIDs) ?? []
     }
 }
 

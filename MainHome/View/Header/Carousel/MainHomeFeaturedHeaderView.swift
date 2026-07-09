@@ -45,7 +45,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .title3)
         label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
+        label.textColor = ThemeColor.highlight
         label.numberOfLines = 1
         return label
     }()
@@ -129,7 +129,8 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         titleLabel.attributedText = MainHomeSectionTitleAttributedStringFactory.make(
             title: title,
             trailingImage: Self.makeTitleTrailingImage(font: font),
-            font: font
+            font: font,
+            textColor: ThemeColor.highlight
         )
         carouselView.configure(items: carouselItems)
         carouselView.onItemSelected = { [weak self] item in

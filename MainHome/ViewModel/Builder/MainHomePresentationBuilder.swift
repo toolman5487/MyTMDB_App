@@ -48,18 +48,17 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let mediaType: MainHomeMediaType
-    let mediaTypeText: String
     let overview: String
     let posterURL: URL?
     let backdropURL: URL?
     let dateText: String
     let scoreText: String
+    let genreIDs: [Int]
 
     init(content: MainHomeContent, mediaType: MainHomeMediaType) {
         self.id = content.id
         self.title = content.title
         self.mediaType = mediaType
-        self.mediaTypeText = mediaType.title
         self.overview = content.overview
         self.posterURL = content.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
@@ -69,6 +68,7 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
         }
         self.dateText = content.primaryDate?.isEmpty == false ? content.primaryDate ?? "" : "尚未公布"
         self.scoreText = String(format: "%.1f", content.voteAverage)
+        self.genreIDs = content.genreIDs
     }
 }
 
@@ -144,21 +144,6 @@ private extension MainHomeContentCategory {
 
         case .topRatedTV:
             return 9
-        }
-    }
-}
-
-// MARK: - MainHomeMediaType Presentation
-
-private extension MainHomeMediaType {
-
-    var title: String {
-        switch self {
-        case .movie:
-            return "電影"
-
-        case .tv:
-            return "影集"
         }
     }
 }
