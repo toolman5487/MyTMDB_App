@@ -83,7 +83,7 @@ final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
                 finishSearchCleanup()
             }
         } else {
-            Task { @MainActor in
+            Task(priority: .userInitiated) { @MainActor in
                 finishSearchCleanup()
             }
         }

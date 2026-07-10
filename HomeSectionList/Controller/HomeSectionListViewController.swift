@@ -138,7 +138,7 @@ final class HomeSectionListViewController: BaseListViewController {
         withObservationTracking {
             _ = viewModel.state
         } onChange: { [weak self] in
-            Task { @MainActor [weak self] in
+            Task(priority: .userInitiated) { @MainActor [weak self] in
                 guard let self else { return }
                 render(state: viewModel.state)
                 observeViewModelState()

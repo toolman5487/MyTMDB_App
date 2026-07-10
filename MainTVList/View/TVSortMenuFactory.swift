@@ -21,7 +21,7 @@ enum TVSortMenuFactory {
                 title: option.title,
                 state: selectedOption == option ? .on : .off
             ) { _ in
-                Task { @MainActor in
+                Task(priority: .userInitiated) { @MainActor in
                     onSelect(option)
                 }
             }
