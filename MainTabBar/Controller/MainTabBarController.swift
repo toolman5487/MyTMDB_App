@@ -143,11 +143,9 @@ final class MainTabBarController: UITabBarController {
             return viewController
 
         case .memberCenter:
-            return ViewController(
-                displayTitle: item.title,
-                tabKind: item.kind,
-                session: session
-            )
+            let viewController = MainMemberCenterViewController(session: session)
+            viewController.title = item.title
+            return viewController
         }
     }
 
