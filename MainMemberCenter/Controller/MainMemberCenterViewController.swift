@@ -14,38 +14,43 @@ final class MainMemberCenterViewController: MainBaseViewController {
     // MARK: - Layout
 
     private enum Layout {
-        static let profileHeight: CGFloat = 128
-        static let menuItemHeight: CGFloat = 60
-        static let sectionSpacing: CGFloat = 16
+        static let profileHeight: CGFloat = 160
+        static let sectionHeaderHeight: CGFloat = 32
+        static let contentItemHeight: CGFloat = 232
+        static let sectionSpacing: CGFloat = 12
         static let horizontalInset: CGFloat = 16
-        static let topInset: CGFloat = 16
-        static let bottomInset: CGFloat = 24
+        static let topInset: CGFloat = 24
+        static let bottomInset: CGFloat = 32
     }
 
-    private enum Section: Int, CaseIterable {
-        case profile
-        case menu
+    private enum Section {
+        case profile(MainMemberCenterProfile)
+        case content(MainMemberCenterSection)
     }
 
     // MARK: - Properties
 
+    private let session: AuthSession
     private let viewModel: MainMemberCenterViewModel
-    private var content: MainMemberCenterContent?
+    private var sections: [Section] = []
     private var loadTask: Task<Void, Never>?
 
     // MARK: - Initialization
 
     init(session: AuthSession) {
+        self.session = session
         self.viewModel = MainMemberCenterViewModel(session: session)
         super.init(nibName: nil, bundle: nil)
     }
 
     init(viewModel: MainMemberCenterViewModel) {
+        self.session = .loggedOut
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
+        self.session = .loggedOut
         self.viewModel = MainMemberCenterViewModel(session: .loggedOut)
         super.init(coder: coder)
     }
@@ -58,6 +63,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
 
     override func configureView() {
         super.configureView()
+        title = nil
         navigationItem.largeTitleDisplayMode = .never
         configureCollectionView()
     }
@@ -66,6 +72,18 @@ final class MainMemberCenterViewController: MainBaseViewController {
         render(state: viewModel.state)
         observeViewModelState()
         loadContent()
+    }
+
+    // MARK: - Lifecycle
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup
@@ -81,10 +99,32 @@ final class MainMemberCenterViewController: MainBaseViewController {
             MainMemberCenterProfileCollectionViewCell.self,
             forCellWithReuseIdentifier: MainMemberCenterProfileCollectionViewCell.reuseIdentifier
         )
+        registerSectionCells()
         collectionView.register(
-            MainMemberCenterMenuItemCollectionViewCell.self,
-            forCellWithReuseIdentifier: MainMemberCenterMenuItemCollectionViewCell.reuseIdentifier
+            MainHomeSectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier
         )
+    }
+
+    private func registerSectionCells() {
+        let cellTypes: [UICollectionViewCell.Type] = [
+            MainMemberCenterFavoriteMoviesSectionCollectionViewCell.self,
+            MainMemberCenterFavoriteTVSectionCollectionViewCell.self,
+            MainMemberCenterWatchlistMoviesSectionCollectionViewCell.self,
+            MainMemberCenterWatchlistTVSectionCollectionViewCell.self,
+            MainMemberCenterRatedMoviesSectionCollectionViewCell.self,
+            MainMemberCenterRatedTVSectionCollectionViewCell.self,
+            MainMemberCenterRatedEpisodesSectionCollectionViewCell.self,
+            MainMemberCenterListsSectionCollectionViewCell.self
+        ]
+
+        for cellType in cellTypes {
+            collectionView.register(
+                cellType,
+                forCellWithReuseIdentifier: String(describing: cellType)
+            )
+        }
     }
 
     // MARK: - Data Loading
@@ -112,22 +152,22 @@ final class MainMemberCenterViewController: MainBaseViewController {
     private func render(state: MainMemberCenterViewState) {
         switch state {
         case .idle:
-            content = nil
+            sections = []
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
-            content = nil
+            sections = []
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let content):
-            self.content = content
+            sections = makeSections(for: content)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .failed(let message):
-            content = nil
+            sections = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadContent()
@@ -136,6 +176,29 @@ final class MainMemberCenterViewController: MainBaseViewController {
 
         collectionView.reloadData()
     }
+
+    private func makeSections(for content: MainMemberCenterContent) -> [Section] {
+        [.profile(content.profile)] + content.contentSections.map(Section.content)
+    }
+
+    private func showList(for destination: MainMemberCenterDestination) {
+        guard case .user(let sessionId) = session,
+              let accountId = sections.compactMap({ section -> Int? in
+                  if case .profile(let profile) = section {
+                      return profile.id
+                  }
+                  return nil
+              }).first else {
+            return
+        }
+
+        let viewController = MainMemberCenterListViewController(
+            destination: destination,
+            accountId: accountId,
+            sessionId: sessionId
+        )
+        navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -143,55 +206,75 @@ final class MainMemberCenterViewController: MainBaseViewController {
 extension MainMemberCenterViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        content == nil ? 0 : Section.allCases.count
+        sections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let section = Section(rawValue: section), let content else { return 0 }
-
-        switch section {
-        case .profile:
-            return 1
-
-        case .menu:
-            return content.menuItems.count
-        }
+        1
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let section = Section(rawValue: indexPath.section), let content else {
+        guard sections.indices.contains(indexPath.section) else {
             return UICollectionViewCell()
         }
 
-        switch section {
-        case .profile:
+        switch sections[indexPath.section] {
+        case .profile(let profile):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MainMemberCenterProfileCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
 
             if let cell = cell as? MainMemberCenterProfileCollectionViewCell {
-                cell.configure(with: content.profile)
+                cell.configure(with: profile)
             }
 
             return cell
 
-        case .menu:
+        case .content(let contentSection):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MainMemberCenterMenuItemCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: contentSection.id.sectionCellReuseIdentifier,
                 for: indexPath
             )
 
-            if let cell = cell as? MainMemberCenterMenuItemCollectionViewCell,
-               content.menuItems.indices.contains(indexPath.item) {
-                cell.configure(with: content.menuItems[indexPath.item])
+            if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
+                cell.configure(items: contentSection.items) { [weak self] _ in
+                    self?.showList(for: contentSection.id)
+                }
             }
 
             return cell
         }
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader,
+              sections.indices.contains(indexPath.section),
+              case .content(let contentSection) = sections[indexPath.section] else {
+            return UICollectionReusableView()
+        }
+
+        let reusableView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier,
+            for: indexPath
+        )
+
+        if let headerView = reusableView as? MainHomeSectionHeaderView {
+            headerView.configure(title: contentSection.title)
+            headerView.onTitleTapped = { [weak self] in
+                self?.showList(for: contentSection.id)
+            }
+        }
+
+        return reusableView
     }
 }
 
@@ -216,22 +299,23 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        guard let section = Section(rawValue: indexPath.section) else {
+        guard sections.indices.contains(indexPath.section) else {
             return .zero
         }
 
-        let width = collectionView.bounds.width - (Layout.horizontalInset * 2)
-        let height: CGFloat
-
-        switch section {
+        switch sections[indexPath.section] {
         case .profile:
-            height = Layout.profileHeight
+            return CGSize(
+                width: collectionView.bounds.width - (Layout.horizontalInset * 2),
+                height: Layout.profileHeight
+            )
 
-        case .menu:
-            height = Layout.menuItemHeight
+        case .content:
+            return CGSize(
+                width: collectionView.bounds.width,
+                height: Layout.contentItemHeight
+            )
         }
-
-        return CGSize(width: width, height: height)
     }
 
     func collectionView(
@@ -239,17 +323,26 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        guard let section = Section(rawValue: section) else { return .zero }
+        guard sections.indices.contains(section) else { return .zero }
 
-        let topInset: CGFloat = section == .profile ? Layout.topInset : 0
-        let bottomInset: CGFloat = section == .menu ? Layout.bottomInset : 0
+        switch sections[section] {
+        case .profile:
+            return UIEdgeInsets(
+                top: Layout.topInset,
+                left: Layout.horizontalInset,
+                bottom: Layout.sectionSpacing,
+                right: Layout.horizontalInset
+            )
 
-        return UIEdgeInsets(
-            top: topInset,
-            left: Layout.horizontalInset,
-            bottom: bottomInset,
-            right: Layout.horizontalInset
-        )
+        case .content:
+            let isLastSection = section == sections.count - 1
+            return UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: isLastSection ? Layout.bottomInset : Layout.sectionSpacing,
+                right: 0
+            )
+        }
     }
 
     func collectionView(
@@ -258,5 +351,21 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
         8
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        guard sections.indices.contains(section),
+              case .content = sections[section] else {
+            return .zero
+        }
+
+        return CGSize(
+            width: collectionView.bounds.width,
+            height: Layout.sectionHeaderHeight
+        )
     }
 }

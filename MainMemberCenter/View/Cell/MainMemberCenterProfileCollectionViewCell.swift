@@ -22,9 +22,10 @@ final class MainMemberCenterProfileCollectionViewCell: BaseCollectionViewCell {
         static let horizontalInset: CGFloat = 16
         static let verticalInset: CGFloat = 16
         static let contentSpacing: CGFloat = 16
-        static let metadataSpacing: CGFloat = 8
-        static let avatarSize: CGFloat = 72
+        static let metadataSpacing: CGFloat = 6
+        static let avatarSize: CGFloat = 88
         static let cornerRadius: CGFloat = 8
+        static let avatarBorderWidth: CGFloat = 3
     }
 
     // MARK: - UI Components
@@ -32,7 +33,7 @@ final class MainMemberCenterProfileCollectionViewCell: BaseCollectionViewCell {
     private let avatarImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
+        imageView.backgroundColor = ThemeColor.background
         imageView.tintColor = ThemeColor.textTertiary
         imageView.clipsToBounds = true
         imageView.image = UIImage(systemName: "person.crop.circle")
@@ -41,7 +42,7 @@ final class MainMemberCenterProfileCollectionViewCell: BaseCollectionViewCell {
 
     private let displayNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
+        label.font = .preferredFont(forTextStyle: .title2)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
@@ -115,10 +116,15 @@ final class MainMemberCenterProfileCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         super.configureView()
-        containerView.backgroundColor = ThemeColor.backgroundSecondary
+        containerView.backgroundColor = ThemeColor.primary.withAlphaComponent(0.12)
         containerView.layer.cornerRadius = Layout.cornerRadius
+        containerView.layer.cornerCurve = .continuous
         containerView.layer.masksToBounds = true
+        containerView.layer.borderWidth = 1
+        containerView.layer.borderColor = ThemeColor.primary.withAlphaComponent(0.18).cgColor
         avatarImageView.layer.cornerRadius = Layout.avatarSize / 2
+        avatarImageView.layer.borderWidth = Layout.avatarBorderWidth
+        avatarImageView.layer.borderColor = ThemeColor.background.withAlphaComponent(0.9).cgColor
     }
 
     override func setupHierarchy() {

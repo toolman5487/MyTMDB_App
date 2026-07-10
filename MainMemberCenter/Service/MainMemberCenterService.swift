@@ -96,7 +96,16 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
 
     func fetchContent(sessionId: String) async throws -> MainMemberCenterContent {
         let account = try await fetchAccount(sessionId: sessionId)
-        return MainMemberCenterContent(profile: MainMemberCenterProfile(account: account))
+        let profile = MainMemberCenterProfile(account: account)
+        let contentSections = await fetchContentSections(
+            accountId: profile.id,
+            sessionId: sessionId
+        )
+
+        return MainMemberCenterContent(
+            profile: profile,
+            contentSections: contentSections
+        )
     }
 
     func fetchFavoriteMovies(
@@ -225,6 +234,155 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         try await network.get(
             path: APIConfig.Account.me,
             queryItems: authenticatedQueryItems(sessionId: sessionId)
+        )
+    }
+
+    private func fetchContentSections(
+        accountId: Int,
+        sessionId: String
+    ) async -> [MainMemberCenterSection] {
+        var sections: [MainMemberCenterSection] = []
+
+        for destination in MainMemberCenterDestination.allCases {
+            guard let section = await fetchContentSection(
+                destination: destination,
+                accountId: accountId,
+                sessionId: sessionId
+            ) else {
+                continue
+            }
+
+            sections.append(section)
+        }
+
+        return sections
+    }
+
+    private func fetchContentSection(
+        destination: MainMemberCenterDestination,
+        accountId: Int,
+        sessionId: String
+    ) async -> MainMemberCenterSection? {
+        do {
+            switch destination {
+            case .favoriteMovies:
+                let page = try await fetchFavoriteMovies(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(movie: $0, destination: destination)
+                    }
+                )
+
+            case .favoriteTV:
+                let page = try await fetchFavoriteTV(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(series: $0, destination: destination)
+                    }
+                )
+
+            case .watchlistMovies:
+                let page = try await fetchWatchlistMovies(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(movie: $0, destination: destination)
+                    }
+                )
+
+            case .watchlistTV:
+                let page = try await fetchWatchlistTV(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(series: $0, destination: destination)
+                    }
+                )
+
+            case .ratedMovies:
+                let page = try await fetchRatedMovies(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(movie: $0, destination: destination)
+                    }
+                )
+
+            case .ratedTV:
+                let page = try await fetchRatedTV(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(series: $0, destination: destination)
+                    }
+                )
+
+            case .ratedEpisodes:
+                let page = try await fetchRatedEpisodes(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(episode: $0, destination: destination)
+                    }
+                )
+
+            case .lists:
+                let page = try await fetchLists(
+                    accountId: accountId,
+                    sessionId: sessionId,
+                    page: 1
+                )
+                return makeContentSection(
+                    destination: destination,
+                    items: Array(page.results.prefix(10)).map {
+                        MainMemberCenterListItem(list: $0, destination: destination)
+                    }
+                )
+            }
+        } catch {
+            return nil
+        }
+    }
+
+    private func makeContentSection(
+        destination: MainMemberCenterDestination,
+        items: [MainMemberCenterListItem]
+    ) -> MainMemberCenterSection? {
+        guard !items.isEmpty else { return nil }
+
+        return MainMemberCenterSection(
+            destination: destination,
+            items: items
         )
     }
 

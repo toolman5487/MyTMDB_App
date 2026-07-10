@@ -20,11 +20,31 @@ nonisolated enum MainMemberCenterViewState: Equatable {
 
 nonisolated struct MainMemberCenterContent: Sendable, Equatable {
     let profile: MainMemberCenterProfile
-    let menuItems: [MainMemberCenterMenuItem]
+    let contentSections: [MainMemberCenterSection]
 
-    init(profile: MainMemberCenterProfile) {
+    init(
+        profile: MainMemberCenterProfile,
+        contentSections: [MainMemberCenterSection] = []
+    ) {
         self.profile = profile
-        self.menuItems = MainMemberCenterDestination.allCases.map(MainMemberCenterMenuItem.init(destination:))
+        self.contentSections = contentSections
+    }
+}
+
+// MARK: - MainMemberCenterSection
+
+nonisolated struct MainMemberCenterSection: Sendable, Equatable, Identifiable {
+    let id: MainMemberCenterDestination
+    let title: String
+    let items: [MainMemberCenterListItem]
+
+    init(
+        destination: MainMemberCenterDestination,
+        items: [MainMemberCenterListItem]
+    ) {
+        self.id = destination
+        self.title = destination.title
+        self.items = items
     }
 }
 
@@ -118,19 +138,5 @@ nonisolated enum MainMemberCenterDestination: String, Sendable, Equatable, CaseI
         case .lists:
             return "list.bullet.rectangle"
         }
-    }
-}
-
-// MARK: - MainMemberCenterMenuItem
-
-nonisolated struct MainMemberCenterMenuItem: Sendable, Equatable, Identifiable {
-    let id: MainMemberCenterDestination
-    let title: String
-    let systemImageName: String
-
-    init(destination: MainMemberCenterDestination) {
-        self.id = destination
-        self.title = destination.title
-        self.systemImageName = destination.systemImageName
     }
 }
