@@ -158,15 +158,15 @@
 		157C58202FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */; };
 		157C58212FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */; };
 		157C58222FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */; };
-		158809033000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809013000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift */; };
+		158809033000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */; };
 		158809A32FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A12FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift */; };
 		158809A42FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A12FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift */; };
 		158809A52FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A12FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift */; };
 		158809A62FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A22FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift */; };
 		158809A72FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A22FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift */; };
 		158809A82FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A22FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift */; };
-		158809053000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809013000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift */; };
-		158809073000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809013000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift */; };
+		158809053000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */; };
+		158809073000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */; };
 		1588090D3000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588090B3000D1850081E4E9 /* MainMemberCenterViewModel.swift */; };
 		1588090E3000D1850081E4E9 /* MainMemberCenterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809093000D1850081E4E9 /* MainMemberCenterService.swift */; };
 		1588090F3000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588090B3000D1850081E4E9 /* MainMemberCenterViewModel.swift */; };
@@ -212,6 +212,9 @@
 		158893DB2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */; };
 		158893DC2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */; };
 		158893DD2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */; };
+		158809AD2FFEB0010081E4E9 /* MainMemberCenterRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809AC2FFEB0010081E4E9 /* MainMemberCenterRouter.swift */; };
+		158809AE2FFEB0010081E4E9 /* MainMemberCenterRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809AC2FFEB0010081E4E9 /* MainMemberCenterRouter.swift */; };
+		158809AF2FFEB0010081E4E9 /* MainMemberCenterRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809AC2FFEB0010081E4E9 /* MainMemberCenterRouter.swift */; };
 		158893E32FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */; };
 		158893E42FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */; };
 		158893E52FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */; };
@@ -550,7 +553,7 @@
 		157C57002FFB9F000044BD8E /* SeasonDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailCells.swift; sourceTree = "<group>"; };
 		157C57012FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailSectionHeaderView.swift; sourceTree = "<group>"; };
 		157C58002FFBA000044BD8E /* SeasonDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailRouter.swift; sourceTree = "<group>"; };
-		158809013000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterProfileCollectionViewCell.swift; sourceTree = "<group>"; };
+		158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterProfileHeaderView.swift; sourceTree = "<group>"; };
 		158809A12FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterContentStripCollectionViewCell.swift; sourceTree = "<group>"; };
 		158809A22FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterSectionCollectionViewCells.swift; sourceTree = "<group>"; };
 		158809093000D1850081E4E9 /* MainMemberCenterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterService.swift; sourceTree = "<group>"; };
@@ -568,6 +571,7 @@
 		158825512FFF7A980028B219 /* HomeSectionListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionListRouter.swift; sourceTree = "<group>"; };
 		1588255B2FFF7A9E0028B219 /* HomeSectionListFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionListFilterHeaderView.swift; sourceTree = "<group>"; };
 		158893DA2FFFA8A90028B219 /* MainMemberCenterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterViewController.swift; sourceTree = "<group>"; };
+		158809AC2FFEB0010081E4E9 /* MainMemberCenterRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterRouter.swift; sourceTree = "<group>"; };
 		158893E12FFFA8B10028B219 /* MainMemberCenterModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterModels.swift; sourceTree = "<group>"; };
 		158893E22FFFA8B20028B219 /* MainMemberCenterAccountModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterAccountModels.swift; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1223,7 +1227,6 @@
 		158809023000D1710081E4E9 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				158809013000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift */,
 				158809A92FFEA0010081E4E9 /* Base */,
 				158809AA2FFEA0010081E4E9 /* Section */,
 			);
@@ -1396,11 +1399,20 @@
 			children = (
 				158893D82FFFA8640028B219 /* Controller */,
 				158893E02FFFA8B00028B219 /* Model */,
+				158809B02FFEB0010081E4E9 /* Router */,
 				1588090A3000D1850081E4E9 /* Service */,
 				158893D92FFFA86D0028B219 /* View */,
 				1588090C3000D1850081E4E9 /* ViewModel */,
 			);
 			path = MainMemberCenter;
+			sourceTree = "<group>";
+		};
+		158809B02FFEB0010081E4E9 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				158809AC2FFEB0010081E4E9 /* MainMemberCenterRouter.swift */,
+			);
+			path = Router;
 			sourceTree = "<group>";
 		};
 		158893D82FFFA8640028B219 /* Controller */ = {
@@ -1415,8 +1427,17 @@
 			isa = PBXGroup;
 			children = (
 				158809023000D1710081E4E9 /* Cell */,
+				158809AB2FFEA0020081E4E9 /* Header */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		158809AB2FFEA0020081E4E9 /* Header */ = {
+			isa = PBXGroup;
+			children = (
+				158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */,
+			);
+			path = Header;
 			sourceTree = "<group>";
 		};
 		158893E02FFFA8B00028B219 /* Model */ = {
@@ -2448,7 +2469,7 @@
 				15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9632FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
 				15BAE9732FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */,
-				158809033000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift in Sources */,
+				158809033000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */,
 				158809A32FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,
 				158809A62FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */,
 				15CF9A042FF380000041F4CC /* MovieDetailService.swift in Sources */,
@@ -2458,6 +2479,7 @@
 				15CF9A142FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
 				158893DB2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */,
+				158809AD2FFEB0010081E4E9 /* MainMemberCenterRouter.swift in Sources */,
 				158893E32FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */,
 				158893E62FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */,
 				1588091D3000DA6E0081E4E9 /* MainMemberCenterListViewController.swift in Sources */,
@@ -2670,7 +2692,7 @@
 				157C52312FFB92000044BD8E /* MainTVListModels.swift in Sources */,
 				158809113000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */,
 				158809123000D1850081E4E9 /* MainMemberCenterService.swift in Sources */,
-				158809073000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift in Sources */,
+				158809073000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */,
 				158809A52FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,
 				158809A82FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */,
 				157C52412FFB92000044BD8E /* MainTVListRouter.swift in Sources */,
@@ -2703,6 +2725,7 @@
 				152BE7642FF56000006681A5 /* MovieDetailReviewModels.swift in Sources */,
 				158825322FFF789F0028B219 /* BaseListViewController.swift in Sources */,
 				158893DC2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */,
+				158809AE2FFEB0010081E4E9 /* MainMemberCenterRouter.swift in Sources */,
 				158893E42FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */,
 				158893E72FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */,
 				1588091E3000DA6E0081E4E9 /* MainMemberCenterListViewController.swift in Sources */,
@@ -2782,7 +2805,7 @@
 				15D198132FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */,
 				15D198232FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
 				15D198332FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
-				158809053000D1710081E4E9 /* MainMemberCenterProfileCollectionViewCell.swift in Sources */,
+				158809053000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */,
 				158809A42FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,
 				158809A72FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */,
 				15D198532FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
@@ -2809,6 +2832,7 @@
 				157C54322FFB95000044BD8E /* SeasonDetailService.swift in Sources */,
 				157C54422FFB95000044BD8E /* SeasonDetailViewModel.swift in Sources */,
 				158893DD2FFFA8A90028B219 /* MainMemberCenterViewController.swift in Sources */,
+				158809AF2FFEB0010081E4E9 /* MainMemberCenterRouter.swift in Sources */,
 				158893E52FFFA8B30028B219 /* MainMemberCenterModels.swift in Sources */,
 				158893E82FFFA8B40028B219 /* MainMemberCenterAccountModels.swift in Sources */,
 				1588091F3000DA6E0081E4E9 /* MainMemberCenterListViewController.swift in Sources */,

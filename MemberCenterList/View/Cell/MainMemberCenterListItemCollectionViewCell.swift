@@ -20,7 +20,7 @@ final class MainMemberCenterListItemCollectionViewCell: BaseCollectionViewCell {
 
     private enum Layout {
         static let titleTopSpacing: CGFloat = 4
-        static let metadataTopSpacing: CGFloat = 2
+        static let metadataTopSpacing: CGFloat = 0
         static let posterCornerRadius: CGFloat = 8
         static let posterAspectRatio: CGFloat = 1.5
     }
@@ -86,7 +86,7 @@ final class MainMemberCenterListItemCollectionViewCell: BaseCollectionViewCell {
         }
 
         metadataLabel.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(Layout.metadataTopSpacing)
+            make.top.equalTo(titleLabel.snp.bottom).offset(Layout.metadataTopSpacing)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }

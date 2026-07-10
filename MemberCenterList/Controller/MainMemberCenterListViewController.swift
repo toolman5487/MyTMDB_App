@@ -41,6 +41,7 @@ final class MainMemberCenterListViewController: MainBaseViewController {
     // MARK: - Properties
 
     private let viewModel: MainMemberCenterListViewModel
+    private lazy var router: MainMemberCenterRouting = MainMemberCenterRouter(sourceViewController: self)
     private var items: [MainMemberCenterListItem] = []
     private var loadTask: Task<Void, Never>?
     private var loadNextPageTask: Task<Void, Never>?
@@ -219,6 +220,9 @@ extension MainMemberCenterListViewController: UICollectionViewDelegateFlowLayout
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+
+        guard items.indices.contains(indexPath.item) else { return }
+        router.showDetail(for: items[indexPath.item])
     }
 
     func collectionView(

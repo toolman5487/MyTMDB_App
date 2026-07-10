@@ -20,7 +20,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
     private enum Layout {
         static let posterHeight: CGFloat = 186
         static let titleTopSpacing: CGFloat = 4
-        static let scoreTopSpacing: CGFloat = 2
+        static let scoreTopSpacing: CGFloat = 0
         static let posterCornerRadius: CGFloat = 8
     }
 
@@ -78,7 +78,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         }
 
         scoreLabel.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(Layout.scoreTopSpacing)
+            make.top.equalTo(titleLabel.snp.bottom).offset(Layout.scoreTopSpacing)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }

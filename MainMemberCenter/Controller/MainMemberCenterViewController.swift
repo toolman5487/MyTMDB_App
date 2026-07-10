@@ -14,26 +14,27 @@ final class MainMemberCenterViewController: MainBaseViewController {
     // MARK: - Layout
 
     private enum Layout {
-        static let profileHeight: CGFloat = 160
         static let sectionHeaderHeight: CGFloat = 32
         static let contentItemHeight: CGFloat = 232
         static let sectionSpacing: CGFloat = 12
-        static let horizontalInset: CGFloat = 16
-        static let topInset: CGFloat = 24
         static let bottomInset: CGFloat = 32
-    }
-
-    private enum Section {
-        case profile(MainMemberCenterProfile)
-        case content(MainMemberCenterSection)
     }
 
     // MARK: - Properties
 
     private let session: AuthSession
     private let viewModel: MainMemberCenterViewModel
-    private var sections: [Section] = []
+    private lazy var router: MainMemberCenterRouting = MainMemberCenterRouter(sourceViewController: self)
+    private var profile: MainMemberCenterProfile?
+    private var contentSections: [MainMemberCenterSection] = []
     private var loadTask: Task<Void, Never>?
+
+    private let profileHeaderView = MainMemberCenterProfileHeaderView(
+        frame: CGRect(
+            origin: .zero,
+            size: CGSize(width: 0, height: MainMemberCenterProfileLayout.headerHeight)
+        )
+    )
 
     // MARK: - Initialization
 
@@ -63,9 +64,24 @@ final class MainMemberCenterViewController: MainBaseViewController {
 
     override func configureView() {
         super.configureView()
-        title = nil
-        navigationItem.largeTitleDisplayMode = .never
+        configureNavigationBarAppearance()
+        navigationItem.title = "會員中心"
+        profileHeaderView.isHidden = true
         configureCollectionView()
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        view.addSubview(profileHeaderView)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        profileHeaderView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(MainMemberCenterProfileLayout.headerHeight)
+        }
     }
 
     override func bindViewModel() {
@@ -74,19 +90,32 @@ final class MainMemberCenterViewController: MainBaseViewController {
         loadContent()
     }
 
-    // MARK: - Lifecycle
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-
     // MARK: - Setup
+
+    private func configureNavigationBarAppearance() {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: ThemeColor.highlight
+        ]
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = ThemeColor.background
+        appearance.shadowColor = ThemeColor.separator
+        appearance.titleTextAttributes = titleAttributes
+        appearance.largeTitleTextAttributes = titleAttributes
+
+        navigationItem.standardAppearance = appearance
+        navigationItem.compactAppearance = appearance
+        navigationItem.scrollEdgeAppearance = appearance
+        navigationItem.compactScrollEdgeAppearance = appearance
+        navigationItem.largeTitleDisplayMode = .never
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        view.bringSubviewToFront(profileHeaderView)
+        updateProfileHeaderInsets()
+    }
 
     private func configureCollectionView() {
         collectionView.dataSource = self
@@ -95,10 +124,6 @@ final class MainMemberCenterViewController: MainBaseViewController {
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.minimumLineSpacing = Layout.sectionSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = 0
-        collectionView.register(
-            MainMemberCenterProfileCollectionViewCell.self,
-            forCellWithReuseIdentifier: MainMemberCenterProfileCollectionViewCell.reuseIdentifier
-        )
         registerSectionCells()
         collectionView.register(
             MainHomeSectionHeaderView.self,
@@ -152,22 +177,31 @@ final class MainMemberCenterViewController: MainBaseViewController {
     private func render(state: MainMemberCenterViewState) {
         switch state {
         case .idle:
-            sections = []
+            profile = nil
+            contentSections = []
+            updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
-            sections = []
+            profile = nil
+            contentSections = []
+            updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
         case .loaded(let content):
-            sections = makeSections(for: content)
+            profile = content.profile
+            contentSections = content.contentSections
+            profileHeaderView.configure(with: content.profile)
+            updateProfileHeaderVisibility(isVisible: true)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .failed(let message):
-            sections = []
+            profile = nil
+            contentSections = []
+            updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadContent()
@@ -177,27 +211,31 @@ final class MainMemberCenterViewController: MainBaseViewController {
         collectionView.reloadData()
     }
 
-    private func makeSections(for content: MainMemberCenterContent) -> [Section] {
-        [.profile(content.profile)] + content.contentSections.map(Section.content)
+    private func updateProfileHeaderVisibility(isVisible: Bool) {
+        profileHeaderView.isHidden = !isVisible
+        updateProfileHeaderInsets()
+
+        guard isVisible else { return }
+        view.bringSubviewToFront(profileHeaderView)
+    }
+
+    private func updateProfileHeaderInsets() {
+        let topInset = profileHeaderView.isHidden ? 0 : MainMemberCenterProfileLayout.headerHeight
+        collectionView.contentInset.top = topInset
+        collectionView.verticalScrollIndicatorInsets.top = topInset
     }
 
     private func showList(for destination: MainMemberCenterDestination) {
         guard case .user(let sessionId) = session,
-              let accountId = sections.compactMap({ section -> Int? in
-                  if case .profile(let profile) = section {
-                      return profile.id
-                  }
-                  return nil
-              }).first else {
+              let accountId = profile?.id else {
             return
         }
 
-        let viewController = MainMemberCenterListViewController(
-            destination: destination,
+        router.showList(
+            for: destination,
             accountId: accountId,
             sessionId: sessionId
         )
-        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 
@@ -206,7 +244,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
 extension MainMemberCenterViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        sections.count
+        contentSections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -217,37 +255,23 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard sections.indices.contains(indexPath.section) else {
+        guard contentSections.indices.contains(indexPath.section) else {
             return UICollectionViewCell()
         }
 
-        switch sections[indexPath.section] {
-        case .profile(let profile):
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MainMemberCenterProfileCollectionViewCell.reuseIdentifier,
-                for: indexPath
-            )
+        let contentSection = contentSections[indexPath.section]
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: contentSection.id.sectionCellReuseIdentifier,
+            for: indexPath
+        )
 
-            if let cell = cell as? MainMemberCenterProfileCollectionViewCell {
-                cell.configure(with: profile)
+        if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
+            cell.configure(items: contentSection.items) { [weak self] item in
+                self?.router.showDetail(for: item)
             }
-
-            return cell
-
-        case .content(let contentSection):
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: contentSection.id.sectionCellReuseIdentifier,
-                for: indexPath
-            )
-
-            if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
-                cell.configure(items: contentSection.items) { [weak self] _ in
-                    self?.showList(for: contentSection.id)
-                }
-            }
-
-            return cell
         }
+
+        return cell
     }
 
     func collectionView(
@@ -256,11 +280,11 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
-              sections.indices.contains(indexPath.section),
-              case .content(let contentSection) = sections[indexPath.section] else {
+              contentSections.indices.contains(indexPath.section) else {
             return UICollectionReusableView()
         }
 
+        let contentSection = contentSections[indexPath.section]
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier,
@@ -299,23 +323,10 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        guard sections.indices.contains(indexPath.section) else {
-            return .zero
-        }
-
-        switch sections[indexPath.section] {
-        case .profile:
-            return CGSize(
-                width: collectionView.bounds.width - (Layout.horizontalInset * 2),
-                height: Layout.profileHeight
-            )
-
-        case .content:
-            return CGSize(
-                width: collectionView.bounds.width,
-                height: Layout.contentItemHeight
-            )
-        }
+        CGSize(
+            width: collectionView.bounds.width,
+            height: Layout.contentItemHeight
+        )
     }
 
     func collectionView(
@@ -323,26 +334,13 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        guard sections.indices.contains(section) else { return .zero }
-
-        switch sections[section] {
-        case .profile:
-            return UIEdgeInsets(
-                top: Layout.topInset,
-                left: Layout.horizontalInset,
-                bottom: Layout.sectionSpacing,
-                right: Layout.horizontalInset
-            )
-
-        case .content:
-            let isLastSection = section == sections.count - 1
-            return UIEdgeInsets(
-                top: 0,
-                left: 0,
-                bottom: isLastSection ? Layout.bottomInset : Layout.sectionSpacing,
-                right: 0
-            )
-        }
+        let isLastSection = section == contentSections.count - 1
+        return UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: isLastSection ? Layout.bottomInset : Layout.sectionSpacing,
+            right: 0
+        )
     }
 
     func collectionView(
@@ -358,12 +356,7 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        guard sections.indices.contains(section),
-              case .content = sections[section] else {
-            return .zero
-        }
-
-        return CGSize(
+        CGSize(
             width: collectionView.bounds.width,
             height: Layout.sectionHeaderHeight
         )

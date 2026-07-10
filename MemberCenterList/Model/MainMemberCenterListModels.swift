@@ -89,6 +89,15 @@ nonisolated struct MainMemberCenterListContent: Sendable, Equatable {
     }
 }
 
+// MARK: - MainMemberCenterListItemDetailTarget
+
+nonisolated enum MainMemberCenterListItemDetailTarget: Sendable, Equatable {
+    case movie(id: Int)
+    case tv(id: Int)
+    case episode(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
+    case list(id: Int)
+}
+
 // MARK: - MainMemberCenterListItem
 
 nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
@@ -97,6 +106,7 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
     let subtitle: String
     let metadataText: String
     let imageURL: URL?
+    let detailTarget: MainMemberCenterListItemDetailTarget
 
     init(movie: MovieGridMovie, destination: MainMemberCenterDestination) {
         self.id = "\(destination.rawValue)-movie-\(movie.id)"
@@ -104,6 +114,7 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.dateText(movie.releaseDate)
         self.metadataText = Self.scoreText(movie.voteAverage)
         self.imageURL = Self.posterURL(path: movie.posterPath)
+        self.detailTarget = .movie(id: movie.id)
     }
 
     init(series: TVGridSeries, destination: MainMemberCenterDestination) {
@@ -112,6 +123,7 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.dateText(series.firstAirDate)
         self.metadataText = Self.scoreText(series.voteAverage)
         self.imageURL = Self.posterURL(path: series.posterPath)
+        self.detailTarget = .tv(id: series.id)
     }
 
     init(movie: MainMemberCenterRatedMovie, destination: MainMemberCenterDestination) {
@@ -120,6 +132,7 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.dateText(movie.releaseDate)
         self.metadataText = Self.userRatingText(movie.rating)
         self.imageURL = Self.posterURL(path: movie.posterPath)
+        self.detailTarget = .movie(id: movie.id)
     }
 
     init(series: MainMemberCenterRatedTVSeries, destination: MainMemberCenterDestination) {
@@ -128,6 +141,7 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.dateText(series.firstAirDate)
         self.metadataText = Self.userRatingText(series.rating)
         self.imageURL = Self.posterURL(path: series.posterPath)
+        self.detailTarget = .tv(id: series.id)
     }
 
     init(episode: MainMemberCenterRatedEpisode, destination: MainMemberCenterDestination) {
@@ -136,6 +150,11 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.episodeSubtitle(episode)
         self.metadataText = Self.userRatingText(episode.rating)
         self.imageURL = Self.posterURL(path: episode.stillPath)
+        self.detailTarget = .episode(
+            seriesID: episode.showID,
+            seasonNumber: episode.seasonNumber,
+            episodeNumber: episode.episodeNumber
+        )
     }
 
     init(list: MainMemberCenterList, destination: MainMemberCenterDestination) {
@@ -144,6 +163,7 @@ nonisolated struct MainMemberCenterListItem: Sendable, Equatable, Identifiable {
         self.subtitle = list.description.isEmpty ? "沒有描述" : list.description
         self.metadataText = "\(list.itemCount) 個項目"
         self.imageURL = Self.posterURL(path: list.posterPath)
+        self.detailTarget = .list(id: list.id)
     }
 
     private static func posterURL(path: String?) -> URL? {
