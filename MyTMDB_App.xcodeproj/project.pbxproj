@@ -173,6 +173,9 @@
 		158809103000D1850081E4E9 /* MainMemberCenterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809093000D1850081E4E9 /* MainMemberCenterService.swift */; };
 		158809113000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588090B3000D1850081E4E9 /* MainMemberCenterViewModel.swift */; };
 		158809123000D1850081E4E9 /* MainMemberCenterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809093000D1850081E4E9 /* MainMemberCenterService.swift */; };
+		158809B12FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809B02FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift */; };
+		158809B22FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809B02FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift */; };
+		158809B32FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809B02FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift */; };
 		1588091D3000DA6E0081E4E9 /* MainMemberCenterListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809193000DA6E0081E4E9 /* MainMemberCenterListViewController.swift */; };
 		1588091E3000DA6E0081E4E9 /* MainMemberCenterListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809193000DA6E0081E4E9 /* MainMemberCenterListViewController.swift */; };
 		1588091F3000DA6E0081E4E9 /* MainMemberCenterListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809193000DA6E0081E4E9 /* MainMemberCenterListViewController.swift */; };
@@ -558,6 +561,7 @@
 		158809A22FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterSectionCollectionViewCells.swift; sourceTree = "<group>"; };
 		158809093000D1850081E4E9 /* MainMemberCenterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterService.swift; sourceTree = "<group>"; };
 		1588090B3000D1850081E4E9 /* MainMemberCenterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterViewModel.swift; sourceTree = "<group>"; };
+		158809B02FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterPresentationBuilder.swift; sourceTree = "<group>"; };
 		158809193000DA6E0081E4E9 /* MainMemberCenterListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterListViewController.swift; sourceTree = "<group>"; };
 		1588091A3000DA6E0081E4E9 /* MainMemberCenterListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterListModels.swift; sourceTree = "<group>"; };
 		1588091B3000DA6E0081E4E9 /* MainMemberCenterListItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterListItemCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1260,9 +1264,18 @@
 		1588090C3000D1850081E4E9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				158809B42FFEC0010081E4E9 /* Builder */,
 				1588090B3000D1850081E4E9 /* MainMemberCenterViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		158809B42FFEC0010081E4E9 /* Builder */ = {
+			isa = PBXGroup;
+			children = (
+				158809B02FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift */,
+			);
+			path = Builder;
 			sourceTree = "<group>";
 		};
 		158809133000DA6E0081E4E9 /* MemberCenterList */ = {
@@ -2594,6 +2607,7 @@
 				15D198212FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
 				1588090D3000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */,
 				1588090E3000D1850081E4E9 /* MainMemberCenterService.swift in Sources */,
+				158809B12FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift in Sources */,
 				15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
 				15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
 				15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */,
@@ -2692,6 +2706,7 @@
 				157C52312FFB92000044BD8E /* MainTVListModels.swift in Sources */,
 				158809113000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */,
 				158809123000D1850081E4E9 /* MainMemberCenterService.swift in Sources */,
+				158809B32FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift in Sources */,
 				158809073000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */,
 				158809A52FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,
 				158809A82FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */,
@@ -2936,6 +2951,7 @@
 				15CF9A092FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				1588090F3000D1850081E4E9 /* MainMemberCenterViewModel.swift in Sources */,
 				158809103000D1850081E4E9 /* MainMemberCenterService.swift in Sources */,
+				158809B22FFEC0010081E4E9 /* MainMemberCenterPresentationBuilder.swift in Sources */,
 				15CF9A122FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
 				15CF9A1A2FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A162FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,

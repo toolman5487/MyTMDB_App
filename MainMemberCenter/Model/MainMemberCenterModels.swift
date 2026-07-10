@@ -31,6 +31,54 @@ nonisolated struct MainMemberCenterContent: Sendable, Equatable {
     }
 }
 
+// MARK: - MainMemberCenterContentSnapshot
+
+nonisolated struct MainMemberCenterContentSnapshot: Sendable {
+    let profile: MainMemberCenterProfile
+    let previewPages: [MainMemberCenterPreviewPage]
+}
+
+// MARK: - MainMemberCenterPreviewPage
+
+nonisolated enum MainMemberCenterPreviewPage: Sendable {
+    case favoriteMovies(MainMemberCenterFavoriteMoviePage)
+    case favoriteTV(MainMemberCenterFavoriteTVPage)
+    case watchlistMovies(MainMemberCenterWatchlistMoviePage)
+    case watchlistTV(MainMemberCenterWatchlistTVPage)
+    case ratedMovies(MainMemberCenterRatedMoviePage)
+    case ratedTV(MainMemberCenterRatedTVPage)
+    case ratedEpisodes(MainMemberCenterRatedEpisodePage)
+    case lists(MainMemberCenterListPage)
+
+    var destination: MainMemberCenterDestination {
+        switch self {
+        case .favoriteMovies:
+            return .favoriteMovies
+
+        case .favoriteTV:
+            return .favoriteTV
+
+        case .watchlistMovies:
+            return .watchlistMovies
+
+        case .watchlistTV:
+            return .watchlistTV
+
+        case .ratedMovies:
+            return .ratedMovies
+
+        case .ratedTV:
+            return .ratedTV
+
+        case .ratedEpisodes:
+            return .ratedEpisodes
+
+        case .lists:
+            return .lists
+        }
+    }
+}
+
 // MARK: - MainMemberCenterSection
 
 nonisolated struct MainMemberCenterSection: Sendable, Equatable, Identifiable {

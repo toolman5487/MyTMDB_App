@@ -10,7 +10,7 @@ import Foundation
 // MARK: - MainMemberCenterServicing
 
 nonisolated protocol MainMemberCenterServicing: Sendable {
-    func fetchContent(sessionId: String) async throws -> MainMemberCenterContent
+    func fetchContent(sessionId: String) async throws -> MainMemberCenterContentSnapshot
 
     func fetchFavoriteMovies(
         accountId: Int,
@@ -94,17 +94,17 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
 
     // MARK: - Public Methods
 
-    func fetchContent(sessionId: String) async throws -> MainMemberCenterContent {
+    func fetchContent(sessionId: String) async throws -> MainMemberCenterContentSnapshot {
         let account = try await fetchAccount(sessionId: sessionId)
         let profile = MainMemberCenterProfile(account: account)
-        let contentSections = await fetchContentSections(
+        let previewPages = await fetchPreviewPages(
             accountId: profile.id,
             sessionId: sessionId
         )
 
-        return MainMemberCenterContent(
+        return MainMemberCenterContentSnapshot(
             profile: profile,
-            contentSections: contentSections
+            previewPages: previewPages
         )
     }
 
@@ -237,14 +237,14 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         )
     }
 
-    private func fetchContentSections(
+    private func fetchPreviewPages(
         accountId: Int,
         sessionId: String
-    ) async -> [MainMemberCenterSection] {
-        var sections: [MainMemberCenterSection] = []
+    ) async -> [MainMemberCenterPreviewPage] {
+        var previewPages: [MainMemberCenterPreviewPage] = []
 
         for destination in MainMemberCenterDestination.allCases {
-            guard let section = await fetchContentSection(
+            guard let previewPage = await fetchPreviewPage(
                 destination: destination,
                 accountId: accountId,
                 sessionId: sessionId
@@ -252,17 +252,17 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                 continue
             }
 
-            sections.append(section)
+            previewPages.append(previewPage)
         }
 
-        return sections
+        return previewPages
     }
 
-    private func fetchContentSection(
+    private func fetchPreviewPage(
         destination: MainMemberCenterDestination,
         accountId: Int,
         sessionId: String
-    ) async -> MainMemberCenterSection? {
+    ) async -> MainMemberCenterPreviewPage? {
         do {
             switch destination {
             case .favoriteMovies:
@@ -271,12 +271,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(movie: $0, destination: destination)
-                    }
-                )
+                return .favoriteMovies(page)
 
             case .favoriteTV:
                 let page = try await fetchFavoriteTV(
@@ -284,12 +279,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(series: $0, destination: destination)
-                    }
-                )
+                return .favoriteTV(page)
 
             case .watchlistMovies:
                 let page = try await fetchWatchlistMovies(
@@ -297,12 +287,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(movie: $0, destination: destination)
-                    }
-                )
+                return .watchlistMovies(page)
 
             case .watchlistTV:
                 let page = try await fetchWatchlistTV(
@@ -310,12 +295,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(series: $0, destination: destination)
-                    }
-                )
+                return .watchlistTV(page)
 
             case .ratedMovies:
                 let page = try await fetchRatedMovies(
@@ -323,12 +303,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(movie: $0, destination: destination)
-                    }
-                )
+                return .ratedMovies(page)
 
             case .ratedTV:
                 let page = try await fetchRatedTV(
@@ -336,12 +311,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(series: $0, destination: destination)
-                    }
-                )
+                return .ratedTV(page)
 
             case .ratedEpisodes:
                 let page = try await fetchRatedEpisodes(
@@ -349,12 +319,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(episode: $0, destination: destination)
-                    }
-                )
+                return .ratedEpisodes(page)
 
             case .lists:
                 let page = try await fetchLists(
@@ -362,28 +327,14 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                     sessionId: sessionId,
                     page: 1
                 )
-                return makeContentSection(
-                    destination: destination,
-                    items: Array(page.results.prefix(10)).map {
-                        MainMemberCenterListItem(list: $0, destination: destination)
-                    }
-                )
+                return .lists(page)
             }
         } catch {
+            AppLogger.network.warning(
+                "Failed to load member center preview \(destination.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
             return nil
         }
-    }
-
-    private func makeContentSection(
-        destination: MainMemberCenterDestination,
-        items: [MainMemberCenterListItem]
-    ) -> MainMemberCenterSection? {
-        guard !items.isEmpty else { return nil }
-
-        return MainMemberCenterSection(
-            destination: destination,
-            items: items
-        )
     }
 
     private func fetchAccountPage<Page: Decodable & Sendable>(

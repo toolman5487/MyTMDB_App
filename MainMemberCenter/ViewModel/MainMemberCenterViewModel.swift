@@ -42,8 +42,9 @@ final class MainMemberCenterViewModel {
         state = .loading
 
         do {
-            let content = try await service.fetchContent(sessionId: sessionId)
+            let snapshot = try await service.fetchContent(sessionId: sessionId)
             guard !Task.isCancelled else { return }
+            let content = MainMemberCenterPresentationBuilder.makeContent(from: snapshot)
             state = .loaded(content)
         } catch {
             guard !Task.isCancelled else { return }

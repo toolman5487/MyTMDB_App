@@ -99,9 +99,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(movie: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .favoriteTV:
@@ -112,9 +113,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(series: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .watchlistMovies:
@@ -125,9 +127,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(movie: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .watchlistTV:
@@ -138,9 +141,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(series: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .ratedMovies:
@@ -151,9 +155,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(movie: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .ratedTV:
@@ -164,9 +169,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(series: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .ratedEpisodes:
@@ -177,9 +183,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(episode: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
 
         case .lists:
@@ -190,9 +197,10 @@ final class MainMemberCenterListViewModel {
             )
             return makePageResult(
                 response: response,
-                items: response.results.map {
-                    MainMemberCenterListItem(list: $0, destination: destination)
-                }
+                items: MainMemberCenterPresentationBuilder.makeItems(
+                    from: response.results,
+                    destination: destination
+                )
             )
         }
     }
