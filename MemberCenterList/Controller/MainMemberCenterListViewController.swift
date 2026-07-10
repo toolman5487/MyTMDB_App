@@ -61,11 +61,13 @@ final class MainMemberCenterListViewController: MainBaseViewController {
             service: service
         )
         super.init(nibName: nil, bundle: nil)
+        hidesBottomBarWhenPushed = true
     }
 
     init(viewModel: MainMemberCenterListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        hidesBottomBarWhenPushed = true
     }
 
     required init?(coder: NSCoder) {
@@ -75,6 +77,7 @@ final class MainMemberCenterListViewController: MainBaseViewController {
             sessionId: ""
         )
         super.init(coder: coder)
+        hidesBottomBarWhenPushed = true
     }
 
     deinit {

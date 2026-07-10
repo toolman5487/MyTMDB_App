@@ -118,12 +118,14 @@ final class BaseWebViewController: BaseViewController {
         self.url = url
         self.preferredTitle = title
         super.init(nibName: nil, bundle: nil)
+        hidesBottomBarWhenPushed = true
     }
 
     required init?(coder: NSCoder) {
         self.url = URL(string: "about:blank") ?? URL(fileURLWithPath: "/")
         self.preferredTitle = nil
         super.init(coder: coder)
+        hidesBottomBarWhenPushed = true
     }
 
     // MARK: - Lifecycle
