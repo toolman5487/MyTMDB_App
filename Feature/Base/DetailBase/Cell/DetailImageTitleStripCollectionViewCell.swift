@@ -12,46 +12,28 @@ import UIKit
 // MARK: - DetailImageTitleStripCollectionViewCell
 
 @MainActor
-class DetailImageTitleStripCollectionViewCell: BaseNestedCollectionViewCell {
+class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionViewCell<
+    DetailImageTitleItem,
+    DetailImageTitleCollectionViewCell
+> {
 
     private enum Layout {
         static let defaultItemSize = CGSize(width: 124, height: 220)
         static let defaultImageHeight: CGFloat = 168
     }
 
-    private var items: [DetailImageTitleItem] = []
-    private var imageHeight = Layout.defaultImageHeight
-    private var onItemSelected: ((DetailImageTitleItem) -> Void)?
-
     override func configureView() {
-        containerView.backgroundColor = .clear
-        collectionViewFlowLayout.itemSize = Layout.defaultItemSize
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(
-            DetailImageTitleCollectionViewCell.self,
-            forCellWithReuseIdentifier: DetailImageTitleCollectionViewCell.reuseIdentifier
+        super.configureView()
+        configureHorizontalStrip(
+            cellType: DetailImageTitleCollectionViewCell.self,
+            reuseIdentifier: DetailImageTitleCollectionViewCell.reuseIdentifier,
+            itemSize: Layout.defaultItemSize
         )
     }
 
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        containerView.addSubview(collectionView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
     override func resetForReuse() {
-        items = []
-        imageHeight = Layout.defaultImageHeight
-        onItemSelected = nil
-        collectionView.reloadData()
+        super.resetForReuse()
+        updateItemSize(Layout.defaultItemSize)
     }
 
     func configure(
@@ -60,43 +42,20 @@ class DetailImageTitleStripCollectionViewCell: BaseNestedCollectionViewCell {
         imageHeight: CGFloat = Layout.defaultImageHeight,
         onItemSelected: ((DetailImageTitleItem) -> Void)? = nil
     ) {
-        self.items = items
-        self.imageHeight = imageHeight
-        self.onItemSelected = onItemSelected
-        collectionViewFlowLayout.itemSize = itemSize
-        collectionView.reloadData()
-    }
-}
-
-extension DetailImageTitleStripCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        items.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: DetailImageTitleCollectionViewCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? DetailImageTitleCollectionViewCell {
-            cell.configure(with: items[indexPath.item], imageHeight: imageHeight)
+        updateItemSize(itemSize)
+        configureItems(
+            items,
+            onItemSelected: onItemSelected
+        ) { cell, item in
+            cell.configure(with: item, imageHeight: imageHeight)
         }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard items.indices.contains(indexPath.item) else { return }
-        onItemSelected?(items[indexPath.item])
     }
 }
 
 // MARK: - DetailImageTitleCollectionViewCell
 
 @MainActor
-private final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
+final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: DetailImageTitleCollectionViewCell.self)
 

@@ -258,74 +258,19 @@ extension MainTVGenrePageSheetViewController: UICollectionViewDelegateFlowLayout
 // MARK: - MainTVGenrePageSheetCell
 
 @MainActor
-private final class MainTVGenrePageSheetCell: UICollectionViewCell {
+private final class MainTVGenrePageSheetCell: BaseFilterHeaderCollectionViewCell {
 
-    // MARK: - UI Components
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        return label
-    }()
-
-    // MARK: - Initialization
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureView()
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        configureView()
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        titleLabel.text = nil
-        contentView.backgroundColor = ThemeColor.backgroundTertiary
-        contentView.layer.borderColor = ThemeColor.highlight.withAlphaComponent(0.36).cgColor
-    }
-
-    // MARK: - Setup
-
-    private func configureView() {
-        contentView.layer.cornerRadius = 12
-        contentView.layer.masksToBounds = true
-        contentView.layer.borderWidth = 2
-    }
-
-    private func setupHierarchy() {
-        contentView.addSubview(titleLabel)
-    }
-
-    private func setupConstraints() {
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
-        ])
+    override func configureView() {
+        super.configureView()
+        applyTextPillStyle(.genrePageSheet)
     }
 
     // MARK: - Configuration
 
     func configure(with item: MainTVGenreItem) {
-        titleLabel.text = item.name
-        titleLabel.textColor = item.isSelected ? .white : ThemeColor.textPrimary
-        contentView.backgroundColor = item.isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
-        contentView.layer.borderColor = borderColor(isSelected: item.isSelected).cgColor
-    }
-
-    private func borderColor(isSelected: Bool) -> UIColor {
-        isSelected ? ThemeColor.highlight : ThemeColor.highlight.withAlphaComponent(0.36)
+        configure(
+            title: item.name,
+            isSelected: item.isSelected
+        )
     }
 }

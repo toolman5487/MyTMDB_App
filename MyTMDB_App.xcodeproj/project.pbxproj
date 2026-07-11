@@ -261,6 +261,9 @@
 		15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */; };
 		15A950292FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */; };
 		15A9502A2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */; };
+		15A951012FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A951002FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift */; };
+		15A951022FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A951002FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift */; };
+		15A951032FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A951002FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift */; };
 		15A950302FF5100000FCBB0F /* MainHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950362FF5100000FCBB0F /* MainHomeRouter.swift */; };
 		15A950312FF5100000FCBB0F /* MainHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950362FF5100000FCBB0F /* MainHomeRouter.swift */; };
 		15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A950362FF5100000FCBB0F /* MainHomeRouter.swift */; };
@@ -594,6 +597,7 @@
 		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
 		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A951002FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseHorizontalStripCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeModels.swift; sourceTree = "<group>"; };
 		15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeService.swift; sourceTree = "<group>"; };
 		15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewModel.swift; sourceTree = "<group>"; };
@@ -1533,6 +1537,7 @@
 			isa = PBXGroup;
 			children = (
 				15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */,
+				15A951002FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift */,
 				158825302FFF789F0028B219 /* BaseListViewController.swift */,
 				15A9502B2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift */,
 				15A94F492FF26D7900FCBB0F /* BaseViewController.swift */,
@@ -2504,6 +2509,7 @@
 				15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001A2FF40100000001A /* BaseFilterHeaderView.swift in Sources */,
 				150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
+				15A951012FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */,
 				15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
@@ -2792,6 +2798,7 @@
 				15D196E12FF35F1000545A85 /* NetworkError.swift in Sources */,
 				15D196E52FF3900000545A85 /* AppLocalization.swift in Sources */,
 				15D196D82FF14D2300545A85 /* AppLogger.swift in Sources */,
+				15A951022FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */,
 				15A950292FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4C2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15E000012FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
@@ -2834,6 +2841,7 @@
 				15E000192FF401000000019 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001C2FF40100000001C /* BaseFilterHeaderView.swift in Sources */,
 				150337102FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
+				15A951032FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */,
 				15BAE9512FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9612FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
 				15BAE9712FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */,
