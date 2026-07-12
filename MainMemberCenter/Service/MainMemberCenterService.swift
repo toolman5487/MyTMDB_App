@@ -77,6 +77,12 @@ nonisolated protocol MainMemberCenterServicing: Sendable {
 
 nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
 
+    // MARK: - Configuration
+
+    private enum Configuration {
+        static let listPreviewPosterFallbackLimit = 10
+    }
+
     // MARK: - Properties
 
     private let network: NetworkServicing
@@ -322,7 +328,7 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
                 return .ratedEpisodes(page)
 
             case .lists:
-                let page = try await fetchLists(
+                let page = try await fetchListsPreviewPage(
                     accountId: accountId,
                     sessionId: sessionId,
                     page: 1
@@ -348,6 +354,63 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         )
     }
 
+    private func fetchListsPreviewPage(
+        accountId: Int,
+        sessionId: String,
+        page: Int
+    ) async throws -> MainMemberCenterListPage {
+        let pageResponse = try await fetchLists(
+            accountId: accountId,
+            sessionId: sessionId,
+            page: page
+        )
+        let enrichedResults = await enrichListsWithFirstItemPoster(pageResponse.results)
+
+        return MainMemberCenterListPage(
+            page: pageResponse.page,
+            results: enrichedResults,
+            totalPages: pageResponse.totalPages,
+            totalResults: pageResponse.totalResults
+        )
+    }
+
+    private func enrichListsWithFirstItemPoster(_ lists: [MainMemberCenterList]) async -> [MainMemberCenterList] {
+        let network = network
+        let queryItems = listDetailQueryItems()
+
+        return await withTaskGroup(of: (Int, MainMemberCenterList).self) { group in
+            for (index, list) in lists.enumerated() {
+                group.addTask {
+                    guard index < Configuration.listPreviewPosterFallbackLimit,
+                          list.posterPath == nil else {
+                        return (index, list)
+                    }
+
+                    do {
+                        let detail: MainMemberCenterListDetail = try await network.get(
+                            path: APIConfig.List.detail(listId: list.id),
+                            queryItems: queryItems
+                        )
+                        return (index, list.replacingMissingPosterPath(with: detail.firstPosterPath))
+                    } catch {
+                        return (index, list)
+                    }
+                }
+            }
+
+            var indexedLists: [(Int, MainMemberCenterList)] = []
+            indexedLists.reserveCapacity(lists.count)
+
+            for await indexedList in group {
+                indexedLists.append(indexedList)
+            }
+
+            return indexedLists
+                .sorted { $0.0 < $1.0 }
+                .map { $0.1 }
+        }
+    }
+
     private func authenticatedQueryItems(sessionId: String) -> [URLQueryItem] {
         [
             URLQueryItem(name: "session_id", value: sessionId)
@@ -362,6 +425,13 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
             URLQueryItem(name: "session_id", value: sessionId),
             URLQueryItem(name: "language", value: localization.languageParameter),
             URLQueryItem(name: "page", value: String(max(page, 1)))
+        ]
+    }
+
+    private func listDetailQueryItems() -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "language", value: localization.languageParameter),
+            URLQueryItem(name: "page", value: "1")
         ]
     }
 }

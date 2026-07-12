@@ -169,6 +169,26 @@ nonisolated struct MainMemberCenterList: Decodable, Sendable, Equatable, Identif
     let favoriteCount: Int
     let posterPath: String?
 
+    init(
+        id: Int,
+        name: String,
+        description: String,
+        languageCode: String,
+        listType: String,
+        itemCount: Int,
+        favoriteCount: Int,
+        posterPath: String?
+    ) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.languageCode = languageCode
+        self.listType = listType
+        self.itemCount = itemCount
+        self.favoriteCount = favoriteCount
+        self.posterPath = posterPath
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -191,6 +211,43 @@ nonisolated struct MainMemberCenterList: Decodable, Sendable, Equatable, Identif
         self.itemCount = try container.decodeIfPresent(Int.self, forKey: .itemCount) ?? 0
         self.favoriteCount = try container.decodeIfPresent(Int.self, forKey: .favoriteCount) ?? 0
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
+    }
+
+    func replacingMissingPosterPath(with fallbackPosterPath: String?) -> MainMemberCenterList {
+        guard posterPath == nil, let fallbackPosterPath else {
+            return self
+        }
+
+        return MainMemberCenterList(
+            id: id,
+            name: name,
+            description: description,
+            languageCode: languageCode,
+            listType: listType,
+            itemCount: itemCount,
+            favoriteCount: favoriteCount,
+            posterPath: fallbackPosterPath
+        )
+    }
+}
+
+// MARK: - MainMemberCenterListDetail
+
+nonisolated struct MainMemberCenterListDetail: Decodable, Sendable, Equatable {
+    let items: [MainMemberCenterListDetailItem]
+
+    var firstPosterPath: String? {
+        items.first { $0.posterPath?.isEmpty == false }?.posterPath
+    }
+}
+
+// MARK: - MainMemberCenterListDetailItem
+
+nonisolated struct MainMemberCenterListDetailItem: Decodable, Sendable, Equatable {
+    let posterPath: String?
+
+    enum CodingKeys: String, CodingKey {
+        case posterPath = "poster_path"
     }
 }
 

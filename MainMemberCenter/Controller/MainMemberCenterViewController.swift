@@ -265,7 +265,11 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
             for: indexPath
         )
 
-        if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
+        if let cell = cell as? MainMemberCenterListStripCollectionViewCell {
+            cell.configure(items: contentSection.items) { [weak self] item in
+                self?.router.showDetail(for: item)
+            }
+        } else if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
             cell.configure(items: contentSection.items) { [weak self] item in
                 self?.router.showDetail(for: item)
             }
@@ -323,7 +327,7 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        CGSize(
+        return CGSize(
             width: collectionView.bounds.width,
             height: Layout.contentItemHeight
         )

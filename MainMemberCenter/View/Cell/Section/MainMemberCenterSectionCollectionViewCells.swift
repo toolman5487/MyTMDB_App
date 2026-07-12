@@ -59,7 +59,7 @@ final class MainMemberCenterRatedEpisodesSectionCollectionViewCell: MainMemberCe
 // MARK: - MainMemberCenterListsSectionCollectionViewCell
 
 @MainActor
-final class MainMemberCenterListsSectionCollectionViewCell: MainMemberCenterContentStripCollectionViewCell {
+final class MainMemberCenterListsSectionCollectionViewCell: MainMemberCenterListStripCollectionViewCell {
     static let reuseIdentifier = String(describing: MainMemberCenterListsSectionCollectionViewCell.self)
 }
 

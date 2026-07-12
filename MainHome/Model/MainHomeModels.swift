@@ -115,6 +115,18 @@ nonisolated struct TMDBPageResponse<Result: Decodable & Sendable>: Decodable, Se
     let totalPages: Int
     let totalResults: Int
 
+    init(
+        page: Int,
+        results: [Result],
+        totalPages: Int,
+        totalResults: Int
+    ) {
+        self.page = page
+        self.results = results
+        self.totalPages = totalPages
+        self.totalResults = totalResults
+    }
+
     enum CodingKeys: String, CodingKey {
         case page
         case results
