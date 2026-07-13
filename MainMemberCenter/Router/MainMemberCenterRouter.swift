@@ -12,6 +12,7 @@ import UIKit
 @MainActor
 protocol MainMemberCenterRouting: AnyObject {
     func showDetail(for item: MainMemberCenterListItem)
+    func showSettings()
     func showList(
         for destination: MainMemberCenterDestination,
         accountId: Int,
@@ -53,6 +54,10 @@ final class MainMemberCenterRouter: BaseRouter, MainMemberCenterRouting {
 
             detailRouter.openExternalURL(url)
         }
+    }
+
+    func showSettings() {
+        show(MemberSettingViewController(), using: .push)
     }
 
     func showList(

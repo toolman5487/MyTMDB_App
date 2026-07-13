@@ -17,6 +17,7 @@ enum MainMemberCenterProfileLayout {
     static let avatarSize: CGFloat = 52
     static let contentSpacing: CGFloat = 12
     static let textSpacing: CGFloat = 2
+    static let chevronSize: CGFloat = 24
 
     static var headerHeight: CGFloat {
         verticalInset * 2 + avatarSize
@@ -29,6 +30,10 @@ enum MainMemberCenterProfileLayout {
 final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: MainMemberCenterProfileHeaderView.self)
+
+    // MARK: - Properties
+
+    var onTap: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -64,6 +69,15 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
         return label
     }()
 
+    private let chevronImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = ThemeColor.textTertiary
+        imageView.setContentHuggingPriority(.required, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return imageView
+    }()
+
     private lazy var textStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
             displayNameLabel,
@@ -72,13 +86,15 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
         stackView.axis = .vertical
         stackView.alignment = .leading
         stackView.spacing = MainMemberCenterProfileLayout.textSpacing
+        stackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return stackView
     }()
 
     private lazy var contentStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
             avatarImageView,
-            textStackView
+            textStackView,
+            chevronImageView
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -125,6 +141,11 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
 
     private func configureView() {
         backgroundColor = ThemeColor.background
+        isUserInteractionEnabled = true
+        accessibilityTraits.insert(.button)
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        addGestureRecognizer(tapGesture)
     }
 
     private func setupHierarchy() {
@@ -134,6 +155,10 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
     private func setupConstraints() {
         avatarImageView.snp.makeConstraints { make in
             make.size.equalTo(MainMemberCenterProfileLayout.avatarSize)
+        }
+
+        chevronImageView.snp.makeConstraints { make in
+            make.size.equalTo(MainMemberCenterProfileLayout.chevronSize)
         }
 
         contentStackView.snp.makeConstraints { make in
@@ -146,5 +171,9 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
                 )
             )
         }
+    }
+
+    @objc private func handleTap() {
+        onTap?()
     }
 }

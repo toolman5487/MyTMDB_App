@@ -73,6 +73,9 @@ final class MainMemberCenterViewController: MainBaseViewController {
     override func setupHierarchy() {
         super.setupHierarchy()
         view.addSubview(profileHeaderView)
+        profileHeaderView.onTap = { [weak self] in
+            self?.router.showSettings()
+        }
     }
 
     override func setupConstraints() {
