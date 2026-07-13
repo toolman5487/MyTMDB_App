@@ -1,42 +1,41 @@
 //
-//  TVDetailRouter.swift
+//  MovieDetailRouter.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/6.
+//  Created by Codex on 2026/7/13.
 //
 
 import UIKit
 
-// MARK: - TVDetailRouting
+// MARK: - MovieDetailRouting
 
 @MainActor
-protocol TVDetailRouting: AnyObject {
+protocol MovieDetailRouting: AnyObject {
     func showReviewList()
     func showYouTubeVideo(videoKey: String, title: String?)
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
-    func showSeasonDetail(seasonNumber: Int)
-    func showTVDetail(seriesID: Int)
+    func showMovieDetail(movieID: Int)
     func showLogin()
 }
 
-// MARK: - TVDetailRouter
+// MARK: - MovieDetailRouter
 
 @MainActor
-final class TVDetailRouter: BaseRouter, TVDetailRouting {
+final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     // MARK: - Properties
 
-    private let seriesID: Int
+    private let movieID: Int
     private let detailRouter: DetailRouter
 
     // MARK: - Initialization
 
     init(
         sourceViewController: UIViewController,
-        seriesID: Int
+        movieID: Int
     ) {
-        self.seriesID = seriesID
+        self.movieID = movieID
         self.detailRouter = DetailRouter(sourceViewController: sourceViewController)
         super.init(sourceViewController: sourceViewController)
     }
@@ -44,8 +43,8 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
     // MARK: - Push
 
     func showReviewList() {
-        guard seriesID > 0 else { return }
-        show(TVReviewListViewController(seriesID: seriesID), using: .push)
+        guard movieID > 0 else { return }
+        show(MovieReviewListViewController(movieID: movieID), using: .push)
     }
 
     func showYouTubeVideo(videoKey: String, title: String?) {
@@ -60,15 +59,8 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
         detailRouter.showPersonDetail(personID: personID)
     }
 
-    func showSeasonDetail(seasonNumber: Int) {
-        detailRouter.showSeasonDetail(
-            seriesID: seriesID,
-            seasonNumber: seasonNumber
-        )
-    }
-
-    func showTVDetail(seriesID: Int) {
-        detailRouter.showTVDetail(seriesID: seriesID)
+    func showMovieDetail(movieID: Int) {
+        detailRouter.showMovieDetail(movieID: movieID)
     }
 
     func showLogin() {

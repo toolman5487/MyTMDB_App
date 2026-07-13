@@ -17,7 +17,10 @@ final class MovieDetailViewController: DetailBaseViewController {
     private var sections: [MovieDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
     private var favoriteTask: Task<Void, Never>?
-    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+    private lazy var router: MovieDetailRouting = MovieDetailRouter(
+        sourceViewController: self,
+        movieID: movieID
+    )
 
     // MARK: - Initialization
 
@@ -180,11 +183,15 @@ final class MovieDetailViewController: DetailBaseViewController {
     // MARK: - Actions
 
     @objc private func handleReviewButtonTapped() {
-        let viewController = MovieReviewListViewController(movieID: movieID)
-        navigationController?.pushViewController(viewController, animated: true)
+        router.showReviewList()
     }
 
     override func handleDetailFavoriteButtonTapped() {
+        if shouldNavigateToLogin() {
+            router.showLogin()
+            return
+        }
+
         setPendingFavoriteButtonState()
         favoriteTask?.cancel()
         favoriteTask = Task(priority: .userInitiated) { [weak self] in
@@ -216,6 +223,14 @@ final class MovieDetailViewController: DetailBaseViewController {
     private func setPendingFavoriteButtonState() {
         guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
         setFavoriteButton(isFavorite: !isFavorite, isEnabled: false)
+    }
+
+    private func shouldNavigateToLogin() -> Bool {
+        if case .requiresUserLogin = viewModel.favoriteState {
+            return true
+        }
+
+        return false
     }
 }
 

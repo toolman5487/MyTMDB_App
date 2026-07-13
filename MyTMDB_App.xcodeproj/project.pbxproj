@@ -365,6 +365,9 @@
 		15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99CD2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
+		15AB10013005000000AB1001 /* MovieDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AB10003005000000AB1001 /* MovieDetailRouter.swift */; };
+		15AB10023005000000AB1001 /* MovieDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AB10003005000000AB1001 /* MovieDetailRouter.swift */; };
+		15AB10033005000000AB1001 /* MovieDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AB10003005000000AB1001 /* MovieDetailRouter.swift */; };
 		15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
 		15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
 		15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
@@ -641,6 +644,7 @@
 		15BAEBD52FF7D100006B0E15 /* TVDetailReviewFilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailReviewFilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		15BAEBD62FF7D100006B0E15 /* TVDetailReviewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailReviewCollectionViewCell.swift; sourceTree = "<group>"; };
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
+		15AB10003005000000AB1001 /* MovieDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailRouter.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
 		15CF99DD2FF620000041F4CC /* DetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
 		15CF99E12FF621000041F4CC /* BaseWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseWebViewController.swift; sourceTree = "<group>"; };
@@ -2009,6 +2013,7 @@
 			children = (
 				15CF99C82FF3701B0041F4CC /* Controller */,
 				15CF99D82FF371A00041F4CC /* Model */,
+				15AB10043005000000AB1001 /* Router */,
 				15CF99D72FF371920041F4CC /* Service */,
 				15CF99C92FF370210041F4CC /* View */,
 				15CF99D92FF371A60041F4CC /* ViewModel */,
@@ -2031,6 +2036,14 @@
 				15BAEBC52FF7C100006B0E15 /* Cell */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		15AB10043005000000AB1001 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				15AB10003005000000AB1001 /* MovieDetailRouter.swift */,
+			);
+			path = Router;
 			sourceTree = "<group>";
 		};
 		15CF99CE2FF370970041F4CC /* DetailBase */ = {
@@ -2530,6 +2543,7 @@
 				15DAAEE92FFDE6D3009FB88A /* EpisodeDetailViewController.swift in Sources */,
 				15D197462FF1693000545A85 /* LoginPageView.swift in Sources */,
 				15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
+				15AB10013005000000AB1001 /* MovieDetailRouter.swift in Sources */,
 				15CF9A012FF380000041F4CC /* MovieDetailModels.swift in Sources */,
 				15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9632FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
@@ -2782,6 +2796,7 @@
 				157C4E822FFB70000044BD8E /* MovieGridPaginationTaskController.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
+				15AB10023005000000AB1001 /* MovieDetailRouter.swift in Sources */,
 				15CF9A022FF380000041F4CC /* MovieDetailModels.swift in Sources */,
 				15BAE9522FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9622FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
@@ -3004,6 +3019,7 @@
 				15A94F652FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
 				15D197312FF1683D00545A85 /* ThemeColor.swift in Sources */,
 				15CF99CD2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
+				15AB10033005000000AB1001 /* MovieDetailRouter.swift in Sources */,
 				15CF9A032FF380000041F4CC /* MovieDetailModels.swift in Sources */,
 				15CF9A062FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A092FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,

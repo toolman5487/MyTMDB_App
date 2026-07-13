@@ -194,6 +194,11 @@ final class TVDetailViewController: DetailBaseViewController {
     }
 
     override func handleDetailFavoriteButtonTapped() {
+        if shouldNavigateToLogin() {
+            router.showLogin()
+            return
+        }
+
         setPendingFavoriteButtonState()
         favoriteTask?.cancel()
         favoriteTask = Task(priority: .userInitiated) { [weak self] in
@@ -225,6 +230,14 @@ final class TVDetailViewController: DetailBaseViewController {
     private func setPendingFavoriteButtonState() {
         guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
         setFavoriteButton(isFavorite: !isFavorite, isEnabled: false)
+    }
+
+    private func shouldNavigateToLogin() -> Bool {
+        if case .requiresUserLogin = viewModel.favoriteState {
+            return true
+        }
+
+        return false
     }
 }
 
