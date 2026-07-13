@@ -13,6 +13,7 @@ import UIKit
 protocol MainMemberCenterRouting: AnyObject {
     func showDetail(for item: MainMemberCenterListItem)
     func showSettings()
+    func showLogin()
     func showList(
         for destination: MainMemberCenterDestination,
         accountId: Int,
@@ -58,6 +59,10 @@ final class MainMemberCenterRouter: BaseRouter, MainMemberCenterRouting {
 
     func showSettings() {
         show(MemberSettingViewController(), using: .push)
+    }
+
+    func showLogin() {
+        show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
     }
 
     func showList(

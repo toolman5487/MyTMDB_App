@@ -34,11 +34,18 @@ final class MainMemberCenterViewModel {
     // MARK: - Public Methods
 
     func loadContent() async {
-        guard case .user(let sessionId) = session else {
-            state = .failed(Self.unavailableSessionMessage(for: session))
-            return
-        }
+        switch session {
+        case .user(let sessionId):
+            await loadUserContent(sessionId: sessionId)
 
+        case .guest, .loggedOut:
+            state = .guest(MainMemberCenterPresentationBuilder.makeGuestContent())
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func loadUserContent(sessionId: String) async {
         state = .loading
 
         do {
@@ -49,33 +56,6 @@ final class MainMemberCenterViewModel {
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
-        }
-    }
-
-    // MARK: - Private Methods
-
-    private static func unavailableSessionMessage(for session: AuthSession) -> ErrorMessage {
-        switch session {
-        case .loggedOut:
-            return ErrorMessage(
-                title: "尚未登入",
-                message: "請先使用 TMDB 帳號登入後再查看會員中心。",
-                systemImageName: "person.crop.circle.badge.exclamationmark"
-            )
-
-        case .guest:
-            return ErrorMessage(
-                title: "訪客無法使用會員中心",
-                message: "請登入 TMDB 帳號以同步個人資料、收藏、待看與評分內容。",
-                systemImageName: "person.crop.circle.badge.xmark"
-            )
-
-        case .user:
-            return ErrorMessage(
-                title: "無法載入會員中心",
-                message: "請稍後再重新整理。",
-                actionTitle: "重試"
-            )
         }
     }
 }

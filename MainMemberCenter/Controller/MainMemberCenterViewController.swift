@@ -16,8 +16,14 @@ final class MainMemberCenterViewController: MainBaseViewController {
     private enum Layout {
         static let sectionHeaderHeight: CGFloat = 32
         static let contentItemHeight: CGFloat = 232
+        static let guestLoginItemHeight: CGFloat = 220
         static let sectionSpacing: CGFloat = 12
         static let bottomInset: CGFloat = 32
+    }
+
+    private enum DisplaySection: Equatable {
+        case guestLogin(MainMemberCenterGuestLoginPrompt)
+        case content(MainMemberCenterSection)
     }
 
     // MARK: - Properties
@@ -26,7 +32,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
     private let viewModel: MainMemberCenterViewModel
     private lazy var router: MainMemberCenterRouting = MainMemberCenterRouter(sourceViewController: self)
     private var profile: MainMemberCenterProfile?
-    private var contentSections: [MainMemberCenterSection] = []
+    private var displaySections: [DisplaySection] = []
     private var loadTask: Task<Void, Never>?
 
     private let profileHeaderView = MainMemberCenterProfileHeaderView(
@@ -74,7 +80,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
         super.setupHierarchy()
         view.addSubview(profileHeaderView)
         profileHeaderView.onTap = { [weak self] in
-            self?.router.showSettings()
+            self?.showProfileAction()
         }
     }
 
@@ -136,6 +142,11 @@ final class MainMemberCenterViewController: MainBaseViewController {
     }
 
     private func registerSectionCells() {
+        collectionView.register(
+            MainMemberCenterGuestLoginCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainMemberCenterGuestLoginCollectionViewCell.reuseIdentifier
+        )
+
         let cellTypes: [UICollectionViewCell.Type] = [
             MainMemberCenterFavoriteMoviesSectionCollectionViewCell.self,
             MainMemberCenterFavoriteTVSectionCollectionViewCell.self,
@@ -181,21 +192,29 @@ final class MainMemberCenterViewController: MainBaseViewController {
         switch state {
         case .idle:
             profile = nil
-            contentSections = []
+            displaySections = []
             updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
             profile = nil
-            contentSections = []
+            displaySections = []
             updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
+        case .guest(let content):
+            profile = content.profile
+            displaySections = [.guestLogin(content.loginPrompt)]
+            profileHeaderView.configure(with: content.profile)
+            updateProfileHeaderVisibility(isVisible: true)
+            setLoadingVisible(false)
+            collectionView.backgroundView = nil
+
         case .loaded(let content):
             profile = content.profile
-            contentSections = content.contentSections
+            displaySections = content.contentSections.map(DisplaySection.content)
             profileHeaderView.configure(with: content.profile)
             updateProfileHeaderVisibility(isVisible: true)
             setLoadingVisible(false)
@@ -203,7 +222,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
 
         case .failed(let message):
             profile = nil
-            contentSections = []
+            displaySections = []
             updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
@@ -228,6 +247,16 @@ final class MainMemberCenterViewController: MainBaseViewController {
         collectionView.verticalScrollIndicatorInsets.top = topInset
     }
 
+    private func showProfileAction() {
+        switch session {
+        case .user:
+            router.showSettings()
+
+        case .guest, .loggedOut:
+            router.showLogin()
+        }
+    }
+
     private func showList(for destination: MainMemberCenterDestination) {
         guard case .user(let sessionId) = session,
               let accountId = profile?.id else {
@@ -247,7 +276,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
 extension MainMemberCenterViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        contentSections.count
+        displaySections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -258,27 +287,41 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard contentSections.indices.contains(indexPath.section) else {
+        guard displaySections.indices.contains(indexPath.section) else {
             return UICollectionViewCell()
         }
 
-        let contentSection = contentSections[indexPath.section]
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: contentSection.id.sectionCellReuseIdentifier,
-            for: indexPath
-        )
+        switch displaySections[indexPath.section] {
+        case .guestLogin(let prompt):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MainMemberCenterGuestLoginCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
 
-        if let cell = cell as? MainMemberCenterListStripCollectionViewCell {
-            cell.configure(items: contentSection.items) { [weak self] item in
-                self?.router.showDetail(for: item)
+            if let cell = cell as? MainMemberCenterGuestLoginCollectionViewCell {
+                cell.configure(with: prompt)
             }
-        } else if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
-            cell.configure(items: contentSection.items) { [weak self] item in
-                self?.router.showDetail(for: item)
+
+            return cell
+
+        case .content(let contentSection):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: contentSection.id.sectionCellReuseIdentifier,
+                for: indexPath
+            )
+
+            if let cell = cell as? MainMemberCenterListStripCollectionViewCell {
+                cell.configure(items: contentSection.items) { [weak self] item in
+                    self?.router.showDetail(for: item)
+                }
+            } else if let cell = cell as? MainMemberCenterContentStripCollectionViewCell {
+                cell.configure(items: contentSection.items) { [weak self] item in
+                    self?.router.showDetail(for: item)
+                }
             }
+
+            return cell
         }
-
-        return cell
     }
 
     func collectionView(
@@ -287,11 +330,14 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
-              contentSections.indices.contains(indexPath.section) else {
+              displaySections.indices.contains(indexPath.section) else {
             return UICollectionReusableView()
         }
 
-        let contentSection = contentSections[indexPath.section]
+        guard case .content(let contentSection) = displaySections[indexPath.section] else {
+            return UICollectionReusableView()
+        }
+
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: MainHomeSectionHeaderView.reuseIdentifier,
@@ -323,6 +369,16 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+
+        guard displaySections.indices.contains(indexPath.section) else { return }
+
+        switch displaySections[indexPath.section] {
+        case .guestLogin:
+            router.showLogin()
+
+        case .content:
+            return
+        }
     }
 
     func collectionView(
@@ -330,9 +386,18 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
+        let height: CGFloat
+
+        if displaySections.indices.contains(indexPath.section),
+           case .guestLogin = displaySections[indexPath.section] {
+            height = Layout.guestLoginItemHeight
+        } else {
+            height = Layout.contentItemHeight
+        }
+
         return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.contentItemHeight
+            height: height
         )
     }
 
@@ -341,7 +406,7 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        let isLastSection = section == contentSections.count - 1
+        let isLastSection = section == displaySections.count - 1
         return UIEdgeInsets(
             top: 0,
             left: 0,
@@ -363,7 +428,12 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        CGSize(
+        guard displaySections.indices.contains(section),
+              case .content = displaySections[section] else {
+            return .zero
+        }
+
+        return CGSize(
             width: collectionView.bounds.width,
             height: Layout.sectionHeaderHeight
         )

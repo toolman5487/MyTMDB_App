@@ -244,6 +244,9 @@
 		15A6A0893005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */; };
 		15A6A08A3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */; };
 		15A6A08B3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */; };
+		15A6A08D3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
+		15A6A08E3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
+		15A6A08F3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
 		15A6A0833005000000AD5E46 /* MemberSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */; };
 		15A6A0843005000000AD5E46 /* MemberSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */; };
 		15A6A0853005000000AD5E46 /* MemberSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */; };
@@ -612,6 +615,7 @@
 		15A6A0863005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingLogoutButtonCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingViewModel.swift; sourceTree = "<group>"; };
 		15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingButtonCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterGuestLoginCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A94F492FF26D7900FCBB0F /* BaseViewController.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		15A94F632FF26FB800FCBB0F /* MainBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBaseViewController.swift; sourceTree = "<group>"; };
 		15A94F6E2FF2704800FCBB0F /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
@@ -1258,6 +1262,7 @@
 			isa = PBXGroup;
 			children = (
 				158809A92FFEA0010081E4E9 /* Base */,
+				15A6A0913005300000AD5E46 /* Guest */,
 				158809AA2FFEA0010081E4E9 /* Section */,
 			);
 			path = Cell;
@@ -1345,6 +1350,14 @@
 				158809A22FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift */,
 			);
 			path = Section;
+			sourceTree = "<group>";
+		};
+		15A6A0913005300000AD5E46 /* Guest */ = {
+			isa = PBXGroup;
+			children = (
+				15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */,
+			);
+			path = Guest;
 			sourceTree = "<group>";
 		};
 		158809AB2FFEA0020081E4E9 /* Header */ = {
@@ -2574,6 +2587,7 @@
 				158809033000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */,
 				158809A32FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,
 				158809A62FFEA0010081E4E9 /* MainMemberCenterSectionCollectionViewCells.swift in Sources */,
+				15A6A08D3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */,
 				15CF9A042FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A072FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A102FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
@@ -2842,6 +2856,7 @@
 				158809213000DA6E0081E4E9 /* MainMemberCenterListModels.swift in Sources */,
 				158809243000DA6E0081E4E9 /* MainMemberCenterListItemCollectionViewCell.swift in Sources */,
 				158809273000DA6E0081E4E9 /* MainMemberCenterListViewModel.swift in Sources */,
+				15A6A08E3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */,
 				152BE7672FF56000006681A5 /* MovieDetailReviewService.swift in Sources */,
 				15BAE9772FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				152BE76A2FF56000006681A5 /* MovieDetailReviewViewModel.swift in Sources */,
@@ -2959,6 +2974,7 @@
 				158809223000DA6E0081E4E9 /* MainMemberCenterListModels.swift in Sources */,
 				158809253000DA6E0081E4E9 /* MainMemberCenterListItemCollectionViewCell.swift in Sources */,
 				158809283000DA6E0081E4E9 /* MainMemberCenterListViewModel.swift in Sources */,
+				15A6A08F3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */,
 				15DAAF122FFDE90009FB88A /* EpisodeDetailModels.swift in Sources */,
 				15DAAF222FFDE90009FB88A /* EpisodeDetailService.swift in Sources */,
 				15DAAF322FFDE90009FB88A /* EpisodeDetailViewModel.swift in Sources */,

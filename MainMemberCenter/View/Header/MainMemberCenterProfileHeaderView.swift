@@ -134,7 +134,7 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
             placeholderImage: UIImage(systemName: "person.fill")
         )
         displayNameLabel.text = profile.displayName
-        usernameLabel.text = "@\(profile.username)"
+        usernameLabel.text = profile.subtitle
     }
 
     // MARK: - Private Methods

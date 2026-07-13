@@ -22,6 +22,18 @@ nonisolated enum MainMemberCenterPresentationBuilder {
         )
     }
 
+    static func makeGuestContent() -> MainMemberCenterGuestContent {
+        MainMemberCenterGuestContent(
+            profile: .guest,
+            loginPrompt: MainMemberCenterGuestLoginPrompt(
+                title: "登入帳號",
+                message: "登入後同步收藏、電影清單、評分內容。",
+                systemImageName: "person.crop.circle.badge.plus",
+                actionTitle: "前往登入"
+            )
+        )
+    }
+
     static func makeSections(from previewPages: [MainMemberCenterPreviewPage]) -> [MainMemberCenterSection] {
         previewPages.compactMap(makeSection)
     }

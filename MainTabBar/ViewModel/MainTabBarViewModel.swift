@@ -11,14 +11,8 @@ import Foundation
 
 struct MainTabBarViewModel: Sendable {
 
-    // MARK: - Properties
-
-    private let session: AuthSession
-
     var items: [MainTabItem] {
-        MainTab.allCases.filter { tab in
-            tab.isVisible(for: session)
-        }.map { tab in
+        MainTab.allCases.map { tab in
             MainTabItem(
                 kind: tab.kind,
                 title: tab.title,
@@ -26,12 +20,6 @@ struct MainTabBarViewModel: Sendable {
                 selectedImageName: tab.selectedImageName
             )
         }
-    }
-
-    // MARK: - Initialization
-
-    init(session: AuthSession) {
-        self.session = session
     }
 
     // MARK: - Tab Selection
@@ -179,13 +167,4 @@ private enum MainTab: CaseIterable, Sendable {
         }
     }
 
-    func isVisible(for session: AuthSession) -> Bool {
-        switch (self, session) {
-        case (.memberCenter, .guest):
-            return false
-
-        default:
-            return true
-        }
-    }
 }

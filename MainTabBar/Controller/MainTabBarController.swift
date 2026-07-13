@@ -55,13 +55,13 @@ final class MainTabBarController: UITabBarController {
 
     init(session: AuthSession) {
         self.session = session
-        self.viewModel = MainTabBarViewModel(session: session)
+        self.viewModel = MainTabBarViewModel()
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         self.session = .loggedOut
-        self.viewModel = MainTabBarViewModel(session: .loggedOut)
+        self.viewModel = MainTabBarViewModel()
         super.init(coder: coder)
     }
 
