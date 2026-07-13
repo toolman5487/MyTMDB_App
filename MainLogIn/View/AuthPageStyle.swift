@@ -19,6 +19,7 @@ enum AuthPageStyle {
         static let pageInset: CGFloat = 16
         static let fieldHeight: CGFloat = 56
         static let buttonHeight: CGFloat = 48
+        static let buttonCornerRadius: CGFloat = 20
         static let stackSpacing: CGFloat = 16
         static let stackMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         static let symbolSize: CGFloat = 48
@@ -146,7 +147,16 @@ enum AuthPageStyle {
     }
 
     static func makeFilledButton(title: String) -> UIButton {
-        AppFactory.Button.authFilled(title: title)
+        var configuration = UIButton.Configuration.filled()
+        configuration.attributedTitle = attributedTitle(title, textStyle: .headline)
+        configuration.baseBackgroundColor = .label
+        configuration.baseForegroundColor = .systemBackground
+        configuration.cornerStyle = .medium
+
+        let button = UIButton(configuration: configuration)
+        button.layer.cornerRadius = Layout.buttonCornerRadius
+        button.clipsToBounds = true
+        return button
     }
 
     static func makeTextField(
@@ -159,5 +169,14 @@ enum AuthPageStyle {
             contentType: contentType,
             isSecure: isSecure
         )
+    }
+
+    private static func attributedTitle(
+        _ title: String,
+        textStyle: UIFont.TextStyle
+    ) -> AttributedString {
+        var attribute = AttributedString(title)
+        attribute.font = UIFont.preferredFont(forTextStyle: textStyle)
+        return attribute
     }
 }

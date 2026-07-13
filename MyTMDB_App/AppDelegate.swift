@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func configureNavigationBarAppearance() {
-        AppFactory.NavigationBar.applyTransparentGlobalAppearance(to: UINavigationBar.appearance())
+        AppAppearance.applyTransparentNavigationBarAppearance(to: UINavigationBar.appearance())
     }
 
     private func configureSkeletonAppearance() {

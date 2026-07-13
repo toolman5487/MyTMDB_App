@@ -217,19 +217,6 @@ enum AppFactory {
             return UIButton(configuration: configuration)
         }
 
-        static func authFilled(title: String) -> UIButton {
-            var configuration = UIButton.Configuration.filled()
-            configuration.attributedTitle = attributedTitle(title, textStyle: .headline)
-            configuration.baseBackgroundColor = .label
-            configuration.baseForegroundColor = .systemBackground
-            configuration.cornerStyle = .medium
-
-            let button = UIButton(configuration: configuration)
-            button.layer.cornerRadius = 20
-            button.clipsToBounds = true
-            return button
-        }
-
         // MARK: - Private Helpers
 
         private static func attributedTitle(
@@ -416,14 +403,5 @@ enum AppFactory {
             navigationItem.largeTitleDisplayMode = .never
         }
 
-        static func applyTransparentGlobalAppearance(to navigationBar: UINavigationBar) {
-            let appearance = transparentAppearance()
-            navigationBar.isTranslucent = true
-            navigationBar.backgroundColor = .clear
-            navigationBar.tintColor = ThemeColor.primary
-            navigationBar.standardAppearance = appearance
-            navigationBar.compactAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-        }
     }
 }

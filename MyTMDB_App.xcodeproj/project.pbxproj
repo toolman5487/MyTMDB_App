@@ -13,6 +13,9 @@
 		15E002122FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
 		15E002132FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
 		15E002142FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
+		15E002152FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
+		15E002162FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
+		15E002172FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336B32FF35E00003125EC /* ErrorMessage.swift */; };
 		150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336B32FF35E00003125EC /* ErrorMessage.swift */; };
 		150336B22FF35E00003125EC /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150336B32FF35E00003125EC /* ErrorMessage.swift */; };
@@ -543,6 +546,7 @@
 /* Begin PBXFileReference section */
 		150336A22FF35D4C003125EC /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
 		15E002112FF430000000001 /* AppFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFactory.swift; sourceTree = "<group>"; };
+		15E002182FF430010000001 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		150336B32FF35E00003125EC /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError+ErrorMessage.swift"; sourceTree = "<group>"; };
 		150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTitleBaseCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -802,6 +806,7 @@
 		15E002102FF430000000001 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				15E002182FF430010000001 /* AppAppearance.swift */,
 				15E002112FF430000000001 /* AppFactory.swift */,
 			);
 			path = UI;
@@ -2678,6 +2683,7 @@
 				15A6A0973005700000AD5E46 /* UserProfileStore.swift in Sources */,
 				150336A52FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				15E002122FF430000000001 /* AppFactory.swift in Sources */,
+				15E002152FF430010000001 /* AppAppearance.swift in Sources */,
 				152BE73F2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift in Sources */,
 				1588252D2FFF766D0028B219 /* HomeSectionListViewController.swift in Sources */,
 				158825362FFF7A900028B219 /* HomeSectionListModels.swift in Sources */,
@@ -2830,6 +2836,7 @@
 				15A9503F2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,
 				150336A42FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				15E002132FF430000000001 /* AppFactory.swift in Sources */,
+				15E002162FF430010000001 /* AppAppearance.swift in Sources */,
 				15DAAEEA2FFDE6D3009FB88A /* EpisodeDetailViewController.swift in Sources */,
 				150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
@@ -3121,6 +3128,7 @@
 				15BAE9782FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				150336A32FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				15E002142FF430000000001 /* AppFactory.swift in Sources */,
+				15E002172FF430010000001 /* AppAppearance.swift in Sources */,
 				150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A6A05E300475E800AD5E46 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,
