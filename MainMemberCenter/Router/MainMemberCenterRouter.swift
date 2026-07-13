@@ -12,13 +12,8 @@ import UIKit
 @MainActor
 protocol MainMemberCenterRouting: AnyObject {
     func showDetail(for item: MainMemberCenterListItem)
-    func showSettings()
-    func showLogin()
-    func showList(
-        for destination: MainMemberCenterDestination,
-        accountId: Int,
-        sessionId: String
-    )
+    func showProfileAction(_ action: MainMemberCenterProfileAction)
+    func showList(_ route: MainMemberCenterListRoute)
 }
 
 // MARK: - MainMemberCenterRouter
@@ -57,24 +52,22 @@ final class MainMemberCenterRouter: BaseRouter, MainMemberCenterRouting {
         }
     }
 
-    func showSettings() {
-        show(MemberSettingViewController(), using: .push)
+    func showProfileAction(_ action: MainMemberCenterProfileAction) {
+        switch action {
+        case .settings:
+            show(MemberSettingViewController(), using: .push)
+
+        case .login:
+            show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
+        }
     }
 
-    func showLogin() {
-        show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
-    }
-
-    func showList(
-        for destination: MainMemberCenterDestination,
-        accountId: Int,
-        sessionId: String
-    ) {
+    func showList(_ route: MainMemberCenterListRoute) {
         show(
             MainMemberCenterListViewController(
-                destination: destination,
-                accountId: accountId,
-                sessionId: sessionId
+                destination: route.destination,
+                accountId: route.accountId,
+                sessionId: route.sessionId
             ),
             using: .push
         )

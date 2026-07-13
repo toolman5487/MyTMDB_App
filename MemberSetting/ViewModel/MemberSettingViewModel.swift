@@ -36,6 +36,7 @@ final class MemberSettingViewModel {
     // MARK: - Properties
 
     private let sessionStore: SessionStoring
+    private let userProfileStore: UserProfileStoring
 
     let rows: [MemberSettingRowItem] = [
         MemberSettingRowItem(
@@ -48,8 +49,12 @@ final class MemberSettingViewModel {
 
     // MARK: - Initialization
 
-    init(sessionStore: SessionStoring = SessionStore()) {
+    init(
+        sessionStore: SessionStoring = SessionStore(),
+        userProfileStore: UserProfileStoring = UserProfileStore()
+    ) {
         self.sessionStore = sessionStore
+        self.userProfileStore = userProfileStore
     }
 
     // MARK: - Public Methods
@@ -65,5 +70,6 @@ final class MemberSettingViewModel {
 
     func logout() {
         sessionStore.clear()
+        userProfileStore.clear()
     }
 }

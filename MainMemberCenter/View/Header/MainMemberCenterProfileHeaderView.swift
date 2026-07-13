@@ -138,6 +138,15 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
     // MARK: - Configuration
 
     func configure(with content: MainMemberCenterProfileHeaderContent) {
+        if let avatarImageData = content.avatarImageData,
+           let image = UIImage(data: avatarImageData) {
+            avatarImageView.contentMode = .scaleAspectFill
+            avatarImageView.image = image
+            displayNameLabel.text = content.displayName
+            usernameLabel.text = content.subtitle
+            return
+        }
+
         guard let avatarURL = content.avatarURL else {
             setPlaceholderAvatar()
             displayNameLabel.text = content.displayName

@@ -17,6 +17,35 @@ nonisolated enum MainMemberCenterViewState: Equatable {
     case failed(ErrorMessage)
 }
 
+// MARK: - MainMemberCenterDisplaySection
+
+nonisolated enum MainMemberCenterDisplaySection: Sendable, Equatable {
+    case guestLogin(MainMemberCenterGuestLoginPrompt)
+    case content(MainMemberCenterSection)
+}
+
+// MARK: - MainMemberCenterProfileAction
+
+nonisolated enum MainMemberCenterProfileAction: Sendable, Equatable {
+    case settings
+    case login
+}
+
+// MARK: - MainMemberCenterAccountContext
+
+nonisolated struct MainMemberCenterAccountContext: Sendable, Equatable {
+    let accountId: Int
+    let sessionId: String
+}
+
+// MARK: - MainMemberCenterListRoute
+
+nonisolated struct MainMemberCenterListRoute: Sendable, Equatable {
+    let destination: MainMemberCenterDestination
+    let accountId: Int
+    let sessionId: String
+}
+
 // MARK: - MainMemberCenterGuestContent
 
 nonisolated struct MainMemberCenterGuestContent: Sendable, Equatable {
@@ -54,6 +83,19 @@ nonisolated struct MainMemberCenterProfileHeaderContent: Sendable, Equatable {
     let displayName: String
     let subtitle: String
     let avatarURL: URL?
+    let avatarImageData: Data?
+
+    init(
+        displayName: String,
+        subtitle: String,
+        avatarURL: URL?,
+        avatarImageData: Data? = nil
+    ) {
+        self.displayName = displayName
+        self.subtitle = subtitle
+        self.avatarURL = avatarURL
+        self.avatarImageData = avatarImageData
+    }
 }
 
 // MARK: - MainMemberCenterContentSnapshot
@@ -162,6 +204,19 @@ nonisolated struct MainMemberCenterProfile: Sendable, Equatable {
         self.languageCode = account.iso_639_1
         self.regionCode = account.iso_3166_1
         self.includesAdultContent = account.include_adult
+    }
+
+    init?(storedProfile: StoredUserProfile) {
+        guard let accountId = storedProfile.accountId else { return nil }
+
+        self.id = accountId
+        self.displayName = storedProfile.displayName
+        self.username = storedProfile.username
+        self.subtitle = "@\(storedProfile.username)"
+        self.avatarURL = storedProfile.avatarURL
+        self.languageCode = ""
+        self.regionCode = ""
+        self.includesAdultContent = false
     }
 
     static let guest = MainMemberCenterProfile(

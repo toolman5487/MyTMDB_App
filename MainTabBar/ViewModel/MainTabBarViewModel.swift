@@ -88,7 +88,7 @@ struct MainTabSelectionTransition: Sendable, Equatable {
 
 // MARK: - MainTabKind
 
-enum MainTabKind: Sendable {
+enum MainTabKind: Sendable, Equatable {
     case home
     case movie
     case series

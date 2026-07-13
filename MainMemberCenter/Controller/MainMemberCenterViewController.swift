@@ -21,18 +21,10 @@ final class MainMemberCenterViewController: MainBaseViewController {
         static let bottomInset: CGFloat = 32
     }
 
-    private enum DisplaySection: Equatable {
-        case guestLogin(MainMemberCenterGuestLoginPrompt)
-        case content(MainMemberCenterSection)
-    }
-
     // MARK: - Properties
 
-    private let session: AuthSession
     private let viewModel: MainMemberCenterViewModel
     private lazy var router: MainMemberCenterRouting = MainMemberCenterRouter(sourceViewController: self)
-    private var profile: MainMemberCenterProfile?
-    private var displaySections: [DisplaySection] = []
     private var loadTask: Task<Void, Never>?
 
     private let profileHeaderView = MainMemberCenterProfileHeaderView(
@@ -45,19 +37,16 @@ final class MainMemberCenterViewController: MainBaseViewController {
     // MARK: - Initialization
 
     init(session: AuthSession) {
-        self.session = session
         self.viewModel = MainMemberCenterViewModel(session: session)
         super.init(nibName: nil, bundle: nil)
     }
 
     init(viewModel: MainMemberCenterViewModel) {
-        self.session = .loggedOut
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        self.session = .loggedOut
         self.viewModel = MainMemberCenterViewModel(session: .loggedOut)
         super.init(coder: coder)
     }
@@ -97,6 +86,14 @@ final class MainMemberCenterViewController: MainBaseViewController {
         render(state: viewModel.state)
         observeViewModelState()
         loadContent()
+    }
+
+    func refreshContentFromTabSelection() {
+        loadTask?.cancel()
+        loadTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            await viewModel.refreshContentFromTabSelection()
+        }
     }
 
     // MARK: - Setup
@@ -191,38 +188,21 @@ final class MainMemberCenterViewController: MainBaseViewController {
     private func render(state: MainMemberCenterViewState) {
         switch state {
         case .idle:
-            profile = nil
-            displaySections = []
             updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .loading:
-            profile = nil
-            displaySections = []
-            updateProfileHeaderVisibility(isVisible: false)
+            renderHeaderContentIfAvailable()
             setLoadingVisible(true)
             collectionView.backgroundView = nil
 
-        case .guest(let content):
-            profile = content.profile
-            displaySections = [.guestLogin(content.loginPrompt)]
-            profileHeaderView.configure(with: content.profile.headerContent)
-            updateProfileHeaderVisibility(isVisible: true)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
-
-        case .loaded(let content):
-            profile = content.profile
-            displaySections = content.contentSections.map(DisplaySection.content)
-            profileHeaderView.configure(with: content.profile.headerContent)
-            updateProfileHeaderVisibility(isVisible: true)
+        case .guest, .loaded:
+            renderHeaderContentIfAvailable()
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
         case .failed(let message):
-            profile = nil
-            displaySections = []
             updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
@@ -231,6 +211,16 @@ final class MainMemberCenterViewController: MainBaseViewController {
         }
 
         collectionView.reloadData()
+    }
+
+    private func renderHeaderContentIfAvailable() {
+        guard let headerContent = viewModel.headerContent else {
+            updateProfileHeaderVisibility(isVisible: false)
+            return
+        }
+
+        profileHeaderView.configure(with: headerContent)
+        updateProfileHeaderVisibility(isVisible: true)
     }
 
     private func updateProfileHeaderVisibility(isVisible: Bool) {
@@ -248,26 +238,12 @@ final class MainMemberCenterViewController: MainBaseViewController {
     }
 
     private func showProfileAction() {
-        switch session {
-        case .user:
-            router.showSettings()
-
-        case .guest, .loggedOut:
-            router.showLogin()
-        }
+        router.showProfileAction(viewModel.profileAction)
     }
 
     private func showList(for destination: MainMemberCenterDestination) {
-        guard case .user(let sessionId) = session,
-              let accountId = profile?.id else {
-            return
-        }
-
-        router.showList(
-            for: destination,
-            accountId: accountId,
-            sessionId: sessionId
-        )
+        guard let route = viewModel.listRoute(for: destination) else { return }
+        router.showList(route)
     }
 }
 
@@ -276,7 +252,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
 extension MainMemberCenterViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        displaySections.count
+        viewModel.displaySections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -287,11 +263,11 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard displaySections.indices.contains(indexPath.section) else {
+        guard viewModel.displaySections.indices.contains(indexPath.section) else {
             return UICollectionViewCell()
         }
 
-        switch displaySections[indexPath.section] {
+        switch viewModel.displaySections[indexPath.section] {
         case .guestLogin(let prompt):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MainMemberCenterGuestLoginCollectionViewCell.reuseIdentifier,
@@ -330,11 +306,11 @@ extension MainMemberCenterViewController: UICollectionViewDataSource {
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
-              displaySections.indices.contains(indexPath.section) else {
+              viewModel.displaySections.indices.contains(indexPath.section) else {
             return UICollectionReusableView()
         }
 
-        guard case .content(let contentSection) = displaySections[indexPath.section] else {
+        guard case .content(let contentSection) = viewModel.displaySections[indexPath.section] else {
             return UICollectionReusableView()
         }
 
@@ -370,11 +346,11 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        guard displaySections.indices.contains(indexPath.section) else { return }
+        guard viewModel.displaySections.indices.contains(indexPath.section) else { return }
 
-        switch displaySections[indexPath.section] {
+        switch viewModel.displaySections[indexPath.section] {
         case .guestLogin:
-            router.showLogin()
+            router.showProfileAction(viewModel.profileAction)
 
         case .content:
             return
@@ -388,8 +364,8 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         let height: CGFloat
 
-        if displaySections.indices.contains(indexPath.section),
-           case .guestLogin = displaySections[indexPath.section] {
+        if viewModel.displaySections.indices.contains(indexPath.section),
+           case .guestLogin = viewModel.displaySections[indexPath.section] {
             height = Layout.guestLoginItemHeight
         } else {
             height = Layout.contentItemHeight
@@ -406,7 +382,7 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        let isLastSection = section == displaySections.count - 1
+        let isLastSection = section == viewModel.displaySections.count - 1
         return UIEdgeInsets(
             top: 0,
             left: 0,
@@ -428,8 +404,8 @@ extension MainMemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        guard displaySections.indices.contains(section),
-              case .content = displaySections[section] else {
+        guard viewModel.displaySections.indices.contains(section),
+              case .content = viewModel.displaySections[section] else {
             return .zero
         }
 

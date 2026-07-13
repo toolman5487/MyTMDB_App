@@ -83,15 +83,18 @@ final class AuthFlowCoordinator: AuthFlowCoordinating {
 
     private let sessionStore: SessionStoring
     private let accountService: AccountServiceProtocol
+    private let userProfileStore: UserProfileStoring
 
     // MARK: - Initialization
 
     init(
         sessionStore: SessionStoring = SessionStore(),
-        accountService: AccountServiceProtocol = AccountService()
+        accountService: AccountServiceProtocol = AccountService(),
+        userProfileStore: UserProfileStoring = UserProfileStore()
     ) {
         self.sessionStore = sessionStore
         self.accountService = accountService
+        self.userProfileStore = userProfileStore
     }
 
     // MARK: - AuthFlowCoordinating
@@ -100,13 +103,15 @@ final class AuthFlowCoordinator: AuthFlowCoordinating {
         let session = AuthSession.user(sessionId: sessionId)
         sessionStore.save(session)
 
-        _ = try await accountService.fetchAccount(sessionId: sessionId)
+        let account = try await accountService.fetchAccount(sessionId: sessionId)
+        userProfileStore.save(account: account)
         replaceRoot(from: sourceViewController, for: session)
     }
 
     func finishGuestLogin(sessionId: String, from sourceViewController: UIViewController) {
         let session = AuthSession.guest(sessionId: sessionId)
         sessionStore.save(session)
+        userProfileStore.clear()
         replaceRoot(from: sourceViewController, for: session)
     }
 

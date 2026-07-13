@@ -12,6 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     private let sessionStore: SessionStoring = SessionStore()
+    private let userProfileStore: UserProfileStoring = UserProfileStore()
     private let sessionValidator = AuthSessionValidator()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -35,6 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             if validatedSession == .loggedOut {
                 sessionStore.clear()
+                userProfileStore.clear()
             } else if validatedSession != storedSession {
                 sessionStore.save(validatedSession)
             }

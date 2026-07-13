@@ -10,7 +10,7 @@ import Foundation
 // MARK: - MainMemberCenterServicing
 
 nonisolated protocol MainMemberCenterServicing: Sendable {
-    func fetchContent(sessionId: String) async throws -> MainMemberCenterContentSnapshot
+    func fetchAccount(sessionId: String) async throws -> Account
 
     func fetchFavoriteMovies(
         accountId: Int,
@@ -60,6 +60,8 @@ nonisolated protocol MainMemberCenterServicing: Sendable {
         page: Int
     ) async throws -> MainMemberCenterListPage
 
+    func fetchListDetail(listId: Int) async throws -> MainMemberCenterListDetail
+
     func updateFavorite(
         accountId: Int,
         sessionId: String,
@@ -77,12 +79,6 @@ nonisolated protocol MainMemberCenterServicing: Sendable {
 
 nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
 
-    // MARK: - Configuration
-
-    private enum Configuration {
-        static let listPreviewPosterFallbackLimit = 10
-    }
-
     // MARK: - Properties
 
     private let network: NetworkServicing
@@ -99,20 +95,6 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
     }
 
     // MARK: - Public Methods
-
-    func fetchContent(sessionId: String) async throws -> MainMemberCenterContentSnapshot {
-        let account = try await fetchAccount(sessionId: sessionId)
-        let profile = MainMemberCenterProfile(account: account)
-        let previewPages = await fetchPreviewPages(
-            accountId: profile.id,
-            sessionId: sessionId
-        )
-
-        return MainMemberCenterContentSnapshot(
-            profile: profile,
-            previewPages: previewPages
-        )
-    }
 
     func fetchFavoriteMovies(
         accountId: Int,
@@ -210,6 +192,13 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         )
     }
 
+    func fetchListDetail(listId: Int) async throws -> MainMemberCenterListDetail {
+        try await network.get(
+            path: APIConfig.List.detail(listId: listId),
+            queryItems: listDetailQueryItems()
+        )
+    }
+
     func updateFavorite(
         accountId: Int,
         sessionId: String,
@@ -234,113 +223,11 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         )
     }
 
-    // MARK: - Private Methods
-
-    private func fetchAccount(sessionId: String) async throws -> Account {
+    func fetchAccount(sessionId: String) async throws -> Account {
         try await network.get(
             path: APIConfig.Account.me,
             queryItems: authenticatedQueryItems(sessionId: sessionId)
         )
-    }
-
-    private func fetchPreviewPages(
-        accountId: Int,
-        sessionId: String
-    ) async -> [MainMemberCenterPreviewPage] {
-        var previewPages: [MainMemberCenterPreviewPage] = []
-
-        for destination in MainMemberCenterDestination.allCases {
-            guard let previewPage = await fetchPreviewPage(
-                destination: destination,
-                accountId: accountId,
-                sessionId: sessionId
-            ) else {
-                continue
-            }
-
-            previewPages.append(previewPage)
-        }
-
-        return previewPages
-    }
-
-    private func fetchPreviewPage(
-        destination: MainMemberCenterDestination,
-        accountId: Int,
-        sessionId: String
-    ) async -> MainMemberCenterPreviewPage? {
-        do {
-            switch destination {
-            case .favoriteMovies:
-                let page = try await fetchFavoriteMovies(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .favoriteMovies(page)
-
-            case .favoriteTV:
-                let page = try await fetchFavoriteTV(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .favoriteTV(page)
-
-            case .watchlistMovies:
-                let page = try await fetchWatchlistMovies(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .watchlistMovies(page)
-
-            case .watchlistTV:
-                let page = try await fetchWatchlistTV(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .watchlistTV(page)
-
-            case .ratedMovies:
-                let page = try await fetchRatedMovies(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .ratedMovies(page)
-
-            case .ratedTV:
-                let page = try await fetchRatedTV(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .ratedTV(page)
-
-            case .ratedEpisodes:
-                let page = try await fetchRatedEpisodes(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .ratedEpisodes(page)
-
-            case .lists:
-                let page = try await fetchListsPreviewPage(
-                    accountId: accountId,
-                    sessionId: sessionId,
-                    page: 1
-                )
-                return .lists(page)
-            }
-        } catch {
-            AppLogger.network.warning(
-                "Failed to load member center preview \(destination.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
-            )
-            return nil
-        }
     }
 
     private func fetchAccountPage<Page: Decodable & Sendable>(
@@ -352,63 +239,6 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
             path: path,
             queryItems: accountListQueryItems(sessionId: sessionId, page: page)
         )
-    }
-
-    private func fetchListsPreviewPage(
-        accountId: Int,
-        sessionId: String,
-        page: Int
-    ) async throws -> MainMemberCenterListPage {
-        let pageResponse = try await fetchLists(
-            accountId: accountId,
-            sessionId: sessionId,
-            page: page
-        )
-        let enrichedResults = await enrichListsWithFirstItemPoster(pageResponse.results)
-
-        return MainMemberCenterListPage(
-            page: pageResponse.page,
-            results: enrichedResults,
-            totalPages: pageResponse.totalPages,
-            totalResults: pageResponse.totalResults
-        )
-    }
-
-    private func enrichListsWithFirstItemPoster(_ lists: [MainMemberCenterList]) async -> [MainMemberCenterList] {
-        let network = network
-        let queryItems = listDetailQueryItems()
-
-        return await withTaskGroup(of: (Int, MainMemberCenterList).self) { group in
-            for (index, list) in lists.enumerated() {
-                group.addTask {
-                    guard index < Configuration.listPreviewPosterFallbackLimit,
-                          list.posterPath == nil else {
-                        return (index, list)
-                    }
-
-                    do {
-                        let detail: MainMemberCenterListDetail = try await network.get(
-                            path: APIConfig.List.detail(listId: list.id),
-                            queryItems: queryItems
-                        )
-                        return (index, list.replacingMissingPosterPath(with: detail.firstPosterPath))
-                    } catch {
-                        return (index, list)
-                    }
-                }
-            }
-
-            var indexedLists: [(Int, MainMemberCenterList)] = []
-            indexedLists.reserveCapacity(lists.count)
-
-            for await indexedList in group {
-                indexedLists.append(indexedList)
-            }
-
-            return indexedLists
-                .sorted { $0.0 < $1.0 }
-                .map { $0.1 }
-        }
     }
 
     private func authenticatedQueryItems(sessionId: String) -> [URLQueryItem] {

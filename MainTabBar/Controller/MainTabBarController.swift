@@ -36,8 +36,10 @@ final class MainTabBarController: UITabBarController {
 
     private let session: AuthSession
     private let viewModel: MainTabBarViewModel
+    private let avatarProvider: MainTabBarAvatarProviding
     private var tabBarVisibilityState: MainTabBarVisibilityState = .visible
     private var pendingTransitionDirection: MainTabNavigationDirection?
+    private var avatarTask: Task<Void, Never>?
 
     // MARK: - UI Components
 
@@ -53,16 +55,25 @@ final class MainTabBarController: UITabBarController {
 
     // MARK: - Initialization
 
-    init(session: AuthSession) {
+    init(
+        session: AuthSession,
+        avatarProvider: MainTabBarAvatarProviding = MainTabBarAvatarService()
+    ) {
         self.session = session
         self.viewModel = MainTabBarViewModel()
+        self.avatarProvider = avatarProvider
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         self.session = .loggedOut
         self.viewModel = MainTabBarViewModel()
+        self.avatarProvider = MainTabBarAvatarService()
         super.init(coder: coder)
+    }
+
+    deinit {
+        avatarTask?.cancel()
     }
 
     // MARK: - Lifecycle
@@ -73,6 +84,7 @@ final class MainTabBarController: UITabBarController {
         configureTabBarAppearance()
         setupViewControllers()
         configureTabSwipeGesture()
+        loadMemberCenterAvatarIfNeeded()
     }
 
     override func viewDidLayoutSubviews() {
@@ -175,6 +187,44 @@ final class MainTabBarController: UITabBarController {
 
     private func configureTabSwipeGesture() {
         view.addGestureRecognizer(tabSwipeGestureRecognizer)
+    }
+
+    private func loadMemberCenterAvatarIfNeeded() {
+        guard case .user(let sessionId) = session else { return }
+
+        avatarTask?.cancel()
+        avatarTask = Task { [weak self] in
+            guard let self else { return }
+            guard let image = await avatarProvider.fetchAvatarImage(sessionId: sessionId) else { return }
+            guard !Task.isCancelled else { return }
+            updateMemberCenterTabBarItemImage(image)
+        }
+    }
+
+    private func updateMemberCenterTabBarItemImage(_ image: UIImage) {
+        let items = viewModel.items
+        guard let index = items.firstIndex(where: { $0.kind == .memberCenter }),
+              let viewControllers,
+              viewControllers.indices.contains(index) else {
+            return
+        }
+
+        let viewController = viewControllers[index]
+        let tabBarItem = viewController.tabBarItem
+        tabBarItem?.image = image
+        tabBarItem?.selectedImage = image
+        tabBarItem?.title = nil
+        viewController.tabBarItem = tabBarItem ?? makeTabBarItem(for: items[index])
+    }
+
+    private func refreshMemberCenterContentIfNeeded(for viewController: UIViewController) {
+        guard case .user = session,
+              let navigationController = viewController as? UINavigationController,
+              let memberCenterViewController = navigationController.viewControllers.first as? MainMemberCenterViewController else {
+            return
+        }
+
+        memberCenterViewController.refreshContentFromTabSelection()
     }
 
     // MARK: - Tab Selection
@@ -339,6 +389,13 @@ extension MainTabBarController: UITabBarControllerDelegate {
             to: targetIndex
         )
         return true
+    }
+
+    func tabBarController(
+        _ tabBarController: UITabBarController,
+        didSelect viewController: UIViewController
+    ) {
+        refreshMemberCenterContentIfNeeded(for: viewController)
     }
 
     func tabBarController(
