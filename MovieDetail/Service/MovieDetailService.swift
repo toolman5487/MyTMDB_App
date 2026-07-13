@@ -23,6 +23,8 @@ nonisolated protocol MovieDetailServicing: Sendable {
     func fetchMovieRecommendations(id: Int, page: Int) async throws -> MovieRecommendationsPage
 
     func fetchMovieWatchProviders(id: Int) async throws -> MovieWatchProvidersResponse
+
+    func fetchMovieAccountStates(id: Int, sessionId: String) async throws -> AccountMediaStatesResponse
 }
 
 extension MovieDetailServicing {
@@ -153,7 +155,20 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
         )
     }
 
+    func fetchMovieAccountStates(id: Int, sessionId: String) async throws -> AccountMediaStatesResponse {
+        try await network.get(
+            path: APIConfig.Movie.accountStates(id: id),
+            queryItems: authenticatedQueryItems(sessionId: sessionId)
+        )
+    }
+
     // MARK: - Private Methods
+
+    private func authenticatedQueryItems(sessionId: String) -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "session_id", value: sessionId)
+        ]
+    }
 
     private var localizedQueryItems: [URLQueryItem] {
         [

@@ -14,6 +14,47 @@ nonisolated enum MainMemberCenterAccountMediaType: String, Sendable, Encodable {
     case tv
 }
 
+// MARK: - Account Media States
+
+nonisolated struct AccountMediaStatesResponse: Decodable, Sendable, Equatable, Identifiable {
+    let id: Int
+    let favorite: Bool
+
+    init(id: Int = 0, favorite: Bool = false) {
+        self.id = id
+        self.favorite = favorite
+    }
+}
+
+// MARK: - Account Media Favorite State
+
+nonisolated enum AccountMediaFavoriteState: Sendable, Equatable {
+    case unavailable
+    case requiresUserLogin
+    case ready(isFavorite: Bool)
+    case updating(isFavorite: Bool)
+
+    var isFavorite: Bool {
+        switch self {
+        case .unavailable, .requiresUserLogin:
+            return false
+
+        case .ready(let isFavorite), .updating(let isFavorite):
+            return isFavorite
+        }
+    }
+
+    var isButtonEnabled: Bool {
+        switch self {
+        case .unavailable, .updating:
+            return false
+
+        case .requiresUserLogin, .ready:
+            return true
+        }
+    }
+}
+
 // MARK: - Account List Pages
 
 typealias MainMemberCenterFavoriteMoviePage = TMDBPageResponse<MovieGridMovie>

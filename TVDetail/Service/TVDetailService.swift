@@ -23,6 +23,8 @@ nonisolated protocol TVDetailServicing: Sendable {
     func fetchTVRecommendations(seriesID: Int, page: Int) async throws -> TVRecommendationsPage
 
     func fetchTVWatchProviders(seriesID: Int) async throws -> TVWatchProvidersResponse
+
+    func fetchTVAccountStates(seriesID: Int, sessionId: String) async throws -> AccountMediaStatesResponse
 }
 
 extension TVDetailServicing {
@@ -153,7 +155,20 @@ nonisolated final class TVDetailService: TVDetailServicing {
         )
     }
 
+    func fetchTVAccountStates(seriesID: Int, sessionId: String) async throws -> AccountMediaStatesResponse {
+        try await network.get(
+            path: APIConfig.TV.accountStates(seriesId: seriesID),
+            queryItems: authenticatedQueryItems(sessionId: sessionId)
+        )
+    }
+
     // MARK: - Private Methods
+
+    private func authenticatedQueryItems(sessionId: String) -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "session_id", value: sessionId)
+        ]
+    }
 
     private var localizedQueryItems: [URLQueryItem] {
         [

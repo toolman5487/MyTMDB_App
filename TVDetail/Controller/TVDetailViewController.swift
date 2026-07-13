@@ -17,6 +17,7 @@ final class TVDetailViewController: DetailBaseViewController {
     private let viewModel: TVDetailViewModel
     private var sections: [TVDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
+    private var favoriteTask: Task<Void, Never>?
     private lazy var router: TVDetailRouting = TVDetailRouter(
         sourceViewController: self,
         seriesID: seriesID
@@ -48,6 +49,7 @@ final class TVDetailViewController: DetailBaseViewController {
 
     deinit {
         loadTask?.cancel()
+        favoriteTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -78,12 +80,15 @@ final class TVDetailViewController: DetailBaseViewController {
     }
 
     private func configureNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "text.bubble"),
-            style: .plain,
-            target: self,
-            action: #selector(handleReviewButtonTapped)
-        )
+        setFavoriteButton(isFavorite: false, isEnabled: false)
+        setDetailRightBarButtonItems([
+            UIBarButtonItem(
+                image: UIImage(systemName: "text.bubble"),
+                style: .plain,
+                target: self,
+                action: #selector(handleReviewButtonTapped)
+            )
+        ])
     }
 
     private func configureCollectionView() {
@@ -146,6 +151,7 @@ final class TVDetailViewController: DetailBaseViewController {
 
             guard !Task.isCancelled else { return }
             render(state: viewModel.state)
+            updateFavoriteButton()
         }
     }
 
@@ -187,9 +193,38 @@ final class TVDetailViewController: DetailBaseViewController {
         router.showReviewList()
     }
 
+    override func handleDetailFavoriteButtonTapped() {
+        setPendingFavoriteButtonState()
+        favoriteTask?.cancel()
+        favoriteTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let message = await viewModel.toggleFavorite(seriesID: seriesID)
+
+            guard !Task.isCancelled else { return }
+            updateFavoriteButton()
+
+            if let message {
+                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+            }
+        }
+    }
+
     private func detailNavigationTitle(from sections: [TVDetailSectionItem]) -> String? {
         guard case .overview(let item) = sections.first else { return nil }
         return item.hero.title.isEmpty ? item.hero.originalTitle : item.hero.title
+    }
+
+    private func updateFavoriteButton() {
+        setFavoriteButton(
+            isFavorite: viewModel.favoriteState.isFavorite,
+            isEnabled: viewModel.favoriteState.isButtonEnabled
+        )
+    }
+
+    private func setPendingFavoriteButtonState() {
+        guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
+        setFavoriteButton(isFavorite: !isFavorite, isEnabled: false)
     }
 }
 

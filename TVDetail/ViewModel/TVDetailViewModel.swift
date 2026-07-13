@@ -26,13 +26,26 @@ final class TVDetailViewModel {
     // MARK: - Properties
 
     private(set) var state: TVDetailViewState = .idle
+    private(set) var favoriteState: AccountMediaFavoriteState = .unavailable
 
     private let service: TVDetailServicing
+    private let sessionStore: SessionStoring
+    private let accountService: AccountServiceProtocol
+    private let accountMediaService: MainMemberCenterServicing
+    private var favoriteSession: AccountMediaFavoriteSession?
 
     // MARK: - Initialization
 
-    init(service: TVDetailServicing = TVDetailService()) {
+    init(
+        service: TVDetailServicing = TVDetailService(),
+        sessionStore: SessionStoring = SessionStore(),
+        accountService: AccountServiceProtocol = AccountService(),
+        accountMediaService: MainMemberCenterServicing = MainMemberCenterService()
+    ) {
         self.service = service
+        self.sessionStore = sessionStore
+        self.accountService = accountService
+        self.accountMediaService = accountMediaService
     }
 
     // MARK: - Public Methods
@@ -50,14 +63,99 @@ final class TVDetailViewModel {
         }
 
         state = .loading
+        favoriteState = .unavailable
+        favoriteSession = nil
 
         do {
-            let content = try await service.fetchTVDetailContent(seriesID: seriesID)
-            state = .loaded(TVDetailSectionBuilder.makeSections(content: content))
+            async let content = service.fetchTVDetailContent(seriesID: seriesID)
+            let loadedFavoriteState = await loadFavoriteState(seriesID: seriesID)
+            let loadedContent = try await content
+            state = .loaded(TVDetailSectionBuilder.makeSections(content: loadedContent))
+            favoriteState = loadedFavoriteState
         } catch {
             state = .failed(error.errorMessage)
+            favoriteState = .unavailable
+            favoriteSession = nil
         }
     }
+
+    func toggleFavorite(seriesID: Int) async -> ErrorMessage? {
+        guard seriesID > 0 else {
+            return ErrorMessage(title: "無法收藏", message: "影集 ID 不正確，請返回上一頁後再試。")
+        }
+
+        switch favoriteState {
+        case .requiresUserLogin:
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
+
+        case .unavailable:
+            return ErrorMessage(title: "暫時無法收藏", message: "目前無法取得收藏狀態，請稍後再試。")
+
+        case .updating:
+            return nil
+
+        case .ready(let currentFavoriteStatus):
+            guard let favoriteSession else {
+                favoriteState = .requiresUserLogin
+                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
+            }
+
+            let updatedFavoriteStatus = !currentFavoriteStatus
+            favoriteState = .updating(isFavorite: updatedFavoriteStatus)
+
+            do {
+                let response = try await accountMediaService.updateFavorite(
+                    accountId: favoriteSession.accountID,
+                    sessionId: favoriteSession.sessionID,
+                    request: MainMemberCenterFavoriteStatusRequest(
+                        mediaType: .tv,
+                        mediaID: seriesID,
+                        favorite: updatedFavoriteStatus
+                    )
+                )
+
+                guard response.success else {
+                    favoriteState = .ready(isFavorite: currentFavoriteStatus)
+                    return ErrorMessage(title: "收藏失敗", message: response.statusMessage)
+                }
+
+                favoriteState = .ready(isFavorite: updatedFavoriteStatus)
+                return nil
+            } catch {
+                favoriteState = .ready(isFavorite: currentFavoriteStatus)
+                return error.errorMessage
+            }
+        }
+    }
+
+    private func loadFavoriteState(seriesID: Int) async -> AccountMediaFavoriteState {
+        guard case .user(let sessionID) = sessionStore.load() else {
+            return .requiresUserLogin
+        }
+
+        async let account = accountService.fetchAccount(sessionId: sessionID)
+        async let accountStates = service.fetchTVAccountStates(seriesID: seriesID, sessionId: sessionID)
+
+        do {
+            let loadedAccount = try await account
+            let loadedAccountStates = try await accountStates
+            favoriteSession = AccountMediaFavoriteSession(accountID: loadedAccount.id, sessionID: sessionID)
+            return .ready(isFavorite: loadedAccountStates.favorite)
+        } catch {
+            favoriteSession = nil
+            AppLogger.network.warning(
+                "Failed to load TV favorite state for series \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
+            return .unavailable
+        }
+    }
+}
+
+// MARK: - AccountMediaFavoriteSession
+
+private nonisolated struct AccountMediaFavoriteSession: Sendable, Equatable {
+    let accountID: Int
+    let sessionID: String
 }
 
 // MARK: - TVDetailSectionItem
