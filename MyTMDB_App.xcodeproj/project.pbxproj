@@ -1283,7 +1283,6 @@
 		1588090A3000D1850081E4E9 /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				15A6A0A33005800000AD5E46 /* MainMemberCenterContentRepository.swift */,
 				158809093000D1850081E4E9 /* MainMemberCenterService.swift */,
 			);
 			path = Service;
@@ -1298,7 +1297,7 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		158809133000DA6E0081E4E9 /* MemberCenterList */ = {
+		158809133000DA6E0081E4E9 /* List */ = {
 			isa = PBXGroup;
 			children = (
 				158809143000DA6E0081E4E9 /* Controller */,
@@ -1306,7 +1305,7 @@
 				158809163000DA6E0081E4E9 /* View */,
 				158809173000DA6E0081E4E9 /* ViewModel */,
 			);
-			path = MemberCenterList;
+			path = List;
 			sourceTree = "<group>";
 		};
 		158809143000DA6E0081E4E9 /* Controller */ = {
@@ -1368,9 +1367,17 @@
 		158809AB2FFEA0020081E4E9 /* Header */ = {
 			isa = PBXGroup;
 			children = (
-				158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */,
+				15E001122FF420000000001 /* Profile */,
 			);
 			path = Header;
+			sourceTree = "<group>";
+		};
+		15E001122FF420000000001 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				158809013000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		158809B02FFEB0010081E4E9 /* Router */ = {
@@ -1471,13 +1478,23 @@
 			isa = PBXGroup;
 			children = (
 				158893D82FFFA8640028B219 /* Controller */,
+				158809133000DA6E0081E4E9 /* List */,
 				158893E02FFFA8B00028B219 /* Model */,
+				15E001112FF420000000001 /* Repository */,
 				158809B02FFEB0010081E4E9 /* Router */,
 				1588090A3000D1850081E4E9 /* Service */,
 				158893D92FFFA86D0028B219 /* View */,
 				1588090C3000D1850081E4E9 /* ViewModel */,
 			);
 			path = MainMemberCenter;
+			sourceTree = "<group>";
+		};
+		15E001112FF420000000001 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				15A6A0A33005800000AD5E46 /* MainMemberCenterContentRepository.swift */,
+			);
+			path = Repository;
 			sourceTree = "<group>";
 		};
 		158893D82FFFA8640028B219 /* Controller */ = {
@@ -1526,7 +1543,6 @@
 				15BAEB622FF658F1006B0E15 /* MainMovieList */,
 				15A94F672FF26FCE00FCBB0F /* MainTabBar */,
 				157C51802FFB91080044BD8E /* MainTVList */,
-				158809133000DA6E0081E4E9 /* MemberCenterList */,
 				15A6A0733004885E00AD5E46 /* MemberSetting */,
 				15CF99C72FF36FEC0041F4CC /* MovieDetail */,
 				157C4E572FFB639E0044BD8E /* MovieSearch */,
