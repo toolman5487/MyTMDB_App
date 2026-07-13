@@ -207,7 +207,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
         case .guest(let content):
             profile = content.profile
             displaySections = [.guestLogin(content.loginPrompt)]
-            profileHeaderView.configure(with: content.profile)
+            profileHeaderView.configure(with: content.profile.headerContent)
             updateProfileHeaderVisibility(isVisible: true)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
@@ -215,7 +215,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
         case .loaded(let content):
             profile = content.profile
             displaySections = content.contentSections.map(DisplaySection.content)
-            profileHeaderView.configure(with: content.profile)
+            profileHeaderView.configure(with: content.profile.headerContent)
             updateProfileHeaderVisibility(isVisible: true)
             setLoadingVisible(false)
             collectionView.backgroundView = nil

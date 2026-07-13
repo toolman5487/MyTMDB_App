@@ -14,7 +14,8 @@ import UIKit
 enum MainMemberCenterProfileLayout {
     static let verticalInset: CGFloat = 12
     static let horizontalInset: CGFloat = 16
-    static let avatarSize: CGFloat = 52
+    static let avatarSize: CGFloat = 60
+    static let placeholderAvatarPointSize: CGFloat = 28
     static let contentSpacing: CGFloat = 12
     static let textSpacing: CGFloat = 2
     static let chevronSize: CGFloat = 24
@@ -35,17 +36,25 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
 
     var onTap: (() -> Void)?
 
+    private static let placeholderAvatarImage = UIImage(
+        systemName: "person.fill",
+        withConfiguration: UIImage.SymbolConfiguration(
+            pointSize: MainMemberCenterProfileLayout.placeholderAvatarPointSize,
+            weight: .regular
+        )
+    )
+
     // MARK: - UI Components
 
     private let avatarImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .center
         imageView.backgroundColor = ThemeColor.backgroundTertiary
         imageView.tintColor = ThemeColor.textTertiary
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = MainMemberCenterProfileLayout.avatarSize / 2
         imageView.layer.cornerCurve = .continuous
-        imageView.image = UIImage(systemName: "person.fill")
+        imageView.image = placeholderAvatarImage
         return imageView
     }()
 
@@ -121,20 +130,36 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         avatarImageView.sd_cancelCurrentImageLoad()
-        avatarImageView.image = UIImage(systemName: "person.fill")
+        setPlaceholderAvatar()
         displayNameLabel.text = nil
         usernameLabel.text = nil
     }
 
     // MARK: - Configuration
 
-    func configure(with profile: MainMemberCenterProfile) {
+    func configure(with content: MainMemberCenterProfileHeaderContent) {
+        guard let avatarURL = content.avatarURL else {
+            setPlaceholderAvatar()
+            displayNameLabel.text = content.displayName
+            usernameLabel.text = content.subtitle
+            return
+        }
+
+        setPlaceholderAvatar()
         avatarImageView.sd_setImage(
-            with: profile.avatarURL,
-            placeholderImage: UIImage(systemName: "person.fill")
-        )
-        displayNameLabel.text = profile.displayName
-        usernameLabel.text = profile.subtitle
+            with: avatarURL,
+            placeholderImage: Self.placeholderAvatarImage
+        ) { [weak self] image, _, _, _ in
+            guard let self else { return }
+
+            if image == nil {
+                setPlaceholderAvatar()
+            } else {
+                avatarImageView.contentMode = .scaleAspectFill
+            }
+        }
+        displayNameLabel.text = content.displayName
+        usernameLabel.text = content.subtitle
     }
 
     // MARK: - Private Methods
@@ -171,6 +196,11 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
                 )
             )
         }
+    }
+
+    private func setPlaceholderAvatar() {
+        avatarImageView.contentMode = .center
+        avatarImageView.image = Self.placeholderAvatarImage
     }
 
     @objc private func handleTap() {

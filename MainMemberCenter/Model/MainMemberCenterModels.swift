@@ -48,6 +48,14 @@ nonisolated struct MainMemberCenterContent: Sendable, Equatable {
     }
 }
 
+// MARK: - MainMemberCenterProfileHeaderContent
+
+nonisolated struct MainMemberCenterProfileHeaderContent: Sendable, Equatable {
+    let displayName: String
+    let subtitle: String
+    let avatarURL: URL?
+}
+
 // MARK: - MainMemberCenterContentSnapshot
 
 nonisolated struct MainMemberCenterContentSnapshot: Sendable {
@@ -166,6 +174,14 @@ nonisolated struct MainMemberCenterProfile: Sendable, Equatable {
         regionCode: "",
         includesAdultContent: false
     )
+
+    var headerContent: MainMemberCenterProfileHeaderContent {
+        MainMemberCenterProfileHeaderContent(
+            displayName: displayName,
+            subtitle: subtitle,
+            avatarURL: avatarURL
+        )
+    }
 
     private static func makeAvatarURL(from account: Account) -> URL? {
         if let avatarPath = account.avatar.tmdb.avatar_path,
