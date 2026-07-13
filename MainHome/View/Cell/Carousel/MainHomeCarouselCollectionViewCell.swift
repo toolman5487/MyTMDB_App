@@ -34,32 +34,11 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
 
     private let gradientView = MainHomeCarouselGradientView()
 
-    private let statusLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 1
-        return label
-    }()
+    private let statusLabel = AppFactory.Label.captionPrimary(color: ThemeColor.highlight, lines: 1)
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.title2(lines: 2)
 
-    private let metadataLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let metadataLabel = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
 
     // MARK: - BaseCollectionViewCell
 

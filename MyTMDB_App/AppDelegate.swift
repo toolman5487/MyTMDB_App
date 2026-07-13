@@ -21,24 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func configureNavigationBarAppearance() {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: ThemeColor.highlight
-        ]
-
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = .clear
-        appearance.shadowColor = .clear
-        appearance.titleTextAttributes = titleAttributes
-        appearance.largeTitleTextAttributes = titleAttributes
-
-        let navigationBar = UINavigationBar.appearance()
-        navigationBar.isTranslucent = true
-        navigationBar.backgroundColor = .clear
-        navigationBar.tintColor = ThemeColor.primary
-        navigationBar.standardAppearance = appearance
-        navigationBar.compactAppearance = appearance
-        navigationBar.scrollEdgeAppearance = appearance
+        AppFactory.NavigationBar.applyTransparentGlobalAppearance(to: UINavigationBar.appearance())
     }
 
     private func configureSkeletonAppearance() {

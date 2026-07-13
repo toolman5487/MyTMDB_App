@@ -312,23 +312,9 @@ private final class EpisodeDetailTextListRowView: UIView {
         return stackView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline(lines: 2)
 
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 3
-        return label
-    }()
+    private let subtitleLabel = AppFactory.Label.subheadline(lines: 3)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -375,14 +361,7 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         static let bodyLineSpacing: CGFloat = 4
     }
 
-    private let overviewLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 0
-        return label
-    }()
+    private let overviewLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
 
     override func configureView() {
         containerView.backgroundColor = ThemeColor.backgroundSecondary

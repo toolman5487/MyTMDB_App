@@ -22,14 +22,7 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         static let titleContentSpacing: CGFloat = 8
     }
 
-    private let overviewLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 0
-        return label
-    }()
+    private let overviewLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
 
     override func configureView() {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
@@ -369,13 +362,9 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
     }
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
+        let label = AppFactory.Label.captionPrimary(lines: 1)
         label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
@@ -579,20 +568,14 @@ private enum TVDetailCellStyle {
     }
 
     static func makeTextLabel(font: UIFont, color: UIColor) -> UILabel {
-        let label = UILabel()
+        let label = AppFactory.Label.body(color: color, lines: 1)
         label.font = font
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = color
-        label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         return label
     }
 
     static func makeGroupTitleLabel(text: String) -> UILabel {
-        let label = makeTextLabel(
-            font: .preferredFont(forTextStyle: .caption1),
-            color: ThemeColor.textSecondary
-        )
+        let label = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
         label.text = text
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)

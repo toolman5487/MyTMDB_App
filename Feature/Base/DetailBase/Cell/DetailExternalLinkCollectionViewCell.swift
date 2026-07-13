@@ -122,11 +122,7 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
     }()
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.captionPrimary(lines: 1)
         label.textAlignment = .center
         label.lineBreakMode = .byTruncatingTail
         return label

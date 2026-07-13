@@ -246,22 +246,14 @@ private final class PlaceholderTabContentView: UIView {
     }()
 
     private lazy var titleLabel: UILabel = {
-        let label = UILabel()
+        let label = AppFactory.Label.largeTitle(alignment: .center)
         label.text = displayTitle
-        label.textColor = ThemeColor.textPrimary
-        label.font = UIFont.preferredFont(forTextStyle: .largeTitle)
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
         return label
     }()
 
     private lazy var subtitleLabel: UILabel = {
-        let label = UILabel()
+        let label = AppFactory.Label.body(alignment: .center)
         label.text = subtitleText
-        label.textColor = ThemeColor.textSecondary
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
         return label
     }()
 

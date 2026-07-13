@@ -99,22 +99,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
     // MARK: - Setup
 
     private func configureNavigationBarAppearance() {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: ThemeColor.highlight
-        ]
-
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = ThemeColor.background
-        appearance.shadowColor = ThemeColor.separator
-        appearance.titleTextAttributes = titleAttributes
-        appearance.largeTitleTextAttributes = titleAttributes
-
-        navigationItem.standardAppearance = appearance
-        navigationItem.compactAppearance = appearance
-        navigationItem.scrollEdgeAppearance = appearance
-        navigationItem.compactScrollEdgeAppearance = appearance
-        navigationItem.largeTitleDisplayMode = .never
+        AppFactory.NavigationBar.applyStandardAppearance(to: navigationItem)
     }
 
     override func viewDidLayoutSubviews() {

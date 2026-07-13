@@ -125,11 +125,12 @@ enum AuthPageStyle {
     }
 
     static func makeSymbolImageView(systemName: String) -> UIImageView {
-        let imageView = UIImageView()
-        let configuration = UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)
-        imageView.image = UIImage(systemName: systemName, withConfiguration: configuration)
-        imageView.tintColor = ThemeColor.primary
-        imageView.contentMode = .scaleAspectFit
+        let imageView = AppFactory.ImageView.symbol(
+            systemName: systemName,
+            pointSize: 32,
+            weight: .medium,
+            color: ThemeColor.primary
+        )
         imageView.accessibilityTraits = .image
         return imageView
     }
@@ -137,37 +138,15 @@ enum AuthPageStyle {
     // MARK: - Components
 
     static func makeTitleLabel(_ title: String) -> UILabel {
-        let label = UILabel()
-        label.text = title
-        label.font = UIFont.preferredFont(forTextStyle: .title1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
-        return label
+        AppFactory.Label.title1(title)
     }
 
     static func makeDescriptionLabel(_ text: String) -> UILabel {
-        let label = UILabel()
-        label.text = text
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        label.textColor = .secondaryLabel
-        label.numberOfLines = 0
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
-        return label
+        AppFactory.Label.body(text, color: .secondaryLabel, alignment: .center, lines: 0)
     }
 
     static func makeFilledButton(title: String) -> UIButton {
-        var config = UIButton.Configuration.filled()
-        var attribute = AttributedString(title)
-        attribute.font = UIFont.preferredFont(forTextStyle: .headline)
-        config.attributedTitle = attribute
-        config.baseBackgroundColor = .label
-        config.baseForegroundColor = .systemBackground
-        config.cornerStyle = .medium
-        let button = UIButton(configuration: config, primaryAction: nil)
-        button.layer.cornerRadius = 20
-        button.clipsToBounds = true
-        return button
+        AppFactory.Button.authFilled(title: title)
     }
 
     static func makeTextField(
@@ -175,18 +154,10 @@ enum AuthPageStyle {
         contentType: UITextContentType?,
         isSecure: Bool = false
     ) -> UITextField {
-        let textField = UITextField()
-        textField.placeholder = placeholder
-        textField.clearButtonMode = .whileEditing
-        textField.borderStyle = .roundedRect
-        textField.layer.borderWidth = 1
-        textField.layer.borderColor = UIColor.secondaryLabel.cgColor
-        textField.layer.cornerRadius = 8
-        textField.font = UIFont.preferredFont(forTextStyle: .body)
-        textField.adjustsFontForContentSizeCategory = true
-        textField.textContentType = contentType
-        textField.isSecureTextEntry = isSecure
-        textField.autocapitalizationType = .none
-        return textField
+        AppFactory.TextField.rounded(
+            placeholder: placeholder,
+            contentType: contentType,
+            isSecure: isSecure
+        )
     }
 }

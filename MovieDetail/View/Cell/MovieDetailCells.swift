@@ -22,14 +22,7 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         static let titleContentSpacing: CGFloat = 8
     }
 
-    private let overviewLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 0
-        return label
-    }()
+    private let overviewLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
 
     override func configureView() {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
@@ -148,11 +141,7 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     private var productionCompanies: [MovieDetailAttributeItem] = []
 
     private let genresTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
         label.text = "種類"
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -160,11 +149,7 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     }()
 
     private let productionCompaniesTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
         label.text = "製作公司"
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -383,13 +368,9 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
     }
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
+        let label = AppFactory.Label.captionPrimary(lines: 1)
         label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingTail
         return label
     }()
 

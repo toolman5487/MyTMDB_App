@@ -55,42 +55,18 @@ final class EpisodeDetailHeroHeaderView: UICollectionReusableView {
     }()
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
+        let label = AppFactory.Label.title2(lines: 2)
         label.font = UIFontMetrics(forTextStyle: .title2).scaledFont(
             for: .systemFont(ofSize: 24, weight: .bold)
         )
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
         return label
     }()
 
-    private let episodeLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 1
-        return label
-    }()
+    private let episodeLabel = AppFactory.Label.subheadline(color: ThemeColor.highlight)
 
-    private let metadataLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 2
-        return label
-    }()
+    private let metadataLabel = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 2)
 
-    private let scoreLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let scoreLabel = AppFactory.Label.headline()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

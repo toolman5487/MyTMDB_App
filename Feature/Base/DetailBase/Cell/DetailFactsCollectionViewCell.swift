@@ -134,21 +134,10 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
         return view
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.callout()
 
     private let valueLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.sectionTitle()
         label.minimumScaleFactor = 0.82
         label.adjustsFontSizeToFitWidth = true
         return label

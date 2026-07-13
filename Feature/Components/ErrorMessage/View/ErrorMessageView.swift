@@ -28,25 +28,9 @@ final class ErrorMessageView: UIView {
         return imageView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline(alignment: .center, lines: 0)
 
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    private let messageLabel = AppFactory.Label.body(alignment: .center, lines: 0)
 
     private lazy var actionButton: UIButton = {
         var configuration = UIButton.Configuration.filled()

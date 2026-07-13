@@ -27,42 +27,13 @@ final class MovieDetailReviewCollectionViewCell: BaseCollectionViewCell {
 
     // MARK: - UI Components
 
-    private let authorLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let authorLabel = AppFactory.Label.headline()
 
-    private let ratingLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 1
-        return label
-    }()
+    private let ratingLabel = AppFactory.Label.subheadline(color: ThemeColor.highlight)
 
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .right
-        label.numberOfLines = 1
-        return label
-    }()
+    private let dateLabel = AppFactory.Label.subheadline(alignment: .right)
 
-    private let contentLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = Layout.maxContentLineCount
-        return label
-    }()
+    private let contentLabel = AppFactory.Label.body(lines: Layout.maxContentLineCount)
 
     private lazy var metadataStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [

@@ -287,24 +287,9 @@ private final class TVReviewDetailAuthorView: UIView {
         return imageView
     }()
 
-    private let authorLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 0
-        return label
-    }()
+    private let authorLabel = AppFactory.Label.headline(lines: 0)
 
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .right
-        label.numberOfLines = 1
-        return label
-    }()
+    private let dateLabel = AppFactory.Label.subheadline(alignment: .right)
 
     private lazy var leadingStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
@@ -401,13 +386,7 @@ private final class TVReviewDetailContentView: UIView {
 
     // MARK: - UI Components
 
-    private let contentLabel: UILabel = {
-        let label = UILabel()
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 0
-        return label
-    }()
+    private let contentLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
 
     // MARK: - Initialization
 
@@ -485,20 +464,13 @@ private final class TVReviewDetailNavigationTitleView: UIView {
     }()
 
     private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
+        let label = AppFactory.Label.subheadline(color: ThemeColor.textPrimary)
         label.lineBreakMode = .byTruncatingTail
-        label.numberOfLines = 1
         return label
     }()
 
     private let ratingLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
+        let label = AppFactory.Label.subheadline(color: ThemeColor.highlight)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label

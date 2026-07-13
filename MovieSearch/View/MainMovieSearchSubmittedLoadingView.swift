@@ -21,25 +21,12 @@ final class MainMovieSearchSubmittedLoadingView: UIView {
     }()
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
+        let label = AppFactory.Label.headline(alignment: .center, lines: 0)
         label.text = "正在搜尋"
         return label
     }()
 
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    private let messageLabel = AppFactory.Label.subheadline(alignment: .center, lines: 0)
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [

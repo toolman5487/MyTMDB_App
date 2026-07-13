@@ -59,29 +59,23 @@ final class MainMemberCenterProfileHeaderView: UICollectionReusableView {
     }()
 
     private let displayNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.headline()
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
     private let usernameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.subheadline()
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
     private let chevronImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "chevron.right"))
-        imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = ThemeColor.textTertiary
+        let imageView = AppFactory.ImageView.symbol(
+            systemName: "chevron.right",
+            pointSize: MainMemberCenterProfileLayout.chevronSize,
+            color: ThemeColor.textTertiary
+        )
         imageView.setContentHuggingPriority(.required, for: .horizontal)
         imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
         return imageView

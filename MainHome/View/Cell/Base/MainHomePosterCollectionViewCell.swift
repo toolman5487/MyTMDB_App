@@ -35,23 +35,9 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         return imageView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.captionPrimary(lines: 1)
 
-    private let scoreLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let scoreLabel = AppFactory.Label.captionSecondary(color: ThemeColor.textSecondary, lines: 1)
 
     override func configureView() {
         contentView.backgroundColor = .clear

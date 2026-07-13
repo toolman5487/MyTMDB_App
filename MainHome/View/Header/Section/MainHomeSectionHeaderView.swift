@@ -26,11 +26,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
     // MARK: - UI Components
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 1
+        let label = AppFactory.Label.sectionTitle(color: ThemeColor.highlight)
         return label
     }()
 

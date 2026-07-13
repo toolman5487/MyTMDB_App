@@ -25,40 +25,21 @@ final class MainMemberCenterGuestLoginCollectionViewCell: BaseCollectionViewCell
     // MARK: - UI Components
 
     private let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = ThemeColor.textTertiary
+        let imageView = AppFactory.ImageView.symbol(
+            systemName: "person.crop.circle.badge.plus",
+            pointSize: Layout.iconSize,
+            color: ThemeColor.textTertiary
+        )
         imageView.setContentHuggingPriority(.required, for: .vertical)
         return imageView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline(alignment: .center, lines: 0)
 
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
+    private let messageLabel = AppFactory.Label.body(alignment: .center, lines: 0)
 
     private lazy var actionButton: UIButton = {
-        var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = ThemeColor.primary
-        configuration.baseForegroundColor = .white
-        configuration.cornerStyle = .medium
-
-        let button = UIButton(configuration: configuration)
+        let button = AppFactory.Button.primaryFilled(title: "")
         button.isUserInteractionEnabled = false
         return button
     }()

@@ -57,11 +57,8 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
     private var style = TextPillStyle.filterHeader
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
-        label.numberOfLines = 1
+        let label = AppFactory.Label.subheadline(alignment: .center)
+        label.textColor = ThemeColor.textPrimary
         return label
     }()
 

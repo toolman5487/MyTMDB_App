@@ -144,12 +144,8 @@ private final class RootLoadingViewController: UIViewController {
     }()
 
     private lazy var titleLabel: UILabel = {
-        let label = UILabel()
+        let label = AppFactory.Label.body(alignment: .center)
         label.text = "正在檢查登入狀態"
-        label.textColor = ThemeColor.textSecondary
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textAlignment = .center
         return label
     }()
 

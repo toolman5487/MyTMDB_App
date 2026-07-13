@@ -18,8 +18,7 @@ class MemberSettingButtonCollectionViewCell: BaseCollectionViewCell {
     private let buttonContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = ThemeColor.systemRed
-        view.layer.cornerRadius = 8
-        view.layer.cornerCurve = .continuous
+        AppFactory.View.applyRoundedCorners(to: view)
         return view
     }()
 
@@ -30,14 +29,7 @@ class MemberSettingButtonCollectionViewCell: BaseCollectionViewCell {
         return imageView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = .white
-        label.textAlignment = .center
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline(color: .white, alignment: .center)
 
     private lazy var contentStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [

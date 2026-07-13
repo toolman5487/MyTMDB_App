@@ -41,14 +41,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     private let carouselView = MainHomeCarouselView()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.highlight
-        label.numberOfLines = 1
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.sectionTitle(color: ThemeColor.highlight)
 
     private let titleRowStackView: UIStackView = {
         let stackView = UIStackView()

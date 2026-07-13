@@ -33,26 +33,16 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
     }()
 
     private let nameLabel: UILabel = {
-        let label = UILabel()
+        let label = AppFactory.Label.title1(alignment: .natural, lines: 2)
         label.font = UIFontMetrics(forTextStyle: .title1).scaledFont(
             for: .systemFont(ofSize: 28, weight: .bold)
         )
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 2
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.72
         return label
     }()
 
-    private let metadataLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 2
-        return label
-    }()
+    private let metadataLabel = AppFactory.Label.callout(lines: 2)
 
     private let contentStackView: UIStackView = {
         let stackView = UIStackView()
@@ -134,14 +124,7 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: PersonDetailSectionHeaderView.self)
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -189,11 +172,7 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         static let titleContentSpacing: CGFloat = 8
     }
 
-    private let biographyLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
-    }()
+    private let biographyLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
 
     override func configureView() {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
@@ -507,11 +486,7 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
     }
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.callout(lines: 1)
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         return label

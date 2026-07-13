@@ -40,24 +40,14 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
     }()
 
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.captionPrimary(lines: 1)
         label.lineBreakMode = .byTruncatingTail
-        label.textAlignment = .natural
         return label
     }()
 
     private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .caption2)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textSecondary
-        label.numberOfLines = 1
+        let label = AppFactory.Label.captionSecondary(color: ThemeColor.textSecondary, lines: 1)
         label.lineBreakMode = .byTruncatingTail
-        label.textAlignment = .natural
         return label
     }()
 

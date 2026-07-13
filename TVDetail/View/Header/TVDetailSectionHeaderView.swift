@@ -15,14 +15,7 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: TVDetailSectionHeaderView.self)
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

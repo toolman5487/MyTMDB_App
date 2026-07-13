@@ -23,14 +23,7 @@ final class MovieDetailSectionHeaderView: UICollectionReusableView {
 
     // MARK: - UI Components
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .title3)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = ThemeColor.textPrimary
-        label.numberOfLines = 1
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.sectionTitle()
 
     // MARK: - Initialization
 
