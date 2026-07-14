@@ -522,8 +522,14 @@
 		15E002162FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		15E002172FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		15E100022FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
+		15E100062FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
+		15E100122FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E100032FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
+		15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
+		15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E100042FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
+		15E100082FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
+		15E100142FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0022FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0032FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
@@ -733,6 +739,8 @@
 		15E002112FF430000000001 /* AppFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFactory.swift; sourceTree = "<group>"; };
 		15E002182FF430010000001 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBottomActionBarView.swift; sourceTree = "<group>"; };
+		15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroHeaderView.swift; sourceTree = "<group>"; };
+		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
 		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2118,9 +2126,18 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		15E100102FF7100000E10001 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
 		15CF99CE2FF370970041F4CC /* DetailBase */ = {
 			isa = PBXGroup;
 			children = (
+				15E100102FF7100000E10001 /* Layout */,
 				15CFB0002FFB0100041F4CC /* Cell */,
 				15DAB01C2FFDFC19009FB88A /* Controller */,
 				15CFB0012FFB0100041F4CC /* Router */,
@@ -2453,6 +2470,7 @@
 			isa = PBXGroup;
 			children = (
 				15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */,
+				15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2806,6 +2824,8 @@
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15E100032FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
+				15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */,
+				15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */,
 				15CFA1022FFAA000041F4CC /* DetailFactsCollectionViewCell.swift in Sources */,
 				15CFA1062FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA10A2FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,
@@ -2857,6 +2877,8 @@
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15E100042FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
+				15E100082FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */,
+				15E100142FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */,
 				15CFA1032FFAA000041F4CC /* DetailFactsCollectionViewCell.swift in Sources */,
 				15CFA1072FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA10B2FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,
@@ -3007,6 +3029,8 @@
 				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15E100022FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
+				15E100062FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */,
+				15E100122FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */,
 				15CFA1012FFAA000041F4CC /* DetailFactsCollectionViewCell.swift in Sources */,
 				15CFA1052FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA1092FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,

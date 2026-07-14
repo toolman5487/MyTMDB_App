@@ -88,15 +88,29 @@ final class TVDetailViewController: DetailBaseViewController {
     // MARK: - Setup
 
     private enum Layout {
-        static let headerHeight: CGFloat = 28
-        static let headerContentSpacing: CGFloat = 8
-        static let defaultHorizontalInset: CGFloat = 16
-        static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
         static let castSectionHeight: CGFloat = 220
         static let videosSectionHeight: CGFloat = 148
         static let seasonsSectionHeight: CGFloat = 220
         static let recommendationsSectionHeight: CGFloat = 220
+    }
+
+    override var updatesFlowLayoutItemSizeAutomatically: Bool {
+        false
+    }
+
+    override func makeCollectionViewLayout() -> UICollectionViewLayout {
+        UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
+            guard let self, sectionIndex < self.sections.count else {
+                return DetailCompositionalLayout.singleItemSection(
+                    height: .absolute(1),
+                    contentInsets: .zero,
+                    header: .none
+                )
+            }
+
+            return self.makeLayoutSection(for: self.sections[sectionIndex])
+        }
     }
 
     private func configureActionBar() {
@@ -109,8 +123,6 @@ final class TVDetailViewController: DetailBaseViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
-        collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
 
         collectionView.register(
             TVDetailOverviewCollectionViewCell.self,
@@ -145,12 +157,83 @@ final class TVDetailViewController: DetailBaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: TVDetailSectionHeaderView.reuseIdentifier
         )
-
         collectionView.register(
             TVDetailHeroHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: TVDetailHeroHeaderView.reuseIdentifier
         )
+    }
+
+    private func makeLayoutSection(for section: TVDetailSectionItem) -> NSCollectionLayoutSection {
+        let contentWidth = max(
+            collectionView.bounds.width - (DetailCompositionalLayout.Metrics.horizontalInset * 2),
+            0
+        )
+
+        return DetailCompositionalLayout.singleItemSection(
+            height: itemHeightDimension(for: section, width: contentWidth),
+            contentInsets: sectionContentInsets(for: section),
+            header: sectionHeader(for: section)
+        )
+    }
+
+    private func sectionHeader(for section: TVDetailSectionItem) -> DetailCompositionalLayout.SectionHeader {
+        switch section {
+        case .overview:
+            return .estimatedHero
+
+        default:
+            return section.title == nil ? .none : .sectionTitle
+        }
+    }
+
+    private func sectionContentInsets(for section: TVDetailSectionItem) -> NSDirectionalEdgeInsets {
+        if case .overview(let item) = section {
+            return DetailCompositionalLayout.contentInsets(
+                top: item.overview == nil ? 0 : DetailCompositionalLayout.Metrics.headerContentSpacing
+            )
+        }
+
+        return DetailCompositionalLayout.contentInsets(
+            top: section.title == nil ? 0 : DetailCompositionalLayout.Metrics.headerContentSpacing
+        )
+    }
+
+    private func itemHeightDimension(
+        for section: TVDetailSectionItem,
+        width: CGFloat
+    ) -> NSCollectionLayoutDimension {
+        switch section {
+        case .overview(let item):
+            guard let overview = item.overview else {
+                return .absolute(1)
+            }
+
+            return .absolute(
+                TVDetailOverviewCollectionViewCell.fittingHeight(
+                    for: overview,
+                    width: width
+                )
+            )
+
+        case .facts:
+            return .absolute(Layout.factsSectionHeight)
+
+        case .videos:
+            return .absolute(Layout.videosSectionHeight)
+
+        case .attributes(let item):
+            return .absolute(TVDetailAttributesCollectionViewCell.fittingHeight(for: item))
+
+        case .cast:
+            return .absolute(Layout.castSectionHeight)
+
+        case .seasons:
+            return .absolute(Layout.seasonsSectionHeight)
+
+        case .recommendations:
+            return .absolute(Layout.recommendationsSectionHeight)
+        }
     }
 
     // MARK: - Data Loading
@@ -397,110 +480,11 @@ extension TVDetailViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
+// MARK: - UICollectionViewDelegate
 
-extension TVDetailViewController: UICollectionViewDelegateFlowLayout {
+extension TVDetailViewController: UICollectionViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateDetailNavigationTitleVisibility(for: scrollView)
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        referenceSizeForHeaderInSection section: Int
-    ) -> CGSize {
-        if case .overview(let item) = sections[section] {
-            return CGSize(
-                width: collectionView.bounds.width,
-                height: TVDetailHeroHeaderView.headerHeight(
-                    for: item.hero,
-                    width: collectionView.bounds.width
-                )
-            )
-        }
-
-        guard sections[section].title != nil else {
-            return .zero
-        }
-
-        return CGSize(
-            width: collectionView.bounds.width,
-            height: Layout.headerHeight
-        )
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        insetForSectionAt section: Int
-    ) -> UIEdgeInsets {
-        sectionInset(for: section)
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        let sectionInsets = sectionInset(for: indexPath.section)
-        let width = collectionView.bounds.width
-            - sectionInsets.left
-            - sectionInsets.right
-
-        return CGSize(
-            width: max(width, 0),
-            height: height(for: sections[indexPath.section], width: max(width, 0))
-        )
-    }
-
-    private func sectionInset(for section: Int) -> UIEdgeInsets {
-        if case .overview(let item) = sections[section] {
-            return UIEdgeInsets(
-                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
-                left: Layout.defaultHorizontalInset,
-                bottom: Layout.defaultSectionBottomInset,
-                right: Layout.defaultHorizontalInset
-            )
-        }
-
-        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
-
-        return UIEdgeInsets(
-            top: topInset,
-            left: Layout.defaultHorizontalInset,
-            bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
-    }
-
-    private func height(for section: TVDetailSectionItem, width: CGFloat) -> CGFloat {
-        switch section {
-        case .overview(let item):
-            guard let overview = item.overview else { return 0 }
-
-            return TVDetailOverviewCollectionViewCell.fittingHeight(
-                for: overview,
-                width: width
-            )
-
-        case .facts:
-            return Layout.factsSectionHeight
-
-        case .videos:
-            return Layout.videosSectionHeight
-
-        case .attributes(let item):
-            return TVDetailAttributesCollectionViewCell.fittingHeight(for: item)
-
-        case .cast:
-            return Layout.castSectionHeight
-
-        case .seasons:
-            return Layout.seasonsSectionHeight
-
-        case .recommendations:
-            return Layout.recommendationsSectionHeight
-        }
     }
 }

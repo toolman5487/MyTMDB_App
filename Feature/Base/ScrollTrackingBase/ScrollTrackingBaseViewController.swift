@@ -72,6 +72,10 @@ class ScrollTrackingBaseViewController: BaseViewController {
     var collectionViewItemHeight: CGFloat {
         80
     }
+    
+    var updatesFlowLayoutItemSizeAutomatically: Bool {
+        true
+    }
 
     private var tabBarVisibilityTracker = TabBarScrollVisibilityTracker()
 
@@ -89,12 +93,18 @@ class ScrollTrackingBaseViewController: BaseViewController {
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
-            collectionViewLayout: collectionViewFlowLayout
+            collectionViewLayout: makeCollectionViewLayout()
         )
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceVertical = true
         return collectionView
     }()
+
+    // MARK: - Collection Layout
+
+    func makeCollectionViewLayout() -> UICollectionViewLayout {
+        collectionViewFlowLayout
+    }
 
     // MARK: - BaseViewController
 
@@ -142,6 +152,8 @@ class ScrollTrackingBaseViewController: BaseViewController {
     }
 
     private func updateCollectionViewItemSize() {
+        guard updatesFlowLayoutItemSizeAutomatically else { return }
+
         let availableWidth = collectionView.bounds.width
         guard availableWidth > 0 else { return }
 
