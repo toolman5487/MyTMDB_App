@@ -22,6 +22,7 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
     private var isLoadingNextPage = false
     private var loadTask: Task<Void, Never>?
     private let paginationTaskController = MovieGridPaginationTaskController()
+    private lazy var router: MovieReviewListRouting = MovieReviewListRouter(sourceViewController: self)
 
     // MARK: - Initialization
 
@@ -209,19 +210,6 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
         }
     }
 
-    private func presentReviewDetail(for review: MovieDetailReviewItem) {
-        let title = review.ratingText.map { "評分 \($0)" } ?? "評論"
-        let viewController = MovieReviewDetailViewController(review: review, title: title)
-        let navigationController = UINavigationController(rootViewController: viewController)
-        navigationController.modalPresentationStyle = .pageSheet
-
-        if let sheet = navigationController.sheetPresentationController {
-            sheet.detents = [.large()]
-            sheet.prefersGrabberVisible = true
-        }
-
-        present(navigationController, animated: true)
-    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -303,7 +291,7 @@ extension MovieReviewListViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        presentReviewDetail(for: reviews[indexPath.item])
+        router.showReviewDetail(for: reviews[indexPath.item])
     }
 
     func collectionView(

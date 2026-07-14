@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import SafariServices
 import Lottie
 import Observation
 
@@ -19,6 +18,7 @@ final class LoginViewController: BaseViewController {
 
     private let loginVM: LoginViewModel
     private let authCoordinator: AuthFlowCoordinating
+    private lazy var router: LoginRouting = LoginRouter(sourceViewController: self)
 
     private var currentPage: AuthPage = .login
     private var authFlowTask: Task<Void, Never>?
@@ -369,8 +369,7 @@ extension LoginViewController: GuestPageViewDelegate {
 extension LoginViewController: RegisterPageViewDelegate {
     func registerPageViewDidTapRegister(_ view: RegisterPageView) {
         guard let url = APIConfig.tmdbSignupURL else { return }
-        let safariVC = SFSafariViewController(url: url)
-        present(safariVC, animated: true)
+        router.openSignup(url: url)
     }
 }
 

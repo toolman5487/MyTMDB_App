@@ -35,10 +35,7 @@ final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
             detailViewController = TVDetailViewController(seriesID: item.id)
         }
 
-        sourceViewController?.navigationController?.pushViewController(
-            detailViewController,
-            animated: true
-        )
+        show(detailViewController, using: .push)
     }
 
     func showGenrePageSheet(

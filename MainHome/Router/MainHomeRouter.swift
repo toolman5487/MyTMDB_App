@@ -10,7 +10,7 @@ import UIKit
 // MARK: - MainHomeRouting
 
 @MainActor
-protocol MainHomeRouting {
+protocol MainHomeRouting: AnyObject {
     func showDetail(for item: MainHomeContentItem)
     func showSectionList(for category: MainHomeContentCategory)
 }
@@ -18,17 +18,7 @@ protocol MainHomeRouting {
 // MARK: - MainHomeRouter
 
 @MainActor
-final class MainHomeRouter: MainHomeRouting {
-
-    // MARK: - Properties
-
-    private weak var sourceViewController: UIViewController?
-
-    // MARK: - Initialization
-
-    init(sourceViewController: UIViewController) {
-        self.sourceViewController = sourceViewController
-    }
+final class MainHomeRouter: BaseRouter, MainHomeRouting {
 
     // MARK: - MainHomeRouting
 
@@ -43,17 +33,11 @@ final class MainHomeRouter: MainHomeRouting {
             detailViewController = TVDetailViewController(seriesID: item.id)
         }
 
-        sourceViewController?.navigationController?.pushViewController(
-            detailViewController,
-            animated: true
-        )
+        show(detailViewController, using: .push)
     }
 
     func showSectionList(for category: MainHomeContentCategory) {
         let viewController = HomeSectionListViewController(category: category)
-        sourceViewController?.navigationController?.pushViewController(
-            viewController,
-            animated: true
-        )
+        show(viewController, using: .push)
     }
 }
