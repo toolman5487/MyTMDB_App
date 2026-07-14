@@ -57,8 +57,8 @@ final class MainMovieListViewController: MainBaseViewController {
         return searchController
     }()
 
-    private lazy var sortBarButtonItem = MovieSortMenuFactory.makeBarButtonItem(
-        selectedOption: nil,
+    private lazy var sortBarButtonItem = AppFactory.SortMenu.makeBarButtonItem(
+        selectedOption: nil as MovieSortOption?,
         onSelect: { [weak self] option in
             self?.selectSortOption(option)
         }
@@ -233,7 +233,7 @@ final class MainMovieListViewController: MainBaseViewController {
         selectedSortOption: MovieSortOption?,
         isSearchMode: Bool = false
     ) {
-        sortBarButtonItem.menu = MovieSortMenuFactory.makeMenu(
+        sortBarButtonItem.menu = AppFactory.SortMenu.makeMenu(
             selectedOption: selectedSortOption,
             onSelect: { [weak self] option in
                 self?.selectSortOption(option, isSearchMode: isSearchMode)

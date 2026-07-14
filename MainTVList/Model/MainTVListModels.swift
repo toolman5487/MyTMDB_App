@@ -121,7 +121,7 @@ nonisolated struct MainTVGenreItem: Sendable, Equatable, Identifiable {
 
 // MARK: - TVSortOption
 
-nonisolated enum TVSortOption: CaseIterable, Sendable, Hashable, Identifiable {
+nonisolated enum TVSortOption: CaseIterable, Sendable, Hashable, Identifiable, AppSortMenuOption {
     case popularity
     case ratingHighToLow
     case ratingLowToHigh

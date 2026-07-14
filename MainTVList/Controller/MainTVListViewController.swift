@@ -58,8 +58,8 @@ final class MainTVListViewController: MainBaseViewController {
         return searchController
     }()
 
-    private lazy var sortBarButtonItem = TVSortMenuFactory.makeBarButtonItem(
-        selectedOption: nil,
+    private lazy var sortBarButtonItem = AppFactory.SortMenu.makeBarButtonItem(
+        selectedOption: nil as TVSortOption?,
         onSelect: { [weak self] option in
             self?.selectSortOption(option)
         }
@@ -234,7 +234,7 @@ final class MainTVListViewController: MainBaseViewController {
         selectedSortOption: TVSortOption?,
         isSearchMode: Bool = false
     ) {
-        sortBarButtonItem.menu = TVSortMenuFactory.makeMenu(
+        sortBarButtonItem.menu = AppFactory.SortMenu.makeMenu(
             selectedOption: selectedSortOption,
             onSelect: { [weak self] option in
                 self?.selectSortOption(option, isSearchMode: isSearchMode)

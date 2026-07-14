@@ -81,7 +81,7 @@ nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
 
 // MARK: - MovieSortOption
 
-nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable {
+nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable, AppSortMenuOption {
     case popularity
     case ratingHighToLow
     case ratingLowToHigh

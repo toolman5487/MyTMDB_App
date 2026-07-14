@@ -402,6 +402,53 @@ enum AppFactory {
             navigationItem.compactScrollEdgeAppearance = appearance
             navigationItem.largeTitleDisplayMode = .never
         }
-
     }
+
+    // MARK: - SortMenu
+
+    @MainActor
+    enum SortMenu {
+
+        // MARK: - Public Factory Methods
+
+        static func makeMenu<Option: AppSortMenuOption>(
+            selectedOption: Option?,
+            onSelect: @escaping (Option) -> Void
+        ) -> UIMenu {
+            let actions = Option.allCases.map { option in
+                UIAction(
+                    title: option.title,
+                    state: selectedOption == option ? .on : .off
+                ) { _ in
+                    Task(priority: .userInitiated) { @MainActor in
+                        onSelect(option)
+                    }
+                }
+            }
+
+            return UIMenu(
+                title: "篩選排序",
+                options: .singleSelection,
+                children: Array(actions)
+            )
+        }
+
+        static func makeBarButtonItem<Option: AppSortMenuOption>(
+            selectedOption: Option?,
+            onSelect: @escaping (Option) -> Void
+        ) -> UIBarButtonItem {
+            let barButtonItem = UIBarButtonItem(
+                image: UIImage(systemName: "arrow.up.arrow.down"),
+                menu: makeMenu(selectedOption: selectedOption, onSelect: onSelect)
+            )
+            barButtonItem.tintColor = ThemeColor.textPrimary
+            return barButtonItem
+        }
+    }
+}
+
+// MARK: - AppSortMenuOption
+
+protocol AppSortMenuOption: Hashable, CaseIterable {
+    var title: String { get }
 }
