@@ -10,7 +10,7 @@ import Foundation
 // MARK: - BaseFilterHeaderItem
 
 nonisolated struct BaseFilterHeaderItem: Sendable, Equatable, Identifiable {
-    let id: Int
-    let name: String
+    let id: String
+    let title: String
     let isSelected: Bool
 }

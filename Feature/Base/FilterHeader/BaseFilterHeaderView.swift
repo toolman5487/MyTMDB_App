@@ -16,11 +16,9 @@ class BaseFilterHeaderView: UICollectionReusableView {
     // MARK: - Properties
 
     private(set) var filters: [BaseFilterHeaderItem] = []
-    private(set) var selectedFilterID: Int?
-    private var isShowAllButtonExpanded = false
+    private(set) var selectedFilterID: String?
     private(set) var isShowingSkeleton = false
-    var onFilterSelected: ((Int) -> Void)?
-    var onShowAllFilters: (() -> Void)?
+    var onBaseFilterSelected: ((BaseFilterHeaderItem) -> Void)?
 
     // MARK: - Layout
 
@@ -29,10 +27,7 @@ class BaseFilterHeaderView: UICollectionReusableView {
         static let itemSpacing: CGFloat = 8
         static let itemHorizontalInset: CGFloat = 16
         static let itemHeight: CGFloat = 36
-        static let buttonSize: CGFloat = 36
-        static let buttonCollectionSpacing: CGFloat = 8
         static let skeletonItemWidths: [CGFloat] = [72, 96, 80, 104, 88]
-        static let showAllButtonExpandedRotation = -CGFloat.pi / 2
     }
 
     // MARK: - UI Components
@@ -70,16 +65,6 @@ class BaseFilterHeaderView: UICollectionReusableView {
         return collectionView
     }()
 
-    private(set) lazy var showAllButton: UIButton = {
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(systemName: "chevron.forward")
-        configuration.baseForegroundColor = ThemeColor.textPrimary
-        configuration.contentInsets = .zero
-        let button = UIButton(configuration: configuration)
-        button.addTarget(self, action: #selector(handleShowAllButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
     // MARK: - Initialization
 
     override init(frame: CGRect) {
@@ -109,19 +94,11 @@ class BaseFilterHeaderView: UICollectionReusableView {
 
     func setupHierarchy() {
         addSubview(collectionView)
-        addSubview(showAllButton)
     }
 
     func setupConstraints() {
         collectionView.snp.makeConstraints { make in
-            make.top.leading.bottom.equalToSuperview()
-            make.trailing.equalTo(showAllButton.snp.leading).offset(-Layout.buttonCollectionSpacing)
-        }
-
-        showAllButton.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview().inset(Layout.horizontalInset)
-            make.size.equalTo(Layout.buttonSize)
+            make.edges.equalToSuperview()
         }
     }
 
@@ -129,52 +106,21 @@ class BaseFilterHeaderView: UICollectionReusableView {
 
     func configure(
         filters: [BaseFilterHeaderItem],
-        isExpanded: Bool,
         isShowingSkeleton: Bool = false
     ) {
         self.filters = filters
         selectedFilterID = filters.first(where: \.isSelected)?.id
         self.isShowingSkeleton = isShowingSkeleton
-        showAllButton.isHidden = isShowingSkeleton
-        showAllButton.isEnabled = !isShowingSkeleton
         collectionView.isUserInteractionEnabled = !isShowingSkeleton
-        setShowAllButtonExpanded(isExpanded)
         collectionView.reloadData()
         scrollToSelectedFilterIfNeeded()
-    }
-
-    func setShowAllButtonExpanded(_ isExpanded: Bool, animated: Bool = false) {
-        let didChange = isShowAllButtonExpanded != isExpanded
-        isShowAllButtonExpanded = isExpanded
-
-        let transform: CGAffineTransform = isExpanded
-            ? CGAffineTransform(rotationAngle: Layout.showAllButtonExpandedRotation)
-            : .identity
-
-        let updateTransform: () -> Void = { [weak self] in
-            self?.showAllButton.imageView?.transform = transform
-        }
-
-        guard animated, didChange else {
-            updateTransform()
-            return
-        }
-
-        UIView.animate(
-            withDuration: 0.22,
-            delay: 0,
-            options: [.curveEaseInOut, .allowUserInteraction],
-            animations: updateTransform
-        )
     }
 
     func resetFilterState() {
         filters = []
         selectedFilterID = nil
-        onFilterSelected = nil
-        onShowAllFilters = nil
+        onBaseFilterSelected = nil
         isShowingSkeleton = false
-        setShowAllButtonExpanded(false)
         collectionView.reloadData()
     }
 
@@ -200,13 +146,6 @@ class BaseFilterHeaderView: UICollectionReusableView {
         )
     }
 
-    // MARK: - Actions
-
-    @objc private func handleShowAllButtonTapped() {
-        guard !isShowingSkeleton else { return }
-        onShowAllFilters?()
-    }
-
     // MARK: - Private Methods
 
     private func scrollToSelectedFilterIfNeeded() {
@@ -222,7 +161,7 @@ class BaseFilterHeaderView: UICollectionReusableView {
         )
     }
 
-    private func updateSelectedFilter(id: Int, at indexPath: IndexPath) {
+    private func updateSelectedFilter(id: String, at indexPath: IndexPath) {
         let previousSelectedID = selectedFilterID
         selectedFilterID = id
 
@@ -259,7 +198,7 @@ extension BaseFilterHeaderView: UICollectionViewDataSource {
             } else {
                 let item = filters[indexPath.item]
                 cell.configure(
-                    title: item.name,
+                    title: item.title,
                     isSelected: item.id == selectedFilterID
                 )
             }
@@ -279,11 +218,11 @@ extension BaseFilterHeaderView: UICollectionViewDelegateFlowLayout {
             return
         }
 
-        let selectedID = filters[indexPath.item].id
-        guard selectedID != selectedFilterID else { return }
+        let selectedItem = filters[indexPath.item]
+        guard selectedItem.id != selectedFilterID else { return }
 
-        updateSelectedFilter(id: selectedID, at: indexPath)
-        onFilterSelected?(selectedID)
+        updateSelectedFilter(id: selectedItem.id, at: indexPath)
+        onBaseFilterSelected?(selectedItem)
     }
 
     func collectionView(
@@ -295,6 +234,6 @@ extension BaseFilterHeaderView: UICollectionViewDelegateFlowLayout {
             return Self.skeletonItemSize(at: indexPath.item)
         }
 
-        return Self.filterItemSize(for: filters[indexPath.item].name)
+        return Self.filterItemSize(for: filters[indexPath.item].title)
     }
 }

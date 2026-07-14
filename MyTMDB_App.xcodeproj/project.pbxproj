@@ -522,13 +522,13 @@
 		15E002162FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		15E002172FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		15E100022FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
-		15E100062FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
-		15E100122FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E100032FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
-		15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
-		15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E100042FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
+		15E100062FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
+		15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
 		15E100082FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
+		15E100122FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
+		15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E100142FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0022FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
@@ -2126,14 +2126,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		15E100102FF7100000E10001 /* Layout */ = {
-			isa = PBXGroup;
-			children = (
-				15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */,
-			);
-			path = Layout;
-			sourceTree = "<group>";
-		};
 		15CF99CE2FF370970041F4CC /* DetailBase */ = {
 			isa = PBXGroup;
 			children = (
@@ -2473,6 +2465,14 @@
 				15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		15E100102FF7100000E10001 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */,
+			);
+			path = Layout;
 			sourceTree = "<group>";
 		};
 		15E1A0102FF9100000FCBB0F /* Factory */ = {

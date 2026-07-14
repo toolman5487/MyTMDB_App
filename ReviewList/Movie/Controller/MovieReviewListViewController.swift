@@ -68,7 +68,7 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
     override func configureView() {
         super.configureView()
         title = "評論"
-        navigationItem.largeTitleDisplayMode = .never
+        configureNavigationBarAppearance()
         configureCollectionView()
     }
 
@@ -81,6 +81,10 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
     }
 
     // MARK: - Setup
+
+    private func configureNavigationBarAppearance() {
+        AppFactory.NavigationBar.applyStandardAppearance(to: navigationItem)
+    }
 
     private func configureCollectionView() {
         collectionView.delegate = self

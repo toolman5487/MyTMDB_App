@@ -202,7 +202,7 @@ class DetailHeroHeaderView: UICollectionReusableView {
                 .offset(Layout.taglineTopSpacing)
                 .constraint
             make.leading.trailing.equalToSuperview().inset(Layout.contentHorizontalInset)
-            make.bottom.equalToSuperview().inset(Layout.bottomInset)
+            make.bottom.lessThanOrEqualToSuperview().inset(Layout.bottomInset)
             taglineHeightConstraint = make.height.equalTo(0).constraint
         }
         taglineHeightConstraint?.deactivate()
