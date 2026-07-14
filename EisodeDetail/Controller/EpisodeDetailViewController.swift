@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SnapKit
 import UIKit
 
 @MainActor
@@ -19,7 +20,9 @@ final class EpisodeDetailViewController: DetailBaseViewController {
     private let viewModel: EpisodeDetailViewModel
     private var sections: [EpisodeDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
+    private var ratingTask: Task<Void, Never>?
     private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+    private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization
 
@@ -59,17 +62,37 @@ final class EpisodeDetailViewController: DetailBaseViewController {
 
     deinit {
         loadTask?.cancel()
+        ratingTask?.cancel()
     }
 
     // MARK: - BaseViewController
 
     override func configureView() {
         super.configureView()
+        configureActionBar()
         configureCollectionView()
     }
 
     override func bindViewModel() {
         loadEpisodeDetail()
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        view.addSubview(bottomActionBarView)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        bottomActionBarView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCollectionViewBottomInset()
     }
 
     // MARK: - Setup
@@ -83,6 +106,12 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         static let trailerStyleSectionHeight: CGFloat = 160
         static let imageStripSectionHeight: CGFloat = 220
         static let textSectionMinimumHeight: CGFloat = 80
+    }
+
+    private func configureActionBar() {
+        bottomActionBarView.setVisibleActions(favorite: false, rating: true, review: false)
+        bottomActionBarView.configureRating(value: nil, isEnabled: false)
+        bottomActionBarView.setRatingAction(target: self, action: #selector(handleRatingButtonTapped))
     }
 
     private func configureCollectionView() {
@@ -161,6 +190,7 @@ final class EpisodeDetailViewController: DetailBaseViewController {
 
             guard !Task.isCancelled else { return }
             render(state: viewModel.state)
+            updateRatingButton()
         }
     }
 
@@ -194,6 +224,100 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         }
 
         collectionView.reloadData()
+    }
+
+    // MARK: - Actions
+
+    @objc private func handleRatingButtonTapped() {
+        if shouldNavigateToLoginForRating() {
+            router.showLogin()
+            return
+        }
+
+        presentRatingSheet()
+    }
+
+    private func presentRatingSheet() {
+        let viewController = RatingPageSheetViewController(
+            title: "為這集評分",
+            currentValue: viewModel.ratingState.value,
+            defaultValue: viewModel.ratingDefaultValue,
+            onSubmit: { [weak self] value in
+                self?.submitRating(value)
+            },
+            onDelete: { [weak self] in
+                self?.deleteRating()
+            }
+        )
+        present(viewController, animated: true)
+    }
+
+    private func submitRating(_ value: Double) {
+        bottomActionBarView.configureRating(value: value, isEnabled: false)
+        ratingTask?.cancel()
+        ratingTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let message = await viewModel.submitRating(
+                seriesID: seriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber,
+                value: value
+            )
+
+            guard !Task.isCancelled else { return }
+            render(state: viewModel.state)
+            updateRatingButton()
+
+            if let message {
+                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+            }
+        }
+    }
+
+    private func deleteRating() {
+        bottomActionBarView.configureRating(value: nil, isEnabled: false)
+        ratingTask?.cancel()
+        ratingTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let message = await viewModel.deleteRating(
+                seriesID: seriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
+            )
+
+            guard !Task.isCancelled else { return }
+            render(state: viewModel.state)
+            updateRatingButton()
+
+            if let message {
+                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+            }
+        }
+    }
+
+    private func updateRatingButton() {
+        bottomActionBarView.configureRating(
+            value: viewModel.ratingState.value,
+            isEnabled: viewModel.ratingState.isButtonEnabled
+        )
+    }
+
+    private func shouldNavigateToLoginForRating() -> Bool {
+        if case .requiresUserLogin = viewModel.ratingState {
+            return true
+        }
+
+        return false
+    }
+
+    private func updateCollectionViewBottomInset() {
+        let bottomInset = bottomActionBarView.bounds.height
+        guard collectionView.contentInset.bottom != bottomInset else { return }
+
+        collectionView.contentInset.bottom = bottomInset
+        collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
 }
 

@@ -18,6 +18,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     private var sections: [MovieDetailSectionItem] = []
     private var loadTask: Task<Void, Never>?
     private var favoriteTask: Task<Void, Never>?
+    private var ratingTask: Task<Void, Never>?
     private lazy var router: MovieDetailRouting = MovieDetailRouter(
         sourceViewController: self,
         movieID: movieID
@@ -51,6 +52,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     deinit {
         loadTask?.cancel()
         favoriteTask?.cancel()
+        ratingTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -113,7 +115,9 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     private func configureActionBar() {
         bottomActionBarView.configureFavorite(isFavorite: false, isEnabled: false)
+        bottomActionBarView.configureRating(value: nil, isEnabled: false)
         bottomActionBarView.setFavoriteAction(target: self, action: #selector(handleBottomFavoriteButtonTapped))
+        bottomActionBarView.setRatingAction(target: self, action: #selector(handleRatingButtonTapped))
         bottomActionBarView.setReviewAction(target: self, action: #selector(handleReviewButtonTapped))
     }
 
@@ -240,6 +244,7 @@ final class MovieDetailViewController: DetailBaseViewController {
             guard !Task.isCancelled else { return }
             render(state: viewModel.state)
             updateFavoriteButton()
+            updateRatingButton()
         }
     }
 
@@ -285,6 +290,15 @@ final class MovieDetailViewController: DetailBaseViewController {
         handleFavoriteButtonTapped()
     }
 
+    @objc private func handleRatingButtonTapped() {
+        if shouldNavigateToLoginForRating() {
+            router.showLogin()
+            return
+        }
+
+        presentRatingSheet()
+    }
+
     private func handleFavoriteButtonTapped() {
         if shouldNavigateToLogin() {
             router.showLogin()
@@ -307,6 +321,55 @@ final class MovieDetailViewController: DetailBaseViewController {
         }
     }
 
+    private func presentRatingSheet() {
+        let viewController = RatingPageSheetViewController(
+            title: "為這部電影評分",
+            currentValue: viewModel.ratingState.value,
+            defaultValue: viewModel.ratingDefaultValue,
+            onSubmit: { [weak self] value in
+                self?.submitRating(value)
+            },
+            onDelete: { [weak self] in
+                self?.deleteRating()
+            }
+        )
+        present(viewController, animated: true)
+    }
+
+    private func submitRating(_ value: Double) {
+        bottomActionBarView.configureRating(value: value, isEnabled: false)
+        ratingTask?.cancel()
+        ratingTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let message = await viewModel.submitRating(movieID: movieID, value: value)
+
+            guard !Task.isCancelled else { return }
+            updateRatingButton()
+
+            if let message {
+                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+            }
+        }
+    }
+
+    private func deleteRating() {
+        bottomActionBarView.configureRating(value: nil, isEnabled: false)
+        ratingTask?.cancel()
+        ratingTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let message = await viewModel.deleteRating(movieID: movieID)
+
+            guard !Task.isCancelled else { return }
+            updateRatingButton()
+
+            if let message {
+                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+            }
+        }
+    }
+
     private func detailNavigationTitle(from sections: [MovieDetailSectionItem]) -> String? {
         guard case .overview(let item) = sections.first else { return nil }
         return item.hero.title.isEmpty ? item.hero.originalTitle : item.hero.title
@@ -319,6 +382,13 @@ final class MovieDetailViewController: DetailBaseViewController {
         )
     }
 
+    private func updateRatingButton() {
+        bottomActionBarView.configureRating(
+            value: viewModel.ratingState.value,
+            isEnabled: viewModel.ratingState.isButtonEnabled
+        )
+    }
+
     private func setPendingFavoriteButtonState() {
         guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
         bottomActionBarView.configureFavorite(isFavorite: !isFavorite, isEnabled: false)
@@ -326,6 +396,14 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     private func shouldNavigateToLogin() -> Bool {
         if case .requiresUserLogin = viewModel.favoriteState {
+            return true
+        }
+
+        return false
+    }
+
+    private func shouldNavigateToLoginForRating() -> Bool {
+        if case .requiresUserLogin = viewModel.ratingState {
             return true
         }
 

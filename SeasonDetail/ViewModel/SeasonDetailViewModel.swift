@@ -38,8 +38,8 @@ final class SeasonDetailViewModel {
 
     // MARK: - Initialization
 
-    init(service: SeasonDetailServicing = SeasonDetailService()) {
-        self.service = service
+    init(service: SeasonDetailServicing? = nil) {
+        self.service = service ?? SeasonDetailService(session: SessionStore().load())
     }
 
     // MARK: - Public Methods

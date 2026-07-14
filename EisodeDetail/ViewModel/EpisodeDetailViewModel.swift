@@ -33,13 +33,24 @@ final class EpisodeDetailViewModel {
     // MARK: - Properties
 
     private(set) var state: EpisodeDetailViewState = .idle
+    private(set) var ratingState: AccountMediaRatingState = .unavailable
+    private(set) var ratingDefaultValue: Double = AccountMediaRatingValue.fallback
 
     private let service: EpisodeDetailServicing
+    private let sessionStore: SessionStoring
+    private let accountMediaService: MainMemberCenterServicing
+    private var ratingSession: AccountMediaRatingSession?
 
     // MARK: - Initialization
 
-    init(service: EpisodeDetailServicing = EpisodeDetailService()) {
-        self.service = service
+    init(
+        service: EpisodeDetailServicing? = nil,
+        sessionStore: SessionStoring = SessionStore(),
+        accountMediaService: MainMemberCenterServicing = MainMemberCenterService()
+    ) {
+        self.sessionStore = sessionStore
+        self.accountMediaService = accountMediaService
+        self.service = service ?? EpisodeDetailService(session: sessionStore.load())
     }
 
     // MARK: - Public Methods
@@ -60,6 +71,9 @@ final class EpisodeDetailViewModel {
         }
 
         state = .loading
+        ratingState = .unavailable
+        ratingDefaultValue = AccountMediaRatingValue.fallback
+        ratingSession = nil
 
         do {
             let content = try await service.fetchEpisodeDetailContent(
@@ -69,12 +83,179 @@ final class EpisodeDetailViewModel {
             )
             guard !Task.isCancelled else { return }
 
+            ratingDefaultValue = AccountMediaRatingValue.defaultValue(
+                fromPublicRating: content.detail.voteCount > 0
+                    ? content.detail.voteAverage
+                    : nil
+            )
             state = .loaded(EpisodeDetailSectionBuilder.makeContent(content: content))
+            ratingState = loadedRatingState(from: content.accountStates)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
+            ratingState = .unavailable
+            ratingDefaultValue = AccountMediaRatingValue.fallback
+            ratingSession = nil
         }
     }
+
+    func submitRating(
+        seriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int,
+        value: Double
+    ) async -> ErrorMessage? {
+        guard seriesID > 0, seasonNumber >= 0, episodeNumber > 0 else {
+            return ErrorMessage(title: "無法評分", message: "缺少有效的影集、季數或集數資訊。")
+        }
+
+        let normalizedValue = AccountMediaRatingValue.normalized(value)
+        guard AccountMediaRatingValue.isValid(normalizedValue) else {
+            return ErrorMessage(title: "無法評分", message: "評分需介於 0.5 到 10 分之間。")
+        }
+
+        switch ratingState {
+        case .requiresUserLogin:
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+
+        case .unavailable:
+            return ErrorMessage(title: "暫時無法評分", message: "目前無法取得評分狀態，請稍後再試。")
+
+        case .updating:
+            return nil
+
+        case .ready(let currentValue):
+            guard let ratingSession else {
+                ratingState = .requiresUserLogin
+                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            }
+
+            ratingState = .updating(value: normalizedValue)
+
+            do {
+                let response = try await accountMediaService.submitRating(
+                    sessionId: ratingSession.sessionID,
+                    target: .episode(
+                        seriesID: seriesID,
+                        seasonNumber: seasonNumber,
+                        episodeNumber: episodeNumber
+                    ),
+                    value: normalizedValue
+                )
+
+                guard response.success else {
+                    ratingState = .ready(value: currentValue)
+                    return ErrorMessage(title: "評分失敗", message: response.statusMessage)
+                }
+
+                ratingState = .ready(value: normalizedValue)
+                updateAccountStateSection(value: normalizedValue)
+                return nil
+            } catch {
+                ratingState = .ready(value: currentValue)
+                return error.errorMessage
+            }
+        }
+    }
+
+    func deleteRating(
+        seriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) async -> ErrorMessage? {
+        guard seriesID > 0, seasonNumber >= 0, episodeNumber > 0 else {
+            return ErrorMessage(title: "無法刪除評分", message: "缺少有效的影集、季數或集數資訊。")
+        }
+
+        switch ratingState {
+        case .requiresUserLogin:
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+
+        case .unavailable:
+            return ErrorMessage(title: "暫時無法刪除評分", message: "目前無法取得評分狀態，請稍後再試。")
+
+        case .updating:
+            return nil
+
+        case .ready(let currentValue):
+            guard currentValue != nil else { return nil }
+
+            guard let ratingSession else {
+                ratingState = .requiresUserLogin
+                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            }
+
+            ratingState = .updating(value: nil)
+
+            do {
+                let response = try await accountMediaService.deleteRating(
+                    sessionId: ratingSession.sessionID,
+                    target: .episode(
+                        seriesID: seriesID,
+                        seasonNumber: seasonNumber,
+                        episodeNumber: episodeNumber
+                    )
+                )
+
+                guard response.success else {
+                    ratingState = .ready(value: currentValue)
+                    return ErrorMessage(title: "刪除評分失敗", message: response.statusMessage)
+                }
+
+                ratingState = .ready(value: nil)
+                updateAccountStateSection(value: nil)
+                return nil
+            } catch {
+                ratingState = .ready(value: currentValue)
+                return error.errorMessage
+            }
+        }
+    }
+
+    private func loadedRatingState(from accountStates: EpisodeAccountStatesResponse) -> AccountMediaRatingState {
+        guard case .user(let sessionID) = sessionStore.load() else {
+            return .requiresUserLogin
+        }
+
+        ratingSession = AccountMediaRatingSession(sessionID: sessionID)
+
+        switch accountStates.rated {
+        case .unrated:
+            return .ready(value: nil)
+
+        case .rated(let value):
+            return .ready(value: value)
+        }
+    }
+
+    private func updateAccountStateSection(value: Double?) {
+        guard case .loaded(let content) = state else { return }
+
+        var sections = content.sections.filter { section in
+            if case .accountState = section {
+                return false
+            }
+
+            return true
+        }
+
+        if let value {
+            sections.append(.accountState(EpisodeAccountStateItem(value: value)))
+        }
+
+        state = .loaded(
+            EpisodeDetailViewContent(
+                sections: sections,
+                navigationTitle: content.navigationTitle
+            )
+        )
+    }
+}
+
+// MARK: - AccountMediaRatingSession
+
+private nonisolated struct AccountMediaRatingSession: Sendable, Equatable {
+    let sessionID: String
 }
 
 // MARK: - EpisodeDetailSectionItem

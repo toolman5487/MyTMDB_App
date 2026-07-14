@@ -73,6 +73,17 @@ nonisolated protocol MainMemberCenterServicing: Sendable {
         sessionId: String,
         request: MainMemberCenterWatchlistStatusRequest
     ) async throws -> MainMemberCenterWatchlistStatusResponse
+
+    func submitRating(
+        sessionId: String,
+        target: AccountMediaRatingTarget,
+        value: Double
+    ) async throws -> AccountMediaRatingResponse
+
+    func deleteRating(
+        sessionId: String,
+        target: AccountMediaRatingTarget
+    ) async throws -> AccountMediaRatingResponse
 }
 
 // MARK: - MainMemberCenterService
@@ -223,6 +234,31 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         )
     }
 
+    func submitRating(
+        sessionId: String,
+        target: AccountMediaRatingTarget,
+        value: Double
+    ) async throws -> AccountMediaRatingResponse {
+        try await network.post(
+            path: ratingPath(for: target),
+            queryItems: authenticatedQueryItems(sessionId: sessionId),
+            body: AccountMediaRatingRequest(value: AccountMediaRatingValue.normalized(value))
+        )
+    }
+
+    func deleteRating(
+        sessionId: String,
+        target: AccountMediaRatingTarget
+    ) async throws -> AccountMediaRatingResponse {
+        let emptyBody: (any Encodable)? = nil
+
+        return try await network.delete(
+            path: ratingPath(for: target),
+            queryItems: authenticatedQueryItems(sessionId: sessionId),
+            body: emptyBody
+        )
+    }
+
     func fetchAccount(sessionId: String) async throws -> Account {
         try await network.get(
             path: APIConfig.Account.me,
@@ -245,6 +281,23 @@ nonisolated final class MainMemberCenterService: MainMemberCenterServicing {
         [
             URLQueryItem(name: "session_id", value: sessionId)
         ]
+    }
+
+    private func ratingPath(for target: AccountMediaRatingTarget) -> String {
+        switch target {
+        case .movie(let id):
+            return APIConfig.Movie.rating(id: id)
+
+        case .tv(let seriesID):
+            return APIConfig.TV.rating(seriesId: seriesID)
+
+        case .episode(let seriesID, let seasonNumber, let episodeNumber):
+            return APIConfig.TV.episodeRating(
+                seriesId: seriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
+            )
+        }
     }
 
     private func accountListQueryItems(

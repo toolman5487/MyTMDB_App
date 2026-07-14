@@ -445,6 +445,10 @@ nonisolated struct EpisodeExternalLinkItem: Sendable, Equatable, Identifiable {
 nonisolated struct EpisodeAccountStateItem: Sendable, Equatable {
     let ratingText: String
 
+    init(value: Double) {
+        self.ratingText = String(format: "%.1f", value)
+    }
+
     init(accountStates: EpisodeAccountStatesResponse) {
         switch accountStates.rated {
         case .unrated:

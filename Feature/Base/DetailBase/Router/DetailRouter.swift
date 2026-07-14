@@ -22,6 +22,7 @@ protocol DetailRouting {
     func showCreditDetail(_ item: PersonDetailCreditItem)
     func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
+    func showLogin()
 
     // MARK: Page Sheet
 
@@ -92,6 +93,10 @@ final class DetailRouter: BaseRouter, DetailRouting {
 
     func openExternalURL(_ url: URL) {
         show(BaseWebViewController(url: url), using: .push)
+    }
+
+    func showLogin() {
+        show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
     }
 
     // MARK: - Page Sheet

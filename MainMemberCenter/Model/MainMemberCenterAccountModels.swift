@@ -19,10 +19,69 @@ nonisolated enum MainMemberCenterAccountMediaType: String, Sendable, Encodable {
 nonisolated struct AccountMediaStatesResponse: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let favorite: Bool
+    let rated: AccountMediaRatedState
 
-    init(id: Int = 0, favorite: Bool = false) {
+    enum CodingKeys: String, CodingKey {
+        case id
+        case favorite
+        case rated
+    }
+
+    init(
+        id: Int = 0,
+        favorite: Bool = false,
+        rated: AccountMediaRatedState = .unrated
+    ) {
         self.id = id
         self.favorite = favorite
+        self.rated = rated
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.favorite = try container.decodeIfPresent(Bool.self, forKey: .favorite) ?? false
+        self.rated = try container.decodeIfPresent(AccountMediaRatedState.self, forKey: .rated) ?? .unrated
+    }
+}
+
+// MARK: - Account Media Rated State
+
+nonisolated enum AccountMediaRatedState: Sendable, Equatable, Decodable {
+    case unrated
+    case rated(Double)
+
+    var value: Double? {
+        switch self {
+        case .unrated:
+            return nil
+
+        case .rated(let value):
+            return value
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case value
+    }
+
+    init(from decoder: Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+
+        if (try? singleValueContainer.decode(Bool.self)) != nil {
+            self = .unrated
+            return
+        }
+
+        if let rating = try? singleValueContainer.decode(Double.self) {
+            self = .rated(rating)
+            return
+        }
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let value = try container.decodeIfPresent(Double.self, forKey: .value)
+        self = value.map(AccountMediaRatedState.rated) ?? .unrated
     }
 }
 
@@ -52,6 +111,63 @@ nonisolated enum AccountMediaFavoriteState: Sendable, Equatable {
         case .requiresUserLogin, .ready:
             return true
         }
+    }
+}
+
+// MARK: - Account Media Rating State
+
+nonisolated enum AccountMediaRatingState: Sendable, Equatable {
+    case unavailable
+    case requiresUserLogin
+    case ready(value: Double?)
+    case updating(value: Double?)
+
+    var value: Double? {
+        switch self {
+        case .unavailable, .requiresUserLogin:
+            return nil
+
+        case .ready(let value), .updating(let value):
+            return value
+        }
+    }
+
+    var isButtonEnabled: Bool {
+        switch self {
+        case .unavailable, .updating:
+            return false
+
+        case .requiresUserLogin, .ready:
+            return true
+        }
+    }
+}
+
+// MARK: - Account Media Rating Value
+
+nonisolated enum AccountMediaRatingValue {
+    static let minimum = 0.5
+    static let maximum = 10.0
+    static let step = 0.5
+    static let fallback = 8.0
+
+    static func normalized(_ value: Double) -> Double {
+        let roundedValue = (value / step).rounded() * step
+        return min(max(roundedValue, minimum), maximum)
+    }
+
+    static func defaultValue(fromPublicRating publicRating: Double?) -> Double {
+        guard let publicRating, publicRating > 0 else {
+            return fallback
+        }
+
+        return normalized(publicRating)
+    }
+
+    static func isValid(_ value: Double) -> Bool {
+        let normalizedValue = normalized(value)
+        return normalizedValue == value
+            && (minimum...maximum).contains(value)
     }
 }
 
@@ -320,6 +436,20 @@ nonisolated struct MainMemberCenterWatchlistStatusRequest: Encodable, Sendable {
     }
 }
 
+// MARK: - Account Media Rating Target
+
+nonisolated enum AccountMediaRatingTarget: Sendable, Equatable {
+    case movie(id: Int)
+    case tv(seriesID: Int)
+    case episode(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
+}
+
+// MARK: - Account Media Rating Request
+
+nonisolated struct AccountMediaRatingRequest: Encodable, Sendable {
+    let value: Double
+}
+
 // MARK: - MainMemberCenterFavoriteStatusResponse
 
 nonisolated struct MainMemberCenterFavoriteStatusResponse: Decodable, Sendable, Equatable {
@@ -337,6 +467,20 @@ nonisolated struct MainMemberCenterFavoriteStatusResponse: Decodable, Sendable, 
 // MARK: - MainMemberCenterWatchlistStatusResponse
 
 nonisolated struct MainMemberCenterWatchlistStatusResponse: Decodable, Sendable, Equatable {
+    let success: Bool
+    let statusCode: Int
+    let statusMessage: String
+
+    enum CodingKeys: String, CodingKey {
+        case success
+        case statusCode = "status_code"
+        case statusMessage = "status_message"
+    }
+}
+
+// MARK: - Account Media Rating Response
+
+nonisolated struct AccountMediaRatingResponse: Decodable, Sendable, Equatable {
     let success: Bool
     let statusCode: Int
     let statusMessage: String

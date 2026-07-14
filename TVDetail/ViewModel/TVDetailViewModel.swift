@@ -27,12 +27,15 @@ final class TVDetailViewModel {
 
     private(set) var state: TVDetailViewState = .idle
     private(set) var favoriteState: AccountMediaFavoriteState = .unavailable
+    private(set) var ratingState: AccountMediaRatingState = .unavailable
+    private(set) var ratingDefaultValue: Double = AccountMediaRatingValue.fallback
 
     private let service: TVDetailServicing
     private let sessionStore: SessionStoring
     private let accountService: AccountServiceProtocol
     private let accountMediaService: MainMemberCenterServicing
     private var favoriteSession: AccountMediaFavoriteSession?
+    private var ratingSession: AccountMediaRatingSession?
 
     // MARK: - Initialization
 
@@ -64,18 +67,30 @@ final class TVDetailViewModel {
 
         state = .loading
         favoriteState = .unavailable
+        ratingState = .unavailable
+        ratingDefaultValue = AccountMediaRatingValue.fallback
         favoriteSession = nil
+        ratingSession = nil
 
         do {
             async let content = service.fetchTVDetailContent(seriesID: seriesID)
-            let loadedFavoriteState = await loadFavoriteState(seriesID: seriesID)
+            let accountMediaState = await loadAccountMediaState(seriesID: seriesID)
             let loadedContent = try await content
+            ratingDefaultValue = AccountMediaRatingValue.defaultValue(
+                fromPublicRating: loadedContent.detail.voteCount > 0
+                    ? loadedContent.detail.voteAverage
+                    : nil
+            )
             state = .loaded(TVDetailSectionBuilder.makeSections(content: loadedContent))
-            favoriteState = loadedFavoriteState
+            favoriteState = accountMediaState.favoriteState
+            ratingState = accountMediaState.ratingState
         } catch {
             state = .failed(error.errorMessage)
             favoriteState = .unavailable
+            ratingState = .unavailable
+            ratingDefaultValue = AccountMediaRatingValue.fallback
             favoriteSession = nil
+            ratingSession = nil
         }
     }
 
@@ -128,9 +143,106 @@ final class TVDetailViewModel {
         }
     }
 
-    private func loadFavoriteState(seriesID: Int) async -> AccountMediaFavoriteState {
+    func submitRating(seriesID: Int, value: Double) async -> ErrorMessage? {
+        guard seriesID > 0 else {
+            return ErrorMessage(title: "無法評分", message: "影集 ID 不正確，請返回上一頁後再試。")
+        }
+
+        let normalizedValue = AccountMediaRatingValue.normalized(value)
+        guard AccountMediaRatingValue.isValid(normalizedValue) else {
+            return ErrorMessage(title: "無法評分", message: "評分需介於 0.5 到 10 分之間。")
+        }
+
+        switch ratingState {
+        case .requiresUserLogin:
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+
+        case .unavailable:
+            return ErrorMessage(title: "暫時無法評分", message: "目前無法取得評分狀態，請稍後再試。")
+
+        case .updating:
+            return nil
+
+        case .ready(let currentValue):
+            guard let ratingSession else {
+                ratingState = .requiresUserLogin
+                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            }
+
+            ratingState = .updating(value: normalizedValue)
+
+            do {
+                let response = try await accountMediaService.submitRating(
+                    sessionId: ratingSession.sessionID,
+                    target: .tv(seriesID: seriesID),
+                    value: normalizedValue
+                )
+
+                guard response.success else {
+                    ratingState = .ready(value: currentValue)
+                    return ErrorMessage(title: "評分失敗", message: response.statusMessage)
+                }
+
+                ratingState = .ready(value: normalizedValue)
+                return nil
+            } catch {
+                ratingState = .ready(value: currentValue)
+                return error.errorMessage
+            }
+        }
+    }
+
+    func deleteRating(seriesID: Int) async -> ErrorMessage? {
+        guard seriesID > 0 else {
+            return ErrorMessage(title: "無法刪除評分", message: "影集 ID 不正確，請返回上一頁後再試。")
+        }
+
+        switch ratingState {
+        case .requiresUserLogin:
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+
+        case .unavailable:
+            return ErrorMessage(title: "暫時無法刪除評分", message: "目前無法取得評分狀態，請稍後再試。")
+
+        case .updating:
+            return nil
+
+        case .ready(let currentValue):
+            guard currentValue != nil else { return nil }
+
+            guard let ratingSession else {
+                ratingState = .requiresUserLogin
+                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            }
+
+            ratingState = .updating(value: nil)
+
+            do {
+                let response = try await accountMediaService.deleteRating(
+                    sessionId: ratingSession.sessionID,
+                    target: .tv(seriesID: seriesID)
+                )
+
+                guard response.success else {
+                    ratingState = .ready(value: currentValue)
+                    return ErrorMessage(title: "刪除評分失敗", message: response.statusMessage)
+                }
+
+                ratingState = .ready(value: nil)
+                return nil
+            } catch {
+                ratingState = .ready(value: currentValue)
+                return error.errorMessage
+            }
+        }
+    }
+
+    private func loadAccountMediaState(seriesID: Int) async -> AccountMediaStateSnapshot {
         guard case .user(let sessionID) = sessionStore.load() else {
-            return .requiresUserLogin
+            return AccountMediaStateSnapshot(
+                favoriteState: .requiresUserLogin,
+                ratingState: .requiresUserLogin
+            )
         }
 
         async let account = accountService.fetchAccount(sessionId: sessionID)
@@ -140,13 +252,21 @@ final class TVDetailViewModel {
             let loadedAccount = try await account
             let loadedAccountStates = try await accountStates
             favoriteSession = AccountMediaFavoriteSession(accountID: loadedAccount.id, sessionID: sessionID)
-            return .ready(isFavorite: loadedAccountStates.favorite)
+            ratingSession = AccountMediaRatingSession(sessionID: sessionID)
+            return AccountMediaStateSnapshot(
+                favoriteState: .ready(isFavorite: loadedAccountStates.favorite),
+                ratingState: .ready(value: loadedAccountStates.rated.value)
+            )
         } catch {
             favoriteSession = nil
+            ratingSession = nil
             AppLogger.network.warning(
-                "Failed to load TV favorite state for series \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                "Failed to load TV account media state for series \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
             )
-            return .unavailable
+            return AccountMediaStateSnapshot(
+                favoriteState: .unavailable,
+                ratingState: .unavailable
+            )
         }
     }
 }
@@ -156,6 +276,15 @@ final class TVDetailViewModel {
 private nonisolated struct AccountMediaFavoriteSession: Sendable, Equatable {
     let accountID: Int
     let sessionID: String
+}
+
+private nonisolated struct AccountMediaRatingSession: Sendable, Equatable {
+    let sessionID: String
+}
+
+private nonisolated struct AccountMediaStateSnapshot: Sendable, Equatable {
+    let favoriteState: AccountMediaFavoriteState
+    let ratingState: AccountMediaRatingState
 }
 
 // MARK: - TVDetailSectionItem
