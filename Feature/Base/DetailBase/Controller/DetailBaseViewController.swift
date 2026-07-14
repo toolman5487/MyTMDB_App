@@ -24,13 +24,6 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
     private var detailNavigationTitleRevealOffset = NavigationTitle.revealOffset
     private var isDetailNavigationTitleVisible = false
     private var detailRightBarButtonItems: [UIBarButtonItem] = []
-    private lazy var favoriteBarButtonItem = UIBarButtonItem(
-        image: UIImage(systemName: "heart"),
-        style: .plain,
-        target: self,
-        action: #selector(handleFavoriteButtonTapped)
-    )
-    private var isFavoriteButtonVisible = false
 
     // MARK: - Initialization
 
@@ -58,21 +51,6 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
         detailRightBarButtonItems = items
         updateRightBarButtonItems()
     }
-
-    func setFavoriteButton(isFavorite: Bool, isEnabled: Bool) {
-        isFavoriteButtonVisible = true
-        favoriteBarButtonItem.image = UIImage(systemName: isFavorite ? "heart.fill" : "heart")
-        favoriteBarButtonItem.isEnabled = isEnabled
-        favoriteBarButtonItem.accessibilityLabel = isFavorite ? "取消收藏" : "加入收藏"
-        updateRightBarButtonItems()
-    }
-
-    func hideFavoriteButton() {
-        isFavoriteButtonVisible = false
-        updateRightBarButtonItems()
-    }
-
-    func handleDetailFavoriteButtonTapped() {}
 
     // MARK: - Navigation Title
 
@@ -135,17 +113,6 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
     }
 
     private func updateRightBarButtonItems() {
-        var items: [UIBarButtonItem] = []
-
-        if isFavoriteButtonVisible {
-            items.append(favoriteBarButtonItem)
-        }
-
-        items.append(contentsOf: detailRightBarButtonItems)
-        navigationItem.rightBarButtonItems = items
-    }
-
-    @objc private func handleFavoriteButtonTapped() {
-        handleDetailFavoriteButtonTapped()
+        navigationItem.rightBarButtonItems = detailRightBarButtonItems
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Willy Hsu on 2026/6/30.
 //
 
+import SnapKit
 import UIKit
 
 @MainActor
@@ -21,6 +22,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         sourceViewController: self,
         movieID: movieID
     )
+    private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization
 
@@ -56,12 +58,30 @@ final class MovieDetailViewController: DetailBaseViewController {
     override func configureView() {
         super.configureView()
         navigationItem.largeTitleDisplayMode = .never
-        configureNavigationBar()
+        configureActionBar()
         configureCollectionView()
     }
 
     override func bindViewModel() {
         loadMovieDetail()
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        view.addSubview(bottomActionBarView)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        bottomActionBarView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCollectionViewBottomInset()
     }
 
     // MARK: - Setup
@@ -77,16 +97,10 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let recommendationsSectionHeight: CGFloat = 220
     }
 
-    private func configureNavigationBar() {
-        setFavoriteButton(isFavorite: false, isEnabled: false)
-        setDetailRightBarButtonItems([
-            UIBarButtonItem(
-                image: UIImage(systemName: "text.bubble"),
-                style: .plain,
-                target: self,
-                action: #selector(handleReviewButtonTapped)
-            )
-        ])
+    private func configureActionBar() {
+        bottomActionBarView.configureFavorite(isFavorite: false, isEnabled: false)
+        bottomActionBarView.setFavoriteAction(target: self, action: #selector(handleBottomFavoriteButtonTapped))
+        bottomActionBarView.setReviewAction(target: self, action: #selector(handleReviewButtonTapped))
     }
 
     private func configureCollectionView() {
@@ -186,7 +200,11 @@ final class MovieDetailViewController: DetailBaseViewController {
         router.showReviewList()
     }
 
-    override func handleDetailFavoriteButtonTapped() {
+    @objc private func handleBottomFavoriteButtonTapped() {
+        handleFavoriteButtonTapped()
+    }
+
+    private func handleFavoriteButtonTapped() {
         if shouldNavigateToLogin() {
             router.showLogin()
             return
@@ -214,7 +232,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     }
 
     private func updateFavoriteButton() {
-        setFavoriteButton(
+        bottomActionBarView.configureFavorite(
             isFavorite: viewModel.favoriteState.isFavorite,
             isEnabled: viewModel.favoriteState.isButtonEnabled
         )
@@ -222,7 +240,7 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     private func setPendingFavoriteButtonState() {
         guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
-        setFavoriteButton(isFavorite: !isFavorite, isEnabled: false)
+        bottomActionBarView.configureFavorite(isFavorite: !isFavorite, isEnabled: false)
     }
 
     private func shouldNavigateToLogin() -> Bool {
@@ -231,6 +249,14 @@ final class MovieDetailViewController: DetailBaseViewController {
         }
 
         return false
+    }
+
+    private func updateCollectionViewBottomInset() {
+        let bottomInset = bottomActionBarView.bounds.height
+        guard collectionView.contentInset.bottom != bottomInset else { return }
+
+        collectionView.contentInset.bottom = bottomInset
+        collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
 }
 

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SnapKit
 import UIKit
 
 @MainActor
@@ -22,6 +23,7 @@ final class TVDetailViewController: DetailBaseViewController {
         sourceViewController: self,
         seriesID: seriesID
     )
+    private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization
 
@@ -57,12 +59,30 @@ final class TVDetailViewController: DetailBaseViewController {
     override func configureView() {
         super.configureView()
         navigationItem.largeTitleDisplayMode = .never
-        configureNavigationBar()
+        configureActionBar()
         configureCollectionView()
     }
 
     override func bindViewModel() {
         loadTVDetail()
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        view.addSubview(bottomActionBarView)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        bottomActionBarView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCollectionViewBottomInset()
     }
 
     // MARK: - Setup
@@ -79,16 +99,10 @@ final class TVDetailViewController: DetailBaseViewController {
         static let recommendationsSectionHeight: CGFloat = 220
     }
 
-    private func configureNavigationBar() {
-        setFavoriteButton(isFavorite: false, isEnabled: false)
-        setDetailRightBarButtonItems([
-            UIBarButtonItem(
-                image: UIImage(systemName: "text.bubble"),
-                style: .plain,
-                target: self,
-                action: #selector(handleReviewButtonTapped)
-            )
-        ])
+    private func configureActionBar() {
+        bottomActionBarView.configureFavorite(isFavorite: false, isEnabled: false)
+        bottomActionBarView.setFavoriteAction(target: self, action: #selector(handleBottomFavoriteButtonTapped))
+        bottomActionBarView.setReviewAction(target: self, action: #selector(handleReviewButtonTapped))
     }
 
     private func configureCollectionView() {
@@ -193,7 +207,11 @@ final class TVDetailViewController: DetailBaseViewController {
         router.showReviewList()
     }
 
-    override func handleDetailFavoriteButtonTapped() {
+    @objc private func handleBottomFavoriteButtonTapped() {
+        handleFavoriteButtonTapped()
+    }
+
+    private func handleFavoriteButtonTapped() {
         if shouldNavigateToLogin() {
             router.showLogin()
             return
@@ -221,7 +239,7 @@ final class TVDetailViewController: DetailBaseViewController {
     }
 
     private func updateFavoriteButton() {
-        setFavoriteButton(
+        bottomActionBarView.configureFavorite(
             isFavorite: viewModel.favoriteState.isFavorite,
             isEnabled: viewModel.favoriteState.isButtonEnabled
         )
@@ -229,7 +247,7 @@ final class TVDetailViewController: DetailBaseViewController {
 
     private func setPendingFavoriteButtonState() {
         guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
-        setFavoriteButton(isFavorite: !isFavorite, isEnabled: false)
+        bottomActionBarView.configureFavorite(isFavorite: !isFavorite, isEnabled: false)
     }
 
     private func shouldNavigateToLogin() -> Bool {
@@ -238,6 +256,14 @@ final class TVDetailViewController: DetailBaseViewController {
         }
 
         return false
+    }
+
+    private func updateCollectionViewBottomInset() {
+        let bottomInset = bottomActionBarView.bounds.height
+        guard collectionView.contentInset.bottom != bottomInset else { return }
+
+        collectionView.contentInset.bottom = bottomInset
+        collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
 }
 

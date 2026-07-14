@@ -172,7 +172,7 @@ final class TVDetailHeroHeaderView: UICollectionReusableView {
         }
 
         taglineLabel.snp.makeConstraints { make in
-            make.top.equalTo(scoreLabel.snp.bottom).offset(8)
+            make.top.equalTo(posterImageView.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(Layout.contentHorizontalInset)
             make.bottom.lessThanOrEqualToSuperview().inset(16)
         }
