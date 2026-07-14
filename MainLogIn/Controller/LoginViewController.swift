@@ -22,6 +22,7 @@ final class LoginViewController: BaseViewController {
 
     private var currentPage: AuthPage = .login
     private var authFlowTask: Task<Void, Never>?
+    private var handledSuccessSessionID: String?
 
     private lazy var loginPageView = LoginPageView()
     private lazy var guestPageView = GuestPageView()
@@ -90,6 +91,7 @@ final class LoginViewController: BaseViewController {
 
     private lazy var errorMessageView: ErrorMessageView = {
         let view = ErrorMessageView()
+        view.backgroundColor = ThemeColor.background
         view.alpha = 0
         view.isHidden = true
         return view
@@ -146,9 +148,7 @@ final class LoginViewController: BaseViewController {
         }
 
         errorMessageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.lessThanOrEqualTo(pageScrollView.snp.top).offset(-8)
+            make.edges.equalToSuperview()
         }
 
         loadingOverlayView.snp.makeConstraints { make in
@@ -210,6 +210,7 @@ final class LoginViewController: BaseViewController {
     private func handleLoginState(_ state: LoginState) {
         switch state {
         case .idle:
+            handledSuccessSessionID = nil
             setLoadingOverlayVisible(false)
             setActionButtonsEnabled(true)
 
@@ -219,21 +220,26 @@ final class LoginViewController: BaseViewController {
             setActionButtonsEnabled(false)
 
         case .success(let sessionId):
+            guard handledSuccessSessionID != sessionId else { return }
+            handledSuccessSessionID = sessionId
             hideErrorMessage()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
             finishUserLogin(sessionId: sessionId)
 
         case .guestSuccess(let guestSessionId):
+            guard handledSuccessSessionID != guestSessionId else { return }
+            handledSuccessSessionID = guestSessionId
             hideErrorMessage()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
             finishGuestLogin(sessionId: guestSessionId)
 
-        case .failed(let message):
+        case .failed(let message, let recoveryAction):
+            handledSuccessSessionID = nil
             setLoadingOverlayVisible(false)
             setActionButtonsEnabled(true)
-            showErrorMessage(message)
+            showErrorMessage(message, recoveryAction: recoveryAction)
         }
     }
 
@@ -248,9 +254,8 @@ final class LoginViewController: BaseViewController {
                 try await authCoordinator.finishUserLogin(sessionId: sessionId, from: self)
             } catch {
                 guard !Task.isCancelled else { return }
-                setLoadingOverlayVisible(false)
-                setActionButtonsEnabled(true)
-                showErrorMessage(error.errorMessage)
+                handledSuccessSessionID = nil
+                loginVM.reportFailure(error.errorMessage)
             }
         }
     }
@@ -278,10 +283,16 @@ final class LoginViewController: BaseViewController {
         pageControl.isEnabled = isEnabled
     }
 
-    private func showErrorMessage(_ message: ErrorMessage) {
-        errorMessageView.configure(with: message) { [weak self] in
-            self?.retryCurrentPageAction()
+    private func showErrorMessage(
+        _ message: ErrorMessage,
+        recoveryAction: LoginFailureRecoveryAction
+    ) {
+        let displayMessage = makeErrorMessage(message, recoveryAction: recoveryAction)
+
+        errorMessageView.configure(with: displayMessage) { [weak self] in
+            self?.performRecoveryAction(recoveryAction)
         }
+        errorMessageView.isUserInteractionEnabled = true
         errorMessageView.isHidden = false
 
         UIView.animate(withDuration: 0.2) {
@@ -290,7 +301,9 @@ final class LoginViewController: BaseViewController {
     }
 
     private func hideErrorMessage() {
-        guard !errorMessageView.isHidden else { return }
+        guard !errorMessageView.isHidden || errorMessageView.alpha > 0 else { return }
+
+        errorMessageView.isUserInteractionEnabled = false
 
         UIView.animate(withDuration: 0.2) {
             self.errorMessageView.alpha = 0
@@ -299,20 +312,46 @@ final class LoginViewController: BaseViewController {
         }
     }
 
+    private func makeErrorMessage(
+        _ message: ErrorMessage,
+        recoveryAction: LoginFailureRecoveryAction
+    ) -> ErrorMessage {
+        switch recoveryAction {
+        case .editCredentials:
+            return ErrorMessage(
+                title: message.title,
+                message: message.message,
+                systemImageName: message.systemImageName,
+                actionTitle: "返回修改"
+            )
+
+        case .retry:
+            return message
+        }
+    }
+
+    private func performRecoveryAction(_ recoveryAction: LoginFailureRecoveryAction) {
+        switch recoveryAction {
+        case .editCredentials:
+            hideErrorMessage()
+
+        case .retry:
+            retryCurrentPageAction()
+        }
+    }
+
     private func retryCurrentPageAction() {
+        errorMessageView.isUserInteractionEnabled = false
+
         switch currentPage {
         case .login:
-            Task(priority: .userInitiated) {
-                await loginVM.login()
-            }
+            loginVM.login()
 
         case .guest:
-            Task(priority: .userInitiated) {
-                await loginVM.continueAsGuest()
-            }
+            loginVM.continueAsGuest()
 
         case .register:
-            break
+            errorMessageView.isUserInteractionEnabled = true
         }
     }
 
@@ -346,9 +385,7 @@ extension LoginViewController: LoginPageViewDelegate {
 
     func loginPageViewDidTapLogin(_ view: LoginPageView) {
         view.endEditing(true)
-        Task(priority: .userInitiated) {
-            await loginVM.login()
-        }
+        loginVM.login()
     }
 }
 
@@ -357,9 +394,7 @@ extension LoginViewController: LoginPageViewDelegate {
 @MainActor
 extension LoginViewController: GuestPageViewDelegate {
     func guestPageViewDidTapContinue(_ view: GuestPageView) {
-        Task(priority: .userInitiated) {
-            await loginVM.continueAsGuest()
-        }
+        loginVM.continueAsGuest()
     }
 }
 

@@ -193,7 +193,7 @@ final class MainTabBarController: UITabBarController {
         guard case .user(let sessionId) = session else { return }
 
         avatarTask?.cancel()
-        avatarTask = Task { [weak self] in
+        avatarTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             guard let image = await avatarProvider.fetchAvatarImage(sessionId: sessionId) else { return }
             guard !Task.isCancelled else { return }
