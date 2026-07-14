@@ -187,6 +187,11 @@ final class MainMemberCenterViewController: MainBaseViewController {
             setLoadingVisible(false)
             collectionView.backgroundView = nil
 
+        case .empty:
+            renderHeaderContentIfAvailable()
+            setLoadingVisible(false)
+            collectionView.backgroundView = ErrorMessageView(message: .emptyMemberCenterContent)
+
         case .failed(let message):
             updateProfileHeaderVisibility(isVisible: false)
             setLoadingVisible(false)

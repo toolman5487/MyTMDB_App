@@ -61,4 +61,11 @@ nonisolated extension ErrorMessage {
         systemImageName: "tray",
         actionTitle: nil
     )
+
+    static let emptyMemberCenterContent = ErrorMessage(
+        title: "目前沒有會員內容",
+        message: "收藏、待看、評分與片單都還沒有資料。",
+        systemImageName: "tray",
+        actionTitle: nil
+    )
 }

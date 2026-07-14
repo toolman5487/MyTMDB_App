@@ -84,7 +84,7 @@ final class MainMemberCenterViewModel {
             guard !Task.isCancelled else { return }
             let content = MainMemberCenterPresentationBuilder.makeContent(from: snapshot)
             cachedHeaderContent = content.profile.headerContent
-            apply(state: .loaded(content))
+            apply(state: content.contentSections.isEmpty ? .empty(content) : .loaded(content))
         } catch {
             guard !Task.isCancelled else { return }
             apply(state: .failed(error.errorMessage))
@@ -127,6 +127,14 @@ final class MainMemberCenterViewModel {
                 content.profile.headerContent,
                 [.guestLogin(content.loginPrompt)],
                 nil
+            )
+
+        case .empty(let content):
+            let accountContext = makeAccountContext(profile: content.profile)
+            return (
+                content.profile.headerContent,
+                [],
+                accountContext
             )
 
         case .loaded(let content):

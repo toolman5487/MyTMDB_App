@@ -13,6 +13,7 @@ nonisolated enum MainMemberCenterViewState: Equatable {
     case idle
     case loading
     case guest(MainMemberCenterGuestContent)
+    case empty(MainMemberCenterContent)
     case loaded(MainMemberCenterContent)
     case failed(ErrorMessage)
 }
