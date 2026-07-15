@@ -17,6 +17,13 @@ protocol TVDetailRouting: AnyObject {
     func showPersonDetail(personID: Int)
     func showSeasonDetail(seasonNumber: Int)
     func showTVDetail(seriesID: Int)
+    func showRatingPageSheet(
+        title: String,
+        currentValue: Double?,
+        defaultValue: Double,
+        onSubmit: @escaping (Double) -> Void,
+        onDelete: @escaping () -> Void
+    )
     func showLogin()
 }
 
@@ -69,6 +76,22 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
 
     func showTVDetail(seriesID: Int) {
         detailRouter.showTVDetail(seriesID: seriesID)
+    }
+
+    func showRatingPageSheet(
+        title: String,
+        currentValue: Double?,
+        defaultValue: Double,
+        onSubmit: @escaping (Double) -> Void,
+        onDelete: @escaping () -> Void
+    ) {
+        detailRouter.showRatingPageSheet(
+            title: title,
+            currentValue: currentValue,
+            defaultValue: defaultValue,
+            onSubmit: onSubmit,
+            onDelete: onDelete
+        )
     }
 
     func showLogin() {

@@ -16,6 +16,13 @@ protocol MovieDetailRouting: AnyObject {
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
     func showMovieDetail(movieID: Int)
+    func showRatingPageSheet(
+        title: String,
+        currentValue: Double?,
+        defaultValue: Double,
+        onSubmit: @escaping (Double) -> Void,
+        onDelete: @escaping () -> Void
+    )
     func showLogin()
 }
 
@@ -61,6 +68,22 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showMovieDetail(movieID: Int) {
         detailRouter.showMovieDetail(movieID: movieID)
+    }
+
+    func showRatingPageSheet(
+        title: String,
+        currentValue: Double?,
+        defaultValue: Double,
+        onSubmit: @escaping (Double) -> Void,
+        onDelete: @escaping () -> Void
+    ) {
+        detailRouter.showRatingPageSheet(
+            title: title,
+            currentValue: currentValue,
+            defaultValue: defaultValue,
+            onSubmit: onSubmit,
+            onDelete: onDelete
+        )
     }
 
     func showLogin() {

@@ -322,7 +322,7 @@ final class MovieDetailViewController: DetailBaseViewController {
     }
 
     private func presentRatingSheet() {
-        let viewController = RatingPageSheetViewController(
+        router.showRatingPageSheet(
             title: "為這部電影評分",
             currentValue: viewModel.ratingState.value,
             defaultValue: viewModel.ratingDefaultValue,
@@ -333,7 +333,6 @@ final class MovieDetailViewController: DetailBaseViewController {
                 self?.deleteRating()
             }
         )
-        present(viewController, animated: true)
     }
 
     private func submitRating(_ value: Double) {

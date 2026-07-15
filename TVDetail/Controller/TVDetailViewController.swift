@@ -331,7 +331,7 @@ final class TVDetailViewController: DetailBaseViewController {
     }
 
     private func presentRatingSheet() {
-        let viewController = RatingPageSheetViewController(
+        router.showRatingPageSheet(
             title: "為這部影集評分",
             currentValue: viewModel.ratingState.value,
             defaultValue: viewModel.ratingDefaultValue,
@@ -342,7 +342,6 @@ final class TVDetailViewController: DetailBaseViewController {
                 self?.deleteRating()
             }
         )
-        present(viewController, animated: true)
     }
 
     private func submitRating(_ value: Double) {

@@ -26,6 +26,13 @@ protocol DetailRouting {
 
     // MARK: Page Sheet
 
+    func showRatingPageSheet(
+        title: String,
+        currentValue: Double?,
+        defaultValue: Double,
+        onSubmit: @escaping (Double) -> Void,
+        onDelete: @escaping () -> Void
+    )
     func showYouTubeVideo(videoKey: String, title: String?)
 }
 
@@ -100,6 +107,26 @@ final class DetailRouter: BaseRouter, DetailRouting {
     }
 
     // MARK: - Page Sheet
+
+    func showRatingPageSheet(
+        title: String,
+        currentValue: Double?,
+        defaultValue: Double,
+        onSubmit: @escaping (Double) -> Void,
+        onDelete: @escaping () -> Void
+    ) {
+        let viewController = RatingPageSheetViewController(
+            title: title,
+            currentValue: currentValue,
+            defaultValue: defaultValue,
+            onSubmit: onSubmit,
+            onDelete: onDelete
+        )
+        let configuration = RouterPageSheetConfiguration(
+            detents: [.medium()]
+        )
+        show(viewController, using: .pageSheet(configuration))
+    }
 
     func showYouTubeVideo(videoKey: String, title: String?) {
         guard !videoKey.isEmpty else { return }
