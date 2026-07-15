@@ -65,9 +65,7 @@ final class LoginViewController: BaseViewController {
     }()
 
     private let animationView = {
-        let view = AppFactory.Animation.loadingAir()
-        view.isHidden = true
-        return view
+        AppFactory.Animation.loadingAir(size: AppAnimationView.Metrics.rootSize, startsAnimating: false)
     }()
 
     private let loadingOverlayView: UIView = {
@@ -354,14 +352,7 @@ final class LoginViewController: BaseViewController {
 
     private func setLoadingOverlayVisible(_ visible: Bool) {
         loadingOverlayView.isHidden = !visible
-        animationView.isHidden = !visible
-
-        switch visible {
-        case true:
-            animationView.play()
-        case false:
-            animationView.stop()
-        }
+        animationView.setAnimating(visible)
     }
 
 }

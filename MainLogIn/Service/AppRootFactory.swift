@@ -136,7 +136,7 @@ private final class RootLoadingViewController: UIViewController {
 
     // MARK: - UI Components
 
-    private lazy var animationView = AppFactory.Animation.loadingAir()
+    private lazy var animationView = AppFactory.Animation.loadingAir(size: AppAnimationView.Metrics.rootSize)
 
     private lazy var titleLabel: UILabel = {
         let label = AppFactory.Label.body(alignment: .center)
@@ -151,7 +151,7 @@ private final class RootLoadingViewController: UIViewController {
         view.backgroundColor = ThemeColor.background
         setupHierarchy()
         setupConstraints()
-        animationView.play()
+        animationView.setAnimating(true)
     }
 
     // MARK: - Setup
@@ -168,9 +168,6 @@ private final class RootLoadingViewController: UIViewController {
         NSLayoutConstraint.activate([
             animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -24),
-            animationView.widthAnchor.constraint(equalToConstant: 144),
-            animationView.heightAnchor.constraint(equalToConstant: 144),
-
             titleLabel.topAnchor.constraint(equalTo: animationView.bottomAnchor, constant: 16),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),

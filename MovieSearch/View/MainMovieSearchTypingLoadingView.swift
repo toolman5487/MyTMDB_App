@@ -17,7 +17,7 @@ final class MainMovieSearchTypingLoadingView: UIView {
         static let animationSize: CGFloat = 200
     }
 
-    private let animationView = AppFactory.Animation.searchLoading()
+    private let animationView = AppFactory.Animation.searchLoading(size: Layout.animationSize)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,21 +29,10 @@ final class MainMovieSearchTypingLoadingView: UIView {
         setupUI()
     }
 
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-
-        if window == nil {
-            animationView.stop()
-        } else {
-            animationView.play()
-        }
-    }
-
     private func setupUI() {
         addSubview(animationView)
         animationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.size.equalTo(Layout.animationSize)
         }
     }
 }

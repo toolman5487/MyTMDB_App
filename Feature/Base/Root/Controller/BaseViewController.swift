@@ -25,8 +25,11 @@ class BaseViewController: UIViewController {
         return view
     }()
 
-    private lazy var baseLoadingView: PopcornLoadingView = {
-        PopcornLoadingView(size: PopcornLoadingView.Metrics.overlaySize, startsAnimating: false)
+    private lazy var baseLoadingView = {
+        AppFactory.Animation.popcornLoading(
+            size: AppAnimationView.Metrics.overlaySize,
+            startsAnimating: false
+        )
     }()
 
     // MARK: - Lifecycle

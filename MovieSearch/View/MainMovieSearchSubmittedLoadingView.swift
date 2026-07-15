@@ -13,7 +13,7 @@ import UIKit
 @MainActor
 final class MainMovieSearchSubmittedLoadingView: UIView {
 
-    private let animationView = AppFactory.Animation.searchLoading()
+    private let animationView = AppFactory.Animation.searchLoading(size: AppAnimationView.Metrics.searchSize)
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.headline(alignment: .center, lines: 0)
@@ -46,22 +46,8 @@ final class MainMovieSearchSubmittedLoadingView: UIView {
         setupUI()
     }
 
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-
-        if window == nil {
-            animationView.stop()
-        } else {
-            animationView.play()
-        }
-    }
-
     private func setupUI() {
         addSubview(stackView)
-        animationView.snp.makeConstraints { make in
-            make.size.equalTo(120)
-        }
-
         stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview().offset(24)

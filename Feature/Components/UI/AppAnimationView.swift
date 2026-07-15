@@ -1,17 +1,18 @@
 //
-//  PopcornLoadingView.swift
+//  AppAnimationView.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/15.
 //
 
+import Lottie
 import SnapKit
 import UIKit
 
-// MARK: - PopcornLoadingView
+// MARK: - AppAnimationView
 
 @MainActor
-final class PopcornLoadingView: UIView {
+final class AppAnimationView: UIView {
 
     // MARK: - Metrics
 
@@ -29,13 +30,18 @@ final class PopcornLoadingView: UIView {
 
     // MARK: - UI Components
 
-    private let animationView = AppFactory.Animation.popcornLoading()
+    private let animationView: LottieAnimationView
 
     // MARK: - Initialization
 
-    init(size: CGFloat, startsAnimating: Bool = true) {
+    init(
+        animation: AppFactory.Animation.Kind,
+        size: CGFloat,
+        startsAnimating: Bool = true
+    ) {
         self.size = size
         self.isAnimationActive = startsAnimating
+        self.animationView = Self.makeLottieAnimationView(for: animation)
         super.init(frame: .zero)
         isHidden = !startsAnimating
         setupHierarchy()
@@ -45,6 +51,7 @@ final class PopcornLoadingView: UIView {
     required init?(coder: NSCoder) {
         self.size = Metrics.overlaySize
         self.isAnimationActive = true
+        self.animationView = Self.makeLottieAnimationView(for: .popcornLoading)
         super.init(coder: coder)
         setupHierarchy()
         setupConstraints()
@@ -89,5 +96,14 @@ final class PopcornLoadingView: UIView {
         } else {
             animationView.stop()
         }
+    }
+
+    private static func makeLottieAnimationView(
+        for animation: AppFactory.Animation.Kind
+    ) -> LottieAnimationView {
+        let view = LottieAnimationView(name: animation.animationName)
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFit
+        return view
     }
 }

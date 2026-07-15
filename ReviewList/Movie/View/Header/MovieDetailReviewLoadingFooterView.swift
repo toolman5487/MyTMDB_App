@@ -17,8 +17,11 @@ final class MovieDetailReviewLoadingFooterView: UICollectionReusableView {
 
     // MARK: - UI Components
 
-    private let loadingView: PopcornLoadingView = {
-        PopcornLoadingView(size: PopcornLoadingView.Metrics.footerSize, startsAnimating: false)
+    private let loadingView = {
+        AppFactory.Animation.popcornLoading(
+            size: AppAnimationView.Metrics.footerSize,
+            startsAnimating: false
+        )
     }()
 
     // MARK: - Initialization

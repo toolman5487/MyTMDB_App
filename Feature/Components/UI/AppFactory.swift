@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/7/13.
 //
 
-import Lottie
 import UIKit
 
 // MARK: - AppFactory
@@ -27,27 +26,39 @@ enum AppFactory {
     @MainActor
     enum Animation {
 
+        // MARK: - Kind
+
+        enum Kind {
+            case loadingAir
+            case searchLoading
+            case popcornLoading
+
+            var animationName: String {
+                switch self {
+                case .loadingAir:
+                    return "loadingAir"
+
+                case .searchLoading:
+                    return "loadingAnimation_blue"
+
+                case .popcornLoading:
+                    return "Animation_popcorn"
+                }
+            }
+        }
+
         // MARK: - Public Factory Methods
 
-        static func loadingAir() -> LottieAnimationView {
-            makeLottieAnimationView(name: "loadingAir")
+        static func loadingAir(size: CGFloat, startsAnimating: Bool = true) -> AppAnimationView {
+            AppAnimationView(animation: .loadingAir, size: size, startsAnimating: startsAnimating)
         }
 
-        static func searchLoading() -> LottieAnimationView {
-            makeLottieAnimationView(name: "loadingAnimation_blue")
+        static func searchLoading(size: CGFloat, startsAnimating: Bool = true) -> AppAnimationView {
+            AppAnimationView(animation: .searchLoading, size: size, startsAnimating: startsAnimating)
         }
 
-        static func popcornLoading() -> LottieAnimationView {
-            makeLottieAnimationView(name: "Animation_popcorn")
-        }
-
-        // MARK: - Private Helpers
-
-        private static func makeLottieAnimationView(name: String) -> LottieAnimationView {
-            let view = LottieAnimationView(name: name)
-            view.loopMode = .loop
-            view.contentMode = .scaleAspectFit
-            return view
+        static func popcornLoading(size: CGFloat, startsAnimating: Bool = true) -> AppAnimationView {
+            AppAnimationView(animation: .popcornLoading, size: size, startsAnimating: startsAnimating)
         }
     }
 
