@@ -525,6 +525,9 @@
 		15E002122FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
 		15E002132FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
 		15E002142FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
+		15F010022FF7600000F01001 /* PopcornLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F010012FF7600000F01001 /* PopcornLoadingView.swift */; };
+		15F010032FF7600000F01001 /* PopcornLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F010012FF7600000F01001 /* PopcornLoadingView.swift */; };
+		15F010042FF7600000F01001 /* PopcornLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F010012FF7600000F01001 /* PopcornLoadingView.swift */; };
 		15E002152FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		15E002162FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
 		15E002172FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
@@ -748,6 +751,7 @@
 		15E000232FF401000000023 /* BaseShowAllFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseShowAllFilterHeaderView.swift; sourceTree = "<group>"; };
 		15E002112FF430000000001 /* AppFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFactory.swift; sourceTree = "<group>"; };
 		15E002182FF430010000001 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
+		15F010012FF7600000F01001 /* PopcornLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopcornLoadingView.swift; sourceTree = "<group>"; };
 		15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBottomActionBarView.swift; sourceTree = "<group>"; };
 		15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
@@ -2499,6 +2503,7 @@
 			children = (
 				15E002182FF430010000001 /* AppAppearance.swift */,
 				15E002112FF430000000001 /* AppFactory.swift */,
+				15F010012FF7600000F01001 /* PopcornLoadingView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -2761,6 +2766,7 @@
 				15A6A0973005700000AD5E46 /* UserProfileStore.swift in Sources */,
 				150336A52FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				15E002122FF430000000001 /* AppFactory.swift in Sources */,
+				15F010022FF7600000F01001 /* PopcornLoadingView.swift in Sources */,
 				15E002152FF430010000001 /* AppAppearance.swift in Sources */,
 				152BE73F2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift in Sources */,
 				1588252D2FFF766D0028B219 /* HomeSectionListViewController.swift in Sources */,
@@ -2918,6 +2924,7 @@
 				15A9503F2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,
 				150336A42FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				15E002132FF430000000001 /* AppFactory.swift in Sources */,
+				15F010032FF7600000F01001 /* PopcornLoadingView.swift in Sources */,
 				15E002162FF430010000001 /* AppAppearance.swift in Sources */,
 				15DAAEEA2FFDE6D3009FB88A /* EpisodeDetailViewController.swift in Sources */,
 				150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */,
@@ -3220,6 +3227,7 @@
 				15BAE9782FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				150336A32FF35D4C003125EC /* ErrorMessageView.swift in Sources */,
 				15E002142FF430000000001 /* AppFactory.swift in Sources */,
+				15F010042FF7600000F01001 /* PopcornLoadingView.swift in Sources */,
 				15E002172FF430010000001 /* AppAppearance.swift in Sources */,
 				150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,

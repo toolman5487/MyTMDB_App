@@ -17,11 +17,8 @@ final class TVDetailReviewLoadingFooterView: UICollectionReusableView {
 
     // MARK: - UI Components
 
-    private let indicatorView: UIActivityIndicatorView = {
-        let indicatorView = UIActivityIndicatorView(style: .medium)
-        indicatorView.color = ThemeColor.primary
-        indicatorView.hidesWhenStopped = true
-        return indicatorView
+    private let loadingView: PopcornLoadingView = {
+        PopcornLoadingView(size: PopcornLoadingView.Metrics.footerSize, startsAnimating: false)
     }()
 
     // MARK: - Initialization
@@ -40,17 +37,17 @@ final class TVDetailReviewLoadingFooterView: UICollectionReusableView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        indicatorView.stopAnimating()
+        loadingView.setAnimating(false)
     }
 
     // MARK: - Setup
 
     private func setupHierarchy() {
-        addSubview(indicatorView)
+        addSubview(loadingView)
     }
 
     private func setupConstraints() {
-        indicatorView.snp.makeConstraints { make in
+        loadingView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }
@@ -58,10 +55,6 @@ final class TVDetailReviewLoadingFooterView: UICollectionReusableView {
     // MARK: - Configuration
 
     func configure(isAnimating: Bool) {
-        if isAnimating {
-            indicatorView.startAnimating()
-        } else {
-            indicatorView.stopAnimating()
-        }
+        loadingView.setAnimating(isAnimating)
     }
 }

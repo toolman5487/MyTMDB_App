@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/7/13.
 //
 
+import Lottie
 import UIKit
 
 // MARK: - AppFactory
@@ -19,6 +20,35 @@ enum AppFactory {
         static let cornerRadiusMedium: CGFloat = 12
         static let fieldHeight: CGFloat = 56
         static let buttonHeight: CGFloat = 48
+    }
+
+    // MARK: - Animation
+
+    @MainActor
+    enum Animation {
+
+        // MARK: - Public Factory Methods
+
+        static func loadingAir() -> LottieAnimationView {
+            makeLottieAnimationView(name: "loadingAir")
+        }
+
+        static func searchLoading() -> LottieAnimationView {
+            makeLottieAnimationView(name: "loadingAnimation_blue")
+        }
+
+        static func popcornLoading() -> LottieAnimationView {
+            makeLottieAnimationView(name: "Animation_popcorn")
+        }
+
+        // MARK: - Private Helpers
+
+        private static func makeLottieAnimationView(name: String) -> LottieAnimationView {
+            let view = LottieAnimationView(name: name)
+            view.loopMode = .loop
+            view.contentMode = .scaleAspectFit
+            return view
+        }
     }
 
     // MARK: - Label

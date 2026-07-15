@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import Lottie
 import Observation
 
 @MainActor
@@ -65,10 +64,8 @@ final class LoginViewController: BaseViewController {
         return scrollView
     }()
 
-    private let animationView: LottieAnimationView = {
-        let view = LottieAnimationView(name: "loadingAir")
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFit
+    private let animationView = {
+        let view = AppFactory.Animation.loadingAir()
         view.isHidden = true
         return view
     }()

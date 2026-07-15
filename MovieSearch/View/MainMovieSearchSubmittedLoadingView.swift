@@ -13,12 +13,7 @@ import UIKit
 @MainActor
 final class MainMovieSearchSubmittedLoadingView: UIView {
 
-    private let indicatorView: UIActivityIndicatorView = {
-        let indicatorView = UIActivityIndicatorView(style: .medium)
-        indicatorView.color = ThemeColor.primary
-        indicatorView.startAnimating()
-        return indicatorView
-    }()
+    private let animationView = AppFactory.Animation.searchLoading()
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.headline(alignment: .center, lines: 0)
@@ -30,7 +25,7 @@ final class MainMovieSearchSubmittedLoadingView: UIView {
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
-            indicatorView,
+            animationView,
             titleLabel,
             messageLabel
         ])
@@ -51,8 +46,22 @@ final class MainMovieSearchSubmittedLoadingView: UIView {
         setupUI()
     }
 
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+
+        if window == nil {
+            animationView.stop()
+        } else {
+            animationView.play()
+        }
+    }
+
     private func setupUI() {
         addSubview(stackView)
+        animationView.snp.makeConstraints { make in
+            make.size.equalTo(120)
+        }
+
         stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview().offset(24)

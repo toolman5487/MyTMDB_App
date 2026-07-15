@@ -25,11 +25,8 @@ class BaseViewController: UIViewController {
         return view
     }()
 
-    private lazy var baseLoadingIndicatorView: UIActivityIndicatorView = {
-        let indicatorView = UIActivityIndicatorView(style: .large)
-        indicatorView.color = ThemeColor.primary
-        indicatorView.hidesWhenStopped = true
-        return indicatorView
+    private lazy var baseLoadingView: PopcornLoadingView = {
+        PopcornLoadingView(size: PopcornLoadingView.Metrics.overlaySize, startsAnimating: false)
     }()
 
     // MARK: - Lifecycle
@@ -65,24 +62,24 @@ class BaseViewController: UIViewController {
         switch (isVisible, animated) {
         case (true, true):
             baseLoadingOverlayView.isHidden = false
-            baseLoadingIndicatorView.startAnimating()
+            baseLoadingView.setAnimating(true)
             UIView.animate(withDuration: 0.2, animations: updates)
 
         case (true, false):
             baseLoadingOverlayView.isHidden = false
-            baseLoadingIndicatorView.startAnimating()
+            baseLoadingView.setAnimating(true)
             updates()
 
         case (false, true):
             UIView.animate(withDuration: 0.2, animations: updates) { [weak self] _ in
                 self?.baseLoadingOverlayView.isHidden = true
-                self?.baseLoadingIndicatorView.stopAnimating()
+                self?.baseLoadingView.setAnimating(false)
             }
 
         case (false, false):
             updates()
             baseLoadingOverlayView.isHidden = true
-            baseLoadingIndicatorView.stopAnimating()
+            baseLoadingView.setAnimating(false)
         }
     }
 
@@ -120,13 +117,13 @@ class BaseViewController: UIViewController {
         guard baseLoadingOverlayView.superview == nil else { return }
 
         view.addSubview(baseLoadingOverlayView)
-        baseLoadingOverlayView.addSubview(baseLoadingIndicatorView)
+        baseLoadingOverlayView.addSubview(baseLoadingView)
 
         baseLoadingOverlayView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        baseLoadingIndicatorView.snp.makeConstraints { make in
+        baseLoadingView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }

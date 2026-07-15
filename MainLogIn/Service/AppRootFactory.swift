@@ -136,12 +136,7 @@ private final class RootLoadingViewController: UIViewController {
 
     // MARK: - UI Components
 
-    private lazy var activityIndicatorView: UIActivityIndicatorView = {
-        let indicatorView = UIActivityIndicatorView(style: .large)
-        indicatorView.color = ThemeColor.primary
-        indicatorView.hidesWhenStopped = false
-        return indicatorView
-    }()
+    private lazy var animationView = AppFactory.Animation.loadingAir()
 
     private lazy var titleLabel: UILabel = {
         let label = AppFactory.Label.body(alignment: .center)
@@ -156,25 +151,27 @@ private final class RootLoadingViewController: UIViewController {
         view.backgroundColor = ThemeColor.background
         setupHierarchy()
         setupConstraints()
-        activityIndicatorView.startAnimating()
+        animationView.play()
     }
 
     // MARK: - Setup
 
     private func setupHierarchy() {
-        view.addSubview(activityIndicatorView)
+        view.addSubview(animationView)
         view.addSubview(titleLabel)
     }
 
     private func setupConstraints() {
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -24),
+            animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -24),
+            animationView.widthAnchor.constraint(equalToConstant: 144),
+            animationView.heightAnchor.constraint(equalToConstant: 144),
 
-            titleLabel.topAnchor.constraint(equalTo: activityIndicatorView.bottomAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: animationView.bottomAnchor, constant: 16),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
         ])

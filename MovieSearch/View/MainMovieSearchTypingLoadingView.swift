@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/7/6.
 //
 
-import Lottie
 import SnapKit
 import UIKit
 
@@ -18,12 +17,7 @@ final class MainMovieSearchTypingLoadingView: UIView {
         static let animationSize: CGFloat = 200
     }
 
-    private let animationView: LottieAnimationView = {
-        let view = LottieAnimationView(name: "loadingAnimation_blue")
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFit
-        return view
-    }()
+    private let animationView = AppFactory.Animation.searchLoading()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
