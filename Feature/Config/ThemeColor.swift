@@ -16,23 +16,17 @@ enum ThemeColor {
     static let midnightHex = "#090712"
     static let midnightElevatedHex = "#151026"
     static let midnightSurfaceHex = "#211637"
-    static let cinemaPurpleHex = "#8B5CF6"
-    static let amethystHex = "#C084FC"
-    static let spotlightGoldHex = "#F5C451"
-    static let velvetRedHex = "#B23A63"
+    static let tmdbDarkBlueHex = "#0D253F"
+    static let tmdbLightBlueHex = "#01B4E4"
 
-    static let cinemaPurple: UIColor = UIColor(hex: cinemaPurpleHex) ?? .systemPurple
-    static let amethyst: UIColor = UIColor(hex: amethystHex) ?? .systemPurple
-    static let spotlightGold: UIColor = UIColor(hex: spotlightGoldHex) ?? .systemYellow
-    static let velvetRed: UIColor = UIColor(hex: velvetRedHex) ?? .systemPink
+    static let tmdbDarkBlue: UIColor = UIColor(hex: tmdbDarkBlueHex) ?? .systemBlue
+    static let tmdbLightBlue: UIColor = UIColor(hex: tmdbLightBlueHex) ?? .systemCyan
 
-    static let primary: UIColor = cinemaPurple
-    static let accent: UIColor = amethyst
-    static let highlight: UIColor = spotlightGold
+    static let primary: UIColor = tmdbDarkBlue
+    static let accent: UIColor = tmdbLightBlue
+    static let highlight: UIColor = tmdbLightBlue
 
-    static let purpleGlass: UIColor = UIColor(hex: cinemaPurpleHex, alpha: 0.20) ?? .systemPurple.withAlphaComponent(0.20)
-    static let purpleGlassStrong: UIColor = UIColor(hex: cinemaPurpleHex, alpha: 0.35) ?? .systemPurple.withAlphaComponent(0.35)
-    static let goldGlass: UIColor = UIColor(hex: spotlightGoldHex, alpha: 0.20) ?? .systemYellow.withAlphaComponent(0.20)
+    static let lightBlueGlass: UIColor = UIColor(hex: tmdbLightBlueHex, alpha: 0.20) ?? .systemCyan.withAlphaComponent(0.20)
 
     // MARK: Text
 
@@ -83,9 +77,7 @@ enum ThemeColor {
 
     // MARK: Fill
 
-    static let fill: UIColor = purpleGlassStrong
-    static let fillSecondary: UIColor = purpleGlass
-    static let fillTertiary: UIColor = goldGlass
+    static let fillSecondary: UIColor = lightBlueGlass
     static let fillQuaternary: UIColor = .quaternarySystemFill
 
     // MARK: Separator

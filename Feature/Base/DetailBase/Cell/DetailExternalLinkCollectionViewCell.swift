@@ -213,7 +213,7 @@ private struct DetailExternalLinkStyle {
         case "imdb":
             self.imageName = "imdb_icon"
             self.symbolName = "film.circle.fill"
-            self.tintColor = ThemeColor.spotlightGold
+            self.tintColor = ThemeColor.systemYellow
 
         case "instagram":
             self.imageName = "instagram_icon"

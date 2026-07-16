@@ -170,7 +170,7 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func configureTabBarAppearance() {
-        tabBar.tintColor = ThemeColor.primary
+        tabBar.tintColor = ThemeColor.highlight
         tabBar.unselectedItemTintColor = ThemeColor.textSecondary
 
         let appearance = UITabBarAppearance()
