@@ -236,15 +236,21 @@
 		15A6A077300488A900AD5E46 /* MemberSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A076300488A900AD5E46 /* MemberSettingViewController.swift */; };
 		15A6A078300488A900AD5E46 /* MemberSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A076300488A900AD5E46 /* MemberSettingViewController.swift */; };
 		15A6A079300488A900AD5E46 /* MemberSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A076300488A900AD5E46 /* MemberSettingViewController.swift */; };
-		15A6A0803005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift */; };
-		15A6A0813005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift */; };
-		15A6A0823005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift */; };
+		15A6A0803005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift */; };
+		15A6A0813005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift */; };
+		15A6A0823005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift */; };
 		15A6A0833005000000AD5E46 /* MemberSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */; };
 		15A6A0843005000000AD5E46 /* MemberSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */; };
 		15A6A0853005000000AD5E46 /* MemberSettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */; };
 		15A6A0893005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */; };
 		15A6A08A3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */; };
 		15A6A08B3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */; };
+		15A6A0B63005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0B53005A00000AD5E46 /* MemberSettingSectionHeaderView.swift */; };
+		15A6A0B73005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0B53005A00000AD5E46 /* MemberSettingSectionHeaderView.swift */; };
+		15A6A0B83005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0B53005A00000AD5E46 /* MemberSettingSectionHeaderView.swift */; };
+		15A6A0C23005B00000AD5E46 /* MemberSettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */; };
+		15A6A0C33005B00000AD5E46 /* MemberSettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */; };
+		15A6A0C43005B00000AD5E46 /* MemberSettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */; };
 		15A6A08D3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
 		15A6A08E3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
 		15A6A08F3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
@@ -646,9 +652,11 @@
 		1598AB272DC88D98005E972C /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		15A6A076300488A900AD5E46 /* MemberSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingViewController.swift; sourceTree = "<group>"; };
-		15A6A0863005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingLogoutButtonCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A6A0863005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingSectionCollectionViewCells.swift; sourceTree = "<group>"; };
 		15A6A0873005000000AD5E46 /* MemberSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingViewModel.swift; sourceTree = "<group>"; };
 		15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingButtonCollectionViewCell.swift; sourceTree = "<group>"; };
+		15A6A0B53005A00000AD5E46 /* MemberSettingSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingSectionHeaderView.swift; sourceTree = "<group>"; };
+		15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingRouter.swift; sourceTree = "<group>"; };
 		15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterGuestLoginCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A6A0953005600000AD5E46 /* MainTabBarAvatarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarAvatarService.swift; sourceTree = "<group>"; };
 		15A6A09A3005700000AD5E46 /* UserProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileStore.swift; sourceTree = "<group>"; };
@@ -1628,31 +1636,81 @@
 		};
 		15A6A0733004885E00AD5E46 /* MemberSetting */ = {
 			isa = PBXGroup;
-			children = (
-				15A6A0743004889000AD5E46 /* Controller */,
-				15A6A0753004889600AD5E46 /* View */,
-				15A6A0883005000000AD5E46 /* ViewModel */,
-			);
+				children = (
+					15A6A0743004889000AD5E46 /* Controller */,
+					15A6A0C03005B00000AD5E46 /* Router */,
+					15A6A0753004889600AD5E46 /* View */,
+					15A6A0883005000000AD5E46 /* ViewModel */,
+				);
 			path = MemberSetting;
 			sourceTree = "<group>";
 		};
-		15A6A0743004889000AD5E46 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				15A6A076300488A900AD5E46 /* MemberSettingViewController.swift */,
-			);
-			path = Controller;
-			sourceTree = "<group>";
-		};
-		15A6A0753004889600AD5E46 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */,
-				15A6A0863005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
+			15A6A0743004889000AD5E46 /* Controller */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A076300488A900AD5E46 /* MemberSettingViewController.swift */,
+				);
+				path = Controller;
+				sourceTree = "<group>";
+			};
+			15A6A0C03005B00000AD5E46 /* Router */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */,
+				);
+				path = Router;
+				sourceTree = "<group>";
+			};
+			15A6A0753004889600AD5E46 /* View */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0B03005A00000AD5E46 /* Cell */,
+					15A6A0B33005A00000AD5E46 /* Header */,
+				);
+				path = View;
+				sourceTree = "<group>";
+			};
+			15A6A0B03005A00000AD5E46 /* Cell */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0B13005A00000AD5E46 /* Base */,
+					15A6A0B23005A00000AD5E46 /* Section */,
+				);
+				path = Cell;
+				sourceTree = "<group>";
+			};
+			15A6A0B13005A00000AD5E46 /* Base */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */,
+				);
+				path = Base;
+				sourceTree = "<group>";
+			};
+			15A6A0B23005A00000AD5E46 /* Section */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0863005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift */,
+				);
+				path = Section;
+				sourceTree = "<group>";
+			};
+			15A6A0B33005A00000AD5E46 /* Header */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0B43005A00000AD5E46 /* Section */,
+				);
+				path = Header;
+				sourceTree = "<group>";
+			};
+			15A6A0B43005A00000AD5E46 /* Section */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0B53005A00000AD5E46 /* MemberSettingSectionHeaderView.swift */,
+				);
+				path = Section;
+				sourceTree = "<group>";
+			};
 		15A6A0883005000000AD5E46 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -2804,8 +2862,10 @@
 				150336C22FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A6A077300488A900AD5E46 /* MemberSettingViewController.swift in Sources */,
 				15A6A0893005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */,
-				15A6A0803005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift in Sources */,
+				15A6A0803005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */,
 				15A6A0833005000000AD5E46 /* MemberSettingViewModel.swift in Sources */,
+				15A6A0B63005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */,
+				15A6A0C23005B00000AD5E46 /* MemberSettingRouter.swift in Sources */,
 				15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */,
 				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,
@@ -3042,8 +3102,10 @@
 				157C56212FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift in Sources */,
 				15A6A078300488A900AD5E46 /* MemberSettingViewController.swift in Sources */,
 				15A6A08A3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */,
-				15A6A0813005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift in Sources */,
+				15A6A0813005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */,
 				15A6A0843005000000AD5E46 /* MemberSettingViewModel.swift in Sources */,
+				15A6A0B73005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */,
+				15A6A0C33005B00000AD5E46 /* MemberSettingRouter.swift in Sources */,
 				157C57212FFB9F000044BD8E /* SeasonDetailCells.swift in Sources */,
 				157C57312FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */,
 				157C58212FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */,
@@ -3101,8 +3163,10 @@
 				15D198232FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */,
 				15A6A079300488A900AD5E46 /* MemberSettingViewController.swift in Sources */,
 				15A6A08B3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */,
-				15A6A0823005000000AD5E46 /* MemberSettingLogoutButtonCollectionViewCell.swift in Sources */,
+				15A6A0823005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */,
 				15A6A0853005000000AD5E46 /* MemberSettingViewModel.swift in Sources */,
+				15A6A0B83005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */,
+				15A6A0C43005B00000AD5E46 /* MemberSettingRouter.swift in Sources */,
 				15D198332FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
 				158809053000D1710081E4E9 /* MainMemberCenterProfileHeaderView.swift in Sources */,
 				158809A42FFEA0010081E4E9 /* MainMemberCenterContentStripCollectionViewCell.swift in Sources */,

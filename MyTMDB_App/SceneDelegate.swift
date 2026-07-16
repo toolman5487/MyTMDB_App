@@ -13,12 +13,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private let sessionStore: SessionStoring = SessionStore()
     private let userProfileStore: UserProfileStoring = UserProfileStore()
+    private let appearancePreferenceStore: MemberSettingAppearancePreferenceStoring = MemberSettingAppearancePreferenceStore()
     private let sessionValidator = AuthSessionValidator()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
-        window.overrideUserInterfaceStyle = .dark
+        window.overrideUserInterfaceStyle = appearancePreferenceStore.load().userInterfaceStyle
 
         window.rootViewController = AppRootFactory.makeLoadingViewController()
 
@@ -74,4 +75,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     
+}
+
+private extension MemberSettingAppearanceMode {
+
+    var userInterfaceStyle: UIUserInterfaceStyle {
+        switch self {
+        case .system:
+            return .unspecified
+
+        case .light:
+            return .light
+
+        case .dark:
+            return .dark
+        }
+    }
 }

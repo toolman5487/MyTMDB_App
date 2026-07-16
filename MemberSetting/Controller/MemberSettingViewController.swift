@@ -10,12 +10,23 @@ import UIKit
 @MainActor
 final class MemberSettingViewController: BaseListViewController {
 
+    // MARK: - Constants
+
+    private enum Layout {
+        static let itemHeight: CGFloat = 56
+        static let sectionHeaderHeight: CGFloat = 32
+        static let sectionTopInset: CGFloat = 8
+        static let sectionBottomInset: CGFloat = 24
+    }
+
     // MARK: - Properties
 
     private let viewModel: MemberSettingViewModel
+    private lazy var router: MemberSettingRouting = MemberSettingRouter(sourceViewController: self)
+    private var profileRefreshTask: Task<Void, Never>?
 
     override var collectionViewItemHeight: CGFloat {
-        56
+        Layout.itemHeight
     }
 
     // MARK: - Initialization
@@ -30,12 +41,16 @@ final class MemberSettingViewController: BaseListViewController {
         super.init(coder: coder)
     }
 
+    deinit {
+        profileRefreshTask?.cancel()
+    }
+
     // MARK: - BaseViewController
 
     override func configureView() {
         super.configureView()
         navigationItem.title = "設定"
-        view.backgroundColor = ThemeColor.background
+        view.backgroundColor = .systemGroupedBackground
         configureCollectionView()
     }
 
@@ -44,7 +59,37 @@ final class MemberSettingViewController: BaseListViewController {
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = ThemeColor.background
+        collectionView.backgroundColor = .systemGroupedBackground
+        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)
+        registerCells()
+        collectionView.register(
+            MemberSettingSectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: MemberSettingSectionHeaderView.reuseIdentifier
+        )
+    }
+
+    private func registerCells() {
+        collectionView.register(
+            MemberSettingRefreshProfileCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingRefreshProfileCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MemberSettingClearProfileCacheCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingClearProfileCacheCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MemberSettingAppearanceModeCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingAppearanceModeCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MemberSettingAppVersionCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingAppVersionCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MemberSettingTMDBAttributionCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingTMDBAttributionCollectionViewCell.reuseIdentifier
+        )
         collectionView.register(
             MemberSettingLogoutButtonCollectionViewCell.self,
             forCellWithReuseIdentifier: MemberSettingLogoutButtonCollectionViewCell.reuseIdentifier
@@ -53,29 +98,56 @@ final class MemberSettingViewController: BaseListViewController {
 
     // MARK: - Actions
 
-    private func presentLogoutConfirmation() {
-        let alert = UIAlertController(
-            title: "登出",
-            message: "確定要登出並返回登入頁嗎？",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(
-            UIAlertAction(title: "登出", style: .destructive) { [weak self] _ in
-                self?.logout()
+    private func refreshProfile() {
+        profileRefreshTask?.cancel()
+        profileRefreshTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                try await viewModel.refreshProfile()
+                router.showProfileRefreshCompleted()
+            } catch {
+                router.showProfileRefreshFailed()
             }
-        )
-        present(alert, animated: true)
+        }
+    }
+
+    private func presentClearProfileCacheConfirmation() {
+        router.showClearProfileCacheConfirmation { [weak self] in
+            self?.clearProfileCache()
+        }
+    }
+
+    private func clearProfileCache() {
+        viewModel.clearProfileCache()
+        router.showProfileCacheCleared()
+    }
+
+    private func toggleAppearanceMode() {
+        updateAppearanceMode(isDarkModeEnabled: viewModel.appearanceMode != .dark)
+    }
+
+    private func updateAppearanceMode(isDarkModeEnabled: Bool) {
+        let mode: MemberSettingAppearanceMode = isDarkModeEnabled ? .dark : .light
+        viewModel.updateAppearanceMode(mode)
+        view.window?.overrideUserInterfaceStyle = mode.userInterfaceStyle
+        collectionView.reloadData()
+    }
+
+    private func openTMDBAttribution() {
+        guard let url = viewModel.tmdbAttributionURL else { return }
+        router.openTMDBAttribution(url)
+    }
+
+    private func presentLogoutConfirmation() {
+        router.showLogoutConfirmation { [weak self] in
+            self?.logout()
+        }
     }
 
     private func logout() {
         viewModel.logout()
-        navigateToLoginScreen()
-    }
-
-    private func navigateToLoginScreen() {
-        guard let window = view.window else { return }
-        AppRootFactory.replaceRoot(in: window, for: .loggedOut)
+        router.showLoggedOut()
     }
 }
 
@@ -83,42 +155,175 @@ final class MemberSettingViewController: BaseListViewController {
 
 extension MemberSettingViewController: UICollectionViewDataSource {
 
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        viewModel.sections.count
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.rows.count
+        viewModel.section(at: section)?.rows.count ?? 0
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MemberSettingLogoutButtonCollectionViewCell.reuseIdentifier,
+        guard let section = viewModel.section(at: indexPath.section),
+              let row = viewModel.row(at: indexPath) else {
+            return UICollectionViewCell()
+        }
+
+        let cell = dequeueCell(for: row, at: indexPath)
+        guard let settingCell = cell as? MemberSettingButtonCollectionViewCell else { return cell }
+
+        configure(
+            settingCell,
+            with: row,
+            section: section,
+            indexPath: indexPath
+        )
+        return settingCell
+    }
+
+    private func dequeueCell(for row: MemberSettingRowItem, at indexPath: IndexPath) -> UICollectionViewCell {
+        let reuseIdentifier: String
+
+        switch row.id {
+        case "refreshProfile":
+            reuseIdentifier = MemberSettingRefreshProfileCollectionViewCell.reuseIdentifier
+
+        case "clearProfileCache":
+            reuseIdentifier = MemberSettingClearProfileCacheCollectionViewCell.reuseIdentifier
+
+        case "appearanceMode":
+            reuseIdentifier = MemberSettingAppearanceModeCollectionViewCell.reuseIdentifier
+
+        case "appVersion":
+            reuseIdentifier = MemberSettingAppVersionCollectionViewCell.reuseIdentifier
+
+        case "tmdbAttribution":
+            reuseIdentifier = MemberSettingTMDBAttributionCollectionViewCell.reuseIdentifier
+
+        case "logout":
+            reuseIdentifier = MemberSettingLogoutButtonCollectionViewCell.reuseIdentifier
+
+        default:
+            return UICollectionViewCell()
+        }
+
+        return collectionView.dequeueReusableCell(
+            withReuseIdentifier: reuseIdentifier,
+            for: indexPath
+        )
+    }
+
+    private func configure(
+        _ cell: MemberSettingButtonCollectionViewCell,
+        with row: MemberSettingRowItem,
+        section: MemberSettingSectionItem,
+        indexPath: IndexPath
+    ) {
+        cell.configure(
+            with: row,
+            isFirstInSection: indexPath.item == 0,
+            isLastInSection: indexPath.item == section.rows.count - 1,
+            onToggleValueChanged: { [weak self] isOn in
+                guard row.action == .appearanceMode else { return }
+                self?.updateAppearanceMode(isDarkModeEnabled: isOn)
+            }
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
+        }
+
+        let reusableView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: MemberSettingSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        guard let cell = cell as? MemberSettingLogoutButtonCollectionViewCell,
-              let row = viewModel.row(at: indexPath.item) else {
-            return cell
+        if let headerView = reusableView as? MemberSettingSectionHeaderView {
+            headerView.configure(title: viewModel.section(at: indexPath.section)?.title)
         }
 
-        cell.configure(with: row)
-        return cell
+        return reusableView
     }
 }
 
-// MARK: - UICollectionViewDelegate
+// MARK: - UICollectionViewDelegateFlowLayout
 
-extension MemberSettingViewController: UICollectionViewDelegate {
+extension MemberSettingViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        switch viewModel.action(at: indexPath.item) {
+        switch viewModel.action(at: indexPath) {
+        case .refreshProfile:
+            refreshProfile()
+
+        case .clearProfileCache:
+            presentClearProfileCacheConfirmation()
+
+        case .appearanceMode:
+            toggleAppearanceMode()
+
+        case .tmdbAttribution:
+            openTMDBAttribution()
+
         case .logout:
             presentLogoutConfirmation()
 
         case nil:
             return
+        }
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        guard viewModel.section(at: section)?.title.isEmpty == false else {
+            return .zero
+        }
+
+        return CGSize(width: collectionView.bounds.width, height: Layout.sectionHeaderHeight)
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        UIEdgeInsets(
+            top: section == 0 ? Layout.sectionTopInset : 0,
+            left: 0,
+            bottom: Layout.sectionBottomInset,
+            right: 0
+        )
+    }
+}
+
+// MARK: - MemberSettingAppearanceMode
+
+private extension MemberSettingAppearanceMode {
+
+    var userInterfaceStyle: UIUserInterfaceStyle {
+        switch self {
+        case .system:
+            return .unspecified
+
+        case .light:
+            return .light
+
+        case .dark:
+            return .dark
         }
     }
 }
