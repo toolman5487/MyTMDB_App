@@ -121,7 +121,7 @@ private struct PlaceholderContent {
         case .home, .movie, .series:
             self.init(title: title)
 
-        case .memberCenter:
+        case .memberSetting:
             self.init(title: title, session: session)
         }
     }

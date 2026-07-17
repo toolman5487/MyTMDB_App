@@ -92,7 +92,7 @@ enum MainTabKind: Sendable, Equatable {
     case home
     case movie
     case series
-    case memberCenter
+    case memberSetting
 }
 
 // MARK: - MainTab
@@ -101,7 +101,7 @@ private enum MainTab: CaseIterable, Sendable {
     case home
     case movie
     case series
-    case memberCenter
+    case memberSetting
 
     var kind: MainTabKind {
         switch self {
@@ -114,8 +114,8 @@ private enum MainTab: CaseIterable, Sendable {
         case .series:
             return .series
 
-        case .memberCenter:
-            return .memberCenter
+        case .memberSetting:
+            return .memberSetting
         }
     }
 
@@ -130,8 +130,8 @@ private enum MainTab: CaseIterable, Sendable {
         case .series:
             return "劇集"
 
-        case .memberCenter:
-            return "會員中心"
+        case .memberSetting:
+            return "設定"
         }
     }
 
@@ -146,7 +146,7 @@ private enum MainTab: CaseIterable, Sendable {
         case .series:
             return "tv"
 
-        case .memberCenter:
+        case .memberSetting:
             return "person.crop.circle"
         }
     }
@@ -162,7 +162,7 @@ private enum MainTab: CaseIterable, Sendable {
         case .series:
             return "tv.fill"
 
-        case .memberCenter:
+        case .memberSetting:
             return "person.crop.circle.fill"
         }
     }

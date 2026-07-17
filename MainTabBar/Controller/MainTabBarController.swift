@@ -85,7 +85,7 @@ final class MainTabBarController: UITabBarController {
         configureTabBarAppearance()
         setupViewControllers()
         configureTabSwipeGesture()
-        loadMemberCenterAvatarIfNeeded()
+        loadMemberTabAvatarIfNeeded()
     }
 
     override func viewDidLayoutSubviews() {
@@ -155,8 +155,8 @@ final class MainTabBarController: UITabBarController {
             viewController.title = item.title
             return viewController
 
-        case .memberCenter:
-            let viewController = MainMemberCenterViewController(session: session)
+        case .memberSetting:
+            let viewController = MainMemberSettingViewController()
             viewController.title = item.title
             return viewController
         }
@@ -190,7 +190,7 @@ final class MainTabBarController: UITabBarController {
         view.addGestureRecognizer(tabSwipeGestureRecognizer)
     }
 
-    private func loadMemberCenterAvatarIfNeeded() {
+    private func loadMemberTabAvatarIfNeeded() {
         guard case .user(let sessionId) = session else { return }
 
         avatarTask?.cancel()
@@ -198,13 +198,13 @@ final class MainTabBarController: UITabBarController {
             guard let self else { return }
             guard let image = await avatarProvider.fetchAvatarImage(sessionId: sessionId) else { return }
             guard !Task.isCancelled else { return }
-            updateMemberCenterTabBarItemImage(image)
+            updateMemberTabBarItemImage(image)
         }
     }
 
-    private func updateMemberCenterTabBarItemImage(_ image: UIImage) {
+    private func updateMemberTabBarItemImage(_ image: UIImage) {
         let items = viewModel.items
-        guard let index = items.firstIndex(where: { $0.kind == .memberCenter }),
+        guard let index = items.firstIndex(where: { $0.kind == .memberSetting }),
               let viewControllers,
               viewControllers.indices.contains(index) else {
             return
@@ -218,22 +218,19 @@ final class MainTabBarController: UITabBarController {
         viewController.tabBarItem = tabBarItem ?? makeTabBarItem(for: items[index])
     }
 
-    private func refreshMemberCenterContentIfNeeded(
+    private func popMainMemberSettingToRootIfNeeded(
         for viewController: UIViewController,
         isReselection: Bool
     ) {
         guard isReselection else { return }
-        guard case .user = session,
-              let navigationController = viewController as? UINavigationController,
-              let memberCenterViewController = navigationController.viewControllers.first as? MainMemberCenterViewController else {
+        guard let navigationController = viewController as? UINavigationController,
+              navigationController.viewControllers.first is MainMemberSettingViewController else {
             return
         }
 
-        if navigationController.topViewController !== memberCenterViewController {
+        if navigationController.viewControllers.count > 1 {
             navigationController.popToRootViewController(animated: true)
         }
-
-        memberCenterViewController.refreshContentFromTabSelection()
     }
 
     // MARK: - Tab Selection
@@ -409,7 +406,7 @@ extension MainTabBarController: UITabBarControllerDelegate {
     ) {
         let isReselection = isReselectingSelectedTab
         isReselectingSelectedTab = false
-        refreshMemberCenterContentIfNeeded(for: viewController, isReselection: isReselection)
+        popMainMemberSettingToRootIfNeeded(for: viewController, isReselection: isReselection)
     }
 
     func tabBarController(

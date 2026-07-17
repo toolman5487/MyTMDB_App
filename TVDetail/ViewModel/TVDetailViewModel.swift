@@ -33,7 +33,7 @@ final class TVDetailViewModel {
     private let service: TVDetailServicing
     private let sessionStore: SessionStoring
     private let accountService: AccountServiceProtocol
-    private let accountMediaService: MainMemberCenterServicing
+    private let accountMediaService: MemberCenterServicing
     private var favoriteSession: AccountMediaFavoriteSession?
     private var ratingSession: AccountMediaRatingSession?
 
@@ -43,7 +43,7 @@ final class TVDetailViewModel {
         service: TVDetailServicing = TVDetailService(),
         sessionStore: SessionStoring = SessionStore(),
         accountService: AccountServiceProtocol = AccountService(),
-        accountMediaService: MainMemberCenterServicing = MainMemberCenterService()
+        accountMediaService: MemberCenterServicing = MemberCenterService()
     ) {
         self.service = service
         self.sessionStore = sessionStore
@@ -122,7 +122,7 @@ final class TVDetailViewModel {
                 let response = try await accountMediaService.updateFavorite(
                     accountId: favoriteSession.accountID,
                     sessionId: favoriteSession.sessionID,
-                    request: MainMemberCenterFavoriteStatusRequest(
+                    request: MemberCenterFavoriteStatusRequest(
                         mediaType: .tv,
                         mediaID: seriesID,
                         favorite: updatedFavoriteStatus

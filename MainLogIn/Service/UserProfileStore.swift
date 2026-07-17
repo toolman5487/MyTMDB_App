@@ -63,8 +63,8 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
         )
     }
 
-    var headerContent: MainMemberCenterProfileHeaderContent {
-        MainMemberCenterProfileHeaderContent(
+    var headerContent: MemberCenterProfileHeaderContent {
+        MemberCenterProfileHeaderContent(
             displayName: displayName,
             subtitle: "@\(username)",
             avatarURL: avatarURL,

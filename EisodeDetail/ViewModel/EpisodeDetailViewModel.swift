@@ -38,7 +38,7 @@ final class EpisodeDetailViewModel {
 
     private let service: EpisodeDetailServicing
     private let sessionStore: SessionStoring
-    private let accountMediaService: MainMemberCenterServicing
+    private let accountMediaService: MemberCenterServicing
     private var ratingSession: AccountMediaRatingSession?
 
     // MARK: - Initialization
@@ -46,7 +46,7 @@ final class EpisodeDetailViewModel {
     init(
         service: EpisodeDetailServicing? = nil,
         sessionStore: SessionStoring = SessionStore(),
-        accountMediaService: MainMemberCenterServicing = MainMemberCenterService()
+        accountMediaService: MemberCenterServicing = MemberCenterService()
     ) {
         self.sessionStore = sessionStore
         self.accountMediaService = accountMediaService
