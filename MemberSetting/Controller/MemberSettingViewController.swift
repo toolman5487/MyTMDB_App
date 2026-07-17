@@ -5,6 +5,7 @@
 //  Created by Willy Hsu on 2026/7/13.
 //
 
+import SDWebImage
 import UIKit
 
 @MainActor
@@ -82,6 +83,10 @@ final class MemberSettingViewController: BaseListViewController {
             forCellWithReuseIdentifier: MemberSettingRefreshProfileCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
+            MemberSettingDefaultCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingDefaultCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
             MemberSettingClearProfileCacheCollectionViewCell.self,
             forCellWithReuseIdentifier: MemberSettingClearProfileCacheCollectionViewCell.reuseIdentifier
         )
@@ -126,6 +131,37 @@ final class MemberSettingViewController: BaseListViewController {
         viewModel.clearProfileCache()
         collectionView.reloadData()
         router.showProfileCacheCleared()
+    }
+
+    private func presentClearImageCacheConfirmation() {
+        router.showClearImageCacheConfirmation { [weak self] in
+            self?.clearImageCache()
+        }
+    }
+
+    private func clearImageCache() {
+        SDImageCache.shared.clearMemory()
+        SDImageCache.shared.clearDisk { [weak self] in
+            Task { @MainActor in
+                self?.router.showImageCacheCleared()
+            }
+        }
+    }
+
+    private func presentClearAllLocalDataConfirmation() {
+        router.showClearAllLocalDataConfirmation { [weak self] in
+            self?.clearAllLocalData()
+        }
+    }
+
+    private func clearAllLocalData() {
+        viewModel.clearAllLocalData()
+        SDImageCache.shared.clearMemory()
+        SDImageCache.shared.clearDisk { [weak self] in
+            Task { @MainActor in
+                self?.router.showLoggedOut()
+            }
+        }
     }
 
     private func openTMDBAttribution() {
@@ -189,6 +225,16 @@ extension MemberSettingViewController: UICollectionViewDataSource {
         switch row.kind {
         case .profileSummary:
             reuseIdentifier = MemberSettingProfileSummaryCollectionViewCell.reuseIdentifier
+
+        case .accountId,
+             .clearImageCache,
+             .clearSearchHistory,
+             .clearAllLocalData,
+             .apiDataLanguage,
+             .loginStatus,
+             .defaultSort,
+             .defaultContentType:
+            reuseIdentifier = MemberSettingDefaultCollectionViewCell.reuseIdentifier
 
         case .refreshProfile:
             reuseIdentifier = MemberSettingRefreshProfileCollectionViewCell.reuseIdentifier
@@ -280,6 +326,12 @@ extension MemberSettingViewController: UICollectionViewDelegateFlowLayout {
 
         case .clearProfileCache:
             presentClearProfileCacheConfirmation()
+
+        case .clearImageCache:
+            presentClearImageCacheConfirmation()
+
+        case .clearAllLocalData:
+            presentClearAllLocalDataConfirmation()
 
         case .tmdbAttribution:
             openTMDBAttribution()

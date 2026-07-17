@@ -24,6 +24,7 @@ final class MainMemberCenterViewModel {
     private let contentRepository: MainMemberCenterContentProviding
     private var cachedHeaderContent: MainMemberCenterProfileHeaderContent?
     private var accountContext: MainMemberCenterAccountContext?
+    private var lastSettledState: MainMemberCenterViewState = .idle
 
     // MARK: - Initialization
 
@@ -50,9 +51,12 @@ final class MainMemberCenterViewModel {
     }
 
     func refreshContentFromTabSelection() async {
-        guard isUserSession else { return }
-        guard state != .loading else { return }
+        guard canRefreshContentFromTabSelection else { return }
         await loadContent()
+    }
+
+    var canRefreshContentFromTabSelection: Bool {
+        isUserSession && !state.isLoading
     }
 
     var profileAction: MainMemberCenterProfileAction {
@@ -77,16 +81,27 @@ final class MainMemberCenterViewModel {
     // MARK: - Private Methods
 
     private func loadUserContent(sessionId: String) async {
+        let cancellationFallbackState = lastSettledState
         apply(state: .loading)
 
         do {
             let snapshot = try await contentRepository.fetchContent(sessionId: sessionId)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                apply(state: cancellationFallbackState)
+                return
+            }
+
             let content = MainMemberCenterPresentationBuilder.makeContent(from: snapshot)
             cachedHeaderContent = content.profile.headerContent
             apply(state: content.contentSections.isEmpty ? .empty(content) : .loaded(content))
+        } catch is CancellationError {
+            apply(state: cancellationFallbackState)
         } catch {
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                apply(state: cancellationFallbackState)
+                return
+            }
+
             apply(state: .failed(error.errorMessage))
         }
     }
@@ -106,6 +121,9 @@ final class MainMemberCenterViewModel {
         displaySections = presentation.displaySections
         accountContext = presentation.accountContext
         state = newState
+
+        guard !newState.isLoading else { return }
+        lastSettledState = newState
     }
 
     private func makePresentation(
@@ -157,5 +175,18 @@ final class MainMemberCenterViewModel {
             accountId: profile.id,
             sessionId: sessionId
         )
+    }
+}
+
+// MARK: - MainMemberCenterViewState
+
+private extension MainMemberCenterViewState {
+
+    var isLoading: Bool {
+        if case .loading = self {
+            return true
+        }
+
+        return false
     }
 }

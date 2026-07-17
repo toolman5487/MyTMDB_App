@@ -13,6 +13,9 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
     let accountId: Int?
     let displayName: String
     let username: String
+    let languageCode: String?
+    let regionCode: String?
+    let includesAdultContent: Bool?
     let avatarURL: URL?
     let avatarImageData: Data?
 
@@ -20,12 +23,18 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
         accountId: Int?,
         displayName: String,
         username: String,
+        languageCode: String? = nil,
+        regionCode: String? = nil,
+        includesAdultContent: Bool? = nil,
         avatarURL: URL?,
         avatarImageData: Data? = nil
     ) {
         self.accountId = accountId
         self.displayName = displayName
         self.username = username
+        self.languageCode = languageCode
+        self.regionCode = regionCode
+        self.includesAdultContent = includesAdultContent
         self.avatarURL = avatarURL
         self.avatarImageData = avatarImageData
     }
@@ -34,6 +43,9 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
         self.accountId = account.id
         self.displayName = account.name?.isEmpty == false ? account.name ?? account.username : account.username
         self.username = account.username
+        self.languageCode = account.iso_639_1
+        self.regionCode = account.iso_3166_1
+        self.includesAdultContent = account.include_adult
         self.avatarURL = Self.makeAvatarURL(from: account)
         self.avatarImageData = avatarImageData
     }
@@ -43,6 +55,9 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
             accountId: accountId,
             displayName: displayName,
             username: username,
+            languageCode: languageCode,
+            regionCode: regionCode,
+            includesAdultContent: includesAdultContent,
             avatarURL: avatarURL,
             avatarImageData: avatarImageData
         )

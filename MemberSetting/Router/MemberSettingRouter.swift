@@ -15,6 +15,9 @@ protocol MemberSettingRouting: AnyObject {
     func showProfileRefreshFailed()
     func showClearProfileCacheConfirmation(onConfirm: @escaping () -> Void)
     func showProfileCacheCleared()
+    func showClearImageCacheConfirmation(onConfirm: @escaping () -> Void)
+    func showImageCacheCleared()
+    func showClearAllLocalDataConfirmation(onConfirm: @escaping () -> Void)
     func openTMDBAttribution(_ url: URL)
     func showLogoutConfirmation(onConfirm: @escaping () -> Void)
     func showLoggedOut()
@@ -44,6 +47,28 @@ final class MemberSettingRouter: BaseRouter, MemberSettingRouting {
 
     func showProfileCacheCleared() {
         showAlert(title: "已清除", message: "會員資料快取已清除。")
+    }
+
+    func showClearImageCacheConfirmation(onConfirm: @escaping () -> Void) {
+        showConfirmationAlert(
+            title: "清除圖片快取",
+            message: "會清除本機儲存的圖片快取，下次瀏覽時會重新下載。",
+            actionTitle: "清除",
+            onConfirm: onConfirm
+        )
+    }
+
+    func showImageCacheCleared() {
+        showAlert(title: "已清除", message: "圖片快取已清除。")
+    }
+
+    func showClearAllLocalDataConfirmation(onConfirm: @escaping () -> Void) {
+        showConfirmationAlert(
+            title: "清除所有本機資料",
+            message: "會清除會員資料、Session 與圖片快取，並返回登入頁。",
+            actionTitle: "清除",
+            onConfirm: onConfirm
+        )
     }
 
     func openTMDBAttribution(_ url: URL) {

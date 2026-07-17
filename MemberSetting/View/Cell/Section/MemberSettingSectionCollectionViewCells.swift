@@ -156,6 +156,13 @@ final class MemberSettingRefreshProfileCollectionViewCell: MemberSettingButtonCo
     static let reuseIdentifier = String(describing: MemberSettingRefreshProfileCollectionViewCell.self)
 }
 
+// MARK: - MemberSettingDefaultCollectionViewCell
+
+@MainActor
+final class MemberSettingDefaultCollectionViewCell: MemberSettingButtonCollectionViewCell {
+    static let reuseIdentifier = String(describing: MemberSettingDefaultCollectionViewCell.self)
+}
+
 // MARK: - MemberSettingClearProfileCacheCollectionViewCell
 
 @MainActor

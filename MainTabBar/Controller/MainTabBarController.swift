@@ -39,6 +39,7 @@ final class MainTabBarController: UITabBarController {
     private let avatarProvider: MainTabBarAvatarProviding
     private var tabBarVisibilityState: MainTabBarVisibilityState = .visible
     private var pendingTransitionDirection: MainTabNavigationDirection?
+    private var isReselectingSelectedTab = false
     private var avatarTask: Task<Void, Never>?
 
     // MARK: - UI Components
@@ -217,11 +218,19 @@ final class MainTabBarController: UITabBarController {
         viewController.tabBarItem = tabBarItem ?? makeTabBarItem(for: items[index])
     }
 
-    private func refreshMemberCenterContentIfNeeded(for viewController: UIViewController) {
+    private func refreshMemberCenterContentIfNeeded(
+        for viewController: UIViewController,
+        isReselection: Bool
+    ) {
+        guard isReselection else { return }
         guard case .user = session,
               let navigationController = viewController as? UINavigationController,
               let memberCenterViewController = navigationController.viewControllers.first as? MainMemberCenterViewController else {
             return
+        }
+
+        if navigationController.topViewController !== memberCenterViewController {
+            navigationController.popToRootViewController(animated: true)
         }
 
         memberCenterViewController.refreshContentFromTabSelection()
@@ -377,8 +386,11 @@ extension MainTabBarController: UITabBarControllerDelegate {
     ) -> Bool {
         guard let targetIndex = viewControllers?.firstIndex(of: viewController) else {
             pendingTransitionDirection = nil
+            isReselectingSelectedTab = false
             return true
         }
+
+        isReselectingSelectedTab = targetIndex == selectedIndex
 
         if targetIndex != selectedIndex {
             setTabBarVisibility(.visible, animated: false)
@@ -395,7 +407,9 @@ extension MainTabBarController: UITabBarControllerDelegate {
         _ tabBarController: UITabBarController,
         didSelect viewController: UIViewController
     ) {
-        refreshMemberCenterContentIfNeeded(for: viewController)
+        let isReselection = isReselectingSelectedTab
+        isReselectingSelectedTab = false
+        refreshMemberCenterContentIfNeeded(for: viewController, isReselection: isReselection)
     }
 
     func tabBarController(

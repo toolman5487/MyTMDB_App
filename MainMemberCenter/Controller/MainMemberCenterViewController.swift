@@ -26,6 +26,7 @@ final class MainMemberCenterViewController: MainBaseViewController {
     private let viewModel: MainMemberCenterViewModel
     private lazy var router: MainMemberCenterRouting = MainMemberCenterRouter(sourceViewController: self)
     private var loadTask: Task<Void, Never>?
+    private var hasStartedInitialLoad = false
 
     private let profileHeaderView = MainMemberCenterProfileHeaderView(
         frame: CGRect(
@@ -85,11 +86,13 @@ final class MainMemberCenterViewController: MainBaseViewController {
     override func bindViewModel() {
         render(state: viewModel.state)
         observeViewModelState()
-        loadContent()
+        loadInitialContentIfNeeded()
     }
 
     func refreshContentFromTabSelection() {
-        loadTask?.cancel()
+        guard isViewLoaded, hasStartedInitialLoad else { return }
+        guard viewModel.canRefreshContentFromTabSelection else { return }
+
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             await viewModel.refreshContentFromTabSelection()
@@ -149,6 +152,12 @@ final class MainMemberCenterViewController: MainBaseViewController {
     }
 
     // MARK: - Data Loading
+
+    private func loadInitialContentIfNeeded() {
+        guard !hasStartedInitialLoad else { return }
+        hasStartedInitialLoad = true
+        loadContent()
+    }
 
     private func loadContent() {
         loadTask?.cancel()

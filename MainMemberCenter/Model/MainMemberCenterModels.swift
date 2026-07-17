@@ -215,9 +215,9 @@ nonisolated struct MainMemberCenterProfile: Sendable, Equatable {
         self.username = storedProfile.username
         self.subtitle = "@\(storedProfile.username)"
         self.avatarURL = storedProfile.avatarURL
-        self.languageCode = ""
-        self.regionCode = ""
-        self.includesAdultContent = false
+        self.languageCode = storedProfile.languageCode ?? ""
+        self.regionCode = storedProfile.regionCode ?? ""
+        self.includesAdultContent = storedProfile.includesAdultContent ?? false
     }
 
     static let guest = MainMemberCenterProfile(

@@ -91,6 +91,8 @@ nonisolated final class MainMemberCenterContentRepository: MainMemberCenterConte
         var previewPages: [MainMemberCenterPreviewPage] = []
 
         for destination in MainMemberCenterDestination.allCases {
+            guard !Task.isCancelled else { break }
+
             guard let previewPage = await fetchPreviewPage(
                 destination: destination,
                 accountId: accountId,
@@ -176,7 +178,11 @@ nonisolated final class MainMemberCenterContentRepository: MainMemberCenterConte
                 )
                 return .lists(page)
             }
+        } catch is CancellationError {
+            return nil
         } catch {
+            guard !Task.isCancelled else { return nil }
+
             AppLogger.network.warning(
                 "Failed to load member center preview \(destination.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
             )

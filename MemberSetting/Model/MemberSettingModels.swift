@@ -12,6 +12,8 @@ import Foundation
 nonisolated enum MemberSettingAction: Sendable, Equatable {
     case refreshProfile
     case clearProfileCache
+    case clearImageCache
+    case clearAllLocalData
     case tmdbAttribution
     case logout
 }
@@ -36,11 +38,30 @@ nonisolated enum MemberSettingRowAccessory: Sendable, Equatable {
 
 nonisolated enum MemberSettingRowKind: Sendable, Equatable, Hashable {
     case profileSummary
+    case accountId
     case refreshProfile
     case clearProfileCache
+    case clearImageCache
+    case clearSearchHistory
+    case clearAllLocalData
     case appVersion
+    case apiDataLanguage
+    case loginStatus
     case tmdbAttribution
+    case defaultSort
+    case defaultContentType
     case logout
+}
+
+// MARK: - MemberSettingSectionKind
+
+nonisolated enum MemberSettingSectionKind: Sendable, Equatable, Hashable {
+    case profile
+    case account
+    case data
+    case preferences
+    case about
+    case danger
 }
 
 // MARK: - MemberSettingRowItem
@@ -53,6 +74,24 @@ nonisolated struct MemberSettingRowItem: Sendable, Equatable, Identifiable {
     let role: MemberSettingRowRole
     let accessory: MemberSettingRowAccessory
     let action: MemberSettingAction?
+
+    init(
+        kind: MemberSettingRowKind,
+        title: String,
+        subtitle: String? = nil,
+        systemImageName: String,
+        role: MemberSettingRowRole = .normal,
+        accessory: MemberSettingRowAccessory = .none,
+        action: MemberSettingAction? = nil
+    ) {
+        self.kind = kind
+        self.title = title
+        self.subtitle = subtitle
+        self.systemImageName = systemImageName
+        self.role = role
+        self.accessory = accessory
+        self.action = action
+    }
 
     var id: MemberSettingRowKind {
         kind
@@ -71,7 +110,21 @@ nonisolated struct MemberSettingProfileSummaryItem: Sendable, Equatable {
 // MARK: - MemberSettingSectionItem
 
 nonisolated struct MemberSettingSectionItem: Sendable, Equatable, Identifiable {
-    let id: String
+    let kind: MemberSettingSectionKind
     let title: String
     let rows: [MemberSettingRowItem]
+
+    init(
+        kind: MemberSettingSectionKind,
+        title: String = "",
+        rows: [MemberSettingRowItem]
+    ) {
+        self.kind = kind
+        self.title = title
+        self.rows = rows
+    }
+
+    var id: MemberSettingSectionKind {
+        kind
+    }
 }
