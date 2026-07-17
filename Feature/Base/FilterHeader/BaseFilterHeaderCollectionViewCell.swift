@@ -26,6 +26,8 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         let cornerRadius: CGFloat
         let borderWidth: CGFloat
         let numberOfLines: Int
+        let selectedTitleColor: UIColor
+        let unselectedTitleColor: UIColor
         let resetBorderColor: UIColor
         let unselectedBorderColor: UIColor
 
@@ -33,21 +35,25 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
             TextPillStyle(
                 horizontalInset: 16,
                 cornerRadius: 18,
-                borderWidth: 2,
+                borderWidth: 1,
                 numberOfLines: 1,
+                selectedTitleColor: .label,
+                unselectedTitleColor: ThemeColor.textSecondary,
                 resetBorderColor: .clear,
-                unselectedBorderColor: ThemeColor.highlight.withAlphaComponent(0.36)
+                unselectedBorderColor: .clear
             )
         }
 
         static var genrePageSheet: TextPillStyle {
             TextPillStyle(
                 horizontalInset: 8,
-                cornerRadius: 12,
-                borderWidth: 2,
-                numberOfLines: 2,
-                resetBorderColor: ThemeColor.highlight.withAlphaComponent(0.36),
-                unselectedBorderColor: ThemeColor.highlight.withAlphaComponent(0.36)
+                cornerRadius: 24,
+                borderWidth: 1,
+                numberOfLines: 1,
+                selectedTitleColor: .label,
+                unselectedTitleColor: ThemeColor.textSecondary,
+                resetBorderColor: ThemeColor.highlight,
+                unselectedBorderColor: .clear
             )
         }
     }
@@ -58,7 +64,7 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.subheadline(alignment: .center)
-        label.textColor = ThemeColor.textPrimary
+        label.textColor = ThemeColor.textSecondary
         return label
     }()
 
@@ -94,6 +100,7 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         hideSkeletonIfNeeded()
         titleLabel.isHidden = false
         titleLabel.text = nil
+        titleLabel.textColor = style.unselectedTitleColor
         containerView.backgroundColor = ThemeColor.backgroundTertiary
         containerView.layer.borderColor = style.resetBorderColor.cgColor
     }
@@ -114,7 +121,7 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         hideSkeletonIfNeeded()
         titleLabel.isHidden = false
         titleLabel.text = title
-        titleLabel.textColor = isSelected ? .white : ThemeColor.textPrimary
+        titleLabel.textColor = isSelected ? style.selectedTitleColor : style.unselectedTitleColor
         containerView.backgroundColor = isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
         containerView.layer.borderColor = borderColor(isSelected: isSelected).cgColor
     }

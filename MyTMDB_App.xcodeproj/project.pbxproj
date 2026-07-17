@@ -366,6 +366,12 @@
 		15BAEB942FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEB972FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift */; };
 		15BAEB952FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEB972FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift */; };
 		15BAEB962FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEB972FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift */; };
+		15F020062FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */; };
+		15F020072FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */; };
+		15F020082FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */; };
+		15F020022FF8500000F02001 /* MainTVGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */; };
+		15F020032FF8500000F02001 /* MainTVGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */; };
+		15F020042FF8500000F02001 /* MainTVGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */; };
 		15BAEBA12FF76000006B0E15 /* MainMovieListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA02FF76000006B0E15 /* MainMovieListRouter.swift */; };
 		15BAEBA22FF76000006B0E15 /* MainMovieListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA02FF76000006B0E15 /* MainMovieListRouter.swift */; };
 		15BAEBA32FF76000006B0E15 /* MainMovieListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA02FF76000006B0E15 /* MainMovieListRouter.swift */; };
@@ -696,6 +702,8 @@
 		15BAEB722FF72000006B0E15 /* MainMovieListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieListViewModel.swift; sourceTree = "<group>"; };
 		15BAEB902FF73000006B0E15 /* MainMovieListFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieListFilterHeaderView.swift; sourceTree = "<group>"; };
 		15BAEB972FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieGenrePageSheetViewController.swift; sourceTree = "<group>"; };
+		15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGenrePageSheetViewController.swift; sourceTree = "<group>"; };
+		15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTVGenrePageSheetViewController.swift; sourceTree = "<group>"; };
 		15BAEBA02FF76000006B0E15 /* MainMovieListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieListRouter.swift; sourceTree = "<group>"; };
 		15BAEBA82FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieListMovieCollectionViewCell.swift; sourceTree = "<group>"; };
 		15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchTypingLoadingView.swift; sourceTree = "<group>"; };
@@ -1562,9 +1570,19 @@
 		158B2E142FF75F9400E899D2 /* Genre */ = {
 			isa = PBXGroup;
 			children = (
+				15F020092FF8501000F02001 /* Base */,
 				15BAEB972FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift */,
+				15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */,
 			);
 			path = Genre;
+			sourceTree = "<group>";
+		};
+		15F020092FF8501000F02001 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		1598AA402DC4B69F005E972C = {
@@ -2886,6 +2904,8 @@
 				157C4E762FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift in Sources */,
 				15BAEB912FF73000006B0E15 /* MainMovieListFilterHeaderView.swift in Sources */,
 				15BAEB942FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */,
+				15F020062FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */,
+				15F020022FF8500000F02001 /* MainTVGenrePageSheetViewController.swift in Sources */,
 				15BAEBA12FF76000006B0E15 /* MainMovieListRouter.swift in Sources */,
 				15BAEBA52FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */,
 				157C52202FFB92000044BD8E /* MainTVListViewController.swift in Sources */,
@@ -3022,6 +3042,8 @@
 				157C4E772FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift in Sources */,
 				15BAEB922FF73000006B0E15 /* MainMovieListFilterHeaderView.swift in Sources */,
 				15BAEB952FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */,
+				15F020072FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */,
+				15F020032FF8500000F02001 /* MainTVGenrePageSheetViewController.swift in Sources */,
 				15BAEBA22FF76000006B0E15 /* MainMovieListRouter.swift in Sources */,
 				15BAEBA62FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */,
 				157C52212FFB92000044BD8E /* MainTVListViewController.swift in Sources */,
@@ -3234,6 +3256,8 @@
 				157C4E782FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift in Sources */,
 				15BAEB932FF73000006B0E15 /* MainMovieListFilterHeaderView.swift in Sources */,
 				15BAEB962FF74000006B0E15 /* MainMovieGenrePageSheetViewController.swift in Sources */,
+				15F020082FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */,
+				15F020042FF8500000F02001 /* MainTVGenrePageSheetViewController.swift in Sources */,
 				15DAAEEB2FFDE6D3009FB88A /* EpisodeDetailViewController.swift in Sources */,
 				15BAEBA32FF76000006B0E15 /* MainMovieListRouter.swift in Sources */,
 				15BAEBA72FF77000006B0E15 /* MainMovieListMovieCollectionViewCell.swift in Sources */,

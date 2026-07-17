@@ -13,7 +13,7 @@ import UIKit
 enum GlassBackgroundEffect {
 
     static func make(
-        tintColor: UIColor? = ThemeColor.background.withAlphaComponent(0.18),
+        tintColor: UIColor? = ThemeColor.background.withAlphaComponent(0.2),
         fallbackStyle: UIBlurEffect.Style = .systemUltraThinMaterial
     ) -> UIVisualEffect {
         if #available(iOS 26.0, *) {

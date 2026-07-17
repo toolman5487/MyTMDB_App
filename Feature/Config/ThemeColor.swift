@@ -13,9 +13,6 @@ enum ThemeColor {
 
     // MARK: Brand
 
-    static let midnightHex = "#090712"
-    static let midnightElevatedHex = "#151026"
-    static let midnightSurfaceHex = "#211637"
     static let tmdbDarkBlueHex = "#0D253F"
     static let tmdbLightBlueHex = "#01B4E4"
 
@@ -39,35 +36,11 @@ enum ThemeColor {
 
     // MARK: Background
 
-    static let background: UIColor = UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            return UIColor(hex: midnightHex) ?? .systemBackground
+    static let background: UIColor = .systemBackground
 
-        default:
-            return UIColor(hex: "#F8F5FF") ?? .systemBackground
-        }
-    }
+    static let backgroundSecondary: UIColor = .secondarySystemBackground
 
-    static let backgroundSecondary: UIColor = UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            return UIColor(hex: midnightElevatedHex) ?? .secondarySystemBackground
-
-        default:
-            return UIColor(hex: "#EFE8FF") ?? .secondarySystemBackground
-        }
-    }
-
-    static let backgroundTertiary: UIColor = UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            return UIColor(hex: midnightSurfaceHex) ?? .tertiarySystemBackground
-
-        default:
-            return UIColor(hex: "#E5D8FF") ?? .tertiarySystemBackground
-        }
-    }
+    static let backgroundTertiary: UIColor = .tertiarySystemBackground
 
     // MARK: Grouped Background
 
