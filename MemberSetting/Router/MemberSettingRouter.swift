@@ -69,34 +69,4 @@ final class MemberSettingRouter: BaseRouter, MemberSettingRouting {
 
         AppRootFactory.replaceRoot(in: window, for: .loggedOut)
     }
-
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "確定", style: .default))
-        show(alert, using: .present)
-    }
-
-    private func showConfirmationAlert(
-        title: String,
-        message: String,
-        actionTitle: String,
-        onConfirm: @escaping () -> Void
-    ) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(
-            UIAlertAction(title: actionTitle, style: .destructive) { _ in
-                onConfirm()
-            }
-        )
-        show(alert, using: .present)
-    }
 }

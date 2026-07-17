@@ -141,6 +141,43 @@ class BaseRouter {
         present(safariViewController, from: sourceViewController)
     }
 
+    // MARK: - Alert
+
+    func showAlert(
+        title: String,
+        message: String,
+        actionTitle: String = "確定"
+    ) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: actionTitle, style: .default))
+        show(alert, using: .present)
+    }
+
+    func showConfirmationAlert(
+        title: String,
+        message: String,
+        actionTitle: String,
+        cancelTitle: String = "取消",
+        onConfirm: @escaping () -> Void
+    ) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+        alert.addAction(
+            UIAlertAction(title: actionTitle, style: .destructive) { _ in
+                onConfirm()
+            }
+        )
+        show(alert, using: .present)
+    }
+
     // MARK: - Private Methods
 
     private func makePageSheetViewController(
