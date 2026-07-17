@@ -9,7 +9,7 @@ import Observation
 import UIKit
 
 @MainActor
-final class MemberCenterViewController: MainBaseViewController {
+final class MemberCenterViewController: BaseListViewController {
 
     // MARK: - Layout
 
@@ -273,14 +273,6 @@ extension MemberCenterViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MemberCenterViewController: UICollectionViewDelegateFlowLayout {
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        beginTabBarVisibilityTracking(for: scrollView)
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        updateTabBarVisibilityTracking(for: scrollView)
-    }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)

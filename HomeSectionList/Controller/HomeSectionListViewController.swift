@@ -37,7 +37,6 @@ final class HomeSectionListViewController: BaseListViewController {
         self.category = category
         self.viewModel = HomeSectionListViewModel(category: category)
         super.init(nibName: nil, bundle: nil)
-        hidesBottomBarWhenPushed = true
     }
 
     init(
@@ -47,7 +46,6 @@ final class HomeSectionListViewController: BaseListViewController {
         self.category = category
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)

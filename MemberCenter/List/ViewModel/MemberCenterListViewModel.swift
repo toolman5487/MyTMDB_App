@@ -22,6 +22,7 @@ final class MemberCenterListViewModel {
     private let accountId: Int
     private let sessionId: String
     private let service: MemberCenterServicing
+    private let listPosterEnricher: any MemberCenterListPosterEnriching
 
     // MARK: - Initialization
 
@@ -29,12 +30,14 @@ final class MemberCenterListViewModel {
         destination: MemberCenterDestination,
         accountId: Int,
         sessionId: String,
-        service: MemberCenterServicing = MemberCenterService()
+        service: MemberCenterServicing = MemberCenterService(),
+        listPosterEnricher: (any MemberCenterListPosterEnriching)? = nil
     ) {
         self.destination = destination
         self.accountId = accountId
         self.sessionId = sessionId
         self.service = service
+        self.listPosterEnricher = listPosterEnricher ?? MemberCenterListPosterEnricher(service: service)
     }
 
     // MARK: - Public Methods
@@ -195,10 +198,15 @@ final class MemberCenterListViewModel {
                 sessionId: sessionId,
                 page: page
             )
+            let enrichedResults = await listPosterEnricher.enrichingListsWithFirstItemPoster(
+                response.results,
+                limit: response.results.count
+            )
+
             return makePageResult(
                 response: response,
                 items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
+                    from: enrichedResults,
                     destination: destination
                 )
             )

@@ -11,7 +11,7 @@ import UIKit
 // MARK: - MemberCenterListViewController
 
 @MainActor
-final class MemberCenterListViewController: MainBaseViewController {
+final class MemberCenterListViewController: BaseListViewController {
 
     // MARK: - Layout
 
@@ -61,13 +61,11 @@ final class MemberCenterListViewController: MainBaseViewController {
             service: service
         )
         super.init(nibName: nil, bundle: nil)
-        hidesBottomBarWhenPushed = true
     }
 
     init(viewModel: MemberCenterListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        hidesBottomBarWhenPushed = true
     }
 
     required init?(coder: NSCoder) {
@@ -77,7 +75,6 @@ final class MemberCenterListViewController: MainBaseViewController {
             sessionId: ""
         )
         super.init(coder: coder)
-        hidesBottomBarWhenPushed = true
     }
 
     deinit {
@@ -212,14 +209,6 @@ extension MemberCenterListViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension MemberCenterListViewController: UICollectionViewDelegateFlowLayout {
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        beginTabBarVisibilityTracking(for: scrollView)
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        updateTabBarVisibilityTracking(for: scrollView)
-    }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)

@@ -14,6 +14,66 @@ nonisolated protocol MemberCenterContentProviding: Sendable {
     func fetchContent(sessionId: String) async throws -> MemberCenterContentSnapshot
 }
 
+// MARK: - MemberCenterListPosterEnriching
+
+nonisolated protocol MemberCenterListPosterEnriching: Sendable {
+    func enrichingListsWithFirstItemPoster(
+        _ lists: [MemberCenterList],
+        limit: Int
+    ) async -> [MemberCenterList]
+}
+
+// MARK: - MemberCenterListPosterEnricher
+
+nonisolated final class MemberCenterListPosterEnricher: MemberCenterListPosterEnriching {
+
+    // MARK: - Properties
+
+    private let service: MemberCenterServicing
+
+    // MARK: - Initialization
+
+    init(service: MemberCenterServicing) {
+        self.service = service
+    }
+
+    // MARK: - Public Methods
+
+    func enrichingListsWithFirstItemPoster(
+        _ lists: [MemberCenterList],
+        limit: Int
+    ) async -> [MemberCenterList] {
+        await withTaskGroup(of: (Int, MemberCenterList).self) { group in
+            for (index, list) in lists.enumerated() {
+                group.addTask { [service] in
+                    guard index < limit,
+                          list.posterPath == nil else {
+                        return (index, list)
+                    }
+
+                    do {
+                        let detail = try await service.fetchListDetail(listId: list.id)
+                        return (index, list.replacingMissingPosterPath(with: detail.firstPosterPath))
+                    } catch {
+                        return (index, list)
+                    }
+                }
+            }
+
+            var indexedLists: [(Int, MemberCenterList)] = []
+            indexedLists.reserveCapacity(lists.count)
+
+            for await indexedList in group {
+                indexedLists.append(indexedList)
+            }
+
+            return indexedLists
+                .sorted { $0.0 < $1.0 }
+                .map { $0.1 }
+        }
+    }
+}
+
 // MARK: - MemberCenterContentRepository
 
 nonisolated final class MemberCenterContentRepository: MemberCenterContentProviding {
@@ -28,15 +88,18 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
 
     private let service: MemberCenterServicing
     private let userProfileStore: UserProfileStoring
+    private let listPosterEnricher: any MemberCenterListPosterEnriching
 
     // MARK: - Initialization
 
     init(
         service: MemberCenterServicing = MemberCenterService(),
-        userProfileStore: UserProfileStoring = UserProfileStore()
+        userProfileStore: UserProfileStoring = UserProfileStore(),
+        listPosterEnricher: (any MemberCenterListPosterEnriching)? = nil
     ) {
         self.service = service
         self.userProfileStore = userProfileStore
+        self.listPosterEnricher = listPosterEnricher ?? MemberCenterListPosterEnricher(service: service)
     }
 
     // MARK: - Public Methods
@@ -200,7 +263,10 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
             sessionId: sessionId,
             page: page
         )
-        let enrichedResults = await enrichListsWithFirstItemPoster(pageResponse.results)
+        let enrichedResults = await listPosterEnricher.enrichingListsWithFirstItemPoster(
+            pageResponse.results,
+            limit: Configuration.listPreviewPosterFallbackLimit
+        )
 
         return MemberCenterListPage(
             page: pageResponse.page,
@@ -208,36 +274,5 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
             totalPages: pageResponse.totalPages,
             totalResults: pageResponse.totalResults
         )
-    }
-
-    private func enrichListsWithFirstItemPoster(_ lists: [MemberCenterList]) async -> [MemberCenterList] {
-        await withTaskGroup(of: (Int, MemberCenterList).self) { group in
-            for (index, list) in lists.enumerated() {
-                group.addTask { [service] in
-                    guard index < Configuration.listPreviewPosterFallbackLimit,
-                          list.posterPath == nil else {
-                        return (index, list)
-                    }
-
-                    do {
-                        let detail = try await service.fetchListDetail(listId: list.id)
-                        return (index, list.replacingMissingPosterPath(with: detail.firstPosterPath))
-                    } catch {
-                        return (index, list)
-                    }
-                }
-            }
-
-            var indexedLists: [(Int, MemberCenterList)] = []
-            indexedLists.reserveCapacity(lists.count)
-
-            for await indexedList in group {
-                indexedLists.append(indexedList)
-            }
-
-            return indexedLists
-                .sorted { $0.0 < $1.0 }
-                .map { $0.1 }
-        }
     }
 }

@@ -19,6 +19,18 @@ class BaseListViewController: BaseViewController {
         80
     }
 
+    // MARK: - Initialization
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        hidesBottomBarWhenPushed = true
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        hidesBottomBarWhenPushed = true
+    }
+
     // MARK: - UI Components
 
     let collectionViewFlowLayout: UICollectionViewFlowLayout = {
