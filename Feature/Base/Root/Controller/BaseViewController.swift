@@ -28,6 +28,7 @@ class BaseViewController: UIViewController {
     private lazy var baseLoadingView = {
         AppFactory.Animation.popcornLoading(
             size: AppAnimationView.Metrics.overlaySize,
+            message: "正在載入...",
             startsAnimating: false
         )
     }()

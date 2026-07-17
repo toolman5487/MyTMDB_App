@@ -49,16 +49,43 @@ enum AppFactory {
 
         // MARK: - Public Factory Methods
 
-        static func loadingAir(size: CGFloat, startsAnimating: Bool = true) -> AppAnimationView {
-            AppAnimationView(animation: .loadingAir, size: size, startsAnimating: startsAnimating)
+        static func loadingAir(
+            size: CGFloat,
+            message: String? = nil,
+            startsAnimating: Bool = true
+        ) -> AppAnimationView {
+            AppAnimationView(
+                animation: .loadingAir,
+                size: size,
+                message: message,
+                startsAnimating: startsAnimating
+            )
         }
 
-        static func searchLoading(size: CGFloat, startsAnimating: Bool = true) -> AppAnimationView {
-            AppAnimationView(animation: .searchLoading, size: size, startsAnimating: startsAnimating)
+        static func searchLoading(
+            size: CGFloat,
+            message: String? = nil,
+            startsAnimating: Bool = true
+        ) -> AppAnimationView {
+            AppAnimationView(
+                animation: .searchLoading,
+                size: size,
+                message: message,
+                startsAnimating: startsAnimating
+            )
         }
 
-        static func popcornLoading(size: CGFloat, startsAnimating: Bool = true) -> AppAnimationView {
-            AppAnimationView(animation: .popcornLoading, size: size, startsAnimating: startsAnimating)
+        static func popcornLoading(
+            size: CGFloat,
+            message: String? = nil,
+            startsAnimating: Bool = true
+        ) -> AppAnimationView {
+            AppAnimationView(
+                animation: .popcornLoading,
+                size: size,
+                message: message,
+                startsAnimating: startsAnimating
+            )
         }
     }
 

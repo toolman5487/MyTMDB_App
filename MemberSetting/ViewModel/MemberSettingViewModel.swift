@@ -12,7 +12,6 @@ import Foundation
 nonisolated enum MemberSettingAction: Sendable, Equatable {
     case refreshProfile
     case clearProfileCache
-    case appearanceMode
     case tmdbAttribution
     case logout
 }
@@ -53,65 +52,6 @@ nonisolated struct MemberSettingSectionItem: Sendable, Equatable, Identifiable {
     let rows: [MemberSettingRowItem]
 }
 
-// MARK: - MemberSettingAppearanceMode
-
-nonisolated enum MemberSettingAppearanceMode: String, Sendable, CaseIterable {
-    case system
-    case light
-    case dark
-
-    var title: String {
-        switch self {
-        case .system:
-            return "跟隨系統"
-
-        case .light:
-            return "淺色"
-
-        case .dark:
-            return "深色"
-        }
-    }
-}
-
-// MARK: - MemberSettingAppearancePreferenceStoring
-
-nonisolated protocol MemberSettingAppearancePreferenceStoring: Sendable {
-    func load() -> MemberSettingAppearanceMode
-    func save(_ mode: MemberSettingAppearanceMode)
-}
-
-// MARK: - MemberSettingAppearancePreferenceStore
-
-final class MemberSettingAppearancePreferenceStore: MemberSettingAppearancePreferenceStoring, @unchecked Sendable {
-
-    // MARK: - Properties
-
-    private let defaults: UserDefaults
-    private let storageKey = "MemberSettingAppearanceMode"
-
-    // MARK: - Initialization
-
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
-    }
-
-    // MARK: - MemberSettingAppearancePreferenceStoring
-
-    func load() -> MemberSettingAppearanceMode {
-        guard let rawValue = defaults.string(forKey: storageKey),
-              let mode = MemberSettingAppearanceMode(rawValue: rawValue) else {
-            return .dark
-        }
-
-        return mode
-    }
-
-    func save(_ mode: MemberSettingAppearanceMode) {
-        defaults.set(mode.rawValue, forKey: storageKey)
-    }
-}
-
 // MARK: - MemberSettingViewModel
 
 @MainActor
@@ -122,7 +62,6 @@ final class MemberSettingViewModel {
     private let sessionStore: SessionStoring
     private let userProfileStore: UserProfileStoring
     private let accountService: AccountServiceProtocol
-    private let appearancePreferenceStore: MemberSettingAppearancePreferenceStoring
     private let bundle: Bundle
 
     var sections: [MemberSettingSectionItem] {
@@ -148,21 +87,6 @@ final class MemberSettingViewModel {
                         role: .normal,
                         accessory: .disclosure,
                         action: .clearProfileCache
-                    )
-                ]
-            ),
-            MemberSettingSectionItem(
-                id: "display",
-                title: "顯示",
-                rows: [
-                    MemberSettingRowItem(
-                        id: "appearanceMode",
-                        title: "外觀模式",
-                        subtitle: nil,
-                        systemImageName: "circle.lefthalf.filled",
-                        role: .normal,
-                        accessory: .toggle(isOn: appearanceMode == .dark),
-                        action: .appearanceMode
                     )
                 ]
             ),
@@ -208,10 +132,6 @@ final class MemberSettingViewModel {
         ]
     }
 
-    var appearanceMode: MemberSettingAppearanceMode {
-        appearancePreferenceStore.load()
-    }
-
     var tmdbAttributionURL: URL? {
         URL(string: APIConfig.tmdbWebsiteBaseURL)
     }
@@ -222,13 +142,11 @@ final class MemberSettingViewModel {
         sessionStore: SessionStoring = SessionStore(),
         userProfileStore: UserProfileStoring = UserProfileStore(),
         accountService: AccountServiceProtocol = AccountService(),
-        appearancePreferenceStore: MemberSettingAppearancePreferenceStoring = MemberSettingAppearancePreferenceStore(),
         bundle: Bundle = .main
     ) {
         self.sessionStore = sessionStore
         self.userProfileStore = userProfileStore
         self.accountService = accountService
-        self.appearancePreferenceStore = appearancePreferenceStore
         self.bundle = bundle
     }
 
@@ -260,10 +178,6 @@ final class MemberSettingViewModel {
 
     func clearProfileCache() {
         userProfileStore.clear()
-    }
-
-    func updateAppearanceMode(_ mode: MemberSettingAppearanceMode) {
-        appearancePreferenceStore.save(mode)
     }
 
     func logout() {

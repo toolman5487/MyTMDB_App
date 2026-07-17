@@ -79,10 +79,6 @@ final class MemberSettingViewController: BaseListViewController {
             forCellWithReuseIdentifier: MemberSettingClearProfileCacheCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MemberSettingAppearanceModeCollectionViewCell.self,
-            forCellWithReuseIdentifier: MemberSettingAppearanceModeCollectionViewCell.reuseIdentifier
-        )
-        collectionView.register(
             MemberSettingAppVersionCollectionViewCell.self,
             forCellWithReuseIdentifier: MemberSettingAppVersionCollectionViewCell.reuseIdentifier
         )
@@ -121,17 +117,6 @@ final class MemberSettingViewController: BaseListViewController {
     private func clearProfileCache() {
         viewModel.clearProfileCache()
         router.showProfileCacheCleared()
-    }
-
-    private func toggleAppearanceMode() {
-        updateAppearanceMode(isDarkModeEnabled: viewModel.appearanceMode != .dark)
-    }
-
-    private func updateAppearanceMode(isDarkModeEnabled: Bool) {
-        let mode: MemberSettingAppearanceMode = isDarkModeEnabled ? .dark : .light
-        viewModel.updateAppearanceMode(mode)
-        view.window?.overrideUserInterfaceStyle = mode.userInterfaceStyle
-        collectionView.reloadData()
     }
 
     private func openTMDBAttribution() {
@@ -194,9 +179,6 @@ extension MemberSettingViewController: UICollectionViewDataSource {
         case "clearProfileCache":
             reuseIdentifier = MemberSettingClearProfileCacheCollectionViewCell.reuseIdentifier
 
-        case "appearanceMode":
-            reuseIdentifier = MemberSettingAppearanceModeCollectionViewCell.reuseIdentifier
-
         case "appVersion":
             reuseIdentifier = MemberSettingAppVersionCollectionViewCell.reuseIdentifier
 
@@ -225,11 +207,7 @@ extension MemberSettingViewController: UICollectionViewDataSource {
         cell.configure(
             with: row,
             isFirstInSection: indexPath.item == 0,
-            isLastInSection: indexPath.item == section.rows.count - 1,
-            onToggleValueChanged: { [weak self] isOn in
-                guard row.action == .appearanceMode else { return }
-                self?.updateAppearanceMode(isDarkModeEnabled: isOn)
-            }
+            isLastInSection: indexPath.item == section.rows.count - 1
         )
     }
 
@@ -270,9 +248,6 @@ extension MemberSettingViewController: UICollectionViewDelegateFlowLayout {
         case .clearProfileCache:
             presentClearProfileCacheConfirmation()
 
-        case .appearanceMode:
-            toggleAppearanceMode()
-
         case .tmdbAttribution:
             openTMDBAttribution()
 
@@ -307,23 +282,5 @@ extension MemberSettingViewController: UICollectionViewDelegateFlowLayout {
             bottom: Layout.sectionBottomInset,
             right: 0
         )
-    }
-}
-
-// MARK: - MemberSettingAppearanceMode
-
-private extension MemberSettingAppearanceMode {
-
-    var userInterfaceStyle: UIUserInterfaceStyle {
-        switch self {
-        case .system:
-            return .unspecified
-
-        case .light:
-            return .light
-
-        case .dark:
-            return .dark
-        }
     }
 }

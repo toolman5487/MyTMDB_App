@@ -21,13 +21,6 @@ final class MemberSettingClearProfileCacheCollectionViewCell: MemberSettingButto
     static let reuseIdentifier = String(describing: MemberSettingClearProfileCacheCollectionViewCell.self)
 }
 
-// MARK: - MemberSettingAppearanceModeCollectionViewCell
-
-@MainActor
-final class MemberSettingAppearanceModeCollectionViewCell: MemberSettingButtonCollectionViewCell {
-    static let reuseIdentifier = String(describing: MemberSettingAppearanceModeCollectionViewCell.self)
-}
-
 // MARK: - MemberSettingAppVersionCollectionViewCell
 
 @MainActor

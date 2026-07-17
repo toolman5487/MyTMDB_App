@@ -14,6 +14,12 @@ import UIKit
 @MainActor
 final class AppAnimationView: UIView {
 
+    // MARK: - Layout
+
+    private enum Layout {
+        static let messageTopSpacing: CGFloat = 4
+    }
+
     // MARK: - Metrics
 
     enum Metrics {
@@ -27,38 +33,73 @@ final class AppAnimationView: UIView {
 
     private let size: CGFloat
     private var isAnimationActive: Bool
+    private let message: String?
 
     // MARK: - UI Components
 
     private let animationView: LottieAnimationView
+
+    private let messageLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = ThemeColor.textSecondary
+        label.textAlignment = .center
+        label.numberOfLines = 1
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
+    private lazy var contentStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            animationView,
+            messageLabel
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = Layout.messageTopSpacing
+        return stackView
+    }()
 
     // MARK: - Initialization
 
     init(
         animation: AppFactory.Animation.Kind,
         size: CGFloat,
+        message: String? = nil,
         startsAnimating: Bool = true
     ) {
         self.size = size
+        self.message = message
         self.isAnimationActive = startsAnimating
         self.animationView = Self.makeLottieAnimationView(for: animation)
         super.init(frame: .zero)
         isHidden = !startsAnimating
+        configureMessage()
         setupHierarchy()
         setupConstraints()
     }
 
     required init?(coder: NSCoder) {
         self.size = Metrics.overlaySize
+        self.message = nil
         self.isAnimationActive = true
         self.animationView = Self.makeLottieAnimationView(for: .popcornLoading)
         super.init(coder: coder)
+        configureMessage()
         setupHierarchy()
         setupConstraints()
     }
 
     override var intrinsicContentSize: CGSize {
-        CGSize(width: size, height: size)
+        guard messageLabel.isHidden == false else {
+            return CGSize(width: size, height: size)
+        }
+
+        let messageSize = messageLabel.intrinsicContentSize
+        return CGSize(
+            width: max(size, messageSize.width),
+            height: size + Layout.messageTopSpacing + messageSize.height
+        )
     }
 
     override func didMoveToWindow() {
@@ -77,17 +118,29 @@ final class AppAnimationView: UIView {
     // MARK: - Setup
 
     private func setupHierarchy() {
-        addSubview(animationView)
+        addSubview(contentStackView)
     }
 
     private func setupConstraints() {
-        snp.makeConstraints { make in
+        animationView.snp.makeConstraints { make in
             make.size.equalTo(size)
         }
 
-        animationView.snp.makeConstraints { make in
+        contentStackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    private func configureMessage() {
+        guard let trimmedMessage = message?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !trimmedMessage.isEmpty else {
+            messageLabel.text = nil
+            messageLabel.isHidden = true
+            return
+        }
+
+        messageLabel.text = trimmedMessage
+        messageLabel.isHidden = false
     }
 
     private func updateAnimationPlayback() {
