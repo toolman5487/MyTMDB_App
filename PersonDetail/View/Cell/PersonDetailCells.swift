@@ -23,6 +23,9 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         static let profileHeight: CGFloat = 198
     }
 
+    private var profileURL: URL?
+    private var onProfileImageSelected: ((URL) -> Void)?
+
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -71,7 +74,13 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         resetContent()
     }
 
-    func configure(with item: PersonDetailHeroItem) {
+    func configure(
+        with item: PersonDetailHeroItem,
+        onProfileImageSelected: ((URL) -> Void)? = nil
+    ) {
+        profileURL = item.profileURL
+        self.onProfileImageSelected = onProfileImageSelected
+        profileImageView.isUserInteractionEnabled = item.profileURL != nil && onProfileImageSelected != nil
         profileImageView.sd_setImage(with: item.profileURL)
         nameLabel.text = item.name
         metadataLabel.text = item.metadataText
@@ -91,6 +100,7 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         addSubview(contentStackView)
         contentStackView.addArrangedSubview(nameLabel)
         contentStackView.addArrangedSubview(metadataLabel)
+        profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapProfileImage)))
     }
 
     private func setupConstraints() {
@@ -109,11 +119,20 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
     }
 
     private func resetContent() {
+        profileURL = nil
+        onProfileImageSelected = nil
+        profileImageView.isUserInteractionEnabled = false
         profileImageView.sd_cancelCurrentImageLoad()
         profileImageView.image = nil
         nameLabel.text = nil
         metadataLabel.text = nil
         metadataLabel.isHidden = false
+    }
+
+    @objc
+    private func didTapProfileImage() {
+        guard let profileURL else { return }
+        onProfileImageSelected?(profileURL)
     }
 }
 
@@ -366,7 +385,10 @@ final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCo
         static let imageHeight: CGFloat = 168
     }
 
-    func configure(items: [PersonDetailProfileImageItem]) {
+    func configure(
+        items: [PersonDetailProfileImageItem],
+        onImageSelected: @escaping (URL) -> Void
+    ) {
         configure(
             items: items.map {
                 DetailImageTitleItem(
@@ -378,7 +400,10 @@ final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCo
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight
-        )
+        ) { item in
+            guard let imageURL = item.imageURL else { return }
+            onImageSelected(imageURL)
+        }
     }
 }
 

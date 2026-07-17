@@ -232,7 +232,9 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailProfileImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailProfileImagesCollectionViewCell)?.configure(items: items)
+            (cell as? PersonDetailProfileImagesCollectionViewCell)?.configure(items: items) { [weak self] imageURL in
+                self?.router.showImagePreview(imageURL: imageURL)
+            }
             return cell
 
         case .aliases(let items):
@@ -272,7 +274,9 @@ extension PersonDetailViewController: UICollectionViewDataSource {
             )
 
             if let headerView = reusableView as? PersonDetailHeroHeaderView {
-                headerView.configure(with: item.hero)
+                headerView.configure(with: item.hero) { [weak self] imageURL in
+                    self?.router.showImagePreview(imageURL: imageURL)
+                }
             }
 
             return reusableView
