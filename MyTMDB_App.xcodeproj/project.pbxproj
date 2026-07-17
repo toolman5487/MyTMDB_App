@@ -251,6 +251,9 @@
 		15A6A0C23005B00000AD5E46 /* MemberSettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */; };
 		15A6A0C33005B00000AD5E46 /* MemberSettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */; };
 		15A6A0C43005B00000AD5E46 /* MemberSettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */; };
+		15A6A0D13005C00000AD5E46 /* MemberSettingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0D03005C00000AD5E46 /* MemberSettingModels.swift */; };
+		15A6A0D23005C00000AD5E46 /* MemberSettingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0D03005C00000AD5E46 /* MemberSettingModels.swift */; };
+		15A6A0D33005C00000AD5E46 /* MemberSettingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0D03005C00000AD5E46 /* MemberSettingModels.swift */; };
 		15A6A08D3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
 		15A6A08E3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
 		15A6A08F3005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */; };
@@ -663,6 +666,7 @@
 		15A6A08C3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingButtonCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A6A0B53005A00000AD5E46 /* MemberSettingSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingSectionHeaderView.swift; sourceTree = "<group>"; };
 		15A6A0C13005B00000AD5E46 /* MemberSettingRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingRouter.swift; sourceTree = "<group>"; };
+		15A6A0D03005C00000AD5E46 /* MemberSettingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberSettingModels.swift; sourceTree = "<group>"; };
 		15A6A0903005300000AD5E46 /* MainMemberCenterGuestLoginCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberCenterGuestLoginCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A6A0953005600000AD5E46 /* MainTabBarAvatarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarAvatarService.swift; sourceTree = "<group>"; };
 		15A6A09A3005700000AD5E46 /* UserProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileStore.swift; sourceTree = "<group>"; };
@@ -1656,6 +1660,7 @@
 			isa = PBXGroup;
 				children = (
 					15A6A0743004889000AD5E46 /* Controller */,
+					15A6A0CF3005C00000AD5E46 /* Model */,
 					15A6A0C03005B00000AD5E46 /* Router */,
 					15A6A0753004889600AD5E46 /* View */,
 					15A6A0883005000000AD5E46 /* ViewModel */,
@@ -1663,6 +1668,14 @@
 			path = MemberSetting;
 			sourceTree = "<group>";
 		};
+			15A6A0CF3005C00000AD5E46 /* Model */ = {
+				isa = PBXGroup;
+				children = (
+					15A6A0D03005C00000AD5E46 /* MemberSettingModels.swift */,
+				);
+				path = Model;
+				sourceTree = "<group>";
+			};
 			15A6A0743004889000AD5E46 /* Controller */ = {
 				isa = PBXGroup;
 				children = (
@@ -2881,6 +2894,7 @@
 				15A6A077300488A900AD5E46 /* MemberSettingViewController.swift in Sources */,
 				15A6A0893005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */,
 				15A6A0803005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */,
+				15A6A0D13005C00000AD5E46 /* MemberSettingModels.swift in Sources */,
 				15A6A0833005000000AD5E46 /* MemberSettingViewModel.swift in Sources */,
 				15A6A0B63005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */,
 				15A6A0C23005B00000AD5E46 /* MemberSettingRouter.swift in Sources */,
@@ -3125,6 +3139,7 @@
 				15A6A078300488A900AD5E46 /* MemberSettingViewController.swift in Sources */,
 				15A6A08A3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */,
 				15A6A0813005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */,
+				15A6A0D23005C00000AD5E46 /* MemberSettingModels.swift in Sources */,
 				15A6A0843005000000AD5E46 /* MemberSettingViewModel.swift in Sources */,
 				15A6A0B73005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */,
 				15A6A0C33005B00000AD5E46 /* MemberSettingRouter.swift in Sources */,
@@ -3186,6 +3201,7 @@
 				15A6A079300488A900AD5E46 /* MemberSettingViewController.swift in Sources */,
 				15A6A08B3005100000AD5E46 /* MemberSettingButtonCollectionViewCell.swift in Sources */,
 				15A6A0823005000000AD5E46 /* MemberSettingSectionCollectionViewCells.swift in Sources */,
+				15A6A0D33005C00000AD5E46 /* MemberSettingModels.swift in Sources */,
 				15A6A0853005000000AD5E46 /* MemberSettingViewModel.swift in Sources */,
 				15A6A0B83005A00000AD5E46 /* MemberSettingSectionHeaderView.swift in Sources */,
 				15A6A0C43005B00000AD5E46 /* MemberSettingRouter.swift in Sources */,

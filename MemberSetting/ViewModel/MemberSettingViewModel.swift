@@ -7,51 +7,6 @@
 
 import Foundation
 
-// MARK: - MemberSettingAction
-
-nonisolated enum MemberSettingAction: Sendable, Equatable {
-    case refreshProfile
-    case clearProfileCache
-    case tmdbAttribution
-    case logout
-}
-
-// MARK: - MemberSettingRowRole
-
-nonisolated enum MemberSettingRowRole: Sendable, Equatable {
-    case normal
-    case destructive
-}
-
-// MARK: - MemberSettingRowAccessory
-
-nonisolated enum MemberSettingRowAccessory: Sendable, Equatable {
-    case none
-    case disclosure
-    case value(String)
-    case toggle(isOn: Bool)
-}
-
-// MARK: - MemberSettingRowItem
-
-nonisolated struct MemberSettingRowItem: Sendable, Equatable, Identifiable {
-    let id: String
-    let title: String
-    let subtitle: String?
-    let systemImageName: String
-    let role: MemberSettingRowRole
-    let accessory: MemberSettingRowAccessory
-    let action: MemberSettingAction?
-}
-
-// MARK: - MemberSettingSectionItem
-
-nonisolated struct MemberSettingSectionItem: Sendable, Equatable, Identifiable {
-    let id: String
-    let title: String
-    let rows: [MemberSettingRowItem]
-}
-
 // MARK: - MemberSettingViewModel
 
 @MainActor
@@ -67,11 +22,26 @@ final class MemberSettingViewModel {
     var sections: [MemberSettingSectionItem] {
         [
             MemberSettingSectionItem(
+                id: "profile",
+                title: "",
+                rows: [
+                    MemberSettingRowItem(
+                        kind: .profileSummary,
+                        title: "會員資料",
+                        subtitle: nil,
+                        systemImageName: "person.crop.circle",
+                        role: .normal,
+                        accessory: .none,
+                        action: nil
+                    )
+                ]
+            ),
+            MemberSettingSectionItem(
                 id: "account",
                 title: "帳號",
                 rows: [
                     MemberSettingRowItem(
-                        id: "refreshProfile",
+                        kind: .refreshProfile,
                         title: "重新整理會員資料",
                         subtitle: nil,
                         systemImageName: "arrow.clockwise",
@@ -80,7 +50,7 @@ final class MemberSettingViewModel {
                         action: .refreshProfile
                     ),
                     MemberSettingRowItem(
-                        id: "clearProfileCache",
+                        kind: .clearProfileCache,
                         title: "清除會員資料快取",
                         subtitle: nil,
                         systemImageName: "person.crop.circle.badge.xmark",
@@ -95,7 +65,7 @@ final class MemberSettingViewModel {
                 title: "關於",
                 rows: [
                     MemberSettingRowItem(
-                        id: "appVersion",
+                        kind: .appVersion,
                         title: "App 版本",
                         subtitle: nil,
                         systemImageName: "info.circle",
@@ -104,7 +74,7 @@ final class MemberSettingViewModel {
                         action: nil
                     ),
                     MemberSettingRowItem(
-                        id: "tmdbAttribution",
+                        kind: .tmdbAttribution,
                         title: "TMDB 資料來源",
                         subtitle: nil,
                         systemImageName: "film.stack",
@@ -119,7 +89,7 @@ final class MemberSettingViewModel {
                 title: "",
                 rows: [
                     MemberSettingRowItem(
-                        id: "logout",
+                        kind: .logout,
                         title: "登出",
                         subtitle: nil,
                         systemImageName: "rectangle.portrait.and.arrow.right",
@@ -134,6 +104,24 @@ final class MemberSettingViewModel {
 
     var tmdbAttributionURL: URL? {
         URL(string: APIConfig.tmdbWebsiteBaseURL)
+    }
+
+    var profileSummary: MemberSettingProfileSummaryItem {
+        guard let profile = userProfileStore.load() else {
+            return MemberSettingProfileSummaryItem(
+                displayName: "TMDB 會員",
+                usernameText: "尚未同步 username",
+                avatarURL: nil,
+                avatarImageData: nil
+            )
+        }
+
+        return MemberSettingProfileSummaryItem(
+            displayName: profile.displayName,
+            usernameText: "@\(profile.username)",
+            avatarURL: profile.avatarURL,
+            avatarImageData: profile.avatarImageData
+        )
     }
 
     // MARK: - Initialization

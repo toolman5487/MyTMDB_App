@@ -13,9 +13,11 @@ final class MemberSettingViewController: BaseListViewController {
     // MARK: - Constants
 
     private enum Layout {
+        static let profileItemHeight: CGFloat = 88
         static let itemHeight: CGFloat = 56
+        static let minimumLineSpacing: CGFloat = 4
         static let sectionHeaderHeight: CGFloat = 32
-        static let sectionTopInset: CGFloat = 8
+        static let sectionHorizontalInset: CGFloat = 16
         static let sectionBottomInset: CGFloat = 24
     }
 
@@ -59,6 +61,7 @@ final class MemberSettingViewController: BaseListViewController {
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionViewFlowLayout.minimumLineSpacing = Layout.minimumLineSpacing
         collectionView.backgroundColor = .systemGroupedBackground
         collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)
         registerCells()
@@ -70,6 +73,10 @@ final class MemberSettingViewController: BaseListViewController {
     }
 
     private func registerCells() {
+        collectionView.register(
+            MemberSettingProfileSummaryCollectionViewCell.self,
+            forCellWithReuseIdentifier: MemberSettingProfileSummaryCollectionViewCell.reuseIdentifier
+        )
         collectionView.register(
             MemberSettingRefreshProfileCollectionViewCell.self,
             forCellWithReuseIdentifier: MemberSettingRefreshProfileCollectionViewCell.reuseIdentifier
@@ -101,6 +108,7 @@ final class MemberSettingViewController: BaseListViewController {
 
             do {
                 try await viewModel.refreshProfile()
+                collectionView.reloadData()
                 router.showProfileRefreshCompleted()
             } catch {
                 router.showProfileRefreshFailed()
@@ -116,6 +124,7 @@ final class MemberSettingViewController: BaseListViewController {
 
     private func clearProfileCache() {
         viewModel.clearProfileCache()
+        collectionView.reloadData()
         router.showProfileCacheCleared()
     }
 
@@ -158,6 +167,11 @@ extension MemberSettingViewController: UICollectionViewDataSource {
         }
 
         let cell = dequeueCell(for: row, at: indexPath)
+        if let profileCell = cell as? MemberSettingProfileSummaryCollectionViewCell {
+            profileCell.configure(with: viewModel.profileSummary)
+            return profileCell
+        }
+
         guard let settingCell = cell as? MemberSettingButtonCollectionViewCell else { return cell }
 
         configure(
@@ -172,24 +186,24 @@ extension MemberSettingViewController: UICollectionViewDataSource {
     private func dequeueCell(for row: MemberSettingRowItem, at indexPath: IndexPath) -> UICollectionViewCell {
         let reuseIdentifier: String
 
-        switch row.id {
-        case "refreshProfile":
+        switch row.kind {
+        case .profileSummary:
+            reuseIdentifier = MemberSettingProfileSummaryCollectionViewCell.reuseIdentifier
+
+        case .refreshProfile:
             reuseIdentifier = MemberSettingRefreshProfileCollectionViewCell.reuseIdentifier
 
-        case "clearProfileCache":
+        case .clearProfileCache:
             reuseIdentifier = MemberSettingClearProfileCacheCollectionViewCell.reuseIdentifier
 
-        case "appVersion":
+        case .appVersion:
             reuseIdentifier = MemberSettingAppVersionCollectionViewCell.reuseIdentifier
 
-        case "tmdbAttribution":
+        case .tmdbAttribution:
             reuseIdentifier = MemberSettingTMDBAttributionCollectionViewCell.reuseIdentifier
 
-        case "logout":
+        case .logout:
             reuseIdentifier = MemberSettingLogoutButtonCollectionViewCell.reuseIdentifier
-
-        default:
-            return UICollectionViewCell()
         }
 
         return collectionView.dequeueReusableCell(
@@ -238,6 +252,25 @@ extension MemberSettingViewController: UICollectionViewDataSource {
 
 extension MemberSettingViewController: UICollectionViewDelegateFlowLayout {
 
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let height = viewModel.row(at: indexPath)?.kind == .profileSummary
+            ? Layout.profileItemHeight
+            : Layout.itemHeight
+
+        return CGSize(
+            width: collectionView.bounds.width - Layout.sectionHorizontalInset * 2,
+            height: height
+        )
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        viewModel.action(at: indexPath) != nil
+    }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
@@ -277,10 +310,10 @@ extension MemberSettingViewController: UICollectionViewDelegateFlowLayout {
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
         UIEdgeInsets(
-            top: section == 0 ? Layout.sectionTopInset : 0,
-            left: 0,
+            top: 0,
+            left: Layout.sectionHorizontalInset,
             bottom: Layout.sectionBottomInset,
-            right: 0
+            right: Layout.sectionHorizontalInset
         )
     }
 }
