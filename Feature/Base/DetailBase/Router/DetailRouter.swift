@@ -23,7 +23,7 @@ protocol DetailRouting {
     func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
     func showLogin()
-    func showImagePreview(imageURL: URL)
+    func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
 
     // MARK: Page Sheet
 
@@ -107,8 +107,15 @@ final class DetailRouter: BaseRouter, DetailRouting {
         show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
     }
 
-    func showImagePreview(imageURL: URL) {
-        show(DetailImagePreviewViewController(imageURL: imageURL), using: .fullScreen)
+    func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?) {
+        let previewImageURLs = imageURLs.isEmpty ? [selectedImageURL] : imageURLs
+        let selectedIndex = previewImageURLs.firstIndex(of: selectedImageURL) ?? 0
+        let viewController = DetailImagePreviewViewController(
+            imageURLs: previewImageURLs,
+            selectedIndex: selectedIndex,
+            title: title
+        )
+        show(viewController, using: .fullScreen)
     }
 
     // MARK: - Page Sheet

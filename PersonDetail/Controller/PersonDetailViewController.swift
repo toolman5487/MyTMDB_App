@@ -233,7 +233,7 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? PersonDetailProfileImagesCollectionViewCell)?.configure(items: items) { [weak self] imageURL in
-                self?.router.showImagePreview(imageURL: imageURL)
+                self?.showImagePreview(selectedImageURL: imageURL)
             }
             return cell
 
@@ -275,7 +275,7 @@ extension PersonDetailViewController: UICollectionViewDataSource {
 
             if let headerView = reusableView as? PersonDetailHeroHeaderView {
                 headerView.configure(with: item.hero) { [weak self] imageURL in
-                    self?.router.showImagePreview(imageURL: imageURL)
+                    self?.showImagePreview(selectedImageURL: imageURL)
                 }
             }
 
@@ -293,6 +293,40 @@ extension PersonDetailViewController: UICollectionViewDataSource {
         }
 
         return reusableView
+    }
+
+    private func showImagePreview(selectedImageURL: URL) {
+        router.showImagePreview(
+            imageURLs: personImageURLs(),
+            selectedImageURL: selectedImageURL,
+            title: personName()
+        )
+    }
+
+    private func personName() -> String? {
+        guard case .biography(let item) = sections.first else { return nil }
+        return item.hero.name
+    }
+
+    private func personImageURLs() -> [URL] {
+        var imageURLs: [URL] = []
+
+        sections.forEach { section in
+            switch section {
+            case .biography(let item):
+                if let profileURL = item.hero.profileURL {
+                    imageURLs.append(profileURL)
+                }
+
+            case .profileImages(let items):
+                imageURLs.append(contentsOf: items.compactMap(\.imageURL))
+
+            case .facts, .knownFor, .crew, .aliases, .externalLinks:
+                break
+            }
+        }
+
+        return imageURLs
     }
 }
 
