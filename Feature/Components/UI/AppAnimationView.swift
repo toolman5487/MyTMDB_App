@@ -128,7 +128,8 @@ final class AppAnimationView: UIView {
 
         contentStackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.edges.lessThanOrEqualToSuperview()
+            make.top.leading.greaterThanOrEqualToSuperview()
+            make.bottom.trailing.lessThanOrEqualToSuperview()
         }
     }
 
