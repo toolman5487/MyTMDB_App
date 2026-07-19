@@ -56,6 +56,17 @@ final class DetailAccountMediaStateController {
         setRatingDefaultValue(AccountMediaRatingValue.defaultValue(fromPublicRating: publicRating))
     }
 
+    func applyLoadedRating(value: Double?) {
+        guard case .user(let sessionID) = sessionStore.load() else {
+            ratingSession = nil
+            setRatingState(.requiresUserLogin)
+            return
+        }
+
+        ratingSession = DetailAccountMediaRatingSession(sessionID: sessionID)
+        setRatingState(.ready(value: value))
+    }
+
     func loadAccountMediaState(
         sourceDescription: String,
         accountStatesProvider: AccountStatesProvider
@@ -91,6 +102,11 @@ final class DetailAccountMediaStateController {
         setRatingState(.unavailable)
         setRatingDefaultValue(AccountMediaRatingValue.fallback)
         favoriteSession = nil
+        ratingSession = nil
+    }
+
+    func markRatingUnavailable() {
+        setRatingState(.unavailable)
         ratingSession = nil
     }
 

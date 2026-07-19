@@ -158,19 +158,11 @@ nonisolated final class EpisodeDetailService: EpisodeDetailServicing {
                 episodeNumber: episodeNumber
             )
         }
-        async let accountStates = fetchAuxiliaryContent(
-            name: "episode account states",
+        async let accountStates = fetchEpisodeAccountStatesIfSupported(
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            episodeNumber: episodeNumber,
-            fallback: EpisodeAccountStatesResponse(id: episodeNumber)
-        ) {
-            try await fetchEpisodeAccountStates(
-                seriesID: seriesID,
-                seasonNumber: seasonNumber,
-                episodeNumber: episodeNumber
-            )
-        }
+            episodeNumber: episodeNumber
+        )
 
         return try await EpisodeDetailContent(
             detail: detail,
@@ -179,7 +171,8 @@ nonisolated final class EpisodeDetailService: EpisodeDetailServicing {
             videos: videos,
             externalIDs: externalIDs,
             translations: translations,
-            accountStates: accountStates
+            accountStates: accountStates,
+            supportsAccountRating: supportsAccountRating(seasonNumber: seasonNumber)
         )
     }
 
@@ -321,6 +314,34 @@ nonisolated final class EpisodeDetailService: EpisodeDetailServicing {
         case .loggedOut, nil:
             return []
         }
+    }
+
+    private func fetchEpisodeAccountStatesIfSupported(
+        seriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) async -> EpisodeAccountStatesResponse {
+        guard supportsAccountRating(seasonNumber: seasonNumber) else {
+            return EpisodeAccountStatesResponse(id: episodeNumber)
+        }
+
+        return await fetchAuxiliaryContent(
+            name: "episode account states",
+            seriesID: seriesID,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            fallback: EpisodeAccountStatesResponse(id: episodeNumber)
+        ) {
+            try await fetchEpisodeAccountStates(
+                seriesID: seriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
+            )
+        }
+    }
+
+    private func supportsAccountRating(seasonNumber: Int) -> Bool {
+        seasonNumber > 0
     }
 
     private func fetchAuxiliaryContent<T: Sendable>(

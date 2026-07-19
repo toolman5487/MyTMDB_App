@@ -17,6 +17,7 @@ nonisolated struct EpisodeDetailContent: Sendable, Equatable {
     let externalIDs: EpisodeExternalIDsResponse
     let translations: EpisodeTranslationsResponse
     let accountStates: EpisodeAccountStatesResponse
+    let supportsAccountRating: Bool
 }
 
 // MARK: - EpisodeDetail
@@ -311,6 +312,16 @@ nonisolated struct EpisodeAccountStatesResponse: Decodable, Sendable, Equatable,
 nonisolated enum EpisodeRatedState: Sendable, Equatable, Decodable {
     case unrated
     case rated(Double)
+
+    var value: Double? {
+        switch self {
+        case .unrated:
+            return nil
+
+        case .rated(let value):
+            return value
+        }
+    }
 
     private enum CodingKeys: String, CodingKey {
         case value

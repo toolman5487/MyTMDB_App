@@ -144,7 +144,10 @@ final class EpisodeDetailImagesCollectionViewCell: DetailImageTitleStripCollecti
         static let imageHeight: CGFloat = 120
     }
 
-    func configure(images: [EpisodeImageItem]) {
+    func configure(
+        images: [EpisodeImageItem],
+        onImageSelected: @escaping (EpisodeImageItem) -> Void
+    ) {
         configure(
             items: images.map {
                 DetailImageTitleItem(
@@ -156,7 +159,10 @@ final class EpisodeDetailImagesCollectionViewCell: DetailImageTitleStripCollecti
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight
-        )
+        ) { item in
+            guard let image = images.first(where: { $0.id == item.id }) else { return }
+            onImageSelected(image)
+        }
     }
 }
 

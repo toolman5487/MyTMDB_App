@@ -407,7 +407,9 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailImagesCollectionViewCell)?.configure(images: images)
+            (cell as? EpisodeDetailImagesCollectionViewCell)?.configure(images: images) { [weak self] image in
+                self?.showImagePreview(selectedImage: image)
+            }
             return cell
 
         case .externalLinks(let links):
@@ -587,4 +589,30 @@ private extension EpisodeDetailViewController {
         ]
     }
 
+    func showImagePreview(selectedImage: EpisodeImageItem) {
+        guard let selectedImageURL = selectedImage.imageURL else { return }
+
+        router.showImagePreview(
+            imageURLs: episodeImageURLs(),
+            selectedImageURL: selectedImageURL,
+            title: episodeTitle()
+        )
+    }
+
+    func episodeImageURLs() -> [URL] {
+        sections.flatMap { section in
+            switch section {
+            case .images(let images):
+                return images.compactMap(\.imageURL)
+
+            default:
+                return []
+            }
+        }
+    }
+
+    func episodeTitle() -> String? {
+        guard case .overview(let item) = sections.first else { return nil }
+        return item.hero.title
+    }
 }
