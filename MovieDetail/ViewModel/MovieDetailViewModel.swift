@@ -31,11 +31,7 @@ final class MovieDetailViewModel {
     private(set) var ratingDefaultValue: Double = AccountMediaRatingValue.fallback
 
     private let service: MovieDetailServicing
-    private let sessionStore: SessionStoring
-    private let accountService: AccountServiceProtocol
-    private let accountMediaService: MemberCenterServicing
-    private var favoriteSession: AccountMediaFavoriteSession?
-    private var ratingSession: AccountMediaRatingSession?
+    private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
@@ -46,9 +42,15 @@ final class MovieDetailViewModel {
         accountMediaService: MemberCenterServicing = MemberCenterService()
     ) {
         self.service = service
-        self.sessionStore = sessionStore
-        self.accountService = accountService
-        self.accountMediaService = accountMediaService
+        self.accountMediaController = DetailAccountMediaStateController(
+            sessionStore: sessionStore,
+            accountService: accountService,
+            accountMediaService: accountMediaService
+        )
+        accountMediaController.stateDidChange = { [weak self] in
+            self?.syncAccountMediaState()
+        }
+        syncAccountMediaState()
     }
 
     // MARK: - Public Methods
@@ -66,225 +68,59 @@ final class MovieDetailViewModel {
         }
 
         state = .loading
-        favoriteState = .unavailable
-        ratingState = .unavailable
-        ratingDefaultValue = AccountMediaRatingValue.fallback
-        favoriteSession = nil
-        ratingSession = nil
+        accountMediaController.prepareForLoading()
 
         do {
             async let content = service.fetchMovieDetailContent(id: id)
-            let accountMediaState = await loadAccountMediaState(movieID: id)
+            async let accountMediaState: Void = accountMediaController.loadAccountMediaState(
+                sourceDescription: "movie \(id)"
+            ) { [service] sessionID in
+                try await service.fetchMovieAccountStates(id: id, sessionId: sessionID)
+            }
             let loadedContent = try await content
-            ratingDefaultValue = AccountMediaRatingValue.defaultValue(
+            _ = await accountMediaState
+            accountMediaController.updateDefaultRating(
                 fromPublicRating: loadedContent.detail.voteCount > 0
                     ? loadedContent.detail.voteAverage
                     : nil
             )
             state = .loaded(MovieDetailSectionBuilder.makeSections(content: loadedContent))
-            favoriteState = accountMediaState.favoriteState
-            ratingState = accountMediaState.ratingState
         } catch {
             state = .failed(error.errorMessage)
-            favoriteState = .unavailable
-            ratingState = .unavailable
-            ratingDefaultValue = AccountMediaRatingValue.fallback
-            favoriteSession = nil
-            ratingSession = nil
+            accountMediaController.markUnavailable()
         }
     }
 
     func toggleFavorite(movieID: Int) async -> ErrorMessage? {
-        guard movieID > 0 else {
-            return ErrorMessage(title: "無法收藏", message: "電影 ID 不正確，請返回上一頁後再試。")
-        }
-
-        switch favoriteState {
-        case .requiresUserLogin:
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
-
-        case .unavailable:
-            return ErrorMessage(title: "暫時無法收藏", message: "目前無法取得收藏狀態，請稍後再試。")
-
-        case .updating:
-            return nil
-
-        case .ready(let currentFavoriteStatus):
-            guard let favoriteSession else {
-                favoriteState = .requiresUserLogin
-                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
-            }
-
-            let updatedFavoriteStatus = !currentFavoriteStatus
-            favoriteState = .updating(isFavorite: updatedFavoriteStatus)
-
-            do {
-                let response = try await accountMediaService.updateFavorite(
-                    accountId: favoriteSession.accountID,
-                    sessionId: favoriteSession.sessionID,
-                    request: MemberCenterFavoriteStatusRequest(
-                        mediaType: .movie,
-                        mediaID: movieID,
-                        favorite: updatedFavoriteStatus
-                    )
-                )
-
-                guard response.success else {
-                    favoriteState = .ready(isFavorite: currentFavoriteStatus)
-                    return ErrorMessage(title: "收藏失敗", message: response.statusMessage)
-                }
-
-                favoriteState = .ready(isFavorite: updatedFavoriteStatus)
-                return nil
-            } catch {
-                favoriteState = .ready(isFavorite: currentFavoriteStatus)
-                return error.errorMessage
-            }
-        }
+        await accountMediaController.toggleFavorite(
+            mediaID: movieID,
+            mediaType: .movie,
+            invalidMessage: ErrorMessage(title: "無法收藏", message: "電影 ID 不正確，請返回上一頁後再試。")
+        )
     }
 
     func submitRating(movieID: Int, value: Double) async -> ErrorMessage? {
-        guard movieID > 0 else {
-            return ErrorMessage(title: "無法評分", message: "電影 ID 不正確，請返回上一頁後再試。")
-        }
-
-        let normalizedValue = AccountMediaRatingValue.normalized(value)
-        guard AccountMediaRatingValue.isValid(normalizedValue) else {
-            return ErrorMessage(title: "無法評分", message: "評分需介於 0.5 到 10 分之間。")
-        }
-
-        switch ratingState {
-        case .requiresUserLogin:
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
-
-        case .unavailable:
-            return ErrorMessage(title: "暫時無法評分", message: "目前無法取得評分狀態，請稍後再試。")
-
-        case .updating:
-            return nil
-
-        case .ready(let currentValue):
-            guard let ratingSession else {
-                ratingState = .requiresUserLogin
-                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
-            }
-
-            ratingState = .updating(value: normalizedValue)
-
-            do {
-                let response = try await accountMediaService.submitRating(
-                    sessionId: ratingSession.sessionID,
-                    target: .movie(id: movieID),
-                    value: normalizedValue
-                )
-
-                guard response.success else {
-                    ratingState = .ready(value: currentValue)
-                    return ErrorMessage(title: "評分失敗", message: response.statusMessage)
-                }
-
-                ratingState = .ready(value: normalizedValue)
-                return nil
-            } catch {
-                ratingState = .ready(value: currentValue)
-                return error.errorMessage
-            }
-        }
+        await accountMediaController.submitRating(
+            target: .movie(id: movieID),
+            value: value,
+            invalidMessage: ErrorMessage(title: "無法評分", message: "電影 ID 不正確，請返回上一頁後再試。")
+        )
     }
 
     func deleteRating(movieID: Int) async -> ErrorMessage? {
-        guard movieID > 0 else {
-            return ErrorMessage(title: "無法刪除評分", message: "電影 ID 不正確，請返回上一頁後再試。")
-        }
-
-        switch ratingState {
-        case .requiresUserLogin:
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
-
-        case .unavailable:
-            return ErrorMessage(title: "暫時無法刪除評分", message: "目前無法取得評分狀態，請稍後再試。")
-
-        case .updating:
-            return nil
-
-        case .ready(let currentValue):
-            guard currentValue != nil else { return nil }
-
-            guard let ratingSession else {
-                ratingState = .requiresUserLogin
-                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
-            }
-
-            ratingState = .updating(value: nil)
-
-            do {
-                let response = try await accountMediaService.deleteRating(
-                    sessionId: ratingSession.sessionID,
-                    target: .movie(id: movieID)
-                )
-
-                guard response.success else {
-                    ratingState = .ready(value: currentValue)
-                    return ErrorMessage(title: "刪除評分失敗", message: response.statusMessage)
-                }
-
-                ratingState = .ready(value: nil)
-                return nil
-            } catch {
-                ratingState = .ready(value: currentValue)
-                return error.errorMessage
-            }
-        }
+        await accountMediaController.deleteRating(
+            target: .movie(id: movieID),
+            invalidMessage: ErrorMessage(title: "無法刪除評分", message: "電影 ID 不正確，請返回上一頁後再試。")
+        )
     }
 
-    private func loadAccountMediaState(movieID: Int) async -> AccountMediaStateSnapshot {
-        guard case .user(let sessionID) = sessionStore.load() else {
-            return AccountMediaStateSnapshot(
-                favoriteState: .requiresUserLogin,
-                ratingState: .requiresUserLogin
-            )
-        }
+    // MARK: - Private Methods
 
-        async let account = accountService.fetchAccount(sessionId: sessionID)
-        async let accountStates = service.fetchMovieAccountStates(id: movieID, sessionId: sessionID)
-
-        do {
-            let loadedAccount = try await account
-            let loadedAccountStates = try await accountStates
-            favoriteSession = AccountMediaFavoriteSession(accountID: loadedAccount.id, sessionID: sessionID)
-            ratingSession = AccountMediaRatingSession(sessionID: sessionID)
-            return AccountMediaStateSnapshot(
-                favoriteState: .ready(isFavorite: loadedAccountStates.favorite),
-                ratingState: .ready(value: loadedAccountStates.rated.value)
-            )
-        } catch {
-            favoriteSession = nil
-            ratingSession = nil
-            AppLogger.network.warning(
-                "Failed to load movie account media state for movie \(movieID, privacy: .public): \(error.localizedDescription, privacy: .public)"
-            )
-            return AccountMediaStateSnapshot(
-                favoriteState: .unavailable,
-                ratingState: .unavailable
-            )
-        }
+    private func syncAccountMediaState() {
+        favoriteState = accountMediaController.favoriteState
+        ratingState = accountMediaController.ratingState
+        ratingDefaultValue = accountMediaController.ratingDefaultValue
     }
-}
-
-// MARK: - AccountMediaFavoriteSession
-
-private nonisolated struct AccountMediaFavoriteSession: Sendable, Equatable {
-    let accountID: Int
-    let sessionID: String
-}
-
-private nonisolated struct AccountMediaRatingSession: Sendable, Equatable {
-    let sessionID: String
-}
-
-private nonisolated struct AccountMediaStateSnapshot: Sendable, Equatable {
-    let favoriteState: AccountMediaFavoriteState
-    let ratingState: AccountMediaRatingState
 }
 
 // MARK: - MovieDetailSectionItem

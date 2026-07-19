@@ -540,6 +540,9 @@
 		15E100022FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
 		15E100032FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
 		15E100042FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */; };
+		15DACD023008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
+		15DACD033008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
+		15DACD043008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
 		15E100062FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
 		15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
 		15E100082FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
@@ -773,6 +776,7 @@
 		15E002112FF430000000001 /* AppFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFactory.swift; sourceTree = "<group>"; };
 		15E002182FF430010000001 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
 		15E100012FF7000000E10001 /* DetailBottomActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBottomActionBarView.swift; sourceTree = "<group>"; };
+		15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAccountMediaStateController.swift; sourceTree = "<group>"; };
 		15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
 		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
@@ -2258,9 +2262,18 @@
 				15CFB0002FFB0100041F4CC /* Cell */,
 				15DAB01C2FFDFC19009FB88A /* Controller */,
 				15CFB0012FFB0100041F4CC /* Router */,
+				15DACD003008F10000ACCD01 /* ViewModel */,
 				15E100002FF7000000E10001 /* View */,
 			);
 			path = DetailBase;
+			sourceTree = "<group>";
+		};
+		15DACD003008F10000ACCD01 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		15CF99D72FF371920041F4CC /* Service */ = {
@@ -2840,6 +2853,7 @@
 				15CF9A042FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A072FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A102FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
+				15DACD023008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */,
 				15CF9A182FF3B2000041F4CC /* MovieDetailHeroHeaderView.swift in Sources */,
 				15CF9A142FF3B1000041F4CC /* MovieDetailSectionHeaderView.swift in Sources */,
 				15D197482FF1694000545A85 /* GuestPageView.swift in Sources */,
@@ -3122,6 +3136,7 @@
 				15CF9A052FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A082FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
 				15CF9A112FF3A0000041F4CC /* MovieDetailCells.swift in Sources */,
+				15DACD033008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */,
 				152BE7612FF56000006681A5 /* MovieReviewListViewController.swift in Sources */,
 				152BE7B12FF5900006681A5 /* MovieReviewListRouter.swift in Sources */,
 				152BE7792FF58000006681A5 /* MovieReviewDetailViewController.swift in Sources */,
@@ -3370,6 +3385,7 @@
 				15CF9A032FF380000041F4CC /* MovieDetailModels.swift in Sources */,
 				15CF9A062FF380000041F4CC /* MovieDetailService.swift in Sources */,
 				15CF9A092FF380000041F4CC /* MovieDetailViewModel.swift in Sources */,
+				15DACD043008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */,
 				1588090F3000D1850081E4E9 /* MemberCenterViewModel.swift in Sources */,
 				158809103000D1850081E4E9 /* MemberCenterService.swift in Sources */,
 				15A6A0A13005800000AD5E46 /* MemberCenterContentRepository.swift in Sources */,
