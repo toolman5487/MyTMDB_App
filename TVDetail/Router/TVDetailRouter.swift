@@ -17,6 +17,7 @@ protocol TVDetailRouting: AnyObject {
     func showPersonDetail(personID: Int)
     func showSeasonDetail(seasonNumber: Int)
     func showTVDetail(seriesID: Int)
+    func showContentList(_ configuration: DetailContentListConfiguration)
     func showRatingPageSheet(
         title: String,
         currentValue: Double?,
@@ -76,6 +77,10 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
 
     func showTVDetail(seriesID: Int) {
         detailRouter.showTVDetail(seriesID: seriesID)
+    }
+
+    func showContentList(_ configuration: DetailContentListConfiguration) {
+        detailRouter.showContentList(configuration)
     }
 
     func showRatingPageSheet(

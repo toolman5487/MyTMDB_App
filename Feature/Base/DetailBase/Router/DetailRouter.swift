@@ -20,6 +20,7 @@ protocol DetailRouting {
     func showEpisodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
     func showPersonDetail(personID: Int)
     func showCreditDetail(_ item: PersonDetailCreditItem)
+    func showContentList(_ configuration: DetailContentListConfiguration)
     func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
     func showLogin()
@@ -93,6 +94,11 @@ final class DetailRouter: BaseRouter, DetailRouting {
         case .unknown:
             return
         }
+    }
+
+    func showContentList(_ configuration: DetailContentListConfiguration) {
+        guard !configuration.items.isEmpty else { return }
+        show(DetailContentListViewController(configuration: configuration), using: .push)
     }
 
     func showWebVideo(url: URL, title: String?) {

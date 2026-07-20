@@ -522,6 +522,18 @@
 		15DACD023008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
 		15DACD033008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
 		15DACD043008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
+		15DCC002300D000000DCC002 /* DetailContentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCC001300D000000DCC001 /* DetailContentListViewController.swift */; };
+		15DCC003300D000000DCC003 /* DetailContentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCC001300D000000DCC001 /* DetailContentListViewController.swift */; };
+		15DCC004300D000000DCC004 /* DetailContentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCC001300D000000DCC001 /* DetailContentListViewController.swift */; };
+		15DCD002300D000000DCD002 /* DetailContentListCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCD001300D000000DCD001 /* DetailContentListCollectionViewCells.swift */; };
+		15DCD003300D000000DCD003 /* DetailContentListCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCD001300D000000DCD001 /* DetailContentListCollectionViewCells.swift */; };
+		15DCD004300D000000DCD004 /* DetailContentListCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCD001300D000000DCD001 /* DetailContentListCollectionViewCells.swift */; };
+		15DCE021300D000000DCE021 /* DetailContentListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCE011300D000000DCE011 /* DetailContentListModels.swift */; };
+		15DCE022300D000000DCE022 /* DetailContentListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCE011300D000000DCE011 /* DetailContentListModels.swift */; };
+		15DCE023300D000000DCE023 /* DetailContentListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCE011300D000000DCE011 /* DetailContentListModels.swift */; };
+		15DCE031300D000000DCE031 /* DetailContentListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCE012300D000000DCE012 /* DetailContentListRouter.swift */; };
+		15DCE032300D000000DCE032 /* DetailContentListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCE012300D000000DCE012 /* DetailContentListRouter.swift */; };
+		15DCE033300D000000DCE033 /* DetailContentListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCE012300D000000DCE012 /* DetailContentListRouter.swift */; };
 		15E000012FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
 		15E000022FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
 		15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */; };
@@ -776,6 +788,10 @@
 		15DAAF422FFDEA0009FB88A /* EpisodeDetailSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailSectionHeaderView.swift; sourceTree = "<group>"; };
 		15DAB0203007D00009FB88A /* DetailImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailImagePreviewViewController.swift; sourceTree = "<group>"; };
 		15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAccountMediaStateController.swift; sourceTree = "<group>"; };
+		15DCC001300D000000DCC001 /* DetailContentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContentListViewController.swift; sourceTree = "<group>"; };
+		15DCD001300D000000DCD001 /* DetailContentListCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContentListCollectionViewCells.swift; sourceTree = "<group>"; };
+		15DCE011300D000000DCE011 /* DetailContentListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContentListModels.swift; sourceTree = "<group>"; };
+		15DCE012300D000000DCE012 /* DetailContentListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContentListRouter.swift; sourceTree = "<group>"; };
 		15E000042FF400000000001 /* ScrollTrackingBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollTrackingBaseViewController.swift; sourceTree = "<group>"; };
 		15E000112FF401000000011 /* BaseFilterHeaderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderItem.swift; sourceTree = "<group>"; };
 		15E000122FF401000000012 /* BaseFilterHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1600,6 +1616,7 @@
 		1598AA402DC4B69F005E972C = {
 			isa = PBXGroup;
 			children = (
+				15DCE000300D000000DCE000 /* DetailContentList */,
 				15DAAEE22FFDE670009FB88A /* EisodeDetail */,
 				15D198632FF210DE00545A85 /* Feature */,
 				158825292FFF742E0028B219 /* HomeSectionList */,
@@ -2560,6 +2577,57 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		15DCE000300D000000DCE000 /* DetailContentList */ = {
+			isa = PBXGroup;
+			children = (
+				15DCE001300D000000DCE001 /* Controller */,
+				15DCE002300D000000DCE002 /* Model */,
+				15DCE003300D000000DCE003 /* Router */,
+				15DCE004300D000000DCE004 /* View */,
+			);
+			path = DetailContentList;
+			sourceTree = "<group>";
+		};
+		15DCE001300D000000DCE001 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				15DCC001300D000000DCC001 /* DetailContentListViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		15DCE002300D000000DCE002 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				15DCE011300D000000DCE011 /* DetailContentListModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		15DCE003300D000000DCE003 /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				15DCE012300D000000DCE012 /* DetailContentListRouter.swift */,
+			);
+			path = Router;
+			sourceTree = "<group>";
+		};
+		15DCE004300D000000DCE004 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				15DCE005300D000000DCE005 /* Cell */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		15DCE005300D000000DCE005 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				15DCD001300D000000DCD001 /* DetailContentListCollectionViewCells.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		15E000052FF400000000001 /* ScrollTrackingBase */ = {
 			isa = PBXGroup;
 			children = (
@@ -3026,6 +3094,7 @@
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
+				15DCC003300D000000DCC003 /* DetailContentListViewController.swift in Sources */,
 				15DAB0223007D00009FB88A /* DetailImagePreviewViewController.swift in Sources */,
 				15E100032FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
 				15F000032FF7500000F00001 /* RatingPageSheetViewController.swift in Sources */,
@@ -3035,6 +3104,9 @@
 				15CFA1062FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA10A2FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,
 				15CFB0122FFB0100041F4CC /* DetailCellItems.swift in Sources */,
+				15DCD003300D000000DCD003 /* DetailContentListCollectionViewCells.swift in Sources */,
+				15DCE022300D000000DCE022 /* DetailContentListModels.swift in Sources */,
+				15DCE032300D000000DCE032 /* DetailContentListRouter.swift in Sources */,
 				15CF99EB2FF623000041F4CC /* BaseRouter.swift in Sources */,
 				15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99DF2FF621000041F4CC /* BaseWebViewController.swift in Sources */,
@@ -3083,6 +3155,7 @@
 				150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A950042FF281000FCBB0F /* MainTabBarViewModel.swift in Sources */,
 				15CF99D62FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
+				15DCC004300D000000DCC004 /* DetailContentListViewController.swift in Sources */,
 				15DAB0233007D00009FB88A /* DetailImagePreviewViewController.swift in Sources */,
 				15E100042FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
 				15F000042FF7500000F00001 /* RatingPageSheetViewController.swift in Sources */,
@@ -3092,6 +3165,9 @@
 				15CFA1072FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA10B2FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,
 				15CFB0132FFB0100041F4CC /* DetailCellItems.swift in Sources */,
+				15DCD004300D000000DCD004 /* DetailContentListCollectionViewCells.swift in Sources */,
+				15DCE023300D000000DCE023 /* DetailContentListModels.swift in Sources */,
+				15DCE033300D000000DCE033 /* DetailContentListRouter.swift in Sources */,
 				15CF99E92FF623000041F4CC /* BaseRouter.swift in Sources */,
 				15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99E02FF621000041F4CC /* BaseWebViewController.swift in Sources */,
@@ -3245,6 +3321,7 @@
 				15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
 				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,
 				15CF99D42FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
+				15DCC002300D000000DCC002 /* DetailContentListViewController.swift in Sources */,
 				15DAB0213007D00009FB88A /* DetailImagePreviewViewController.swift in Sources */,
 				15E100022FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
 				15F000022FF7500000F00001 /* RatingPageSheetViewController.swift in Sources */,
@@ -3254,6 +3331,9 @@
 				15CFA1052FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA1092FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,
 				15CFB0112FFB0100041F4CC /* DetailCellItems.swift in Sources */,
+				15DCD002300D000000DCD002 /* DetailContentListCollectionViewCells.swift in Sources */,
+				15DCE021300D000000DCE021 /* DetailContentListModels.swift in Sources */,
+				15DCE031300D000000DCE031 /* DetailContentListRouter.swift in Sources */,
 				15CF99EA2FF623000041F4CC /* BaseRouter.swift in Sources */,
 				15CF99DA2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99DE2FF621000041F4CC /* BaseWebViewController.swift in Sources */,

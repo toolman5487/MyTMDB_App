@@ -131,6 +131,7 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
     case attributes(TVDetailAttributeSectionItem)
     case cast([TVDetailCastItem])
     case seasons([TVDetailSeasonItem])
+    case images([TVDetailImageItem])
     case recommendations([TVDetailRecommendationItem])
 
     var title: String? {
@@ -153,8 +154,87 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
         case .seasons:
             return "季數"
 
+        case .images:
+            return "劇照"
+
         case .recommendations:
             return "推薦影集"
+        }
+    }
+
+    var contentListConfiguration: DetailContentListConfiguration? {
+        switch self {
+        case .cast(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "主要演員",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: String(item.id),
+                        imageURL: item.profileURL,
+                        title: item.name,
+                        subtitle: item.characterText,
+                        destination: .person(id: item.id)
+                    )
+                }
+            )
+
+        case .videos(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "預告與影片",
+                thumbnailStyle: .landscape,
+                items: items.map { item in
+                    let destination: DetailContentListDestination
+                    if let videoKey = item.youtubeVideoKey {
+                        destination = .youtube(videoKey: videoKey, title: item.title)
+                    } else if let videoURL = item.videoURL {
+                        destination = .webVideo(url: videoURL, title: item.title)
+                    } else {
+                        destination = .none
+                    }
+
+                    return DetailContentListItem(
+                        id: item.id,
+                        imageURL: item.thumbnailURL,
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        destination: destination
+                    )
+                }
+            )
+
+        case .images(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "劇照",
+                thumbnailStyle: .gallery,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: item.id,
+                        imageURL: item.imageURL,
+                        title: item.title,
+                        subtitle: item.resolutionText,
+                        destination: .image(url: item.imageURL)
+                    )
+                }
+            )
+
+        case .recommendations(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "推薦影集",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: String(item.id),
+                        imageURL: item.posterURL,
+                        title: item.title,
+                        subtitle: item.scoreText.map { "評分 \($0)" },
+                        destination: .tv(seriesID: item.id)
+                    )
+                }
+            )
+
+        case .overview, .facts, .attributes, .seasons:
+            return nil
         }
     }
 }
@@ -184,7 +264,6 @@ nonisolated enum TVDetailSectionBuilder {
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailVideoItem.init(video:))
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
@@ -196,7 +275,6 @@ nonisolated enum TVDetailSectionBuilder {
 
         let castItems = content.aggregateCredits.cast
             .sorted { $0.order < $1.order }
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailCastItem.init(cast:))
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
@@ -210,8 +288,14 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.seasons(Array(seasonItems)))
         }
 
+        let imageItems = content.images.backdrops.enumerated().compactMap { index, image in
+            TVDetailImageItem(image: image, index: index)
+        }
+        if !imageItems.isEmpty {
+            sections.append(.images(imageItems))
+        }
+
         let recommendationItems = content.recommendations.results
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
@@ -271,6 +355,28 @@ nonisolated enum TVDetailSectionBuilder {
         let officialRank = video.official ? 0 : 1
 
         return (typeRank * 100) + (siteRank * 10) + officialRank
+    }
+}
+
+// MARK: - TVDetailImageItem
+
+nonisolated struct TVDetailImageItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let title: String
+    let resolutionText: String?
+    let imageURL: URL
+
+    init?(image: TVImage, index: Int) {
+        guard let imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500) else {
+            return nil
+        }
+
+        self.id = image.filePath
+        self.title = "劇照 \(index + 1)"
+        self.resolutionText = image.width > 0 && image.height > 0
+            ? "\(image.width) × \(image.height)"
+            : nil
+        self.imageURL = imageURL
     }
 }
 

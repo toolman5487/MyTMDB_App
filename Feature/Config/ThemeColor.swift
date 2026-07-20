@@ -15,7 +15,6 @@ enum ThemeColor {
 
     static let tmdbDarkBlueHex = "#0D253F"
     static let tmdbLightBlueHex = "#01B4E4"
-
     static let tmdbDarkBlue: UIColor = UIColor(hex: tmdbDarkBlueHex) ?? .systemBlue
     static let tmdbLightBlue: UIColor = UIColor(hex: tmdbLightBlueHex) ?? .systemCyan
 
@@ -37,9 +36,7 @@ enum ThemeColor {
     // MARK: Background
 
     static let background: UIColor = .systemBackground
-
     static let backgroundSecondary: UIColor = .secondarySystemBackground
-
     static let backgroundTertiary: UIColor = .tertiarySystemBackground
 
     // MARK: Grouped Background

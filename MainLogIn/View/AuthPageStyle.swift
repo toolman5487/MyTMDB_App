@@ -130,7 +130,7 @@ enum AuthPageStyle {
             systemName: systemName,
             pointSize: 32,
             weight: .medium,
-            color: ThemeColor.primary
+            color: ThemeColor.accent
         )
         imageView.accessibilityTraits = .image
         return imageView

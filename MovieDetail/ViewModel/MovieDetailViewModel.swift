@@ -130,6 +130,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case attributes(MovieDetailAttributeSectionItem)
     case cast([MovieDetailCastItem])
     case videos([MovieDetailVideoItem])
+    case images([MovieDetailImageItem])
     case recommendations([MovieDetailRecommendationItem])
 
     var title: String? {
@@ -149,8 +150,87 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
         case .videos:
             return "預告與影片"
 
+        case .images:
+            return "劇照"
+
         case .recommendations:
             return "推薦電影"
+        }
+    }
+
+    var contentListConfiguration: DetailContentListConfiguration? {
+        switch self {
+        case .cast(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "主要演員",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: String(item.id),
+                        imageURL: item.profileURL,
+                        title: item.name,
+                        subtitle: item.characterText,
+                        destination: .person(id: item.id)
+                    )
+                }
+            )
+
+        case .videos(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "預告與影片",
+                thumbnailStyle: .landscape,
+                items: items.map { item in
+                    let destination: DetailContentListDestination
+                    if let videoKey = item.youtubeVideoKey {
+                        destination = .youtube(videoKey: videoKey, title: item.title)
+                    } else if let videoURL = item.videoURL {
+                        destination = .webVideo(url: videoURL, title: item.title)
+                    } else {
+                        destination = .none
+                    }
+
+                    return DetailContentListItem(
+                        id: item.id,
+                        imageURL: item.thumbnailURL,
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        destination: destination
+                    )
+                }
+            )
+
+        case .images(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "劇照",
+                thumbnailStyle: .gallery,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: item.id,
+                        imageURL: item.imageURL,
+                        title: item.title,
+                        subtitle: item.resolutionText,
+                        destination: .image(url: item.imageURL)
+                    )
+                }
+            )
+
+        case .recommendations(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "推薦電影",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: String(item.id),
+                        imageURL: item.posterURL,
+                        title: item.title,
+                        subtitle: item.scoreText.map { "評分 \($0)" },
+                        destination: .movie(id: item.id)
+                    )
+                }
+            )
+
+        case .overview, .facts, .attributes:
+            return nil
         }
     }
 }
@@ -180,7 +260,6 @@ nonisolated enum MovieDetailSectionBuilder {
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailVideoItem.init(video:))
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
@@ -192,14 +271,19 @@ nonisolated enum MovieDetailSectionBuilder {
 
         let castItems = content.credits.cast
             .sorted { $0.order < $1.order }
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailCastItem.init(cast:))
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
         }
 
+        let imageItems = content.images.backdrops.enumerated().compactMap { index, image in
+            MovieDetailImageItem(image: image, index: index)
+        }
+        if !imageItems.isEmpty {
+            sections.append(.images(imageItems))
+        }
+
         let recommendationItems = content.recommendations.results
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
@@ -478,6 +562,28 @@ nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
             self.thumbnailURL = nil
             self.videoURL = nil
         }
+    }
+}
+
+// MARK: - MovieDetailImageItem
+
+nonisolated struct MovieDetailImageItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let title: String
+    let resolutionText: String?
+    let imageURL: URL
+
+    init?(image: MovieImage, index: Int) {
+        guard let imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500) else {
+            return nil
+        }
+
+        self.id = image.filePath
+        self.title = "劇照 \(index + 1)"
+        self.resolutionText = image.width > 0 && image.height > 0
+            ? "\(image.width) × \(image.height)"
+            : nil
+        self.imageURL = imageURL
     }
 }
 

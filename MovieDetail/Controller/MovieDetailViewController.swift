@@ -92,6 +92,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let factsSectionHeight: CGFloat = 96
         static let castSectionHeight: CGFloat = 220
         static let videosSectionHeight: CGFloat = 160
+        static let imagesSectionHeight: CGFloat = 168
         static let recommendationsSectionHeight: CGFloat = 220
     }
 
@@ -145,6 +146,10 @@ final class MovieDetailViewController: DetailBaseViewController {
         collectionView.register(
             MovieDetailVideosCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailVideosCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MovieDetailImagesCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailImagesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             MovieDetailRecommendationsCollectionViewCell.self,
@@ -225,6 +230,9 @@ final class MovieDetailViewController: DetailBaseViewController {
 
         case .videos:
             return .absolute(Layout.videosSectionHeight)
+
+        case .images:
+            return .absolute(Layout.imagesSectionHeight)
 
         case .recommendations:
             return .absolute(Layout.recommendationsSectionHeight)
@@ -468,7 +476,9 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailCastCollectionViewCell)?.configure(items: items) { [weak self] personID in
+            (cell as? MovieDetailCastCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
@@ -478,7 +488,9 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailVideosCollectionViewCell)?.configure(items: items) { [weak self] item in
+            (cell as? MovieDetailVideosCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] item in
                 guard let self else { return }
 
                 if let youtubeVideoKey = item.youtubeVideoKey {
@@ -489,12 +501,24 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             }
             return cell
 
+        case .images(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MovieDetailImagesCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? MovieDetailImagesCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            )
+            return cell
+
         case .recommendations(let items):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(items: items) { [weak self] movieID in
+            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] movieID in
                 self?.router.showMovieDetail(movieID: movieID)
             }
             return cell
@@ -531,7 +555,16 @@ extension MovieDetailViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MovieDetailSectionHeaderView {
-            headerView.configure(title: sections[indexPath.section].title)
+            let section = sections[indexPath.section]
+            let onTap: (() -> Void)?
+            if let configuration = section.contentListConfiguration {
+                onTap = { [weak self] in
+                    self?.router.showContentList(configuration)
+                }
+            } else {
+                onTap = nil
+            }
+            headerView.configure(title: section.title, onTap: onTap)
         }
 
         return reusableView

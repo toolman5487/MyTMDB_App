@@ -131,6 +131,7 @@ nonisolated enum PersonDetailSectionBuilder {
             .sorted { lhs, rhs in
                 creditPriority(lhs) > creditPriority(rhs)
             }
+            .uniqueByContent()
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map(PersonDetailCreditItem.init(crew:))
         if !crewItems.isEmpty {
@@ -229,6 +230,18 @@ nonisolated enum PersonDetailSectionBuilder {
 
     private static func creditPriority(_ credit: PersonCombinedCreditCrew) -> Double {
         credit.popularity + credit.voteAverage + Double(credit.voteCount) / 1_000
+    }
+}
+
+private extension Sequence where Element == PersonCombinedCreditCrew {
+
+    func uniqueByContent() -> [PersonCombinedCreditCrew] {
+        var seenIDs = Set<String>()
+
+        return filter { credit in
+            let id = "\(credit.mediaType.idValue)-\(credit.id)"
+            return seenIDs.insert(id).inserted
+        }
     }
 }
 
