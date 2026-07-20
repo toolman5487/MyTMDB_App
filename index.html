@@ -3,218 +3,606 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MyTMDB_App 作品說明</title>
+  <title>MyTMDB_App 架構說明</title>
   <style>
-    body {
-      font-family: "Noto Sans TC", sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-      margin: 0;
-      padding: 0;
+    :root {
+      color-scheme: light dark;
+      --tmdb-dark-blue: #0d253f;
+      --tmdb-light-blue: #01b4e4;
+      --tmdb-green: #90cea1;
+      --background: #f6f8fb;
+      --surface: #ffffff;
+      --surface-muted: #edf4f8;
+      --text: #18212f;
+      --text-muted: #5d6878;
+      --line: #d8e2ea;
+      --shadow: 0 18px 44px rgba(13, 37, 63, 0.10);
     }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #101820;
+        --surface: #172331;
+        --surface-muted: #203141;
+        --text: #f3f7fb;
+        --text-muted: #b9c4cf;
+        --line: #314456;
+        --shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+
     a {
-      color: #01b4e4;
+      color: var(--tmdb-light-blue);
       text-decoration: none;
     }
+
     a:hover {
       text-decoration: underline;
     }
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .site-header {
+      background: var(--tmdb-dark-blue);
+      color: #ffffff;
     }
-    h1, h2, h3 {
-      color: #0d253f;
-      margin-top: 1.5rem;
+
+    .hero {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 36px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 32px;
+      align-items: center;
     }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .brand img {
+      width: 168px;
+      height: auto;
+      display: block;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--tmdb-green);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
     h1 {
-      font-size: 2rem;
-      text-align: center;
-      margin-bottom: 1rem;
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 4.25rem);
+      line-height: 1.06;
+      letter-spacing: 0;
     }
+
+    .hero p {
+      max-width: 720px;
+      margin: 20px 0 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 1.08rem;
+    }
+
+    .hero-panel {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .hero-panel dl {
+      margin: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-panel dt {
+      color: rgba(255, 255, 255, 0.64);
+      font-size: 0.82rem;
+    }
+
+    .hero-panel dd {
+      margin: 4px 0 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    section {
+      margin-top: 48px;
+    }
+
+    section:first-child {
+      margin-top: 0;
+    }
+
     h2 {
-      font-size: 1.5rem;
-      border-left: 4px solid #0d253f;
-      padding-left: 0.75rem;
+      margin: 0 0 18px;
+      color: var(--tmdb-dark-blue);
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      line-height: 1.2;
+      letter-spacing: 0;
     }
+
+    @media (prefers-color-scheme: dark) {
+      h2 {
+        color: #ffffff;
+      }
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      line-height: 1.35;
+    }
+
     p {
-      margin: 1rem 0;
+      margin: 0;
     }
-    ul, ol {
-      margin: 0.5rem 0 1rem 1.5rem;
+
+    .lead {
+      max-width: 820px;
+      color: var(--text-muted);
+      font-size: 1.02rem;
     }
-    li {
-      margin-bottom: 0.5rem;
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
     }
+
+    .card {
+      min-height: 100%;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .card p,
+    .card li {
+      color: var(--text-muted);
+    }
+
+    .card ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
+
+    .card li {
+      margin: 6px 0;
+    }
+
+    .feature-grid {
+      margin-top: 22px;
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .stack-list li {
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .stack-list strong {
+      color: var(--tmdb-dark-blue);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .stack-list strong {
+        color: var(--tmdb-green);
+      }
+    }
+
     pre {
-      background-color: #2d2d2d;
-      color: #f8f8f2;
-      padding: 1rem;
-      border-radius: 4px;
+      margin: 0;
+      padding: 18px;
       overflow-x: auto;
-      font-family: "Source Code Pro", monospace;
+      background: #111827;
+      color: #e5edf5;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+    }
+
+    :not(pre) > code {
+      padding: 2px 6px;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding: 18px 18px 18px 58px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 20px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      background: var(--tmdb-light-blue);
+      color: #ffffff;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .step p {
+      color: var(--text-muted);
+    }
+
+    .packages {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 650;
+    }
+
+    .footer {
+      padding: 28px 0 36px;
+      border-top: 1px solid var(--line);
+      color: var(--text-muted);
+      text-align: center;
       font-size: 0.9rem;
     }
-    code {
-  background-color: transparent;
-  border-radius: 3px;
-  padding: 0.2rem 0.4rem;
-  font-family: "Source Code Pro", monospace;
-  font-size: 0.9rem;
+
+    @media (max-width: 860px) {
+      .hero,
+      .architecture {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .hero {
+        width: min(100% - 24px, 1120px);
+        padding-top: 28px;
+      }
+
+      main {
+        width: min(100% - 24px, 1120px);
+      }
+
+      .brand img {
+        width: 136px;
+      }
+
+      .stack-list li {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .step {
+        padding-left: 18px;
+        padding-top: 58px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>MyTMDB_App 作品說明</h1>
+  <header class="site-header">
+    <div class="hero">
+      <div>
+        <a class="brand" href="https://www.themoviedb.org/" target="_blank" rel="noopener">
+          <img src="MyTMDB_App/Assets.xcassets/tmdb_icon_long.imageset/tmdb_icon_long.png" alt="TMDB" />
+        </a>
+        <p class="eyebrow">UIKit / Swift 6 / TMDB API</p>
+        <h1>MyTMDB_App 架構與功能說明</h1>
+        <p>
+          MyTMDB_App 是以 TMDB 內容探索為核心的 iOS App，採用 UIKit、MVVM、Service、Repository
+          與 Router 分層，並以 Swift Concurrency 處理 API 請求、Session 驗證與畫面狀態更新。
+        </p>
+      </div>
 
-    <h2>專案簡介</h2>
-    <p>
-      <strong>MyTMDB_App</strong>  
-      一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + MVVM 架構，
-      提供電影列表瀏覽、詳細資訊、收藏與評分功能。
-    </p>
+      <aside class="hero-panel">
+        <dl>
+          <div>
+            <dt>Deployment Target</dt>
+            <dd>iOS 18.4</dd>
+          </div>
+          <div>
+            <dt>Language</dt>
+            <dd>Swift 6.0</dd>
+          </div>
+          <div>
+            <dt>Primary UI</dt>
+            <dd>UIKit + UICollectionView</dd>
+          </div>
+          <div>
+            <dt>Architecture</dt>
+            <dd>MVVM / Service / Repository / Router</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </header>
 
-    <h2>功能特色</h2>
+  <main>
+    <section>
+      <h2>目前功能</h2>
+      <p class="lead">
+        App 目前涵蓋首頁推薦、電影與劇集分類列表、搜尋、Movie/TV/Season/Episode/Person 詳細頁、
+        會員中心、收藏、觀看清單與評分流程。
+      </p>
 
-    <h3>1. 電影列表與搜尋</h3>
-    <ul>
-      <li>使用 TMDB 的 Search/Multi 搜尋 API，可同時搜尋電影、影集與演員。</li>
-      <li>搜尋結果會自動依「發行／首播日期」由新到舊排序，並將電影、影集顯示在前，演員顯示在後。</li>
-    </ul>
+      <div class="grid feature-grid">
+        <article class="card">
+          <h3>登入與 Session</h3>
+          <ul>
+            <li>支援 TMDB 帳號登入與訪客 Session。</li>
+            <li>登入流程為 Request Token、Validate With Login、Session 建立。</li>
+            <li>啟動時驗證已儲存的使用者 Session，失效時回到登入頁。</li>
+          </ul>
+        </article>
 
-    <h3>2. 電影詳情</h3>
-    <ul>
-      <li>顯示單部電影的海報、標題、簡介、演員名單、預告影片等。</li>
-      <li>內嵌 YouTube Trailer 播放功能（使用 <code>YTPlayerView</code> + <code>SnapKit</code> 佈局），並能以固定高度呈現。</li>
-    </ul>
+        <article class="card">
+          <h3>首頁探索</h3>
+          <ul>
+            <li>首頁包含 Trending、Popular、Now Playing、Upcoming、Top Rated 與 TV on air 內容。</li>
+            <li><code>MainHomeService</code> 負責 API 請求。</li>
+            <li><code>MainHomePresentationBuilder</code> 負責組裝畫面資料。</li>
+          </ul>
+        </article>
 
-    <h3>3. 帳號認證（登入／註冊）</h3>
-    <ul>
-      <li>採用 TMDB 提供的「Request Token → 使用者授權 → 換取 Session ID」流程登入。</li>
-      <li>登入後可呼叫「新增最愛」與「評分」API，管理個人最愛清單與影片評分。</li>
-      <li>在登入畫面提供「註冊」按鈕，點擊後以 <code>SFSafariViewController</code> 開啟 TMDB 官方註冊頁面。</li>
-    </ul>
+        <article class="card">
+          <h3>電影與劇集列表</h3>
+          <ul>
+            <li><code>MainMovieList</code> 使用 Genre 與 Discover Movie API。</li>
+            <li><code>MainTVList</code> 使用 Genre 與 Discover TV API。</li>
+            <li>支援分類篩選、排序與分頁載入。</li>
+          </ul>
+        </article>
 
-    <h3>4. 收藏／評分功能</h3>
-    <ul>
-      <li>「收藏」功能：點擊書籤按鈕即可將電影加入或移除最愛，按鈕會即時切換填滿狀態。</li>
-      <li>「評分」功能：點擊愛心按鈕後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後即時顯示實心愛心，並在幕後同步到 TMDB。</li>
-    </ul>
+        <article class="card">
+          <h3>搜尋</h3>
+          <ul>
+            <li><code>MovieSearch</code> 使用 TMDB Search Movie API。</li>
+            <li><code>TVSearch</code> 使用 TMDB Search TV API。</li>
+            <li>搜尋關鍵字會先移除前後空白，並排除 adult 內容。</li>
+          </ul>
+        </article>
 
-    <h3>5. MVVM 架構</h3>
-    <ul>
-      <li><strong>Service 層</strong>：封裝所有 TMDB API 呼叫（搜尋、詳情、最愛、評分、帳號狀態）。</li>
-      <li><strong>ViewModel 層</strong>：負責呼叫 Service、處理回傳並整理畫面狀態。</li>
-      <li><strong>View 層</strong>：僅處理畫面顯示、使用者互動與 ViewModel 狀態綁定。</li>
-    </ul>
+        <article class="card">
+          <h3>詳細頁</h3>
+          <ul>
+            <li>支援 Movie、TV、Season、Episode、Person 詳細頁。</li>
+            <li>整合基本資訊、演員/製作人員、影片、圖片、推薦內容與觀看平台。</li>
+            <li>Movie/TV 共用 <code>DetailBase</code> 與 <code>DetailRouter</code>。</li>
+          </ul>
+        </article>
 
-    <h2>環境需求</h2>
-    <ul>
-      <li>iOS 15.0 以上</li>
-      <li>Xcode 14.0 以上</li>
-      <li>Swift 5.6 以上</li>
-      <li>Swift Packages：</li>
-      <ul>
-        <li>SnapKit</li>
-        <li>SDWebImage</li>
-        <li>YouTube-Player-iOS-Helper</li>
-      </ul>
-    </ul>
+        <article class="card">
+          <h3>會員與互動</h3>
+          <ul>
+            <li>會員中心支援 favorite、watchlist、rated 內容與 TMDB lists。</li>
+            <li>收藏與觀看清單透過 TMDB Account API 更新。</li>
+            <li>評分使用 <code>RatingPageSheetViewController</code> 半頁介面。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
 
-    <h2>安裝與執行</h2>
-    <ol>
-      <li>
-        <strong>Clone 專案</strong><br />
-        <code>git clone https://github.com/你的帳號/MyTMDB_App.git  
-        <br />
-        cd MyTMDB_App</code>
-      </li>
-      <li>
-        <strong>打開 Xcode 並安裝套件</strong><br />
-        在 Finder 中打開 <code>MyTMDB_App.xcodeproj</code>。  
-        Xcode 會自動讀取內部的 Swift Package 依賴，並下載：
-        <ul>
-          <li>SnapKit</li>
-          <li>SDWebImage</li>
-          <li>YouTube-Player-iOS-Helper</li>
+    <section>
+      <h2>技術架構</h2>
+      <div class="architecture">
+        <ul class="stack-list">
+          <li><strong>View</strong><span>畫面組裝、使用者互動、collection view layout、ViewModel 綁定。</span></li>
+          <li><strong>ViewModel</strong><span>管理 loading、loaded、empty、failed 等狀態與 presentation model。</span></li>
+          <li><strong>Service</strong><span>封裝 TMDB API 呼叫、query items 與 JSON decode。</span></li>
+          <li><strong>Repository</strong><span>處理跨 API 的內容組裝、快取與會員中心資料彙整。</span></li>
+          <li><strong>Router</strong><span>集中處理 push、present、page sheet、Safari 等導航規則。</span></li>
         </ul>
-      </li>
-      <li>
-        <strong>設定 TMDB API Key</strong><br />
-        在專案中打開 <code>TMDB.swift</code>（或 <code>Constants.swift</code>），找到：
-        <pre><code>struct TMDB {
-  static let apiKey = "YOUR_API_KEY"
-  static let baseURL = "https://api.themoviedb.org/3"
-}</code></pre>
-        把 <code>"YOUR_API_KEY"</code> 改成你在 TMDB 官網申請的 API Key，然後存檔。
-      </li>
-      <li>
-        <strong>執行 App</strong><br />
-        選擇模擬器或真機後，按下 <code>Run (⌘R)</code>。  
-        首次啟動會顯示登入頁，若尚未擁有 TMDB 帳號，請點「註冊」按鈕在瀏覽器完成註冊。  
-        註冊完成後返回 App，輸入帳號與密碼並登入，即可瀏覽電影列表、查看詳情、加入最愛與評分。
-      </li>
-    </ol>
 
-    <h2>使用說明</h2>
+        <pre><code>MyTMDB_App/
+├── MyTMDB_App/        AppDelegate、SceneDelegate、Info.plist、Assets
+├── Network/           APIConfig、NetworkService、NetworkError
+├── MainLogIn/         登入、訪客登入、Session、Root 切換
+├── MainTabBar/        原生 UITabBarController
+├── MainHome/          首頁內容區塊
+├── MainMovieList/     電影分類列表
+├── MainTVList/        劇集分類列表
+├── MovieSearch/       電影搜尋
+├── TVSearch/          劇集搜尋
+├── MovieDetail/       電影詳細頁
+├── TVDetail/          劇集詳細頁
+├── SeasonDetail/      季詳細頁
+├── EisodeDetail/      集詳細頁
+├── PersonDetail/      人物詳細頁
+├── MemberCenter/      會員中心與帳號內容
+├── MainMemberSetting/ 會員設定頁
+├── PageSheet/         Rating、Genre、ReviewDetail
+└── Feature/           Base、Components、Config、Extension、Logger</code></pre>
+      </div>
+    </section>
 
-    <h3>1. 登入</h3>
-    <p>使用 TMDB 官網註冊的帳號與密碼進行登入，登入成功後會取得 <code>session_id</code>，後續 API 呼叫皆以該 Session ID 驗證。</p>
+    <section>
+      <h2>共用元件與主題</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>ThemeColor</h3>
+          <p>
+            使用 TMDB 品牌色 <code>#0D253F</code>、<code>#01B4E4</code>，並搭配系統色支援 Dark Mode。
+          </p>
+        </article>
 
-    <h3>2. 電影列表與搜尋</h3>
-    <ul>
-      <li>在主畫面輸入關鍵字後，搜尋結果會顯示電影、影集、演員，並依「發行／首播日期」由新到舊排序。</li>
-      <li>支援空白鍵修剪後的關鍵字過濾，若輸入為空則清除結果。</li>
-    </ul>
+        <article class="card">
+          <h3>AppFactory</h3>
+          <p>
+            集中建立常用 Label、Button 與 Animation View，減少畫面層重複的 UI 建構程式碼。
+          </p>
+        </article>
 
-    <h3>3. 電影詳情</h3>
-    <ul>
-      <li>點擊電影後可進入詳情頁面，包含海報、標題、簡介、演員名單與影片預告。</li>
-      <li>若該電影有 YouTube Trailer，可在列表中直接播放，並且維持固定高度。</li>
-    </ul>
+        <article class="card">
+          <h3>AppAnimationView</h3>
+          <p>
+            集中處理 Lottie 動畫生命週期，目前保留 <code>loadingAir</code>、<code>searchLoading</code>、
+            <code>popcornLoading</code> 等既有動畫資產。
+          </p>
+        </article>
+      </div>
+    </section>
 
-    <h3>4. 收藏與評分</h3>
-    <ul>
-      <li>詳情頁右上角有兩個按鈕：  
-        <ul>
-          <li><strong>書籤（Bookmark）</strong>：點擊後將電影加入或移除「我的最愛」清單，書籤圖示會隨狀態切換。</li>
-          <li><strong>愛心（Heart）</strong>：點擊後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後愛心圖示會立刻變成實心，並在幕後更新到 TMDB。</li>
-        </ul>
-      </li>
-    </ul>
+    <section>
+      <h2>環境與依賴</h2>
+      <div class="card">
+        <p>
+          專案使用 Swift 6.0，iOS Deployment Target 為 18.4，並透過 Swift Package Manager 管理第三方套件。
+        </p>
+        <div class="packages">
+          <span class="pill">SnapKit 5.7.1+</span>
+          <span class="pill">SDWebImage 5.21.0+</span>
+          <span class="pill">youtube-ios-player-helper 1.0.4+</span>
+          <span class="pill">lottie-ios 4.5.2+</span>
+          <span class="pill">SkeletonView 1.31.0+</span>
+        </div>
+      </div>
+    </section>
 
-    <h2>技術細節</h2>
-    <ul>
-      <li><strong>半頁評分介面</strong><br />
-        採用 iOS 15+ 的 <code>UISheetPresentationController.Detent</code> 自訂 1/4 螢幕高度，並以 SnapKit 排版滑桿與按鈕，  
-        滑動時即時顯示數值並動態調整字體大小。</li>
-      <li><strong>資料載入流程</strong><br />
-        Service 層封裝 TMDB API request，ViewModel 負責整理畫面狀態並提供 View 綁定。</li>
-      <li><strong>本地收藏資料庫</strong><br />
-        使用 <code>FavoritesLocalService</code> 搭配 Core Data 儲存電影最愛清單，並使用 <code>NSFetchedResultsController</code> 在收藏頁面實現動態更新。</li>
-    </ul>
+    <section>
+      <h2>安裝與執行</h2>
+      <div class="steps">
+        <article class="step">
+          <h3>Clone 專案</h3>
+          <pre><code>git clone https://github.com/toolman5487/MyTMDB_App
+cd MyTMDB_App</code></pre>
+        </article>
 
-    <h2>貢獻與回報</h2>
+        <article class="step">
+          <h3>使用 Xcode 開啟</h3>
+          <p>開啟 <code>MyTMDB_App.xcodeproj</code>，並確認 Swift Package 依賴已由 Xcode 解析完成。</p>
+        </article>
+
+        <article class="step">
+          <h3>設定 TMDB API Key</h3>
+          <p><code>Network/APIConfig.swift</code> 會從 <code>Info.plist</code> 的 <code>TMDBAPIKey</code> 讀取 API Key。</p>
+          <pre><code>&lt;key&gt;TMDBAPIKey&lt;/key&gt;
+&lt;string&gt;YOUR_TMDB_API_KEY&lt;/string&gt;</code></pre>
+        </article>
+
+        <article class="step">
+          <h3>執行 App</h3>
+          <p>選擇 iOS Simulator 或真機，按下 Xcode Run。首次啟動會依 Session 狀態進入登入頁或主 Tab。</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>API 與在地化</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>NetworkService</h3>
+          <p>
+            API base URL 為 <code>https://api.themoviedb.org/3</code>，請求會自動補上 <code>api_key</code>。
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>會員權限</h3>
+          <p>
+            favorite、watchlist、rating 與 account list 相關 API 會額外帶入 <code>session_id</code>。
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>AppLocalization</h3>
+          <p>
+            依系統語言產生 TMDB <code>language</code>、<code>region</code>、<code>timezone</code>
+            與圖片/影片語言參數。
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
     <p>
-      如果你有任何問題、建議或想請求新功能，請提交 Issue；若要發 Pull Request，  
-      請先確保程式碼風格與專案一致，並附上相應說明。
+      本專案使用 TMDB API，但未由 TMDB 官方背書或認證。內容、圖片與相關資料版權歸 TMDB 與原權利人所有。
+      <br />
+      <a href="https://github.com/toolman5487/MyTMDB_App" target="_blank" rel="noopener">GitHub 倉庫連結</a>
     </p>
-
-    <h2>授權條款</h2>
-    <p>
-      本專案以 MIT Licence 授權，詳細條款請見專案根目錄中的文件。  
-      您可以自由使用、修改、合夥及轉載本專案程式碼，但需保留原作者版權聲明與本許可聲明。
-    </p>
-
-    <footer style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #666;">
-      &copy; 2025 Willy Hsu ｜ <a href="https://github.com/toolman5487/MyTMDB_App" target="_blank">GitHub 倉庫連結</a>
-    </footer>
-  </div>
+  </footer>
 </body>
 </html>

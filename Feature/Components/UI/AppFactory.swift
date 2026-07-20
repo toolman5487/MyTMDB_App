@@ -32,6 +32,7 @@ enum AppFactory {
             case loadingAir
             case searchLoading
             case popcornLoading
+            case error
 
             var animationName: String {
                 switch self {
@@ -43,6 +44,9 @@ enum AppFactory {
 
                 case .popcornLoading:
                     return "Animation_popcorn"
+
+                case .error:
+                    return "ErrorAnimation"
                 }
             }
         }
@@ -82,6 +86,19 @@ enum AppFactory {
         ) -> AppAnimationView {
             AppAnimationView(
                 animation: .popcornLoading,
+                size: size,
+                message: message,
+                startsAnimating: startsAnimating
+            )
+        }
+
+        static func error(
+            size: CGFloat,
+            message: String? = nil,
+            startsAnimating: Bool = true
+        ) -> AppAnimationView {
+            AppAnimationView(
+                animation: .error,
                 size: size,
                 message: message,
                 startsAnimating: startsAnimating

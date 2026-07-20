@@ -49,8 +49,16 @@ final class LoginViewModel {
     // MARK: - Public Methods
 
     func login() {
-        guard !username.isEmpty, !password.isEmpty else { return }
         guard !state.isLoading else { return }
+
+        switch validateCredentials() {
+        case .valid:
+            break
+
+        case .invalid(let message):
+            state = .failed(message, recoveryAction: .editCredentials)
+            return
+        }
 
         authenticationTask?.cancel()
         authenticationTask = Task(priority: .userInitiated) { [weak self] in
@@ -84,9 +92,10 @@ final class LoginViewModel {
             state = .success(sessionId: sessionId)
         } catch {
             guard !Task.isCancelled else { return }
+            let recoveryAction = makeLoginFailureRecoveryAction(for: error)
             state = .failed(
-                error.errorMessage,
-                recoveryAction: makeLoginFailureRecoveryAction(for: error)
+                makeLoginFailureMessage(for: error, recoveryAction: recoveryAction),
+                recoveryAction: recoveryAction
             )
         }
     }
@@ -117,6 +126,71 @@ final class LoginViewModel {
 
         return .retry
     }
+
+    private func makeLoginFailureMessage(
+        for error: Error,
+        recoveryAction: LoginFailureRecoveryAction
+    ) -> ErrorMessage {
+        switch recoveryAction {
+        case .editCredentials:
+            return ErrorMessage(
+                title: "帳號或密碼錯誤",
+                message: "請確認 TMDB 帳號與密碼後再試。",
+                systemImageName: "person.crop.circle.badge.exclamationmark",
+                actionTitle: "返回修改"
+            )
+
+        case .retry:
+            return error.errorMessage
+        }
+    }
+
+    private func validateCredentials() -> LoginCredentialValidationResult {
+        let isUsernameEmpty = username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let isPasswordEmpty = password.isEmpty
+
+        switch (isUsernameEmpty, isPasswordEmpty) {
+        case (true, true):
+            return .invalid(
+                ErrorMessage(
+                    title: "請輸入帳號與密碼",
+                    message: "登入前需要填寫 TMDB 帳號與密碼。",
+                    systemImageName: "person.text.rectangle",
+                    actionTitle: "返回修改"
+                )
+            )
+
+        case (true, false):
+            return .invalid(
+                ErrorMessage(
+                    title: "請輸入帳號",
+                    message: "登入前需要填寫 TMDB 帳號。",
+                    systemImageName: "person.crop.circle",
+                    actionTitle: "返回修改"
+                )
+            )
+
+        case (false, true):
+            return .invalid(
+                ErrorMessage(
+                    title: "請輸入密碼",
+                    message: "登入前需要填寫 TMDB 密碼。",
+                    systemImageName: "lock",
+                    actionTitle: "返回修改"
+                )
+            )
+
+        case (false, false):
+            return .valid
+        }
+    }
+}
+
+// MARK: - LoginCredentialValidationResult
+
+private enum LoginCredentialValidationResult: Equatable {
+    case valid
+    case invalid(ErrorMessage)
 }
 
 // MARK: - LoginState Helpers

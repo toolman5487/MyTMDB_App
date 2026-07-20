@@ -1,87 +1,161 @@
 # MyTMDB_App
-一款基於 The Movie Database (TMDB) API 的 iOS 應用，採用 UIKit + MVVM 架構，提供電影列表瀏覽、詳細資訊、收藏與評分功能。
 
-## 功能特色
-- **電影列表與搜尋**  
-  - 使用 TMDB 的 Search/Multi 搜尋 API，能同時搜尋電影、影集與演員。  
-  - 搜尋結果會自動依「發行／首播日期」由新到舊排序，並將電影、影集顯示在前，演員顯示在後。
+MyTMDB_App 是一款基於 [The Movie Database (TMDB)](https://www.themoviedb.org/) API 的 iOS App。專案以 UIKit 為主要 UI 技術，採用 MVVM、Service、Repository、Router 分層，並使用 Swift Concurrency 處理 API 請求與畫面狀態更新。
 
-- **電影詳情**  
-  - 顯示單部電影的海報、標題、簡介、演員名單、預告影片等。  
-  - 內嵌 YouTube Trailer 播放功能（使用 `YTPlayerView` + SnapKit 佈局），並能以固定高度呈現。
+目前 App 以 TMDB 內容探索為核心，包含首頁推薦、電影與劇集分類列表、搜尋、詳細頁、季/集資訊、人物資訊、會員中心、收藏、觀看清單與評分流程。
 
-- **帳號認證（登入／註冊）**  
-  - 採用 TMDB 提供的「Request Token → 使用者授權 → 換取 Session ID」流程登入。  
-  - 登入後可呼叫「新增最愛」與「評分」API，管理個人最愛清單與影片評分。  
-  - 在登入畫面提供「註冊」按鈕，點擊後以 `SFSafariViewController` 開啟 TMDB 官方註冊頁面。
+## 主要功能
 
-- **收藏／評分功能**  
-  - 「收藏」功能：點擊書籤按鈕即可將電影加入或移除最愛，按鈕會即時切換填滿狀態。  
-  - 「評分」功能：點擊愛心按鈕後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後即時顯示實心愛心，並在幕後同步到 TMDB。
+- **登入與 Session 管理**
+  - 支援 TMDB 帳號登入與訪客 Session。
+  - 登入流程使用 TMDB `Request Token -> Validate With Login -> Session`。
+  - 啟動時會驗證已儲存的使用者 Session，失效時回到登入頁。
+  - Session 透過 `SessionStore` 儲存在 `UserDefaults`，並保留舊 Key 的遷移邏輯。
 
-- **MVVM 架構**
-  - **Service 層**：封裝所有 TMDB API 呼叫（搜尋、詳情、最愛、評分、帳號狀態）。  
-  - **ViewModel 層**：負責呼叫 Service、處理回傳並透過 `@Published` 將資料推送給 View 層。  
-  - **View 層**：僅處理畫面顯示、使用者互動與 ViewModel 狀態綁定。
+- **首頁內容探索**
+  - 首頁由多個 TMDB 分類區塊組成，例如 Trending、Popular、Now Playing、Upcoming、Top Rated 與 TV on air 相關內容。
+  - `MainHomeService` 負責 API 請求，`MainHomePresentationBuilder` 負責組裝畫面資料。
+  - 首頁內容使用系統語言、地區與時區參數取得在地化結果。
+
+- **電影與劇集列表**
+  - `MainMovieList` 使用 TMDB Genre 與 Discover Movie API。
+  - `MainTVList` 使用 TMDB Genre 與 Discover TV API。
+  - 支援分類篩選、排序與分頁載入。
+  - 列表共用 `MovieGrid` 元件與分頁控制器。
+
+- **搜尋**
+  - `MovieSearch` 使用 TMDB Search Movie API。
+  - `TVSearch` 使用 TMDB Search TV API。
+  - 搜尋關鍵字會先移除前後空白，並排除 adult 內容。
+
+- **詳細頁**
+  - 支援 Movie、TV、Season、Episode、Person 詳細頁。
+  - 詳細頁會整合基本資訊、演員/製作人員、影片、圖片、推薦內容、觀看平台與外部連結。
+  - Movie/TV 詳細頁共用 `DetailBase`、`DetailRouter` 與底部操作列。
+  - YouTube 預告片使用 `youtube-ios-player-helper` 播放。
+
+- **收藏、觀看清單與評分**
+  - 會員中心支援 favorite、watchlist、rated movies、rated TV、rated TV episodes 與 TMDB lists。
+  - 收藏與觀看清單透過 TMDB Account API 更新。
+  - 評分流程使用 `RatingPageSheetViewController`，以 `UISheetPresentationController` 呈現半頁評分介面。
+  - 評分支援 Movie、TV 與 Episode 目標。
+
+- **會員中心**
+  - `MemberCenterViewModel` 管理會員頁狀態與展示資料。
+  - `MemberCenterContentRepository` 負責會員內容組裝與快取。
+  - `MemberCenterService` 專注 TMDB Account/List API 呼叫。
+  - `MemberCenterRouter` 以語意化路由處理會員相關跳轉。
+
+- **共用 UI 與主題**
+  - `ThemeColor` 使用 TMDB 品牌色：`#0D253F`、`#01B4E4`。
+  - `AppFactory` 集中建立常用 Label、Button 與 Animation View。
+  - `AppAnimationView` 集中處理 Lottie 動畫生命週期。
+  - `ErrorMessageView` 提供網路錯誤與空狀態畫面。
+  - 專案目前以 Dark Mode 與系統色為主要 UI 基準。
+
+## 技術架構
+
+專案採用 feature-based 目錄結構，每個主要功能通常包含 Model、Service、ViewModel、View、Controller、Router。
+
+```text
+MyTMDB_App/
+├── MyTMDB_App/              # AppDelegate、SceneDelegate、Info.plist、Assets
+├── Network/                 # APIConfig、NetworkService、NetworkError、Localization
+├── MainLogIn/               # 登入、訪客登入、Session、Root 切換
+├── MainTabBar/              # 原生 UITabBarController 與 tab 狀態
+├── MainHome/                # 首頁內容區塊
+├── MainMovieList/           # 電影分類列表
+├── MainTVList/              # 劇集分類列表
+├── MovieSearch/             # 電影搜尋
+├── TVSearch/                # 劇集搜尋
+├── MovieDetail/             # 電影詳細頁
+├── TVDetail/                # 劇集詳細頁
+├── SeasonDetail/            # 季詳細頁
+├── EisodeDetail/            # 集詳細頁
+├── PersonDetail/            # 人物詳細頁
+├── MemberCenter/            # 會員中心與帳號內容
+├── MainMemberSetting/       # 會員設定頁
+├── PageSheet/               # Rating、Genre、ReviewDetail 等 Sheet 畫面
+└── Feature/                 # Base、Components、Config、Extension、Logger
+```
+
+### 分層原則
+
+- **View / ViewController**：負責畫面組裝、使用者互動、collection view layout 與 ViewModel 綁定。
+- **ViewModel**：管理畫面狀態，將 Service 回傳資料轉成 UI 可用的 presentation model。
+- **Service**：封裝 TMDB API 呼叫與 JSON decode。
+- **Repository**：處理跨 API 或跨資料來源的內容組裝與快取。
+- **Router**：集中處理 push、present、page sheet、Safari 等導航規則。
 
 ## 環境需求
-- iOS 15.0 以上  
-- Xcode 14.0 以上  
-- Swift 5.6 以上  
-- Swift Packages：  
-  - SnapKit  
-  - SDWebImage  
-  - YouTube-Player-iOS-Helper  
 
-# 安裝與執行
-	•	Clone 專案
-	•	在終端機輸入：
-git clone https://github.com/toolman5487/MyTMDB_App
-cd MyTMDB_App
-	•	開啟 Xcode 並安裝套件
-	•	在 Finder 中打開 MyTMDB_App.xcodeproj。
-	•	Xcode 會自動讀取內部的 Swift Package 依賴，並下載：
-  	•	SnapKit
-  	•	SDWebImage
-  	•	YouTube-Player-iOS-Helper
-	•	設定 TMDB API Key
-	•	在專案中開啟 Constants.swift，找到：
-struct TMDB 
-{ 
-static let apiKey = "YOUR_API_KEY" 
-static let baseURL = "https://api.themoviedb.org/3" 
-}
-	•	把 "YOUR_API_KEY" 改成你在 TMDB 官網申請的 API Key，然後存檔。
-	•	執行 App
-	•	選擇模擬器或真機後，按下 Run（⌘R）。
-	•	首次啟動會顯示登入頁，若尚未擁有 TMDB 帳號，請點「註冊」按鈕在瀏覽器完成註冊。
-	•	註冊完成後返回 App，輸入帳號與密碼並登入，即可瀏覽電影列表、查看詳情、加入最愛與評分。
+- iOS Deployment Target：18.4
+- Swift：6.0
+- Xcode：建議使用支援 Swift 6 與 iOS 18.4 SDK 的版本
+- Swift Package Manager 依賴：
+  - [SnapKit](https://github.com/SnapKit/SnapKit) `5.7.1+`
+  - [SDWebImage](https://github.com/SDWebImage/SDWebImage) `5.21.0+`
+  - [youtube-ios-player-helper](https://github.com/youtube/youtube-ios-player-helper) `1.0.4+`
+  - [lottie-ios](https://github.com/airbnb/lottie-ios) `4.5.2+`
+  - [SkeletonView](https://github.com/Juanpe/SkeletonView) `1.31.0+`
 
-# 使用說明
-1.	登入
-•	 使用 TMDB 官網註冊的帳號與密碼進行登入，登入成功後會取得 session_id，後續 API 呼叫皆以該 Session ID 驗證。
-2.	電影列表與搜尋
-	•	在主畫面輸入關鍵字後，搜尋結果會顯示電影、影集、演員，並依「發行／首播日期」由新到舊排序。
-	•	支援空白鍵修剪後的關鍵字過濾，若輸入為空則清除結果。
-3.	電影詳情
-  •	點擊電影後可進入詳情頁面，包含海報、標題、簡介、演員名單與影片預告。
-  •	若該電影有 YouTube Trailer，可在列表中直接播放，並且維持固定高度。
-4.	收藏與評分
-  •	詳情頁右上角有兩個按鈕：
-    1.	書籤（Bookmark）：點擊後將電影加入或移除「我的最愛」清單，書籤圖示會隨狀態切換。
-    2.	愛心（Heart）：點擊後彈出半頁評分介面，使用滑桿選擇 0.5–10 分，提交後愛心圖示會立刻變成實心，並在幕後更新到 TMDB。
+## 安裝與執行
 
-# 技術細節
-•	半頁評分介面
-•	採用 iOS 15+ 的 UISheetPresentationController.Detent 自訂 1/4 螢幕高度，並以 SnapKit 排版滑桿與按鈕，滑動時即時顯示數值並動態調整字體大小。
-•	資料載入流程
-•	Service 層封裝 TMDB API request，ViewModel 負責整理畫面狀態並提供 View 綁定。
-•	本地收藏資料庫
-•	FavoritesLocalService 使用 Core Data 儲存電影最愛清單，並搭配 NSFetchedResultsController 在收藏頁面實現動態更新。
+1. Clone 專案：
 
-# 貢獻與回報
-如果你有任何問題、建議或想請求新功能，請提交 Issue；若要發 Pull Request，請先確保程式碼風格與專案一致，並附上相應說明。
+   ```bash
+   git clone https://github.com/toolman5487/MyTMDB_App
+   cd MyTMDB_App
+   ```
 
-## 授權條款
-本專案以 MIT Licence 授權，詳細條款請見專案根目錄中的文件。  
-您可以自由使用、修改、合佈及轉載本專案程式碼，但需保留原作者版權聲明與本許可聲明。
+2. 使用 Xcode 開啟：
+
+   ```text
+   MyTMDB_App.xcodeproj
+   ```
+
+3. 確認 Swift Package 依賴已由 Xcode 解析完成。
+
+4. 設定 TMDB API Key：
+
+   `Network/APIConfig.swift` 會從 `Info.plist` 的 `TMDBAPIKey` 讀取 API Key。
+
+   ```xml
+   <key>TMDBAPIKey</key>
+   <string>YOUR_TMDB_API_KEY</string>
+   ```
+
+   請到 [TMDB API Settings](https://www.themoviedb.org/settings/api) 申請 API Key，並將 `YOUR_TMDB_API_KEY` 換成自己的 key。
+
+5. 選擇 iOS Simulator 或真機，按下 Xcode Run。
+
+## API 與在地化
+
+- API base URL：`https://api.themoviedb.org/3`
+- 圖片 base URL：`https://image.tmdb.org/t/p`
+- `NetworkService` 會自動在 query items 補上 `api_key`。
+- 需要會員權限的 API 會另外帶入 `session_id`。
+- `AppLocalization.current` 會依系統語言產生 TMDB `language`、`region`、`timezone` 與圖片/影片語言參數。
+
+## 開發注意事項
+
+- 使用 Swift 6 語言模式，新增跨執行緒傳遞的型別時應評估 `Sendable`。
+- ViewModel 不應 import UIKit，也不應直接持有或操作 ViewController。
+- API 請求優先使用 Swift Concurrency。
+- 畫面狀態優先使用 enum 表達 loading、loaded、empty、failed 等狀態。
+- 導航與 page sheet presentation policy 放在 Router。
+- 新增共用 UI 前先確認是否屬於真正跨 feature 的需求，避免把 feature-only 邏輯放進 base class。
+- 新增檔案後需確認 `MyTMDB_App.xcodeproj/project.pbxproj` 的 target membership。
+
+## 測試
+
+專案包含：
+
+- `MyTMDB_AppTests`
+- `MyTMDB_AppUITests`
+
+可在 Xcode 內使用 Test action 執行。若要用命令列驗證，請依目前本機 Xcode 與 Simulator SDK 狀態調整目的地與 DerivedData 路徑。
+
+## 資料來源
+
+本專案使用 TMDB API，但未由 TMDB 官方背書或認證。內容、圖片與相關資料版權歸 TMDB 與原權利人所有。

@@ -13,6 +13,16 @@ import Observation
 @MainActor
 final class LoginViewController: BaseViewController {
 
+    // MARK: - Metrics
+
+    private enum ErrorLayout {
+        static let animationSize: CGFloat = 120
+        static let stackSpacing: CGFloat = 8
+        static let actionTopSpacing: CGFloat = 16
+        static let horizontalInset: CGFloat = 24
+        static let buttonHeight: CGFloat = 48
+    }
+
     // MARK: - Properties
 
     private let loginVM: LoginViewModel
@@ -22,6 +32,7 @@ final class LoginViewController: BaseViewController {
     private var currentPage: AuthPage = .login
     private var authFlowTask: Task<Void, Never>?
     private var handledSuccessSessionID: String?
+    private var currentFailureRecoveryAction: LoginFailureRecoveryAction?
 
     private lazy var loginPageView = LoginPageView()
     private lazy var guestPageView = GuestPageView()
@@ -84,12 +95,41 @@ final class LoginViewController: BaseViewController {
         return control
     }()
 
-    private lazy var errorMessageView: ErrorMessageView = {
-        let view = ErrorMessageView()
+    private let errorOverlayView: UIView = {
+        let view = UIView()
         view.backgroundColor = ThemeColor.background
         view.alpha = 0
         view.isHidden = true
         return view
+    }()
+
+    private let errorAnimationView = AppFactory.Animation.error(
+        size: ErrorLayout.animationSize,
+        startsAnimating: false
+    )
+
+    private let errorTitleLabel = AppFactory.Label.headline(alignment: .center, lines: 0)
+
+    private let errorMessageLabel = AppFactory.Label.body(alignment: .center, lines: 0)
+
+    private lazy var errorActionButton: UIButton = {
+        let button = AppFactory.Button.primaryFilled(title: "返回修改")
+        button.addTarget(self, action: #selector(handleErrorActionButtonTapped), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var errorStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            errorAnimationView,
+            errorTitleLabel,
+            errorMessageLabel,
+            errorActionButton
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = ErrorLayout.stackSpacing
+        stackView.setCustomSpacing(ErrorLayout.actionTopSpacing, after: errorMessageLabel)
+        return stackView
     }()
 
     // MARK: - Lifecycle
@@ -103,10 +143,11 @@ final class LoginViewController: BaseViewController {
         pageScrollView.addSubview(loginPageView)
         pageScrollView.addSubview(guestPageView)
         pageScrollView.addSubview(registerPageView)
+        errorOverlayView.addSubview(errorStackView)
 
         view.addSubview(pageScrollView)
         view.addSubview(pageControl)
-        view.addSubview(errorMessageView)
+        view.addSubview(errorOverlayView)
         view.addSubview(loadingOverlayView)
         view.addSubview(animationView)
     }
@@ -142,8 +183,23 @@ final class LoginViewController: BaseViewController {
             make.centerX.equalToSuperview()
         }
 
-        errorMessageView.snp.makeConstraints { make in
+        errorOverlayView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+
+        errorAnimationView.snp.makeConstraints { make in
+            make.size.equalTo(ErrorLayout.animationSize)
+        }
+
+        errorActionButton.snp.makeConstraints { make in
+            make.height.equalTo(ErrorLayout.buttonHeight)
+            make.leading.trailing.equalToSuperview()
+        }
+
+        errorStackView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview().offset(ErrorLayout.horizontalInset)
+            make.trailing.lessThanOrEqualToSuperview().inset(ErrorLayout.horizontalInset)
         }
 
         loadingOverlayView.snp.makeConstraints { make in
@@ -186,6 +242,11 @@ final class LoginViewController: BaseViewController {
         scrollToPage(AuthPage(rawValue: pageControl.currentPage) ?? .login, animated: true)
     }
 
+    @objc private func handleErrorActionButtonTapped() {
+        guard let currentFailureRecoveryAction else { return }
+        performRecoveryAction(currentFailureRecoveryAction)
+    }
+
     // MARK: - Observation
 
     private func observeLoginState() {
@@ -206,18 +267,19 @@ final class LoginViewController: BaseViewController {
         switch state {
         case .idle:
             handledSuccessSessionID = nil
+            hideFailureState()
             setLoadingOverlayVisible(false)
             setActionButtonsEnabled(true)
 
         case .loading:
-            hideErrorMessage()
+            hideFailureState()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
 
         case .success(let sessionId):
             guard handledSuccessSessionID != sessionId else { return }
             handledSuccessSessionID = sessionId
-            hideErrorMessage()
+            hideFailureState()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
             finishUserLogin(sessionId: sessionId)
@@ -225,7 +287,7 @@ final class LoginViewController: BaseViewController {
         case .guestSuccess(let guestSessionId):
             guard handledSuccessSessionID != guestSessionId else { return }
             handledSuccessSessionID = guestSessionId
-            hideErrorMessage()
+            hideFailureState()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
             finishGuestLogin(sessionId: guestSessionId)
@@ -234,7 +296,7 @@ final class LoginViewController: BaseViewController {
             handledSuccessSessionID = nil
             setLoadingOverlayVisible(false)
             setActionButtonsEnabled(true)
-            showErrorMessage(message, recoveryAction: recoveryAction)
+            showFailureState(message, recoveryAction: recoveryAction)
         }
     }
 
@@ -278,32 +340,45 @@ final class LoginViewController: BaseViewController {
         pageControl.isEnabled = isEnabled
     }
 
-    private func showErrorMessage(
+    private func showFailureState(
         _ message: ErrorMessage,
         recoveryAction: LoginFailureRecoveryAction
     ) {
         let displayMessage = makeErrorMessage(message, recoveryAction: recoveryAction)
 
-        errorMessageView.configure(with: displayMessage) { [weak self] in
-            self?.performRecoveryAction(recoveryAction)
-        }
-        errorMessageView.isUserInteractionEnabled = true
-        errorMessageView.isHidden = false
+        currentFailureRecoveryAction = recoveryAction
+        errorTitleLabel.text = displayMessage.title
+        errorMessageLabel.text = displayMessage.message
+        setErrorActionTitle(displayMessage.actionTitle ?? "重試")
+        errorActionButton.isHidden = displayMessage.actionTitle == nil
+        errorOverlayView.isUserInteractionEnabled = true
+        errorOverlayView.isHidden = false
+        errorAnimationView.setAnimating(true)
 
         UIView.animate(withDuration: 0.2) {
-            self.errorMessageView.alpha = 1
+            self.errorOverlayView.alpha = 1
         }
     }
 
-    private func hideErrorMessage() {
-        guard !errorMessageView.isHidden || errorMessageView.alpha > 0 else { return }
+    private func setErrorActionTitle(_ title: String) {
+        var configuration = errorActionButton.configuration
+        var attributedTitle = AttributedString(title)
+        attributedTitle.font = UIFont.preferredFont(forTextStyle: .headline)
+        configuration?.attributedTitle = attributedTitle
+        errorActionButton.configuration = configuration
+    }
 
-        errorMessageView.isUserInteractionEnabled = false
+    private func hideFailureState() {
+        guard !errorOverlayView.isHidden || errorOverlayView.alpha > 0 else { return }
+
+        currentFailureRecoveryAction = nil
+        errorOverlayView.isUserInteractionEnabled = false
+        errorAnimationView.setAnimating(false)
 
         UIView.animate(withDuration: 0.2) {
-            self.errorMessageView.alpha = 0
+            self.errorOverlayView.alpha = 0
         } completion: { [weak self] _ in
-            self?.errorMessageView.isHidden = true
+            self?.errorOverlayView.isHidden = true
         }
     }
 
@@ -328,7 +403,7 @@ final class LoginViewController: BaseViewController {
     private func performRecoveryAction(_ recoveryAction: LoginFailureRecoveryAction) {
         switch recoveryAction {
         case .editCredentials:
-            hideErrorMessage()
+            hideFailureState()
 
         case .retry:
             retryCurrentPageAction()
@@ -336,7 +411,7 @@ final class LoginViewController: BaseViewController {
     }
 
     private func retryCurrentPageAction() {
-        errorMessageView.isUserInteractionEnabled = false
+        errorOverlayView.isUserInteractionEnabled = false
 
         switch currentPage {
         case .login:
@@ -346,7 +421,7 @@ final class LoginViewController: BaseViewController {
             loginVM.continueAsGuest()
 
         case .register:
-            errorMessageView.isUserInteractionEnabled = true
+            errorOverlayView.isUserInteractionEnabled = true
         }
     }
 
@@ -362,12 +437,12 @@ final class LoginViewController: BaseViewController {
 @MainActor
 extension LoginViewController: LoginPageViewDelegate {
     func loginPageView(_ view: LoginPageView, didUpdateUsername username: String) {
-        hideErrorMessage()
+        hideFailureState()
         loginVM.username = username
     }
 
     func loginPageView(_ view: LoginPageView, didUpdatePassword password: String) {
-        hideErrorMessage()
+        hideFailureState()
         loginVM.password = password
     }
 
@@ -407,7 +482,7 @@ extension LoginViewController: UIScrollViewDelegate {
         currentPage = page
         pageControl.currentPage = page.rawValue
         navigationItem.title = page.title
-        hideErrorMessage()
+        hideFailureState()
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
