@@ -3447,6 +3447,8 @@
 				DEVELOPMENT_TEAM = G5A93Q7SG9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyTMDB_App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CineBase;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -3477,6 +3479,8 @@
 				DEVELOPMENT_TEAM = G5A93Q7SG9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyTMDB_App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CineBase;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";

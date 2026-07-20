@@ -1,5 +1,9 @@
 # MyTMDB_App
 
+<p align="center">
+  <img src="MyTMDB_App/Assets.xcassets/AppIcon.appiconset/CineBase1x.png" alt="CineBase App Icon" width="160" />
+</p>
+
 MyTMDB_App 是一款基於 [The Movie Database (TMDB)](https://www.themoviedb.org/) API 的 iOS App。專案以 UIKit 為主要 UI 技術，採用 MVVM、Service、Repository、Router 分層，並使用 Swift Concurrency 處理 API 請求與畫面狀態更新。
 
 目前 App 以 TMDB 內容探索為核心，包含首頁推薦、電影與劇集分類列表、搜尋、詳細頁、季/集資訊、人物資訊、會員中心、收藏、觀看清單與評分流程。
@@ -47,6 +51,7 @@ MyTMDB_App 是一款基於 [The Movie Database (TMDB)](https://www.themoviedb.or
   - `MemberCenterRouter` 以語意化路由處理會員相關跳轉。
 
 - **共用 UI 與主題**
+  - App 主題 logo 使用 `MyTMDB_App/Assets.xcassets/AppIcon.appiconset/CineBase1x.png`。
   - `ThemeColor` 使用 TMDB 品牌色：`#0D253F`、`#01B4E4`。
   - `AppFactory` 集中建立常用 Label、Button 與 Animation View。
   - `AppAnimationView` 集中處理 Lottie 動畫生命週期。
