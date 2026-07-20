@@ -499,7 +499,13 @@ final class TVDetailImagesCollectionViewCell: DetailImageTitleStripCollectionVie
         static let imageHeight: CGFloat = 124
     }
 
-    func configure(items: [TVDetailImageItem]) {
+    func configure(
+        items: [TVDetailImageItem],
+        onImageSelected: @escaping (TVDetailImageItem) -> Void
+    ) {
+        let imageItemsByID = items.reduce(into: [String: TVDetailImageItem]()) { result, item in
+            result[item.id] = item
+        }
         configure(
             items: items.map {
                 DetailImageTitleItem(
@@ -511,7 +517,10 @@ final class TVDetailImagesCollectionViewCell: DetailImageTitleStripCollectionVie
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight
-        )
+        ) { item in
+            guard let imageItem = imageItemsByID[item.id] else { return }
+            onImageSelected(imageItem)
+        }
     }
 }
 

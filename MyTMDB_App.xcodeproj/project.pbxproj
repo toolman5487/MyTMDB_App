@@ -582,6 +582,9 @@
 		15F020062FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */; };
 		15F020072FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */; };
 		15F020082FF8501000F02001 /* BaseGenrePageSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */; };
+		15F11002300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */; };
+		15F11003300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */; };
+		15F11004300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -808,6 +811,7 @@
 		15F010012FF7600000F01001 /* AppAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimationView.swift; sourceTree = "<group>"; };
 		15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTVGenrePageSheetViewController.swift; sourceTree = "<group>"; };
 		15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGenrePageSheetViewController.swift; sourceTree = "<group>"; };
+		15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDisplayTextFormatter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -2458,6 +2462,7 @@
 				1503369E2FF35CFC003125EC /* Components */,
 				1598AA982DC4C29C005E972C /* Config */,
 				15D197282FF167E300545A85 /* Extension */,
+				15F11000300E100000F11000 /* Formatter */,
 				15D196C42FF14CD300545A85 /* Logger */,
 			);
 			path = Feature;
@@ -2758,6 +2763,14 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
+		15F11000300E100000F11000 /* Formatter */ = {
+			isa = PBXGroup;
+			children = (
+				15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */,
+			);
+			path = Formatter;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2981,6 +2994,7 @@
 				15E002122FF430000000001 /* AppFactory.swift in Sources */,
 				15F010022FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002152FF430010000001 /* AppAppearance.swift in Sources */,
+				15F11002300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
 				152BE73F2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift in Sources */,
 				1588252D2FFF766D0028B219 /* HomeSectionListViewController.swift in Sources */,
 				158825362FFF7A900028B219 /* HomeSectionListModels.swift in Sources */,
@@ -3150,6 +3164,7 @@
 				15E002132FF430000000001 /* AppFactory.swift in Sources */,
 				15F010032FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002162FF430010000001 /* AppAppearance.swift in Sources */,
+				15F11003300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
 				15DAAEEA2FFDE6D3009FB88A /* EpisodeDetailViewController.swift in Sources */,
 				150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
@@ -3476,6 +3491,7 @@
 				15E002142FF430000000001 /* AppFactory.swift in Sources */,
 				15F010042FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002172FF430010000001 /* AppAppearance.swift in Sources */,
+				15F11004300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
 				150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A6A05E300475E800AD5E46 /* MemberCenterContentStripCollectionViewCell.swift in Sources */,

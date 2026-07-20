@@ -525,9 +525,16 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
+            let previewItems = Array(items.prefix(DetailSectionPreviewLimit.itemCount))
             (cell as? TVDetailImagesCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
-            )
+                items: previewItems
+            ) { [weak self] imageItem in
+                self?.router.showImagePreview(
+                    imageURLs: items.map(\.imageURL),
+                    selectedImageURL: imageItem.imageURL,
+                    title: "劇照"
+                )
+            }
             return cell
 
         case .recommendations(let items):

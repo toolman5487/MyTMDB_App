@@ -372,57 +372,22 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         self.title = detail.title
         self.originalTitle = detail.originalTitle
         self.tagline = detail.tagline.isEmpty ? nil : detail.tagline
-        self.overview = Self.nonEmptyText(from: detail.overview)
+        self.overview = BaseDisplayTextFormatter.nonEmptyText(detail.overview)
         self.posterURL = detail.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
         self.backdropURL = detail.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.releaseDateText = Self.nonEmptyText(from: detail.releaseDate)
-        self.runtimeText = Self.formatRuntime(detail.runtime)
-        self.scoreText = detail.voteCount > 0 ? String(format: "%.1f", detail.voteAverage) : nil
-        self.voteCountText = detail.voteCount > 0 ? "\(detail.voteCount)" : nil
-        self.statusText = Self.nonEmptyText(from: detail.status)
-        self.budgetText = Self.formatCurrency(detail.budget)
-        self.revenueText = Self.formatCurrency(detail.revenue)
+        self.releaseDateText = BaseDisplayTextFormatter.nonEmptyText(detail.releaseDate)
+        self.runtimeText = BaseDisplayTextFormatter.runtime(minutes: detail.runtime)
+        self.scoreText = BaseDisplayTextFormatter.score(detail.voteAverage, voteCount: detail.voteCount)
+        self.voteCountText = BaseDisplayTextFormatter.voteCount(detail.voteCount)
+        self.statusText = BaseDisplayTextFormatter.nonEmptyText(detail.status)
+        self.budgetText = BaseDisplayTextFormatter.currencyUSD(detail.budget)
+        self.revenueText = BaseDisplayTextFormatter.currencyUSD(detail.revenue)
         self.homepageURL = Self.makeURL(from: detail.homepage)
         self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
-    }
-
-    private static func formatRuntime(_ runtime: Int?) -> String? {
-        guard let runtime, runtime > 0 else { return nil }
-
-        let hours = runtime / 60
-        let minutes = runtime % 60
-
-        if hours == 0 {
-            return "\(minutes) 分鐘"
-        }
-
-        if minutes == 0 {
-            return "\(hours) 小時"
-        }
-
-        return "\(hours) 小時 \(minutes) 分鐘"
-    }
-
-    private static func formatCurrency(_ value: Int) -> String? {
-        guard value > 0 else { return nil }
-
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        formatter.maximumFractionDigits = 0
-
-        return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
-    }
-
-    private static func nonEmptyText(from text: String?) -> String? {
-        guard let text else { return nil }
-
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedText.isEmpty ? nil : trimmedText
     }
 
     private static func makeURL(from string: String?) -> URL? {
@@ -580,9 +545,10 @@ nonisolated struct MovieDetailImageItem: Sendable, Equatable, Identifiable {
 
         self.id = image.filePath
         self.title = "劇照 \(index + 1)"
-        self.resolutionText = image.width > 0 && image.height > 0
-            ? "\(image.width) × \(image.height)"
-            : nil
+        self.resolutionText = BaseDisplayTextFormatter.resolution(
+            width: image.width,
+            height: image.height
+        )
         self.imageURL = imageURL
     }
 }
@@ -600,7 +566,10 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
         self.id = recommendation.id
         self.title = recommendation.title
         self.releaseDateText = recommendation.releaseDate
-        self.scoreText = recommendation.voteCount > 0 ? String(format: "%.1f", recommendation.voteAverage) : nil
+        self.scoreText = BaseDisplayTextFormatter.score(
+            recommendation.voteAverage,
+            voteCount: recommendation.voteCount
+        )
         self.posterURL = recommendation.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

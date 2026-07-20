@@ -758,35 +758,23 @@ nonisolated struct TVDetailItem: Sendable, Equatable, Identifiable {
         self.title = detail.name
         self.originalTitle = detail.originalName
         self.tagline = detail.tagline.isEmpty ? nil : detail.tagline
-        self.overview = Self.nonEmptyText(from: detail.overview)
+        self.overview = BaseDisplayTextFormatter.nonEmptyText(detail.overview)
         self.posterURL = detail.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
         self.backdropURL = detail.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.firstAirDateText = Self.nonEmptyText(from: detail.firstAirDate)
-        self.lastAirDateText = Self.nonEmptyText(from: detail.lastAirDate)
-        self.episodeRunTimeText = Self.formatEpisodeRunTime(detail.episodeRunTime)
-        self.seasonCountText = detail.numberOfSeasons > 0 ? "\(detail.numberOfSeasons) 季" : nil
-        self.episodeCountText = detail.numberOfEpisodes > 0 ? "\(detail.numberOfEpisodes) 集" : nil
-        self.scoreText = detail.voteCount > 0 ? String(format: "%.1f", detail.voteAverage) : nil
-        self.voteCountText = detail.voteCount > 0 ? "\(detail.voteCount)" : nil
-        self.statusText = Self.nonEmptyText(from: detail.status)
-        self.typeText = Self.nonEmptyText(from: detail.type)
+        self.firstAirDateText = BaseDisplayTextFormatter.nonEmptyText(detail.firstAirDate)
+        self.lastAirDateText = BaseDisplayTextFormatter.nonEmptyText(detail.lastAirDate)
+        self.episodeRunTimeText = BaseDisplayTextFormatter.firstMinutes(values: detail.episodeRunTime)
+        self.seasonCountText = BaseDisplayTextFormatter.count(detail.numberOfSeasons, unit: "季")
+        self.episodeCountText = BaseDisplayTextFormatter.count(detail.numberOfEpisodes, unit: "集")
+        self.scoreText = BaseDisplayTextFormatter.score(detail.voteAverage, voteCount: detail.voteCount)
+        self.voteCountText = BaseDisplayTextFormatter.voteCount(detail.voteCount)
+        self.statusText = BaseDisplayTextFormatter.nonEmptyText(detail.status)
+        self.typeText = BaseDisplayTextFormatter.nonEmptyText(detail.type)
         self.homepageURL = Self.makeURL(from: detail.homepage)
-    }
-
-    private static func formatEpisodeRunTime(_ values: [Int]) -> String? {
-        guard let runtime = values.first(where: { $0 > 0 }) else { return nil }
-        return "\(runtime) 分鐘"
-    }
-
-    private static func nonEmptyText(from text: String?) -> String? {
-        guard let text else { return nil }
-
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedText.isEmpty ? nil : trimmedText
     }
 
     private static func makeURL(from string: String?) -> URL? {
@@ -969,7 +957,10 @@ nonisolated struct TVDetailRecommendationItem: Sendable, Equatable, Identifiable
         self.id = recommendation.id
         self.title = recommendation.name
         self.firstAirDateText = recommendation.firstAirDate
-        self.scoreText = recommendation.voteCount > 0 ? String(format: "%.1f", recommendation.voteAverage) : nil
+        self.scoreText = BaseDisplayTextFormatter.score(
+            recommendation.voteAverage,
+            voteCount: recommendation.voteCount
+        )
         self.posterURL = recommendation.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

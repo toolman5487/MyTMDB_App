@@ -17,6 +17,7 @@ protocol MovieDetailRouting: AnyObject {
     func showPersonDetail(personID: Int)
     func showMovieDetail(movieID: Int)
     func showContentList(_ configuration: DetailContentListConfiguration)
+    func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
     func showRatingPageSheet(
         title: String,
         currentValue: Double?,
@@ -73,6 +74,14 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showContentList(_ configuration: DetailContentListConfiguration) {
         detailRouter.showContentList(configuration)
+    }
+
+    func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?) {
+        detailRouter.showImagePreview(
+            imageURLs: imageURLs,
+            selectedImageURL: selectedImageURL,
+            title: title
+        )
     }
 
     func showRatingPageSheet(

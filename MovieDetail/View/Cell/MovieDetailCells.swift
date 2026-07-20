@@ -498,7 +498,13 @@ final class MovieDetailImagesCollectionViewCell: DetailImageTitleStripCollection
         static let imageHeight: CGFloat = 124
     }
 
-    func configure(items: [MovieDetailImageItem]) {
+    func configure(
+        items: [MovieDetailImageItem],
+        onImageSelected: @escaping (MovieDetailImageItem) -> Void
+    ) {
+        let imageItemsByID = items.reduce(into: [String: MovieDetailImageItem]()) { result, item in
+            result[item.id] = item
+        }
         configure(
             items: items.map {
                 DetailImageTitleItem(
@@ -510,7 +516,10 @@ final class MovieDetailImagesCollectionViewCell: DetailImageTitleStripCollection
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight
-        )
+        ) { item in
+            guard let imageItem = imageItemsByID[item.id] else { return }
+            onImageSelected(imageItem)
+        }
     }
 }
 

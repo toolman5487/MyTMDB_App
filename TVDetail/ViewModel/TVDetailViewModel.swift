@@ -373,9 +373,10 @@ nonisolated struct TVDetailImageItem: Sendable, Equatable, Identifiable {
 
         self.id = image.filePath
         self.title = "劇照 \(index + 1)"
-        self.resolutionText = image.width > 0 && image.height > 0
-            ? "\(image.width) × \(image.height)"
-            : nil
+        self.resolutionText = BaseDisplayTextFormatter.resolution(
+            width: image.width,
+            height: image.height
+        )
         self.imageURL = imageURL
     }
 }

@@ -17,10 +17,6 @@ final class MovieDetailSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: MovieDetailSectionHeaderView.self)
 
-    private enum Layout {
-        static let horizontalInset: CGFloat = 16
-    }
-
     private var onTap: (() -> Void)?
 
     // MARK: - UI Components
@@ -64,7 +60,7 @@ final class MovieDetailSectionHeaderView: UICollectionReusableView {
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(Layout.horizontalInset)
+            make.leading.trailing.equalToSuperview()
         }
     }
 

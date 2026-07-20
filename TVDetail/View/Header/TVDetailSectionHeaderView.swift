@@ -15,10 +15,6 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: TVDetailSectionHeaderView.self)
 
-    private enum Layout {
-        static let horizontalInset: CGFloat = 16
-    }
-
     private var onTap: (() -> Void)?
 
     private let titleLabel = AppFactory.Label.headline()
@@ -64,7 +60,7 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
 
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(Layout.horizontalInset)
+            make.leading.trailing.equalToSuperview()
             make.centerY.equalToSuperview()
         }
     }

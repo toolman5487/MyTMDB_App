@@ -506,9 +506,16 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
+            let previewItems = Array(items.prefix(DetailSectionPreviewLimit.itemCount))
             (cell as? MovieDetailImagesCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
-            )
+                items: previewItems
+            ) { [weak self] imageItem in
+                self?.router.showImagePreview(
+                    imageURLs: items.map(\.imageURL),
+                    selectedImageURL: imageItem.imageURL,
+                    title: "劇照"
+                )
+            }
             return cell
 
         case .recommendations(let items):
