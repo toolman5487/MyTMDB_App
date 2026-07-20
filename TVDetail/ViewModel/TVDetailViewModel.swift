@@ -72,13 +72,12 @@ final class TVDetailViewModel {
 
         do {
             async let content = service.fetchTVDetailContent(seriesID: seriesID)
-            async let accountMediaState: Void = accountMediaController.loadAccountMediaState(
+            await accountMediaController.loadAccountMediaState(
                 sourceDescription: "TV series \(seriesID)"
             ) { [service] sessionID in
                 try await service.fetchTVAccountStates(seriesID: seriesID, sessionId: sessionID)
             }
             let loadedContent = try await content
-            _ = await accountMediaState
             accountMediaController.updateDefaultRating(
                 fromPublicRating: loadedContent.detail.voteCount > 0
                     ? loadedContent.detail.voteAverage

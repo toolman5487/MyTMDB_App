@@ -72,13 +72,12 @@ final class MovieDetailViewModel {
 
         do {
             async let content = service.fetchMovieDetailContent(id: id)
-            async let accountMediaState: Void = accountMediaController.loadAccountMediaState(
+            await accountMediaController.loadAccountMediaState(
                 sourceDescription: "movie \(id)"
             ) { [service] sessionID in
                 try await service.fetchMovieAccountStates(id: id, sessionId: sessionID)
             }
             let loadedContent = try await content
-            _ = await accountMediaState
             accountMediaController.updateDefaultRating(
                 fromPublicRating: loadedContent.detail.voteCount > 0
                     ? loadedContent.detail.voteAverage
