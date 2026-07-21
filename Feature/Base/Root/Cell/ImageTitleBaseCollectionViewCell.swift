@@ -21,6 +21,7 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
 
     private var imageHeight = DefaultLayout.imageHeight
     private var imageCornerRadius = DefaultLayout.imageCornerRadius
+    private var imageHeightConstraint: Constraint?
 
     private let contentStackView: UIStackView = {
         let stackView = UIStackView()
@@ -74,7 +75,7 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
 
         itemImageView.snp.makeConstraints { make in
             make.width.equalTo(contentStackView)
-            make.height.equalTo(imageHeight)
+            imageHeightConstraint = make.height.equalTo(imageHeight).constraint
         }
 
         titleLabel.snp.makeConstraints { make in
@@ -111,6 +112,7 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
     ) {
         self.imageHeight = imageHeight
         self.imageCornerRadius = imageCornerRadius
+        imageHeightConstraint?.update(offset: imageHeight)
         itemImageView.layer.cornerRadius = imageCornerRadius
     }
 }

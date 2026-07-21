@@ -16,13 +16,60 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     // MARK: - Constants
 
     static let reuseIdentifier = String(describing: MainHomeFeaturedHeaderView.self)
-    static let featuredHeight: CGFloat = 264
+
+    static func featuredHeight(
+        for width: CGFloat,
+        userInterfaceIdiom: UIUserInterfaceIdiom
+    ) -> CGFloat {
+        let platform = Platform(userInterfaceIdiom: userInterfaceIdiom)
+
+        return Layout.carouselHeight(for: width, platform: platform)
+            + Layout.carouselTitleSpacing
+            + MainHomeSectionHeaderView.standardHeight
+    }
+
+    private enum Platform {
+        case phone
+        case pad
+
+        init(userInterfaceIdiom: UIUserInterfaceIdiom) {
+            switch userInterfaceIdiom {
+            case .pad:
+                self = .pad
+
+            default:
+                self = .phone
+            }
+        }
+
+        func maximumCarouselWidth(for width: CGFloat) -> CGFloat {
+            switch self {
+            case .phone:
+                return width
+
+            case .pad:
+                return min(width, Layout.maximumCarouselWidthForPad)
+            }
+        }
+
+        func carouselWidth(for width: CGFloat) -> CGFloat {
+            maximumCarouselWidth(for: width)
+        }
+    }
 
     private enum Layout {
         static let horizontalInset: CGFloat = 16
-        static let carouselHeight: CGFloat = 224
+        static let maximumCarouselWidthForPad: CGFloat = 720
+        static let fallbackCarouselHeight: CGFloat = 224
+        static let backdropAspectRatio: CGFloat = 9.0 / 16.0
         static let carouselTitleSpacing: CGFloat = 8
         static let titleTrailingSymbolName = "chevron.right.2"
+
+        static func carouselHeight(for width: CGFloat, platform: Platform) -> CGFloat {
+            guard width > 0 else { return fallbackCarouselHeight }
+            let carouselWidth = platform.carouselWidth(for: width)
+            return floor(carouselWidth * backdropAspectRatio)
+        }
     }
 
     // MARK: - Properties
@@ -35,6 +82,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     private let stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.alignment = .center
         stackView.spacing = Layout.carouselTitleSpacing
         return stackView
     }()
@@ -107,10 +155,22 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         }
 
         carouselView.snp.makeConstraints { make in
-            make.height.equalTo(Layout.carouselHeight)
+            let platform = Platform(userInterfaceIdiom: traitCollection.userInterfaceIdiom)
+
+            make.width.lessThanOrEqualToSuperview()
+            switch platform {
+            case .phone:
+                break
+
+            case .pad:
+                make.width.lessThanOrEqualTo(Layout.maximumCarouselWidthForPad)
+            }
+            make.width.equalToSuperview().priority(.high)
+            make.height.equalTo(carouselView.snp.width).multipliedBy(Layout.backdropAspectRatio)
         }
 
         titleRowStackView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
             make.height.equalTo(MainHomeSectionHeaderView.standardHeight)
         }
     }
@@ -119,9 +179,14 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     func configure(title: String?, carouselItems: [MainHomeContentItem] = []) {
         let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
+        let trailingImage = UIImage(
+            systemName: Layout.titleTrailingSymbolName,
+            withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
+        )
+
         titleLabel.attributedText = MainHomeSectionTitleAttributedStringFactory.make(
             title: title,
-            trailingImage: Self.makeTitleTrailingImage(font: font),
+            trailingImage: trailingImage,
             font: font,
             textColor: ThemeColor.highlight
         )
@@ -129,13 +194,6 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         carouselView.onItemSelected = { [weak self] item in
             self?.onCarouselSelected?(item)
         }
-    }
-
-    private static func makeTitleTrailingImage(font: UIFont) -> UIImage? {
-        UIImage(
-            systemName: Layout.titleTrailingSymbolName,
-            withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
-        )
     }
 
     @objc private func handleTitleTap() {

@@ -302,7 +302,10 @@ extension MainHomeViewController: UICollectionViewDelegateFlowLayout {
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
         let height = section == 0 && !carouselItems.isEmpty
-            ? MainHomeFeaturedHeaderView.featuredHeight
+            ? MainHomeFeaturedHeaderView.featuredHeight(
+                for: collectionView.bounds.width,
+                userInterfaceIdiom: traitCollection.userInterfaceIdiom
+            )
             : Layout.headerHeight
 
         return CGSize(
