@@ -108,7 +108,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     private func refreshProfile() {
         profileRefreshTask?.cancel()
-        profileRefreshTask = Task { [weak self] in
+        profileRefreshTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             do {
@@ -142,7 +142,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
     private func clearImageCache() {
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk { [weak self] in
-            Task { @MainActor in
+            Task(priority: .userInitiated) { @MainActor in
                 self?.router.showImageCacheCleared()
             }
         }
@@ -158,7 +158,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
         viewModel.clearAllLocalData()
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk { [weak self] in
-            Task { @MainActor in
+            Task(priority: .userInitiated) { @MainActor in
                 self?.router.showLoggedOut()
             }
         }

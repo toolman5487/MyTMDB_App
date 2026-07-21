@@ -83,7 +83,7 @@ final class MainMemberSettingProfileSummaryCollectionViewCell: UICollectionViewL
             options: [],
             progress: nil
         ) { [weak self] image, _, _, _, _, imageURL in
-            Task { @MainActor in
+            Task(priority: .userInitiated) { @MainActor in
                 guard let self,
                       imageURL == self.representedAvatarURL,
                       let image else {

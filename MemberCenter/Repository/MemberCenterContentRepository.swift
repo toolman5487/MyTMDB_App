@@ -45,7 +45,7 @@ nonisolated final class MemberCenterListPosterEnricher: MemberCenterListPosterEn
     ) async -> [MemberCenterList] {
         await withTaskGroup(of: (Int, MemberCenterList).self) { group in
             for (index, list) in lists.enumerated() {
-                group.addTask { [service] in
+                group.addTask(priority: .utility) { [service] in
                     guard index < limit,
                           list.posterPath == nil else {
                         return (index, list)
