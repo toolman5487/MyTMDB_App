@@ -9,6 +9,15 @@ import SDWebImage
 import SnapKit
 import UIKit
 
+// MARK: - ImageTitleCellContent
+
+nonisolated struct ImageTitleCellContent: Sendable, Equatable {
+    let imageURL: URL?
+    let title: String
+    let subtitle: String?
+    let imageHeight: CGFloat
+}
+
 // MARK: - ImageTitleBaseCollectionViewCell
 
 @MainActor
@@ -95,7 +104,16 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
         subtitleLabel.isHidden = false
     }
 
-    func configure(
+    func configure(with content: ImageTitleCellContent) {
+        configureLayout(imageHeight: content.imageHeight)
+        configure(
+            imageURL: content.imageURL,
+            title: content.title,
+            subtitle: content.subtitle
+        )
+    }
+
+    private func configure(
         imageURL: URL?,
         title: String,
         subtitle: String?
@@ -106,7 +124,7 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
         subtitleLabel.isHidden = subtitle?.isEmpty ?? true
     }
 
-    func configureLayout(
+    private func configureLayout(
         imageHeight: CGFloat,
         imageCornerRadius: CGFloat = DefaultLayout.imageCornerRadius
     ) {

@@ -14,22 +14,15 @@ final class MainTVListSeriesCollectionViewCell: ImageTitleBaseCollectionViewCell
 
     static let reuseIdentifier = String(describing: MainTVListSeriesCollectionViewCell.self)
 
-    private enum Layout {
-        static let imageCornerRadius: CGFloat = 8
-    }
-
     func configure(
         with item: TVGridSeriesItem,
         imageHeight: CGFloat
     ) {
-        configureLayout(
-            imageHeight: imageHeight,
-            imageCornerRadius: Layout.imageCornerRadius
-        )
-        configure(
+        configure(with: ImageTitleCellContent(
             imageURL: item.posterURL,
             title: item.title,
-            subtitle: "評分 \(item.scoreText)"
-        )
+            subtitle: "評分 \(item.scoreText)",
+            imageHeight: imageHeight
+        ))
     }
 }
