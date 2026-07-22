@@ -13,4 +13,14 @@ nonisolated struct BaseFilterHeaderItem: Sendable, Equatable, Identifiable {
     let id: String
     let title: String
     let isSelected: Bool
+
+    init(
+        id: String,
+        title: String,
+        isSelected: Bool
+    ) {
+        self.id = id
+        self.title = SimplifiedChineseTextMapper.traditionalChinese(from: title)
+        self.isSelected = isSelected
+    }
 }

@@ -585,6 +585,9 @@
 		15F11002300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */; };
 		15F11003300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */; };
 		15F11004300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */; };
+		15F11006300E110000F11001 /* SimplifiedChineseTextMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11005300E110000F11001 /* SimplifiedChineseTextMapper.swift */; };
+		15F11007300E110000F11001 /* SimplifiedChineseTextMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11005300E110000F11001 /* SimplifiedChineseTextMapper.swift */; };
+		15F11008300E110000F11001 /* SimplifiedChineseTextMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F11005300E110000F11001 /* SimplifiedChineseTextMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -812,6 +815,7 @@
 		15F020012FF8500000F02001 /* MainTVGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTVGenrePageSheetViewController.swift; sourceTree = "<group>"; };
 		15F020052FF8501000F02001 /* BaseGenrePageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGenrePageSheetViewController.swift; sourceTree = "<group>"; };
 		15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDisplayTextFormatter.swift; sourceTree = "<group>"; };
+		15F11005300E110000F11001 /* SimplifiedChineseTextMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedChineseTextMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -2767,6 +2771,7 @@
 			isa = PBXGroup;
 			children = (
 				15F11001300E100000F11001 /* BaseDisplayTextFormatter.swift */,
+				15F11005300E110000F11001 /* SimplifiedChineseTextMapper.swift */,
 			);
 			path = Formatter;
 			sourceTree = "<group>";
@@ -2995,6 +3000,7 @@
 				15F010022FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002152FF430010000001 /* AppAppearance.swift in Sources */,
 				15F11002300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
+				15F11006300E110000F11001 /* SimplifiedChineseTextMapper.swift in Sources */,
 				152BE73F2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift in Sources */,
 				1588252D2FFF766D0028B219 /* HomeSectionListViewController.swift in Sources */,
 				158825362FFF7A900028B219 /* HomeSectionListModels.swift in Sources */,
@@ -3165,6 +3171,7 @@
 				15F010032FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002162FF430010000001 /* AppAppearance.swift in Sources */,
 				15F11003300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
+				15F11007300E110000F11001 /* SimplifiedChineseTextMapper.swift in Sources */,
 				15DAAEEA2FFDE6D3009FB88A /* EpisodeDetailViewController.swift in Sources */,
 				150336B12FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C12FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
@@ -3492,6 +3499,7 @@
 				15F010042FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002172FF430010000001 /* AppAppearance.swift in Sources */,
 				15F11004300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
+				15F11008300E110000F11001 /* SimplifiedChineseTextMapper.swift in Sources */,
 				150336B02FF35E00003125EC /* ErrorMessage.swift in Sources */,
 				150336C02FF35F00003125EC /* NetworkError+ErrorMessage.swift in Sources */,
 				15A6A05E300475E800AD5E46 /* MemberCenterContentStripCollectionViewCell.swift in Sources */,
