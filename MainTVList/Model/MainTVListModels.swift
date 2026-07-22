@@ -79,7 +79,7 @@ nonisolated struct TVGridSeriesItem: Sendable, Equatable, Identifiable {
 
         self.id = series.id
         self.title = series.name
-        self.overview = series.overview.isEmpty ? "目前沒有簡介。" : series.overview
+        self.overview = BaseDisplayTextFormatter.overview(series.overview)
         self.posterURL = series.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -87,8 +87,8 @@ nonisolated struct TVGridSeriesItem: Sendable, Equatable, Identifiable {
         self.voteAverage = series.voteAverage
         self.voteCount = series.voteCount
         self.popularity = series.popularity
-        self.firstAirDateText = firstAirDate ?? "尚未公布"
-        self.scoreText = String(format: "%.1f", series.voteAverage)
+        self.firstAirDateText = BaseDisplayTextFormatter.announcedText(firstAirDate)
+        self.scoreText = BaseDisplayTextFormatter.decimal(series.voteAverage)
     }
 }
 

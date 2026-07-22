@@ -66,7 +66,7 @@ nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
 
         self.id = movie.id
         self.title = movie.title
-        self.overview = movie.overview.isEmpty ? "目前沒有簡介。" : movie.overview
+        self.overview = BaseDisplayTextFormatter.overview(movie.overview)
         self.posterURL = movie.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -74,8 +74,8 @@ nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
         self.voteAverage = movie.voteAverage
         self.voteCount = movie.voteCount
         self.popularity = movie.popularity
-        self.releaseDateText = releaseDate ?? "尚未公布"
-        self.scoreText = String(format: "%.1f", movie.voteAverage)
+        self.releaseDateText = BaseDisplayTextFormatter.announcedText(releaseDate)
+        self.scoreText = BaseDisplayTextFormatter.decimal(movie.voteAverage)
     }
 }
 

@@ -436,11 +436,11 @@ nonisolated struct SeasonDetailItem: Sendable, Equatable, Identifiable {
     init(detail: SeasonDetail) {
         self.id = detail.id
         self.title = detail.name
-        self.overview = detail.overview.isEmpty ? "目前沒有簡介。" : detail.overview
-        self.airDateText = detail.airDate.isEmpty ? "尚未公布" : detail.airDate
-        self.episodeCountText = "\(detail.episodes.count) 集"
-        self.seasonNumberText = "第 \(detail.seasonNumber) 季"
-        self.scoreText = String(format: "%.1f", detail.voteAverage)
+        self.overview = BaseDisplayTextFormatter.overview(detail.overview)
+        self.airDateText = BaseDisplayTextFormatter.announcedText(detail.airDate)
+        self.episodeCountText = BaseDisplayTextFormatter.countText(detail.episodes.count, unit: "集")
+        self.seasonNumberText = BaseDisplayTextFormatter.seasonNumberText(detail.seasonNumber)
+        self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
         self.posterURL = detail.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
@@ -459,32 +459,20 @@ nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
     init(episode: SeasonEpisode) {
         self.id = episode.id
         self.episodeNumber = episode.episodeNumber
-        self.title = "第 \(episode.episodeNumber) 集 \(episode.name)"
+        self.title = "\(BaseDisplayTextFormatter.episodeNumberText(episode.episodeNumber)) \(episode.name)"
         self.subtitle = Self.makeSubtitle(episode: episode)
-        self.overview = episode.overview.isEmpty ? "目前沒有簡介。" : episode.overview
+        self.overview = BaseDisplayTextFormatter.overview(episode.overview)
         self.stillURL = episode.stillPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.scoreText = String(format: "%.1f", episode.voteAverage)
+        self.scoreText = BaseDisplayTextFormatter.decimal(episode.voteAverage)
     }
 
     private static func makeSubtitle(episode: SeasonEpisode) -> String {
-        let airDateText = episode.airDate.isEmpty ? nil : episode.airDate
-        let runtimeText = episode.runtime.map { "\($0) 分鐘" }
-
-        switch (airDateText, runtimeText) {
-        case let (airDate?, runtime?):
-            return "\(airDate) · \(runtime)"
-
-        case let (airDate?, nil):
-            return airDate
-
-        case let (nil, runtime?):
-            return runtime
-
-        case (nil, nil):
-            return "尚未公布"
-        }
+        BaseDisplayTextFormatter.metadata([
+            episode.airDate,
+            BaseDisplayTextFormatter.minutes(episode.runtime)
+        ]) ?? BaseDisplayTextFormatter.announcedText(nil)
     }
 }
 

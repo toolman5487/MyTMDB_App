@@ -113,7 +113,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
             .overview(
                 EpisodeDetailOverviewSectionItem(
                     hero: detail,
-                    overview: content.detail.overview.isEmpty ? nil : content.detail.overview
+                    overview: BaseDisplayTextFormatter.nonEmptyText(content.detail.overview)
                 )
             )
         ]

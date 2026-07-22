@@ -757,7 +757,7 @@ nonisolated struct TVDetailItem: Sendable, Equatable, Identifiable {
         self.id = detail.id
         self.title = detail.name
         self.originalTitle = detail.originalName
-        self.tagline = detail.tagline.isEmpty ? nil : detail.tagline
+        self.tagline = BaseDisplayTextFormatter.nonEmptyText(detail.tagline)
         self.overview = BaseDisplayTextFormatter.nonEmptyText(detail.overview)
         self.posterURL = detail.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
@@ -803,11 +803,10 @@ nonisolated struct TVDetailHeroItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropURL
         self.scoreText = detail.scoreText
         self.voteCountText = detail.voteCountText
-        let metadataValues = [
+        self.metadataText = BaseDisplayTextFormatter.metadata([
             detail.firstAirDateText,
             detail.seasonCountText
-        ].compactMap { $0 }
-        self.metadataText = metadataValues.isEmpty ? nil : metadataValues.joined(separator: " · ")
+        ])
     }
 }
 
@@ -879,7 +878,7 @@ nonisolated struct TVDetailCastItem: Sendable, Equatable, Identifiable {
         self.id = cast.id
         self.name = cast.name
         self.characterText = Self.makeCharacterText(roles: cast.roles)
-        self.episodeCountText = cast.totalEpisodeCount > 0 ? "\(cast.totalEpisodeCount) 集" : ""
+        self.episodeCountText = BaseDisplayTextFormatter.count(cast.totalEpisodeCount, unit: "集") ?? ""
         self.profileURL = cast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -888,8 +887,7 @@ nonisolated struct TVDetailCastItem: Sendable, Equatable, Identifiable {
     private static func makeCharacterText(roles: [TVAggregateCreditRole]) -> String {
         let characters = roles
             .map(\.character)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
+            .compactMap(BaseDisplayTextFormatter.nonEmptyText)
 
         guard !characters.isEmpty else { return "" }
         return Array(Set(characters)).sorted().joined(separator: " / ")
@@ -914,10 +912,10 @@ nonisolated struct TVDetailSeasonItem: Sendable, Equatable, Identifiable {
     }
 
     private static func makeSubtitle(season: TVDetailSeason) -> String {
-        let episodeText = season.episodeCount > 0 ? "\(season.episodeCount) 集" : nil
-        guard !season.airDate.isEmpty else { return episodeText ?? "" }
-        guard let episodeText else { return season.airDate }
-        return "\(season.airDate) · \(episodeText)"
+        BaseDisplayTextFormatter.metadata([
+            season.airDate,
+            BaseDisplayTextFormatter.count(season.episodeCount, unit: "集")
+        ]) ?? ""
     }
 }
 

@@ -111,8 +111,8 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
     init(movie: MovieGridMovie, destination: MemberCenterDestination) {
         self.id = "\(destination.rawValue)-movie-\(movie.id)"
         self.title = movie.title
-        self.subtitle = Self.dateText(movie.releaseDate)
-        self.metadataText = Self.scoreText(movie.voteAverage)
+        self.subtitle = BaseDisplayTextFormatter.announcedText(movie.releaseDate)
+        self.metadataText = BaseDisplayTextFormatter.ratingText(movie.voteAverage)
         self.imageURL = Self.posterURL(path: movie.posterPath)
         self.detailTarget = .movie(id: movie.id)
     }
@@ -120,8 +120,8 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
     init(series: TVGridSeries, destination: MemberCenterDestination) {
         self.id = "\(destination.rawValue)-tv-\(series.id)"
         self.title = series.name
-        self.subtitle = Self.dateText(series.firstAirDate)
-        self.metadataText = Self.scoreText(series.voteAverage)
+        self.subtitle = BaseDisplayTextFormatter.announcedText(series.firstAirDate)
+        self.metadataText = BaseDisplayTextFormatter.ratingText(series.voteAverage)
         self.imageURL = Self.posterURL(path: series.posterPath)
         self.detailTarget = .tv(id: series.id)
     }
@@ -129,8 +129,8 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
     init(movie: MemberCenterRatedMovie, destination: MemberCenterDestination) {
         self.id = "\(destination.rawValue)-movie-\(movie.id)"
         self.title = movie.title
-        self.subtitle = Self.dateText(movie.releaseDate)
-        self.metadataText = Self.userRatingText(movie.rating)
+        self.subtitle = BaseDisplayTextFormatter.announcedText(movie.releaseDate)
+        self.metadataText = BaseDisplayTextFormatter.userRatingText(movie.rating)
         self.imageURL = Self.posterURL(path: movie.posterPath)
         self.detailTarget = .movie(id: movie.id)
     }
@@ -138,8 +138,8 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
     init(series: MemberCenterRatedTVSeries, destination: MemberCenterDestination) {
         self.id = "\(destination.rawValue)-tv-\(series.id)"
         self.title = series.name
-        self.subtitle = Self.dateText(series.firstAirDate)
-        self.metadataText = Self.userRatingText(series.rating)
+        self.subtitle = BaseDisplayTextFormatter.announcedText(series.firstAirDate)
+        self.metadataText = BaseDisplayTextFormatter.userRatingText(series.rating)
         self.imageURL = Self.posterURL(path: series.posterPath)
         self.detailTarget = .tv(id: series.id)
     }
@@ -148,7 +148,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         self.id = "\(destination.rawValue)-episode-\(episode.showID)-\(episode.seasonNumber)-\(episode.episodeNumber)-\(episode.id)"
         self.title = episode.name
         self.subtitle = Self.episodeSubtitle(episode)
-        self.metadataText = Self.userRatingText(episode.rating)
+        self.metadataText = BaseDisplayTextFormatter.userRatingText(episode.rating)
         self.imageURL = Self.posterURL(path: episode.stillPath)
         self.detailTarget = .episode(
             seriesID: episode.showID,
@@ -161,7 +161,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         self.id = "\(destination.rawValue)-list-\(list.id)"
         self.title = list.name
         self.subtitle = list.description.isEmpty ? "沒有描述" : list.description
-        self.metadataText = "\(list.itemCount) 個項目"
+        self.metadataText = BaseDisplayTextFormatter.countText(list.itemCount, unit: "個項目")
         self.imageURL = Self.posterURL(path: list.posterPath)
         self.detailTarget = .list(id: list.id)
     }
@@ -172,28 +172,13 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         }
     }
 
-    private static func dateText(_ value: String?) -> String {
-        guard let value, !value.isEmpty else {
-            return "尚未公布"
-        }
-
-        return value
-    }
-
-    private static func scoreText(_ value: Double) -> String {
-        "評分 \(String(format: "%.1f", value))"
-    }
-
-    private static func userRatingText(_ value: Double) -> String {
-        "我的評分 \(String(format: "%.1f", value))"
-    }
-
     private static func episodeSubtitle(_ episode: MemberCenterRatedEpisode) -> String {
-        let episodeText = "第 \(episode.seasonNumber) 季第 \(episode.episodeNumber) 集"
-        guard let airDate = episode.airDate, !airDate.isEmpty else {
-            return episodeText
-        }
-
-        return "\(episodeText) · \(airDate)"
+        BaseDisplayTextFormatter.metadata([
+            BaseDisplayTextFormatter.seasonEpisodeNumberText(
+                seasonNumber: episode.seasonNumber,
+                episodeNumber: episode.episodeNumber
+            ),
+            episode.airDate
+        ]) ?? ""
     }
 }

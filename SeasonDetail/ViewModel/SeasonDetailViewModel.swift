@@ -148,7 +148,7 @@ nonisolated enum SeasonDetailSectionBuilder {
             .overview(
                 SeasonDetailOverviewSectionItem(
                     hero: detail,
-                    overview: content.detail.overview.isEmpty ? nil : content.detail.overview
+                    overview: BaseDisplayTextFormatter.nonEmptyText(content.detail.overview)
                 )
             )
         ]
@@ -208,7 +208,7 @@ nonisolated enum SeasonDetailSectionBuilder {
         [
             makeFact(title: "季數", value: detailItem.seasonNumberText),
             makeFact(title: "集數", value: detailItem.episodeCountText),
-            makeFact(title: "首播日期", value: detail.airDate.isEmpty ? nil : detail.airDate),
+            makeFact(title: "首播日期", value: BaseDisplayTextFormatter.nonEmptyText(detail.airDate)),
             makeFact(title: "評分", value: detail.voteAverage > 0 ? detailItem.scoreText : nil)
         ].compactMap { $0 }
     }
@@ -365,7 +365,7 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
     init(creditCast: SeasonCreditCast) {
         self.id = creditCast.id
         self.title = creditCast.name
-        self.subtitle = creditCast.character.isEmpty ? nil : creditCast.character
+        self.subtitle = BaseDisplayTextFormatter.nonEmptyText(creditCast.character)
         self.profileURL = creditCast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -461,10 +461,10 @@ nonisolated struct SeasonAccountStateItem: Sendable, Equatable {
     init(accountStates: SeasonAccountStatesResponse) {
         switch accountStates.rated {
         case .unrated:
-            self.ratingText = "尚未評分"
+            self.ratingText = BaseDisplayTextFormatter.unratedText
 
         case .rated(let value):
-            self.ratingText = String(format: "%.1f", value)
+            self.ratingText = BaseDisplayTextFormatter.decimal(value)
         }
     }
 }

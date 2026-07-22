@@ -371,7 +371,7 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
         self.id = detail.id
         self.title = detail.title
         self.originalTitle = detail.originalTitle
-        self.tagline = detail.tagline.isEmpty ? nil : detail.tagline
+        self.tagline = BaseDisplayTextFormatter.nonEmptyText(detail.tagline)
         self.overview = BaseDisplayTextFormatter.nonEmptyText(detail.overview)
         self.posterURL = detail.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
@@ -423,11 +423,10 @@ nonisolated struct MovieDetailHeroItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropURL
         self.scoreText = detail.scoreText
         self.voteCountText = detail.voteCountText
-        let metadataValues = [
+        self.metadataText = BaseDisplayTextFormatter.metadata([
             detail.releaseDateText,
             detail.runtimeText
-        ].compactMap { $0 }
-        self.metadataText = metadataValues.isEmpty ? nil : metadataValues.joined(separator: " · ")
+        ])
     }
 }
 
@@ -496,7 +495,7 @@ nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
     init(cast: MovieCreditCast) {
         self.id = cast.id
         self.name = cast.name
-        self.characterText = cast.character.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.characterText = BaseDisplayTextFormatter.nonEmptyText(cast.character) ?? ""
         self.profileURL = cast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

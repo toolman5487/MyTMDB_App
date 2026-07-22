@@ -150,8 +150,7 @@ nonisolated enum PersonDetailSectionBuilder {
         }
 
         let aliasItems = content.detail.alsoKnownAs
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
+            .compactMap(BaseDisplayTextFormatter.nonEmptyText)
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map(PersonDetailAliasItem.init(name:))
         if !aliasItems.isEmpty {
@@ -271,16 +270,16 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
     init(detail: PersonDetail) {
         self.id = detail.id
         self.name = detail.name
-        self.biography = Self.nonEmptyText(from: detail.biography)
+        self.biography = BaseDisplayTextFormatter.nonEmptyText(detail.biography)
         self.profileURL = detail.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.birthdayText = Self.nonEmptyText(from: detail.birthday)
-        self.deathdayText = Self.nonEmptyText(from: detail.deathday)
-        self.placeOfBirthText = Self.nonEmptyText(from: detail.placeOfBirth)
-        self.knownForDepartmentText = Self.nonEmptyText(from: detail.knownForDepartment)
+        self.birthdayText = BaseDisplayTextFormatter.nonEmptyText(detail.birthday)
+        self.deathdayText = BaseDisplayTextFormatter.nonEmptyText(detail.deathday)
+        self.placeOfBirthText = BaseDisplayTextFormatter.nonEmptyText(detail.placeOfBirth)
+        self.knownForDepartmentText = BaseDisplayTextFormatter.nonEmptyText(detail.knownForDepartment)
         self.genderText = Self.makeGenderText(detail.gender)
-        self.popularityText = detail.popularity > 0 ? String(format: "%.1f", detail.popularity) : nil
+        self.popularityText = BaseDisplayTextFormatter.positiveDecimal(detail.popularity)
         self.homepageURL = Self.makeURL(from: detail.homepage)
         self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
     }
@@ -302,13 +301,6 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
         case .unknown:
             return nil
         }
-    }
-
-    private static func nonEmptyText(from text: String?) -> String? {
-        guard let text else { return nil }
-
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedText.isEmpty ? nil : trimmedText
     }
 
     private static func makeURL(from string: String?) -> URL? {
@@ -334,11 +326,10 @@ nonisolated struct PersonDetailHeroItem: Sendable, Equatable, Identifiable {
         self.id = detail.id
         self.name = detail.name
         self.profileURL = detail.profileURL
-        let metadataValues = [
+        self.metadataText = BaseDisplayTextFormatter.metadata([
             detail.knownForDepartmentText,
             detail.birthdayText
-        ].compactMap { $0 }
-        self.metadataText = metadataValues.isEmpty ? nil : metadataValues.joined(separator: " · ")
+        ])
     }
 }
 
@@ -374,8 +365,8 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
         self.mediaType = cast.mediaType
         self.title = cast.title
         self.subtitle = Self.makeSubtitle(primary: cast.character, fallback: cast.mediaType.displayText)
-        self.dateText = Self.nonEmptyText(from: cast.primaryDate)
-        self.scoreText = cast.voteCount > 0 ? String(format: "%.1f", cast.voteAverage) : nil
+        self.dateText = BaseDisplayTextFormatter.nonEmptyText(cast.primaryDate)
+        self.scoreText = BaseDisplayTextFormatter.score(cast.voteAverage, voteCount: cast.voteCount)
         self.posterURL = cast.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -387,27 +378,15 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
         self.mediaType = crew.mediaType
         self.title = crew.title
         self.subtitle = Self.makeSubtitle(primary: crew.job, fallback: crew.department)
-        self.dateText = Self.nonEmptyText(from: crew.primaryDate)
-        self.scoreText = crew.voteCount > 0 ? String(format: "%.1f", crew.voteAverage) : nil
+        self.dateText = BaseDisplayTextFormatter.nonEmptyText(crew.primaryDate)
+        self.scoreText = BaseDisplayTextFormatter.score(crew.voteAverage, voteCount: crew.voteCount)
         self.posterURL = crew.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
     }
 
     private static func makeSubtitle(primary: String, fallback: String) -> String {
-        let trimmedPrimary = primary.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedPrimary.isEmpty {
-            return trimmedPrimary
-        }
-
-        return fallback.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private static func nonEmptyText(from text: String?) -> String? {
-        guard let text else { return nil }
-
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedText.isEmpty ? nil : trimmedText
+        BaseDisplayTextFormatter.firstNonEmptyText([primary, fallback]) ?? ""
     }
 }
 
@@ -421,7 +400,10 @@ nonisolated struct PersonDetailProfileImageItem: Sendable, Equatable, Identifiab
     init(image: PersonProfileImage) {
         self.id = image.filePath
         self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
-        self.sizeText = image.width > 0 && image.height > 0 ? "\(image.width) x \(image.height)" : ""
+        self.sizeText = BaseDisplayTextFormatter.resolutionText(
+            width: image.width,
+            height: image.height
+        )
     }
 }
 

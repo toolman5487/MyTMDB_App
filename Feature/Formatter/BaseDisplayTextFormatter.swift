@@ -11,6 +11,8 @@ import Foundation
 
 nonisolated enum BaseDisplayTextFormatter {
 
+    // MARK: - Text Sanitization
+
     static func nonEmptyText(_ text: String?) -> String? {
         guard let text else { return nil }
 
@@ -18,14 +20,58 @@ nonisolated enum BaseDisplayTextFormatter {
         return trimmedText.isEmpty ? nil : trimmedText
     }
 
+    static func nonEmptyTexts(_ values: [String?]) -> [String] {
+        values.compactMap(nonEmptyText)
+    }
+
+    static func firstNonEmptyText(_ values: [String?]) -> String? {
+        nonEmptyTexts(values).first
+    }
+
+    static func text(_ text: String?, fallback: String) -> String {
+        nonEmptyText(text) ?? fallback
+    }
+
+    static func overview(_ text: String?) -> String {
+        self.text(text, fallback: "目前沒有簡介。")
+    }
+
+    static func announcedText(_ text: String?) -> String {
+        self.text(text, fallback: "尚未公布")
+    }
+
+    // MARK: - Score & Vote Count
+
     static func score(_ value: Double, voteCount: Int) -> String? {
         guard voteCount > 0 else { return nil }
         return String(format: "%.1f", value)
     }
 
+    static func decimal(_ value: Double) -> String {
+        String(format: "%.1f", value)
+    }
+
+    static func positiveDecimal(_ value: Double) -> String? {
+        value > 0 ? decimal(value) : nil
+    }
+
+    static func ratingText(_ value: Double) -> String {
+        "評分 \(decimal(value))"
+    }
+
+    static func userRatingText(_ value: Double) -> String {
+        "我的評分 \(decimal(value))"
+    }
+
+    static var unratedText: String {
+        "尚未評分"
+    }
+
     static func voteCount(_ value: Int) -> String? {
         value > 0 ? "\(value)" : nil
     }
+
+    // MARK: - Runtime & Minutes
 
     static func runtime(minutes: Int?) -> String? {
         guard let minutes, minutes > 0 else { return nil }
@@ -53,9 +99,39 @@ nonisolated enum BaseDisplayTextFormatter {
         minutes(values.first { $0 > 0 })
     }
 
+    // MARK: - Count
+
     static func count(_ value: Int, unit: String) -> String? {
         value > 0 ? "\(value) \(unit)" : nil
     }
+
+    static func countText(_ value: Int, unit: String) -> String {
+        "\(value) \(unit)"
+    }
+
+    static func seasonNumberText(_ value: Int) -> String {
+        "第 \(value) 季"
+    }
+
+    static func episodeNumberText(_ value: Int) -> String {
+        "第 \(value) 集"
+    }
+
+    static func seasonEpisodeNumberText(
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) -> String {
+        "\(seasonNumberText(seasonNumber))\(episodeNumberText(episodeNumber))"
+    }
+
+    // MARK: - Metadata
+
+    static func metadata(_ values: [String?]) -> String? {
+        let nonEmptyValues = nonEmptyTexts(values)
+        return nonEmptyValues.isEmpty ? nil : nonEmptyValues.joined(separator: " · ")
+    }
+
+    // MARK: - Currency
 
     static func currencyUSD(_ value: Int) -> String? {
         guard value > 0 else { return nil }
@@ -68,7 +144,25 @@ nonisolated enum BaseDisplayTextFormatter {
         return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
     }
 
+    // MARK: - Resolution
+
     static func resolution(width: Int, height: Int) -> String? {
         width > 0 && height > 0 ? "\(width) × \(height)" : nil
+    }
+
+    static func resolutionText(width: Int, height: Int) -> String {
+        resolution(width: width, height: height) ?? ""
+    }
+
+    // MARK: - Date
+
+    static func iso8601Date(from rawValue: String) -> Date? {
+        guard nonEmptyText(rawValue) != nil else { return nil }
+
+        let fractionalSecondsFormatter = ISO8601DateFormatter()
+        fractionalSecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        return fractionalSecondsFormatter.date(from: rawValue)
+            ?? ISO8601DateFormatter().date(from: rawValue)
     }
 }

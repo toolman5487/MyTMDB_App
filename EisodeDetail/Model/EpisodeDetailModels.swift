@@ -364,14 +364,14 @@ nonisolated struct EpisodeDetailItem: Sendable, Equatable, Identifiable {
     init(detail: EpisodeDetail) {
         self.id = detail.id
         self.title = detail.name
-        self.overview = detail.overview.isEmpty ? "目前沒有簡介。" : detail.overview
-        self.airDateText = detail.airDate.isEmpty ? "尚未公布" : detail.airDate
-        self.episodeNumberText = "第 \(detail.episodeNumber) 集"
-        self.seasonNumberText = "第 \(detail.seasonNumber) 季"
-        self.runtimeText = detail.runtime.map { "\($0) 分鐘" }
-        self.productionCodeText = detail.productionCode.isEmpty ? nil : detail.productionCode
-        self.scoreText = String(format: "%.1f", detail.voteAverage)
-        self.voteCountText = "\(detail.voteCount) 票"
+        self.overview = BaseDisplayTextFormatter.overview(detail.overview)
+        self.airDateText = BaseDisplayTextFormatter.announcedText(detail.airDate)
+        self.episodeNumberText = BaseDisplayTextFormatter.episodeNumberText(detail.episodeNumber)
+        self.seasonNumberText = BaseDisplayTextFormatter.seasonNumberText(detail.seasonNumber)
+        self.runtimeText = BaseDisplayTextFormatter.minutes(detail.runtime)
+        self.productionCodeText = BaseDisplayTextFormatter.nonEmptyText(detail.productionCode)
+        self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
+        self.voteCountText = BaseDisplayTextFormatter.countText(detail.voteCount, unit: "票")
         self.stillURL = detail.stillPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
@@ -389,7 +389,7 @@ nonisolated struct EpisodePersonItem: Sendable, Equatable, Identifiable {
         self.id = cast.creditID
         self.personID = cast.id
         self.title = cast.name
-        self.subtitle = cast.character.isEmpty ? nil : cast.character
+        self.subtitle = BaseDisplayTextFormatter.nonEmptyText(cast.character)
         self.profileURL = cast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -457,16 +457,16 @@ nonisolated struct EpisodeAccountStateItem: Sendable, Equatable {
     let ratingText: String
 
     init(value: Double) {
-        self.ratingText = String(format: "%.1f", value)
+        self.ratingText = BaseDisplayTextFormatter.decimal(value)
     }
 
     init(accountStates: EpisodeAccountStatesResponse) {
         switch accountStates.rated {
         case .unrated:
-            self.ratingText = "尚未評分"
+            self.ratingText = BaseDisplayTextFormatter.unratedText
 
         case .rated(let value):
-            self.ratingText = String(format: "%.1f", value)
+            self.ratingText = BaseDisplayTextFormatter.decimal(value)
         }
     }
 }

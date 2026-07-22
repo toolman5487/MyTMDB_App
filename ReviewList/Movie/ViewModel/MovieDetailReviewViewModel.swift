@@ -231,16 +231,7 @@ final class MovieDetailReviewViewModel {
     }
 
     private func reviewDate(for review: MovieDetailReview) -> Date? {
-        date(from: review.updatedAt) ?? date(from: review.createdAt)
-    }
-
-    private func date(from rawValue: String) -> Date? {
-        guard !rawValue.isEmpty else { return nil }
-
-        let fractionalSecondsFormatter = ISO8601DateFormatter()
-        fractionalSecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        return fractionalSecondsFormatter.date(from: rawValue)
-            ?? ISO8601DateFormatter().date(from: rawValue)
+        BaseDisplayTextFormatter.iso8601Date(from: review.updatedAt)
+            ?? BaseDisplayTextFormatter.iso8601Date(from: review.createdAt)
     }
 }
