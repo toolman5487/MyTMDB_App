@@ -512,7 +512,7 @@ enum AppFactory {
             }
 
             return UIMenu(
-                title: "篩選排序",
+                title: "排序",
                 options: .singleSelection,
                 children: Array(actions)
             )

@@ -1654,6 +1654,17 @@
 			path = Genre;
 			sourceTree = "<group>";
 		};
+		1596A5FB30109402000079DA /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				15A94F982FF27D0900FCBB0F /* MainHome */,
+				15A6A0733004885E00AD5E46 /* MainMemberSetting */,
+				15BAEB622FF658F1006B0E15 /* MainMovieList */,
+				157C51802FFB91080044BD8E /* MainTVList */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
 		1598AA402DC4B69F005E972C = {
 			isa = PBXGroup;
 			children = (
@@ -1661,12 +1672,9 @@
 				15DAAEE22FFDE670009FB88A /* EisodeDetail */,
 				15D198632FF210DE00545A85 /* Feature */,
 				158825292FFF742E0028B219 /* HomeSectionList */,
-				15A94F982FF27D0900FCBB0F /* MainHome */,
+				1596A5FB30109402000079DA /* Main */,
 				15D196332FF10EFF00545A85 /* MainLogIn */,
-				15A6A0733004885E00AD5E46 /* MainMemberSetting */,
-				15BAEB622FF658F1006B0E15 /* MainMovieList */,
 				15A94F672FF26FCE00FCBB0F /* MainTabBar */,
-				157C51802FFB91080044BD8E /* MainTVList */,
 				158893D72FFFA7EF0028B219 /* MemberCenter */,
 				15CF99C72FF36FEC0041F4CC /* MovieDetail */,
 				157C4E572FFB639E0044BD8E /* MovieSearch */,

@@ -68,9 +68,11 @@ MyTMDB_App/
 ├── Network/                 # APIConfig、NetworkService、NetworkError、Localization
 ├── MainLogIn/               # 登入、訪客登入、Session、Root 切換
 ├── MainTabBar/              # 原生 UITabBarController 與 tab 狀態
-├── MainHome/                # 首頁內容區塊
-├── MainMovieList/           # 電影分類列表
-├── MainTVList/              # 劇集分類列表
+├── Main/                    # 主要 Tab 頁面
+│   ├── MainHome/            # 首頁內容區塊
+│   ├── MainMovieList/       # 電影分類列表
+│   ├── MainTVList/          # 劇集分類列表
+│   └── MainMemberSetting/   # 會員設定頁
 ├── MovieSearch/             # 電影搜尋
 ├── TVSearch/                # 劇集搜尋
 ├── MovieDetail/             # 電影詳細頁
@@ -79,7 +81,6 @@ MyTMDB_App/
 ├── EisodeDetail/            # 集詳細頁
 ├── PersonDetail/            # 人物詳細頁
 ├── MemberCenter/            # 會員中心與帳號內容
-├── MainMemberSetting/       # 會員設定頁
 ├── PageSheet/               # Rating、Genre、ReviewDetail 等 Sheet 畫面
 └── Feature/                 # Base、Components、Config、Extension、Logger
 ```
@@ -130,7 +131,7 @@ MyTMDB_App/
    <string>YOUR_TMDB_API_KEY</string>
    ```
 
-   請到 [TMDB API Settings](https://www.themoviedb.org/settings/api) 申請 API Key，並將 `YOUR_TMDB_API_KEY` 換成自己的 key。
+   請到 [TMDB API Settings](https://www.themoviedb.org/settings/api) 申請 API Key，並將範例值換成自己的設定。
 
 5. 選擇 iOS Simulator 或真機，按下 Xcode Run。
 

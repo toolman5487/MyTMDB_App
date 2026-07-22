@@ -166,5 +166,4 @@ private enum MainTab: CaseIterable, Sendable {
             return "person.crop.circle.fill"
         }
     }
-
 }
