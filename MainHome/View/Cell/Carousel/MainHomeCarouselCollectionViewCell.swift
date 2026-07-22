@@ -104,7 +104,10 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
 
         statusLabel.text = "現正熱映"
         titleLabel.text = item.title
-        metadataLabel.text = "\(item.dateText) · 評分 \(item.scoreText)"
+        metadataLabel.text = BaseDisplayTextFormatter.metadata([
+            item.dateText,
+            BaseDisplayTextFormatter.ratingText(item.scoreText)
+        ])
     }
 }
 

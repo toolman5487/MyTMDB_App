@@ -545,7 +545,7 @@ final class MovieDetailRecommendationsCollectionViewCell: DetailImageTitleStripC
                     id: String($0.id),
                     imageURL: $0.posterURL,
                     title: $0.title,
-                    subtitle: $0.scoreText.map { "評分 \($0)" }
+                    subtitle: BaseDisplayTextFormatter.ratingText($0.scoreText)
                 )
             },
             itemSize: Layout.itemSize,

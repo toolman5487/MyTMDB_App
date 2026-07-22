@@ -517,7 +517,7 @@ private final class MovieReviewDetailNavigationTitleView: UIView {
 
     func configure(with item: MovieDetailReviewItem) {
         nameLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
-        ratingLabel.text = item.ratingText.map { "評分 \($0)" }
+        ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
         ratingLabel.isHidden = item.ratingText == nil
 
         if let avatarURL = item.avatarURL {

@@ -44,7 +44,12 @@ nonisolated enum BaseDisplayTextFormatter {
 
     static func score(_ value: Double, voteCount: Int) -> String? {
         guard voteCount > 0 else { return nil }
-        return String(format: "%.1f", value)
+        return decimal(value)
+    }
+
+    static func score(_ rating: Double?) -> String? {
+        guard let rating, rating > 0 else { return nil }
+        return decimal(rating)
     }
 
     static func decimal(_ value: Double) -> String {
@@ -57,6 +62,26 @@ nonisolated enum BaseDisplayTextFormatter {
 
     static func ratingText(_ value: Double) -> String {
         "評分 \(decimal(value))"
+    }
+
+    static func ratingText(_ scoreText: String) -> String {
+        "評分 \(scoreText)"
+    }
+
+    static func ratingText(_ scoreText: String?) -> String? {
+        nonEmptyText(scoreText).map(ratingText)
+    }
+
+    static func ratingText(
+        scoreText: String?,
+        voteCountText: String?
+    ) -> String? {
+        guard let scoreText = nonEmptyText(scoreText),
+              let voteCountText = nonEmptyText(voteCountText) else {
+            return nil
+        }
+
+        return "\(ratingText(scoreText)) (\(voteCountText))"
     }
 
     static func userRatingText(_ value: Double) -> String {
@@ -156,6 +181,11 @@ nonisolated enum BaseDisplayTextFormatter {
 
     // MARK: - Date
 
+    static func iso8601Date(from rawValue: String?) -> Date? {
+        guard let rawValue else { return nil }
+        return iso8601Date(from: rawValue)
+    }
+
     static func iso8601Date(from rawValue: String) -> Date? {
         guard nonEmptyText(rawValue) != nil else { return nil }
 
@@ -164,5 +194,16 @@ nonisolated enum BaseDisplayTextFormatter {
 
         return fractionalSecondsFormatter.date(from: rawValue)
             ?? ISO8601DateFormatter().date(from: rawValue)
+    }
+
+    static func iso8601DisplayDate(from rawValue: String?) -> String? {
+        guard let date = iso8601Date(from: rawValue) else { return nil }
+
+        return date.formatted(
+            .dateTime
+                .year()
+                .month(.twoDigits)
+                .day(.twoDigits)
+        )
     }
 }

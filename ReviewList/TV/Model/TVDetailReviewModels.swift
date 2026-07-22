@@ -188,25 +188,11 @@ nonisolated struct TVReviewDetailItem: Sendable, Equatable, Identifiable {
     }
 
     private static func makeRatingText(rating: Double?) -> String? {
-        guard let rating, rating > 0 else { return nil }
-        return String(format: "%.1f", rating)
+        BaseDisplayTextFormatter.score(rating)
     }
 
     private static func makeDateText(from rawValue: String) -> String? {
-        guard !rawValue.isEmpty else { return nil }
-
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        let date = formatter.date(from: rawValue) ?? ISO8601DateFormatter().date(from: rawValue)
-        guard let date else { return nil }
-
-        return date.formatted(
-            .dateTime
-                .year()
-                .month(.twoDigits)
-                .day(.twoDigits)
-        )
+        BaseDisplayTextFormatter.iso8601DisplayDate(from: rawValue)
     }
 
     private static func makeAvatarURL(from path: String?) -> URL? {

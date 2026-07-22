@@ -227,6 +227,6 @@ final class DetailBottomActionBarView: UIView {
 
     private func ratingButtonTitle(value: Double?) -> String {
         guard let value else { return "評分" }
-        return String(format: "%.1f", value)
+        return BaseDisplayTextFormatter.decimal(value)
     }
 }

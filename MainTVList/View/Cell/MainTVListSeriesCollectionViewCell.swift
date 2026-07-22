@@ -21,7 +21,7 @@ final class MainTVListSeriesCollectionViewCell: ImageTitleBaseCollectionViewCell
         configure(with: ImageTitleCellContent(
             imageURL: item.posterURL,
             title: item.title,
-            subtitle: "評分 \(item.scoreText)",
+            subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
             imageHeight: imageHeight
         ))
     }

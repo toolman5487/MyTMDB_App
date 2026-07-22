@@ -66,10 +66,7 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
         self.backdropURL = content.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.dateText = BaseDisplayTextFormatter.text(
-            content.primaryDate,
-            fallback: "尚未公布"
-        )
+        self.dateText = BaseDisplayTextFormatter.announcedText(content.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.decimal(content.voteAverage)
         self.genreIDs = content.genreIDs
     }

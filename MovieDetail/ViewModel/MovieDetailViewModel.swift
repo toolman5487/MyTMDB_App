@@ -223,7 +223,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
                         id: String(item.id),
                         imageURL: item.posterURL,
                         title: item.title,
-                        subtitle: item.scoreText.map { "評分 \($0)" },
+                        subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
                         destination: .movie(id: item.id)
                     )
                 }

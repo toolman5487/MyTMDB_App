@@ -94,7 +94,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         }
 
         titleLabel.text = item.title
-        scoreLabel.text = "評分 \(item.scoreText)"
+        scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
     }
 
     private func showPosterSkeletonIfNeeded() {

@@ -446,12 +446,10 @@ final class TVDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewC
     }
 
     private static func makeSubtitle(for item: TVDetailCastItem) -> String? {
-        let values = [
+        BaseDisplayTextFormatter.metadata([
             item.characterText,
             item.episodeCountText
-        ].filter { !$0.isEmpty }
-
-        return values.isEmpty ? nil : values.joined(separator: " · ")
+        ])
     }
 }
 
@@ -576,7 +574,7 @@ final class TVDetailRecommendationsCollectionViewCell: DetailImageTitleStripColl
                     id: String($0.id),
                     imageURL: $0.posterURL,
                     title: $0.title,
-                    subtitle: $0.scoreText.map { "評分 \($0)" }
+                    subtitle: BaseDisplayTextFormatter.ratingText($0.scoreText)
                 )
             },
             itemSize: Layout.itemSize,

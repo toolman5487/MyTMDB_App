@@ -319,13 +319,10 @@ final class PersonDetailKnownForCollectionViewCell: DetailImageTitleStripCollect
     }
 
     private static func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
-        let values = [
+        BaseDisplayTextFormatter.metadata([
             item.dateText,
             item.subtitle
-        ].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
-        return values.isEmpty ? nil : values.joined(separator: " · ")
+        ])
     }
 }
 
@@ -363,13 +360,10 @@ final class PersonDetailCrewCollectionViewCell: DetailImageTitleStripCollectionV
     }
 
     private static func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
-        let values = [
+        BaseDisplayTextFormatter.metadata([
             item.dateText,
             item.subtitle
-        ].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
-        return values.isEmpty ? nil : values.joined(separator: " · ")
+        ])
     }
 }
 

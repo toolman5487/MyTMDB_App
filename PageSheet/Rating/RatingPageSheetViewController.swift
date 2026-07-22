@@ -184,7 +184,7 @@ final class RatingPageSheetViewController: UIViewController {
     }
 
     private func updateValueLabel() {
-        let scoreText = String(format: "%.1f", selectedValue)
+        let scoreText = BaseDisplayTextFormatter.decimal(selectedValue)
         let suffixText = " / 10.0"
         let scoreFont = UIFontMetrics(forTextStyle: .largeTitle).scaledFont(
             for: .systemFont(ofSize: 60, weight: .bold)

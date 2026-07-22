@@ -20,7 +20,7 @@ protocol MovieReviewListRouting: AnyObject {
 final class MovieReviewListRouter: BaseRouter, MovieReviewListRouting {
 
     func showReviewDetail(for review: MovieDetailReviewItem) {
-        let title = review.ratingText.map { "評分 \($0)" } ?? "評論"
+        let title = BaseDisplayTextFormatter.ratingText(review.ratingText) ?? "評論"
         let viewController = MovieReviewDetailViewController(review: review, title: title)
         show(viewController, using: .pageSheet(.large))
     }

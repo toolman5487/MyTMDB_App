@@ -92,8 +92,11 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
         posterImageView.sd_setImage(with: item.posterURL)
         titleLabel.text = item.title
         seasonLabel.text = item.seasonNumberText
-        metadataLabel.text = "\(item.airDateText) · \(item.episodeCountText)"
-        scoreLabel.text = "評分 \(item.scoreText)"
+        metadataLabel.text = BaseDisplayTextFormatter.metadata([
+            item.airDateText,
+            item.episodeCountText
+        ])
+        scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
     }
 
     private func configureView() {

@@ -98,7 +98,7 @@ final class MovieDetailReviewCollectionViewCell: BaseCollectionViewCell {
 
     func configure(with item: MovieDetailReviewItem) {
         authorLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
-        ratingLabel.text = item.ratingText.map { "評分 \($0)" }
+        ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
         ratingLabel.isHidden = item.ratingText == nil
         dateLabel.text = item.updatedDateText
         dateLabel.isHidden = item.updatedDateText == nil

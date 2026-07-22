@@ -91,9 +91,12 @@ final class EpisodeDetailHeroHeaderView: UICollectionReusableView {
         bannerImageView.sd_setImage(with: item.stillURL)
         posterImageView.sd_setImage(with: item.stillURL)
         titleLabel.text = item.title
-        episodeLabel.text = "\(item.seasonNumberText) · \(item.episodeNumberText)"
+        episodeLabel.text = BaseDisplayTextFormatter.metadata([
+            item.seasonNumberText,
+            item.episodeNumberText
+        ])
         metadataLabel.text = metadataText(from: item)
-        scoreLabel.text = "評分 \(item.scoreText)"
+        scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
     }
 
     private func configureView() {
@@ -156,10 +159,10 @@ final class EpisodeDetailHeroHeaderView: UICollectionReusableView {
     }
 
     private func metadataText(from item: EpisodeDetailItem) -> String {
-        [item.airDateText, item.runtimeText]
-            .compactMap { $0 }
-            .filter { !$0.isEmpty }
-            .joined(separator: " · ")
+        BaseDisplayTextFormatter.metadata([
+            item.airDateText,
+            item.runtimeText
+        ]) ?? ""
     }
 
     private func resetContent() {

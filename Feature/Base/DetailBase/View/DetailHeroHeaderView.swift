@@ -26,8 +26,10 @@ nonisolated struct DetailHeroHeaderContent: Sendable, Equatable {
     }
 
     var scoreDisplayText: String? {
-        guard let scoreText, let voteCountText else { return nil }
-        return "評分 \(scoreText) (\(voteCountText))"
+        BaseDisplayTextFormatter.ratingText(
+            scoreText: scoreText,
+            voteCountText: voteCountText
+        )
     }
 }
 
