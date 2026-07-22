@@ -25,7 +25,7 @@ nonisolated enum BaseDisplayTextFormatter {
     }
 
     static func firstNonEmptyText(_ values: [String?]) -> String? {
-        nonEmptyTexts(values).first
+        values.lazy.compactMap(nonEmptyText).first
     }
 
     static func text(_ text: String?, fallback: String) -> String {
@@ -48,8 +48,7 @@ nonisolated enum BaseDisplayTextFormatter {
     }
 
     static func score(_ rating: Double?) -> String? {
-        guard let rating, rating > 0 else { return nil }
-        return decimal(rating)
+        positiveDecimal(rating)
     }
 
     static func decimal(_ value: Double) -> String {
@@ -57,15 +56,20 @@ nonisolated enum BaseDisplayTextFormatter {
     }
 
     static func positiveDecimal(_ value: Double) -> String? {
-        value > 0 ? decimal(value) : nil
+        positiveDecimal(Optional(value))
+    }
+
+    static func positiveDecimal(_ value: Double?) -> String? {
+        guard let value, value > 0 else { return nil }
+        return decimal(value)
     }
 
     static func ratingText(_ value: Double) -> String {
-        "評分 \(decimal(value))"
+        ratingText(decimal(value))
     }
 
     static func ratingText(_ scoreText: String) -> String {
-        "評分 \(scoreText)"
+        prefixedText("評分", value: scoreText)
     }
 
     static func ratingText(_ scoreText: String?) -> String? {
@@ -85,7 +89,7 @@ nonisolated enum BaseDisplayTextFormatter {
     }
 
     static func userRatingText(_ value: Double) -> String {
-        "我的評分 \(decimal(value))"
+        prefixedText("我的評分", value: decimal(value))
     }
 
     static var unratedText: String {
@@ -127,7 +131,7 @@ nonisolated enum BaseDisplayTextFormatter {
     // MARK: - Count
 
     static func count(_ value: Int, unit: String) -> String? {
-        value > 0 ? "\(value) \(unit)" : nil
+        value > 0 ? countText(value, unit: unit) : nil
     }
 
     static func countText(_ value: Int, unit: String) -> String {
@@ -156,6 +160,12 @@ nonisolated enum BaseDisplayTextFormatter {
         return nonEmptyValues.isEmpty ? nil : nonEmptyValues.joined(separator: " · ")
     }
 
+    // MARK: - Private Helpers
+
+    private static func prefixedText(_ prefix: String, value: String) -> String {
+        "\(prefix) \(value)"
+    }
+
     // MARK: - Currency
 
     static func currencyUSD(_ value: Int) -> String? {
@@ -182,18 +192,17 @@ nonisolated enum BaseDisplayTextFormatter {
     // MARK: - Date
 
     static func iso8601Date(from rawValue: String?) -> Date? {
-        guard let rawValue else { return nil }
-        return iso8601Date(from: rawValue)
-    }
-
-    static func iso8601Date(from rawValue: String) -> Date? {
-        guard nonEmptyText(rawValue) != nil else { return nil }
+        guard let rawValue = nonEmptyText(rawValue) else { return nil }
 
         let fractionalSecondsFormatter = ISO8601DateFormatter()
         fractionalSecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
 
         return fractionalSecondsFormatter.date(from: rawValue)
             ?? ISO8601DateFormatter().date(from: rawValue)
+    }
+
+    static func iso8601Date(from rawValue: String) -> Date? {
+        iso8601Date(from: Optional(rawValue))
     }
 
     static func iso8601DisplayDate(from rawValue: String?) -> String? {

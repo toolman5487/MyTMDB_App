@@ -20,7 +20,7 @@ nonisolated struct BaseFilterHeaderItem: Sendable, Equatable, Identifiable {
         isSelected: Bool
     ) {
         self.id = id
-        self.title = SimplifiedChineseTextMapper.traditionalChinese(from: title)
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: title)
         self.isSelected = isSelected
     }
 }

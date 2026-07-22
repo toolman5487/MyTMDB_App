@@ -189,7 +189,7 @@ private final class BaseGenrePageSheetCell: BaseFilterHeaderCollectionViewCell {
 
     func configure<Item: GenrePageSheetItemRepresentable>(with item: Item) {
         configure(
-            title: SimplifiedChineseTextMapper.traditionalChinese(from: item.name),
+            title: BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: item.name),
             isSelected: item.isSelected
         )
     }

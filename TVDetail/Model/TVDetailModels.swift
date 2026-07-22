@@ -848,7 +848,7 @@ nonisolated struct TVDetailAttributeItem: Sendable, Equatable, Identifiable {
     init(genre: TVDetailGenre) {
         self.id = "genre-\(genre.id)"
         self.sourceID = genre.id
-        self.title = genre.name
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: genre.name)
         self.kind = .genre
     }
 
