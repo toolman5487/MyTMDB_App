@@ -42,7 +42,7 @@ nonisolated struct MainMovieGenreItem: Sendable, Equatable, Identifiable {
         isSelected: Bool
     ) {
         self.id = genre.id
-        self.name = genre.name
+        self.name = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: genre.name)
         self.isSelected = isSelected
     }
 }
