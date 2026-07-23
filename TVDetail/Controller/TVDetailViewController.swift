@@ -96,6 +96,7 @@ final class TVDetailViewController: DetailBaseViewController {
         static let seasonsSectionHeight: CGFloat = 220
         static let imagesSectionHeight: CGFloat = 168
         static let recommendationsSectionHeight: CGFloat = 220
+        static let watchProvidersSectionHeight: CGFloat = 144
     }
 
     override var updatesFlowLayoutItemSizeAutomatically: Bool {
@@ -160,6 +161,10 @@ final class TVDetailViewController: DetailBaseViewController {
         collectionView.register(
             TVDetailRecommendationsCollectionViewCell.self,
             forCellWithReuseIdentifier: TVDetailRecommendationsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailWatchProvidersCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailWatchProvidersCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             TVDetailSectionHeaderView.self,
@@ -245,6 +250,9 @@ final class TVDetailViewController: DetailBaseViewController {
 
         case .recommendations, .similar:
             return .absolute(Layout.recommendationsSectionHeight)
+
+        case .watchProviders:
+            return .absolute(Layout.watchProvidersSectionHeight)
         }
     }
 
@@ -558,6 +566,19 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
             ) { [weak self] seriesID in
                 self?.router.showTVDetail(seriesID: seriesID)
+            }
+            return cell
+
+        case .watchProviders(let providers):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailWatchProvidersCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailWatchProvidersCollectionViewCell)?.configure(
+                providers: providers
+            ) { [weak self] provider in
+                guard let linkURL = provider.linkURL else { return }
+                self?.router.showWatchProvider(url: linkURL, title: provider.title)
             }
             return cell
         }

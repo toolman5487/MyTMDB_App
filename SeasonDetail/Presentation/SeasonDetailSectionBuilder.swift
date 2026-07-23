@@ -69,13 +69,13 @@ nonisolated enum SeasonDetailSectionBuilder {
             sections.append(.images(images))
         }
 
+        if case .rated = content.accountStates.rated {
+            sections.append(.accountState(SeasonAccountStateItem(accountStates: content.accountStates)))
+        }
+
         let watchProviders = makeWatchProviderItems(response: content.watchProviders)
         if !watchProviders.isEmpty {
             sections.append(.watchProviders(watchProviders))
-        }
-
-        if case .rated = content.accountStates.rated {
-            sections.append(.accountState(SeasonAccountStateItem(accountStates: content.accountStates)))
         }
 
         return sections
@@ -169,21 +169,88 @@ nonisolated enum SeasonDetailSectionBuilder {
         return item.isEmpty ? nil : item
     }
 
-    private static func makeWatchProviderItems(response: TVWatchProvidersResponse) -> [SeasonWatchProviderItem] {
-        response.results
-            .sorted { $0.key < $1.key }
+    private static func makeWatchProviderItems(
+        response: TVWatchProvidersResponse,
+        localization: AppLocalization = .current
+    ) -> [SeasonWatchProviderItem] {
+        let preferredRegionCode = localization.regionCode.uppercased()
+        let preferredCountry = response.results[preferredRegionCode]
+        let countries: [(key: String, value: TVWatchProviderCountry)]
+
+        if let preferredCountry {
+            countries = [(key: preferredRegionCode, value: preferredCountry)]
+        } else {
+            countries = response.results.sorted { $0.key < $1.key }
+        }
+
+        return countries
             .flatMap { countryCode, country in
-                country.flatrate.map { provider in
-                    SeasonWatchProviderItem(
-                        countryCode: countryCode,
-                        provider: provider,
-                        category: "串流",
-                        link: country.link
-                    )
-                }
+                makeWatchProviderItems(countryCode: countryCode, country: country)
             }
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map { $0 }
+    }
+
+    private static func makeWatchProviderItems(
+        countryCode: String,
+        country: TVWatchProviderCountry
+    ) -> [SeasonWatchProviderItem] {
+        [
+            makeWatchProviderItems(
+                providers: country.flatrate,
+                countryCode: countryCode,
+                category: "串流",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.rent,
+                countryCode: countryCode,
+                category: "租借",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.buy,
+                countryCode: countryCode,
+                category: "購買",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.free,
+                countryCode: countryCode,
+                category: "免費",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.ads,
+                countryCode: countryCode,
+                category: "廣告",
+                link: country.link
+            )
+        ].flatMap { $0 }
+    }
+
+    private static func makeWatchProviderItems(
+        providers: [TVWatchProvider],
+        countryCode: String,
+        category: String,
+        link: String
+    ) -> [SeasonWatchProviderItem] {
+        providers
+            .sorted { lhs, rhs in
+                if lhs.displayPriority != rhs.displayPriority {
+                    return lhs.displayPriority < rhs.displayPriority
+                }
+
+                return lhs.name < rhs.name
+            }
+            .map {
+                SeasonWatchProviderItem(
+                    countryCode: countryCode,
+                    provider: $0,
+                    category: category,
+                    link: link
+                )
+            }
     }
 
     private static func videoPriority(_ video: TVVideo) -> Int {

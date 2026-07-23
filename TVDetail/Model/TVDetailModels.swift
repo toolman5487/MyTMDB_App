@@ -949,6 +949,35 @@ nonisolated struct TVDetailVideoItem: Sendable, Equatable, Identifiable {
     }
 }
 
+nonisolated struct TVWatchProviderItem: Sendable, Equatable, Identifiable {
+    var id: String {
+        "\(countryCode)-\(category)-\(providerID)"
+    }
+
+    let countryCode: String
+    let providerID: Int
+    let title: String
+    let category: String
+    let linkURL: URL?
+    let logoURL: URL?
+
+    init(
+        countryCode: String,
+        provider: TVWatchProvider,
+        category: String,
+        link: String
+    ) {
+        self.countryCode = countryCode
+        self.providerID = provider.id
+        self.title = provider.name
+        self.category = category
+        self.linkURL = URL(string: link)
+        self.logoURL = provider.logoPath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
+    }
+}
+
 nonisolated struct TVDetailRecommendationItem: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String

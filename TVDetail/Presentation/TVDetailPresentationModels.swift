@@ -19,6 +19,7 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
     case images([TVDetailImageItem])
     case recommendations([TVDetailRecommendationItem])
     case similar([TVDetailSimilarItem])
+    case watchProviders([TVWatchProviderItem])
 
     var title: String? {
         switch self {
@@ -48,6 +49,9 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
 
         case .similar:
             return "相似影集"
+
+        case .watchProviders:
+            return "觀看平台"
         }
     }
 
@@ -137,7 +141,7 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
                 }
             )
 
-        case .overview, .facts, .attributes, .seasons:
+        case .overview, .facts, .attributes, .seasons, .watchProviders:
             return nil
         }
     }

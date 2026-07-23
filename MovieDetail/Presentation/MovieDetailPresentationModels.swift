@@ -16,6 +16,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case cast([MovieDetailCastItem])
     case videos([MovieDetailVideoItem])
     case images([MovieDetailImageItem])
+    case watchProviders([MovieWatchProviderItem])
     case recommendations([MovieDetailRecommendationItem])
     case similar([MovieDetailSimilarItem])
 
@@ -38,6 +39,9 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .images:
             return "劇照"
+
+        case .watchProviders:
+            return "觀看平台"
 
         case .recommendations:
             return "推薦電影"
@@ -133,7 +137,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
                 }
             )
 
-        case .overview, .facts, .attributes:
+        case .overview, .facts, .attributes, .watchProviders:
             return nil
         }
     }
@@ -348,6 +352,37 @@ nonisolated struct MovieDetailImageItem: Sendable, Equatable, Identifiable {
             height: image.height
         )
         self.imageURL = imageURL
+    }
+}
+
+// MARK: - MovieWatchProviderItem
+
+nonisolated struct MovieWatchProviderItem: Sendable, Equatable, Identifiable {
+    var id: String {
+        "\(countryCode)-\(category)-\(providerID)"
+    }
+
+    let countryCode: String
+    let providerID: Int
+    let title: String
+    let category: String
+    let linkURL: URL?
+    let logoURL: URL?
+
+    init(
+        countryCode: String,
+        provider: MovieWatchProvider,
+        category: String,
+        link: String
+    ) {
+        self.countryCode = countryCode
+        self.providerID = provider.id
+        self.title = provider.name
+        self.category = category
+        self.linkURL = URL(string: link)
+        self.logoURL = provider.logoPath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
     }
 }
 

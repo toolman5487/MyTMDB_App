@@ -93,6 +93,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         static let castSectionHeight: CGFloat = 220
         static let videosSectionHeight: CGFloat = 160
         static let imagesSectionHeight: CGFloat = 168
+        static let watchProvidersSectionHeight: CGFloat = 144
         static let recommendationsSectionHeight: CGFloat = 220
     }
 
@@ -150,6 +151,10 @@ final class MovieDetailViewController: DetailBaseViewController {
         collectionView.register(
             MovieDetailImagesCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailImagesCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MovieDetailWatchProvidersCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailWatchProvidersCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             MovieDetailRecommendationsCollectionViewCell.self,
@@ -236,6 +241,9 @@ final class MovieDetailViewController: DetailBaseViewController {
 
         case .recommendations, .similar:
             return .absolute(Layout.recommendationsSectionHeight)
+
+        case .watchProviders:
+            return .absolute(Layout.watchProvidersSectionHeight)
         }
     }
 
@@ -515,6 +523,19 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                     selectedImageURL: imageItem.imageURL,
                     title: "劇照"
                 )
+            }
+            return cell
+
+        case .watchProviders(let providers):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MovieDetailWatchProvidersCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? MovieDetailWatchProvidersCollectionViewCell)?.configure(
+                providers: providers
+            ) { [weak self] provider in
+                guard let linkURL = provider.linkURL else { return }
+                self?.router.showWatchProvider(url: linkURL, title: provider.title)
             }
             return cell
 

@@ -17,6 +17,7 @@ protocol TVDetailRouting: AnyObject {
     func showPersonDetail(personID: Int)
     func showSeasonDetail(seasonNumber: Int)
     func showTVDetail(seriesID: Int)
+    func showWatchProvider(url: URL, title: String?)
     func showContentList(_ configuration: DetailContentListConfiguration)
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
     func showRatingPageSheet(
@@ -78,6 +79,10 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
 
     func showTVDetail(seriesID: Int) {
         detailRouter.showTVDetail(seriesID: seriesID)
+    }
+
+    func showWatchProvider(url: URL, title: String?) {
+        detailRouter.showWebVideo(url: url, title: title)
     }
 
     func showContentList(_ configuration: DetailContentListConfiguration) {

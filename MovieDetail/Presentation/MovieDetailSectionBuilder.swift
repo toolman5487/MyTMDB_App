@@ -11,7 +11,10 @@ import Foundation
 
 nonisolated enum MovieDetailSectionBuilder {
 
-    static func makeSections(content: MovieDetailContent) -> [MovieDetailSectionItem] {
+    static func makeSections(
+        content: MovieDetailContent,
+        localization: AppLocalization = .current
+    ) -> [MovieDetailSectionItem] {
         let detailItem = MovieDetailItem(detail: content.detail)
         var sections: [MovieDetailSectionItem] = [
             .overview(
@@ -67,6 +70,14 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.append(.similar(Array(similarItems)))
         }
 
+        let watchProviders = makeWatchProviderItems(
+            response: content.watchProviders,
+            localization: localization
+        )
+        if !watchProviders.isEmpty {
+            sections.append(.watchProviders(watchProviders))
+        }
+
         return sections
     }
 
@@ -96,6 +107,90 @@ nonisolated enum MovieDetailSectionBuilder {
         )
 
         return section.isEmpty ? nil : section
+    }
+
+    private static func makeWatchProviderItems(
+        response: MovieWatchProvidersResponse,
+        localization: AppLocalization
+    ) -> [MovieWatchProviderItem] {
+        let preferredRegionCode = localization.regionCode.uppercased()
+        let preferredCountry = response.results[preferredRegionCode]
+        let countries: [(key: String, value: MovieWatchProviderCountry)]
+
+        if let preferredCountry {
+            countries = [(key: preferredRegionCode, value: preferredCountry)]
+        } else {
+            countries = response.results.sorted { $0.key < $1.key }
+        }
+
+        return countries
+            .flatMap { countryCode, country in
+                makeWatchProviderItems(countryCode: countryCode, country: country)
+            }
+            .prefix(DetailSectionPreviewLimit.itemCount)
+            .map { $0 }
+    }
+
+    private static func makeWatchProviderItems(
+        countryCode: String,
+        country: MovieWatchProviderCountry
+    ) -> [MovieWatchProviderItem] {
+        [
+            makeWatchProviderItems(
+                providers: country.flatrate,
+                countryCode: countryCode,
+                category: "串流",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.rent,
+                countryCode: countryCode,
+                category: "租借",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.buy,
+                countryCode: countryCode,
+                category: "購買",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.free,
+                countryCode: countryCode,
+                category: "免費",
+                link: country.link
+            ),
+            makeWatchProviderItems(
+                providers: country.ads,
+                countryCode: countryCode,
+                category: "廣告",
+                link: country.link
+            )
+        ].flatMap { $0 }
+    }
+
+    private static func makeWatchProviderItems(
+        providers: [MovieWatchProvider],
+        countryCode: String,
+        category: String,
+        link: String
+    ) -> [MovieWatchProviderItem] {
+        providers
+            .sorted { lhs, rhs in
+                if lhs.displayPriority != rhs.displayPriority {
+                    return lhs.displayPriority < rhs.displayPriority
+                }
+
+                return lhs.name < rhs.name
+            }
+            .map {
+                MovieWatchProviderItem(
+                    countryCode: countryCode,
+                    provider: $0,
+                    category: category,
+                    link: link
+                )
+            }
     }
 
     private static func videoPriority(_ video: MovieVideo) -> Int {

@@ -216,8 +216,8 @@ final class SeasonDetailWatchProvidersCollectionViewCell: DetailImageTitleStripC
     static let reuseIdentifier = String(describing: SeasonDetailWatchProvidersCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 124, height: 220)
-        static let imageHeight: CGFloat = 168
+        static let itemSize = CGSize(width: 96, height: 144)
+        static let imageHeight: CGFloat = 96
     }
 
     func configure(

@@ -587,6 +587,38 @@ final class TVDetailRecommendationsCollectionViewCell: DetailImageTitleStripColl
 }
 
 @MainActor
+final class TVDetailWatchProvidersCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: TVDetailWatchProvidersCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 96, height: 144)
+        static let imageHeight: CGFloat = 96
+    }
+
+    func configure(
+        providers: [TVWatchProviderItem],
+        onProviderSelected: @escaping (TVWatchProviderItem) -> Void
+    ) {
+        configure(
+            items: providers.map {
+                DetailImageTitleItem(
+                    id: $0.id,
+                    imageURL: $0.logoURL,
+                    title: $0.title,
+                    subtitle: BaseDisplayTextFormatter.metadata([$0.countryCode, $0.category])
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let provider = providers.first(where: { $0.id == item.id }) else { return }
+            onProviderSelected(provider)
+        }
+    }
+}
+
+@MainActor
 private enum TVDetailCellStyle {
 
     private enum Layout {

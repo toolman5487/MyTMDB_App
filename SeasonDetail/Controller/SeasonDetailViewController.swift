@@ -79,6 +79,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
         static let factsSectionHeight: CGFloat = 96
         static let trailerStyleSectionHeight: CGFloat = 160
         static let imageStripSectionHeight: CGFloat = 220
+        static let watchProvidersSectionHeight: CGFloat = 144
         static let textSectionMinimumHeight: CGFloat = 80
     }
 
@@ -429,8 +430,11 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         case .episodes, .videos:
             return Layout.trailerStyleSectionHeight
 
-        case .cast, .crew, .images, .watchProviders:
+        case .cast, .crew, .images:
             return Layout.imageStripSectionHeight
+
+        case .watchProviders:
+            return Layout.watchProvidersSectionHeight
 
         case .accountState(let accountState):
             return max(
