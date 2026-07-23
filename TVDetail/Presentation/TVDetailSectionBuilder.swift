@@ -69,6 +69,12 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.recommendations(Array(recommendationItems)))
         }
 
+        let similarItems = content.similar.results
+            .map(TVDetailSimilarItem.init(recommendation:))
+        if !similarItems.isEmpty {
+            sections.append(.similar(Array(similarItems)))
+        }
+
         return sections
     }
 

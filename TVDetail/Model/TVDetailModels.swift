@@ -130,6 +130,7 @@ nonisolated struct TVDetailContent: Sendable, Equatable {
     let videos: TVVideosResponse
     let images: TVImagesResponse
     let recommendations: TVRecommendationsPage
+    let similar: TVSimilarPage
     let watchProviders: TVWatchProvidersResponse
 }
 
@@ -656,6 +657,10 @@ nonisolated struct TVRecommendation: Decodable, Sendable, Equatable, Identifiabl
     }
 }
 
+// MARK: - TVSimilarPage
+
+typealias TVSimilarPage = TVRecommendationsPage
+
 // MARK: - TVWatchProvidersResponse
 
 nonisolated struct TVWatchProvidersResponse: Decodable, Sendable, Equatable, Identifiable {
@@ -964,3 +969,7 @@ nonisolated struct TVDetailRecommendationItem: Sendable, Equatable, Identifiable
         }
     }
 }
+
+// MARK: - TVDetailSimilarItem
+
+typealias TVDetailSimilarItem = TVDetailRecommendationItem

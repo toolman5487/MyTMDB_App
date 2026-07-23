@@ -523,7 +523,7 @@ enum AppFactory {
             onSelect: @escaping (Option) -> Void
         ) -> UIBarButtonItem {
             let barButtonItem = UIBarButtonItem(
-                image: UIImage(systemName: "arrow.up.arrow.down"),
+                image: UIImage(systemName: "line.3.horizontal.decrease"),
                 menu: makeMenu(selectedOption: selectedOption, onSelect: onSelect)
             )
             barButtonItem.tintColor = ThemeColor.textPrimary

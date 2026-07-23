@@ -22,6 +22,8 @@ nonisolated protocol MovieDetailServicing: Sendable {
 
     func fetchMovieRecommendations(id: Int, page: Int) async throws -> MovieRecommendationsPage
 
+    func fetchMovieSimilar(id: Int, page: Int) async throws -> MovieSimilarPage
+
     func fetchMovieWatchProviders(id: Int) async throws -> MovieWatchProvidersResponse
 
     func fetchMovieAccountStates(id: Int, sessionId: String) async throws -> AccountMediaStatesResponse
@@ -35,6 +37,10 @@ extension MovieDetailServicing {
 
     func fetchMovieRecommendations(id: Int) async throws -> MovieRecommendationsPage {
         try await fetchMovieRecommendations(id: id, page: 1)
+    }
+
+    func fetchMovieSimilar(id: Int) async throws -> MovieSimilarPage {
+        try await fetchMovieSimilar(id: id, page: 1)
     }
 }
 
@@ -92,6 +98,13 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
         ) {
             try await fetchMovieRecommendations(id: id, page: recommendationPage)
         }
+        async let similar = fetchAuxiliaryContent(
+            name: "movie similar",
+            id: id,
+            fallback: MovieSimilarPage(page: recommendationPage)
+        ) {
+            try await fetchMovieSimilar(id: id, page: recommendationPage)
+        }
         async let watchProviders = fetchAuxiliaryContent(
             name: "movie watch providers",
             id: id,
@@ -106,6 +119,7 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
             videos: videos,
             images: images,
             recommendations: recommendations,
+            similar: similar,
             watchProviders: watchProviders
         )
     }
@@ -144,6 +158,16 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
     ) async throws -> MovieRecommendationsPage {
         try await network.get(
             path: APIConfig.Movie.recommendations(id: id),
+            queryItems: pagedQueryItems(page: page)
+        )
+    }
+
+    func fetchMovieSimilar(
+        id: Int,
+        page: Int = 1
+    ) async throws -> MovieSimilarPage {
+        try await network.get(
+            path: APIConfig.Movie.similar(id: id),
             queryItems: pagedQueryItems(page: page)
         )
     }

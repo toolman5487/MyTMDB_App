@@ -17,6 +17,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case videos([MovieDetailVideoItem])
     case images([MovieDetailImageItem])
     case recommendations([MovieDetailRecommendationItem])
+    case similar([MovieDetailSimilarItem])
 
     var title: String? {
         switch self {
@@ -40,6 +41,9 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .recommendations:
             return "推薦電影"
+
+        case .similar:
+            return "相似電影"
         }
     }
 
@@ -102,6 +106,21 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
         case .recommendations(let items):
             return DetailContentListConfiguration(
                 title: title ?? "推薦電影",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: String(item.id),
+                        imageURL: item.posterURL,
+                        title: item.title,
+                        subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+                        destination: .movie(id: item.id)
+                    )
+                }
+            )
+
+        case .similar(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "相似電影",
                 thumbnailStyle: .portrait,
                 items: items.map { item in
                     DetailContentListItem(
@@ -354,3 +373,7 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
         }
     }
 }
+
+// MARK: - MovieDetailSimilarItem
+
+typealias MovieDetailSimilarItem = MovieDetailRecommendationItem

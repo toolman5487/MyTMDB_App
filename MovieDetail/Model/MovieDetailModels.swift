@@ -177,6 +177,7 @@ nonisolated struct MovieDetailContent: Sendable, Equatable {
     let videos: MovieVideosResponse
     let images: MovieImagesResponse
     let recommendations: MovieRecommendationsPage
+    let similar: MovieSimilarPage
     let watchProviders: MovieWatchProvidersResponse
 }
 
@@ -530,6 +531,10 @@ nonisolated struct MovieRecommendation: Decodable, Sendable, Equatable, Identifi
         self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
     }
 }
+
+// MARK: - MovieSimilarPage
+
+typealias MovieSimilarPage = MovieRecommendationsPage
 
 // MARK: - MovieWatchProvidersResponse
 

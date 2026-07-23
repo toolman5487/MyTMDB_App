@@ -243,7 +243,7 @@ final class TVDetailViewController: DetailBaseViewController {
         case .images:
             return .absolute(Layout.imagesSectionHeight)
 
-        case .recommendations:
+        case .recommendations, .similar:
             return .absolute(Layout.recommendationsSectionHeight)
         }
     }
@@ -538,6 +538,18 @@ extension TVDetailViewController: UICollectionViewDataSource {
             return cell
 
         case .recommendations(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailRecommendationsCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailRecommendationsCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] seriesID in
+                self?.router.showTVDetail(seriesID: seriesID)
+            }
+            return cell
+
+        case .similar(let items):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: TVDetailRecommendationsCollectionViewCell.reuseIdentifier,
                 for: indexPath

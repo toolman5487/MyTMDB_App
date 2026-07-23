@@ -61,6 +61,12 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.append(.recommendations(Array(recommendationItems)))
         }
 
+        let similarItems = content.similar.results
+            .map(MovieDetailSimilarItem.init(recommendation:))
+        if !similarItems.isEmpty {
+            sections.append(.similar(Array(similarItems)))
+        }
+
         return sections
     }
 

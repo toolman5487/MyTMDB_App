@@ -18,6 +18,7 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
     case seasons([TVDetailSeasonItem])
     case images([TVDetailImageItem])
     case recommendations([TVDetailRecommendationItem])
+    case similar([TVDetailSimilarItem])
 
     var title: String? {
         switch self {
@@ -44,6 +45,9 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
 
         case .recommendations:
             return "推薦影集"
+
+        case .similar:
+            return "相似影集"
         }
     }
 
@@ -106,6 +110,21 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
         case .recommendations(let items):
             return DetailContentListConfiguration(
                 title: title ?? "推薦影集",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: String(item.id),
+                        imageURL: item.posterURL,
+                        title: item.title,
+                        subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+                        destination: .tv(seriesID: item.id)
+                    )
+                }
+            )
+
+        case .similar(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "相似影集",
                 thumbnailStyle: .portrait,
                 items: items.map { item in
                     DetailContentListItem(

@@ -234,7 +234,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         case .images:
             return .absolute(Layout.imagesSectionHeight)
 
-        case .recommendations:
+        case .recommendations, .similar:
             return .absolute(Layout.recommendationsSectionHeight)
         }
     }
@@ -519,6 +519,18 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             return cell
 
         case .recommendations(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] movieID in
+                self?.router.showMovieDetail(movieID: movieID)
+            }
+            return cell
+
+        case .similar(let items):
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier,
                 for: indexPath

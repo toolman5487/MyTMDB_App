@@ -22,6 +22,8 @@ nonisolated protocol TVDetailServicing: Sendable {
 
     func fetchTVRecommendations(seriesID: Int, page: Int) async throws -> TVRecommendationsPage
 
+    func fetchTVSimilar(seriesID: Int, page: Int) async throws -> TVSimilarPage
+
     func fetchTVWatchProviders(seriesID: Int) async throws -> TVWatchProvidersResponse
 
     func fetchTVAccountStates(seriesID: Int, sessionId: String) async throws -> AccountMediaStatesResponse
@@ -35,6 +37,10 @@ extension TVDetailServicing {
 
     func fetchTVRecommendations(seriesID: Int) async throws -> TVRecommendationsPage {
         try await fetchTVRecommendations(seriesID: seriesID, page: 1)
+    }
+
+    func fetchTVSimilar(seriesID: Int) async throws -> TVSimilarPage {
+        try await fetchTVSimilar(seriesID: seriesID, page: 1)
     }
 }
 
@@ -92,6 +98,13 @@ nonisolated final class TVDetailService: TVDetailServicing {
         ) {
             try await fetchTVRecommendations(seriesID: seriesID, page: recommendationPage)
         }
+        async let similar = fetchAuxiliaryContent(
+            name: "TV similar",
+            seriesID: seriesID,
+            fallback: TVSimilarPage(page: recommendationPage)
+        ) {
+            try await fetchTVSimilar(seriesID: seriesID, page: recommendationPage)
+        }
         async let watchProviders = fetchAuxiliaryContent(
             name: "TV watch providers",
             seriesID: seriesID,
@@ -106,6 +119,7 @@ nonisolated final class TVDetailService: TVDetailServicing {
             videos: videos,
             images: images,
             recommendations: recommendations,
+            similar: similar,
             watchProviders: watchProviders
         )
     }
@@ -144,6 +158,16 @@ nonisolated final class TVDetailService: TVDetailServicing {
     ) async throws -> TVRecommendationsPage {
         try await network.get(
             path: APIConfig.TV.recommendations(seriesId: seriesID),
+            queryItems: pagedQueryItems(page: page)
+        )
+    }
+
+    func fetchTVSimilar(
+        seriesID: Int,
+        page: Int = 1
+    ) async throws -> TVSimilarPage {
+        try await network.get(
+            path: APIConfig.TV.similar(seriesId: seriesID),
             queryItems: pagedQueryItems(page: page)
         )
     }
