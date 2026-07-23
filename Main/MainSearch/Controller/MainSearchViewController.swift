@@ -73,6 +73,7 @@ final class MainSearchViewController: MainBaseViewController {
 
     private func configureNavigationBarAppearance() {
         AppFactory.NavigationBar.applyStandardAppearance(to: navigationItem)
+        navigationItem.title = "搜尋"
     }
 
     private func configureCollectionView() {
