@@ -90,6 +90,7 @@ struct MainTabSelectionTransition: Sendable, Equatable {
 
 enum MainTabKind: Sendable, Equatable {
     case home
+    case search
     case movie
     case series
     case memberSetting
@@ -99,6 +100,7 @@ enum MainTabKind: Sendable, Equatable {
 
 private enum MainTab: CaseIterable, Sendable {
     case home
+    case search
     case movie
     case series
     case memberSetting
@@ -107,6 +109,9 @@ private enum MainTab: CaseIterable, Sendable {
         switch self {
         case .home:
             return .home
+
+        case .search:
+            return .search
 
         case .movie:
             return .movie
@@ -124,6 +129,9 @@ private enum MainTab: CaseIterable, Sendable {
         case .home:
             return "首頁"
 
+        case .search:
+            return "搜尋"
+
         case .movie:
             return "電影"
 
@@ -140,6 +148,9 @@ private enum MainTab: CaseIterable, Sendable {
         case .home:
             return "flame"
 
+        case .search:
+            return "magnifyingglass"
+
         case .movie:
             return "film.stack"
 
@@ -155,6 +166,9 @@ private enum MainTab: CaseIterable, Sendable {
         switch self {
         case .home:
             return "flame.fill"
+
+        case .search:
+            return "magnifyingglass"
 
         case .movie:
             return "film.stack.fill"

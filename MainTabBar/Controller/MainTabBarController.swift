@@ -152,6 +152,7 @@ final class MainTabBarController: UITabBarController {
 
     private func makeNavigationController(for item: MainTabItem) -> UINavigationController {
         let viewController = makeContentViewController(for: item)
+        viewController.navigationItem.largeTitleDisplayMode = largeTitleDisplayMode(for: item.kind)
         viewController.tabBarItem = makeTabBarItem(for: item)
 
         let navigationController = UINavigationController(rootViewController: viewController)
@@ -164,6 +165,9 @@ final class MainTabBarController: UITabBarController {
         switch item.kind {
         case .home:
             return MainHomeViewController()
+
+        case .search:
+            return MainSearchViewController()
 
         case .movie:
             let viewController = MainMovieListViewController()
@@ -183,11 +187,29 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func makeTabBarItem(for item: MainTabItem) -> UITabBarItem {
-        UITabBarItem(
-            title: nil,
+        let tabBarItem = UITabBarItem(
+            title: "",
             image: UIImage(systemName: item.imageName),
             selectedImage: UIImage(systemName: item.selectedImageName)
         )
+        applyTextlessTabBarItemAppearance(to: tabBarItem)
+        return tabBarItem
+    }
+
+    private func largeTitleDisplayMode(for tabKind: MainTabKind) -> UINavigationItem.LargeTitleDisplayMode {
+        switch tabKind {
+        case .home:
+            return .never
+
+        case .search, .movie, .series, .memberSetting:
+            return .always
+        }
+    }
+
+    private func applyTextlessTabBarItemAppearance(to tabBarItem: UITabBarItem) {
+        tabBarItem.title = ""
+        tabBarItem.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 100)
+        tabBarItem.imageInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
     }
 
     private func configureTabBarAppearance() {
@@ -234,8 +256,12 @@ final class MainTabBarController: UITabBarController {
         let tabBarItem = viewController.tabBarItem
         tabBarItem?.image = image
         tabBarItem?.selectedImage = image
-        tabBarItem?.title = nil
-        viewController.tabBarItem = tabBarItem ?? makeTabBarItem(for: items[index])
+        if let tabBarItem {
+            applyTextlessTabBarItemAppearance(to: tabBarItem)
+            viewController.tabBarItem = tabBarItem
+        } else {
+            viewController.tabBarItem = makeTabBarItem(for: items[index])
+        }
     }
 
     private func popMainMemberSettingToRootIfNeeded(

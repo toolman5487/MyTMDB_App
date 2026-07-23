@@ -118,7 +118,7 @@ private struct PlaceholderContent {
 
     init(title: String, tabKind: MainTabKind, session: AuthSession) {
         switch tabKind {
-        case .home, .movie, .series:
+        case .home, .search, .movie, .series:
             self.init(title: title)
 
         case .memberSetting:

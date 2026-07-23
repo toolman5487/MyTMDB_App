@@ -221,6 +221,27 @@
 		158893E62FFFA8B40028B219 /* MemberCenterAccountModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E22FFFA8B20028B219 /* MemberCenterAccountModels.swift */; };
 		158893E72FFFA8B40028B219 /* MemberCenterAccountModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E22FFFA8B20028B219 /* MemberCenterAccountModels.swift */; };
 		158893E82FFFA8B40028B219 /* MemberCenterAccountModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158893E22FFFA8B20028B219 /* MemberCenterAccountModels.swift */; };
+		1596680C30120282000079DA /* MainSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680930120282000079DA /* MainSearchViewModel.swift */; };
+		1596680D30120282000079DA /* MainSearchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680230120282000079DA /* MainSearchRouter.swift */; };
+		1596680E30120282000079DA /* MainSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680430120282000079DA /* MainSearchService.swift */; };
+		1596680F30120282000079DA /* MainSearchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680030120282000079DA /* MainSearchModels.swift */; };
+		1596681030120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680630120282000079DA /* MainSearchResultCollectionViewCell.swift */; };
+		1596681130120282000079DA /* MainSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159667FE30120282000079DA /* MainSearchViewController.swift */; };
+		1596681230120282000079DA /* MainSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680930120282000079DA /* MainSearchViewModel.swift */; };
+		1596681330120282000079DA /* MainSearchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680230120282000079DA /* MainSearchRouter.swift */; };
+		1596681430120282000079DA /* MainSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680430120282000079DA /* MainSearchService.swift */; };
+		1596681530120282000079DA /* MainSearchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680030120282000079DA /* MainSearchModels.swift */; };
+		1596681630120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680630120282000079DA /* MainSearchResultCollectionViewCell.swift */; };
+		1596681730120282000079DA /* MainSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159667FE30120282000079DA /* MainSearchViewController.swift */; };
+		1596681830120282000079DA /* MainSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680930120282000079DA /* MainSearchViewModel.swift */; };
+		1596681930120282000079DA /* MainSearchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680230120282000079DA /* MainSearchRouter.swift */; };
+		1596681A30120282000079DA /* MainSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680430120282000079DA /* MainSearchService.swift */; };
+		1596681B30120282000079DA /* MainSearchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680030120282000079DA /* MainSearchModels.swift */; };
+		1596681C30120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596680630120282000079DA /* MainSearchResultCollectionViewCell.swift */; };
+		1596681D30120282000079DA /* MainSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159667FE30120282000079DA /* MainSearchViewController.swift */; };
+		1596682030120BC9000079DA /* MainSearchFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596681E30120BC9000079DA /* MainSearchFilterHeaderView.swift */; };
+		1596682130120BC9000079DA /* MainSearchFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596681E30120BC9000079DA /* MainSearchFilterHeaderView.swift */; };
+		1596682230120BC9000079DA /* MainSearchFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1596681E30120BC9000079DA /* MainSearchFilterHeaderView.swift */; };
 		1598AA7F2DC4B6D1005E972C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA7E2DC4B6D1005E972C /* SDWebImage */; };
 		1598AA822DC4B6DF005E972C /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1598AA812DC4B6DF005E972C /* SnapKit */; };
 		1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA8F2DC4B93E005E972C /* LoginViewController.swift */; };
@@ -703,6 +724,13 @@
 		158893DA2FFFA8A90028B219 /* MemberCenterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterViewController.swift; sourceTree = "<group>"; };
 		158893E12FFFA8B10028B219 /* MemberCenterModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterModels.swift; sourceTree = "<group>"; };
 		158893E22FFFA8B20028B219 /* MemberCenterAccountModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterAccountModels.swift; sourceTree = "<group>"; };
+		159667FE30120282000079DA /* MainSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchViewController.swift; sourceTree = "<group>"; };
+		1596680030120282000079DA /* MainSearchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchModels.swift; sourceTree = "<group>"; };
+		1596680230120282000079DA /* MainSearchRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchRouter.swift; sourceTree = "<group>"; };
+		1596680430120282000079DA /* MainSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchService.swift; sourceTree = "<group>"; };
+		1596680630120282000079DA /* MainSearchResultCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchResultCollectionViewCell.swift; sourceTree = "<group>"; };
+		1596680930120282000079DA /* MainSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchViewModel.swift; sourceTree = "<group>"; };
+		1596681E30120BC9000079DA /* MainSearchFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchFilterHeaderView.swift; sourceTree = "<group>"; };
 		1598AA492DC4B69F005E972C /* MyTMDB_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTMDB_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA5F2DC4B6A1005E972C /* MyTMDB_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1598AA692DC4B6A1005E972C /* MyTMDB_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTMDB_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1654,12 +1682,91 @@
 			path = Genre;
 			sourceTree = "<group>";
 		};
+		159667FF30120282000079DA /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				159667FE30120282000079DA /* MainSearchViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		1596680130120282000079DA /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1596680030120282000079DA /* MainSearchModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1596680330120282000079DA /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				1596680230120282000079DA /* MainSearchRouter.swift */,
+			);
+			path = Router;
+			sourceTree = "<group>";
+		};
+		1596680530120282000079DA /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				1596680430120282000079DA /* MainSearchService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		1596680730120282000079DA /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				1596680630120282000079DA /* MainSearchResultCollectionViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		1596680830120282000079DA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1596680730120282000079DA /* Cell */,
+				1596681F30120BC9000079DA /* Header */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		1596680A30120282000079DA /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				1596680930120282000079DA /* MainSearchViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		1596680B30120282000079DA /* MainSearch */ = {
+			isa = PBXGroup;
+			children = (
+				159667FF30120282000079DA /* Controller */,
+				1596680130120282000079DA /* Model */,
+				1596680330120282000079DA /* Router */,
+				1596680530120282000079DA /* Service */,
+				1596680830120282000079DA /* View */,
+				1596680A30120282000079DA /* ViewModel */,
+			);
+			path = MainSearch;
+			sourceTree = "<group>";
+		};
+		1596681F30120BC9000079DA /* Header */ = {
+			isa = PBXGroup;
+			children = (
+				1596681E30120BC9000079DA /* MainSearchFilterHeaderView.swift */,
+			);
+			path = Header;
+			sourceTree = "<group>";
+		};
 		1596A5FB30109402000079DA /* Main */ = {
 			isa = PBXGroup;
 			children = (
 				15A94F982FF27D0900FCBB0F /* MainHome */,
 				15A6A0733004885E00AD5E46 /* MainMemberSetting */,
 				15BAEB622FF658F1006B0E15 /* MainMovieList */,
+				1596680B30120282000079DA /* MainSearch */,
 				157C51802FFB91080044BD8E /* MainTVList */,
 			);
 			path = Main;
@@ -3063,6 +3170,12 @@
 				15E000202FF401000000020 /* BaseShowAllFilterHeaderView.swift in Sources */,
 				150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15A951012FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */,
+				1596681230120282000079DA /* MainSearchViewModel.swift in Sources */,
+				1596681330120282000079DA /* MainSearchRouter.swift in Sources */,
+				1596681430120282000079DA /* MainSearchService.swift in Sources */,
+				1596681530120282000079DA /* MainSearchModels.swift in Sources */,
+				1596681630120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */,
+				1596681730120282000079DA /* MainSearchViewController.swift in Sources */,
 				15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
 				15E000032FF400000000001 /* ScrollTrackingBaseViewController.swift in Sources */,
@@ -3085,6 +3198,7 @@
 				15E002122FF430000000001 /* AppFactory.swift in Sources */,
 				15F010022FF7600000F01001 /* AppAnimationView.swift in Sources */,
 				15E002152FF430010000001 /* AppAppearance.swift in Sources */,
+				1596682130120BC9000079DA /* MainSearchFilterHeaderView.swift in Sources */,
 				15F11002300E100000F11001 /* BaseDisplayTextFormatter.swift in Sources */,
 				15F11006300E110000F11001 /* BaseFormatter.swift in Sources */,
 				152BE73F2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift in Sources */,
@@ -3282,6 +3396,12 @@
 				15CF99DC2FF620000041F4CC /* DetailRouter.swift in Sources */,
 				15CF99E02FF621000041F4CC /* BaseWebViewController.swift in Sources */,
 				15CF99E82FF622000041F4CC /* YouTubePlayerViewController.swift in Sources */,
+				1596681830120282000079DA /* MainSearchViewModel.swift in Sources */,
+				1596681930120282000079DA /* MainSearchRouter.swift in Sources */,
+				1596681A30120282000079DA /* MainSearchService.swift in Sources */,
+				1596681B30120282000079DA /* MainSearchModels.swift in Sources */,
+				1596681C30120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */,
+				1596681D30120282000079DA /* MainSearchViewController.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15E000152FF401000000015 /* BaseFilterHeaderItem.swift in Sources */,
 				15E000182FF401000000018 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
@@ -3336,6 +3456,7 @@
 				157C4E822FFB70000044BD8E /* MovieGridPaginationTaskController.swift in Sources */,
 				15D196C22FF14A2100545A85 /* NetworkService.swift in Sources */,
 				15CF99CC2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
+				1596682230120BC9000079DA /* MainSearchFilterHeaderView.swift in Sources */,
 				15AB10023005000000AB1001 /* MovieDetailRouter.swift in Sources */,
 				15CF9A022FF380000041F4CC /* MovieDetailModels.swift in Sources */,
 				15BAE9522FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
@@ -3522,6 +3643,7 @@
 				157C57322FFB9F000044BD8E /* SeasonDetailSectionHeaderView.swift in Sources */,
 				157C58222FFBA000044BD8E /* SeasonDetailRouter.swift in Sources */,
 				152BE7652FF56000006681A5 /* MovieDetailReviewModels.swift in Sources */,
+				1596682030120BC9000079DA /* MainSearchFilterHeaderView.swift in Sources */,
 				152BE7682FF56000006681A5 /* MovieDetailReviewService.swift in Sources */,
 				15BAEB6B2FF65A6C006B0E15 /* MainMovieListViewController.swift in Sources */,
 				15BAEBAF2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */,
@@ -3618,6 +3740,12 @@
 				15F12103300E200000F12101 /* MovieDetailSectionBuilder.swift in Sources */,
 				15F12106300E200000F12101 /* MovieDetailPresentationModels.swift in Sources */,
 				15DACD043008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */,
+				1596680C30120282000079DA /* MainSearchViewModel.swift in Sources */,
+				1596680D30120282000079DA /* MainSearchRouter.swift in Sources */,
+				1596680E30120282000079DA /* MainSearchService.swift in Sources */,
+				1596680F30120282000079DA /* MainSearchModels.swift in Sources */,
+				1596681030120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */,
+				1596681130120282000079DA /* MainSearchViewController.swift in Sources */,
 				1588090F3000D1850081E4E9 /* MemberCenterViewModel.swift in Sources */,
 				158809103000D1850081E4E9 /* MemberCenterService.swift in Sources */,
 				15A6A0A13005800000AD5E46 /* MemberCenterContentRepository.swift in Sources */,

@@ -215,4 +215,14 @@ nonisolated enum BaseDisplayTextFormatter {
                 .day(.twoDigits)
         )
     }
+
+    static func year(from dateText: String?) -> String? {
+        guard let dateText = nonEmptyText(dateText),
+              dateText.count >= 4 else {
+            return nil
+        }
+
+        let yearText = String(dateText.prefix(4))
+        return yearText.allSatisfy(\.isNumber) ? yearText : nil
+    }
 }
