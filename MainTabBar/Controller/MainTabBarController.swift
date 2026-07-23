@@ -122,6 +122,26 @@ final class MainTabBarController: UITabBarController {
         }
     }
 
+    // MARK: - Detail Routes
+
+    func showMovieGenreList(genreID: Int) {
+        guard genreID > 0,
+              let viewController = rootViewController(for: .movie) as? MainMovieListViewController else {
+            return
+        }
+
+        viewController.routeToGenre(id: genreID)
+    }
+
+    func showTVGenreList(genreID: Int) {
+        guard genreID > 0,
+              let viewController = rootViewController(for: .series) as? MainTVListViewController else {
+            return
+        }
+
+        viewController.routeToGenre(id: genreID)
+    }
+
     // MARK: - Setup
 
     private func setupViewControllers() {
@@ -231,6 +251,22 @@ final class MainTabBarController: UITabBarController {
         if navigationController.viewControllers.count > 1 {
             navigationController.popToRootViewController(animated: true)
         }
+    }
+
+    private func rootViewController(for tabKind: MainTabKind) -> UIViewController? {
+        guard let index = viewModel.items.firstIndex(where: { $0.kind == tabKind }),
+              let viewControllers,
+              viewControllers.indices.contains(index),
+              let navigationController = viewControllers[index] as? UINavigationController,
+              let rootViewController = navigationController.viewControllers.first else {
+            return nil
+        }
+
+        setTabBarVisibility(.visible, animated: false)
+        selectedIndex = index
+        navigationController.popToRootViewController(animated: false)
+        rootViewController.loadViewIfNeeded()
+        return rootViewController
     }
 
     // MARK: - Tab Selection

@@ -30,13 +30,18 @@ final class MainTVListViewModel {
     private(set) var state: MainTVListViewState = .idle
 
     private let service: MainTVListServicing
+    private var preferredGenreID: Int?
     private var genres: [MainTVGenre] = []
     private var selectedSortOption: TVSortOption = .popularity
 
     // MARK: - Initialization
 
-    init(service: MainTVListServicing = MainTVListService()) {
+    init(
+        service: MainTVListServicing = MainTVListService(),
+        initialGenreID: Int? = nil
+    ) {
         self.service = service
+        self.preferredGenreID = initialGenreID
     }
 
     // MARK: - Public Methods
@@ -48,7 +53,7 @@ final class MainTVListViewModel {
             let genres = try await service.fetchGenres()
             guard !Task.isCancelled else { return }
 
-            guard let selectedGenre = genres.first else {
+            guard let selectedGenre = initialSelectedGenre(from: genres) else {
                 state = .empty
                 return
             }
@@ -71,6 +76,7 @@ final class MainTVListViewModel {
     func selectGenre(id: Int) async {
         guard let selectedGenre = genres.first(where: { $0.id == id }) else { return }
 
+        preferredGenreID = selectedGenre.id
         state = .refreshing(previewContent(for: selectedGenre))
 
         do {
@@ -159,7 +165,27 @@ final class MainTVListViewModel {
         }
     }
 
+    func loadContent(selectingGenreID genreID: Int) async {
+        preferredGenreID = genreID
+
+        guard !genres.isEmpty else {
+            await loadInitialContent()
+            return
+        }
+
+        await selectGenre(id: genreID)
+    }
+
     // MARK: - Private Methods
+
+    private func initialSelectedGenre(from genres: [MainTVGenre]) -> MainTVGenre? {
+        if let preferredGenreID,
+           let genre = genres.first(where: { $0.id == preferredGenreID }) {
+            return genre
+        }
+
+        return genres.first
+    }
 
     private func previewContent(for selectedGenre: MainTVGenre) -> MainTVListContent {
         MainTVListContent(

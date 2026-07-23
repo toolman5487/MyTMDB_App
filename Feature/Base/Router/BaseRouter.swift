@@ -71,6 +71,10 @@ class BaseRouter {
 
     private(set) weak var sourceViewController: UIViewController?
 
+    var mainTabBarController: MainTabBarController? {
+        sourceViewController?.tabBarController as? MainTabBarController
+    }
+
     // MARK: - Initialization
 
     init(sourceViewController: UIViewController) {

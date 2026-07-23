@@ -480,7 +480,11 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailAttributesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailAttributesCollectionViewCell)?.configure(with: item)
+            (cell as? MovieDetailAttributesCollectionViewCell)?.configure(
+                with: item
+            ) { [weak self] genreID in
+                self?.router.showGenreList(genreID: genreID)
+            }
             return cell
 
         case .cast(let items):

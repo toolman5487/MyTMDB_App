@@ -141,6 +141,7 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     private var genres: [TVDetailAttributeItem] = []
     private var networks: [TVDetailAttributeItem] = []
     private var productionCompanies: [TVDetailAttributeItem] = []
+    private var onGenreSelected: ((Int) -> Void)?
 
     private let genresTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "種類")
     private let networksTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "平台")
@@ -212,6 +213,7 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         genres = []
         networks = []
         productionCompanies = []
+        onGenreSelected = nil
         setGroup(.genres, hidden: false)
         setGroup(.networks, hidden: false)
         setGroup(.productionCompanies, hidden: false)
@@ -220,10 +222,14 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         productionCompaniesCollectionView.reloadData()
     }
 
-    func configure(with item: TVDetailAttributeSectionItem) {
+    func configure(
+        with item: TVDetailAttributeSectionItem,
+        onGenreSelected: ((Int) -> Void)? = nil
+    ) {
         genres = item.genres
         networks = item.networks
         productionCompanies = item.productionCompanies
+        self.onGenreSelected = onGenreSelected
         setGroup(.genres, hidden: genres.isEmpty)
         setGroup(.networks, hidden: networks.isEmpty)
         setGroup(.productionCompanies, hidden: productionCompanies.isEmpty)
@@ -317,6 +323,20 @@ extension TVDetailAttributesCollectionViewCell: UICollectionViewDataSource, UICo
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         items(for: group(for: collectionView)).count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+
+        let group = group(for: collectionView)
+        guard group == .genres else { return }
+
+        let items = items(for: group)
+        guard items.indices.contains(indexPath.item) else { return }
+
+        let item = items[indexPath.item]
+        guard item.kind == .genre else { return }
+        onGenreSelected?(item.sourceID)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

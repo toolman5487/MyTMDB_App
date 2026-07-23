@@ -66,6 +66,12 @@ final class MainMovieListViewController: MainBaseViewController {
 
     // MARK: - Initialization
 
+    convenience init(initialGenreID: Int) {
+        self.init(
+            viewModel: MainMovieListViewModel(initialGenreID: initialGenreID)
+        )
+    }
+
     init(viewModel: MainMovieListViewModel = MainMovieListViewModel()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -95,6 +101,25 @@ final class MainMovieListViewController: MainBaseViewController {
         render(state: viewModel.state)
         observeViewModelState()
         loadInitialContent()
+    }
+
+    // MARK: - Routing
+
+    func routeToGenre(id: Int) {
+        guard id > 0 else { return }
+
+        searchController.searchBar.text = nil
+        searchResultsViewController.reset()
+        searchController.isActive = false
+        loadTask?.cancel()
+        filterSelectionTask?.cancel()
+        sortSelectionTask?.cancel()
+        cancelLoadNextPageTask()
+
+        filterSelectionTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            await viewModel.loadContent(selectingGenreID: id)
+        }
     }
 
     // MARK: - Setup

@@ -16,6 +16,7 @@ protocol MovieDetailRouting: AnyObject {
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
     func showMovieDetail(movieID: Int)
+    func showGenreList(genreID: Int)
     func showWatchProvider(url: URL, title: String?)
     func showContentList(_ configuration: DetailContentListConfiguration)
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
@@ -71,6 +72,16 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showMovieDetail(movieID: Int) {
         detailRouter.showMovieDetail(movieID: movieID)
+    }
+
+    func showGenreList(genreID: Int) {
+        guard genreID > 0 else { return }
+
+        guard let mainTabBarController else {
+            return
+        }
+
+        mainTabBarController.showMovieGenreList(genreID: genreID)
     }
 
     func showWatchProvider(url: URL, title: String?) {

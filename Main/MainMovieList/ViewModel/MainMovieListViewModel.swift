@@ -30,13 +30,18 @@ final class MainMovieListViewModel {
     private(set) var state: MainMovieListViewState = .idle
 
     private let service: MainMovieListServicing
+    private var preferredGenreID: Int?
     private var genres: [MainMovieGenre] = []
     private var selectedSortOption: MovieSortOption = .popularity
 
     // MARK: - Initialization
 
-    init(service: MainMovieListServicing = MainMovieListService()) {
+    init(
+        service: MainMovieListServicing = MainMovieListService(),
+        initialGenreID: Int? = nil
+    ) {
         self.service = service
+        self.preferredGenreID = initialGenreID
     }
 
     // MARK: - Public Methods
@@ -48,7 +53,7 @@ final class MainMovieListViewModel {
             let genres = try await service.fetchGenres()
             guard !Task.isCancelled else { return }
 
-            guard let selectedGenre = genres.first else {
+            guard let selectedGenre = initialSelectedGenre(from: genres) else {
                 state = .empty
                 return
             }
@@ -71,6 +76,7 @@ final class MainMovieListViewModel {
     func selectGenre(id: Int) async {
         guard let selectedGenre = genres.first(where: { $0.id == id }) else { return }
 
+        preferredGenreID = selectedGenre.id
         state = .refreshing(previewContent(for: selectedGenre))
 
         do {
@@ -159,7 +165,27 @@ final class MainMovieListViewModel {
         }
     }
 
+    func loadContent(selectingGenreID genreID: Int) async {
+        preferredGenreID = genreID
+
+        guard !genres.isEmpty else {
+            await loadInitialContent()
+            return
+        }
+
+        await selectGenre(id: genreID)
+    }
+
     // MARK: - Private Methods
+
+    private func initialSelectedGenre(from genres: [MainMovieGenre]) -> MainMovieGenre? {
+        if let preferredGenreID,
+           let genre = genres.first(where: { $0.id == preferredGenreID }) {
+            return genre
+        }
+
+        return genres.first
+    }
 
     private func previewContent(for selectedGenre: MainMovieGenre) -> MainMovieListContent {
         MainMovieListContent(
