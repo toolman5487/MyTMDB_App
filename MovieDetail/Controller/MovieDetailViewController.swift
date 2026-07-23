@@ -153,6 +153,10 @@ final class MovieDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: MovieDetailImagesCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
+            MovieDetailCollectionPartsCollectionViewCell.self,
+            forCellWithReuseIdentifier: MovieDetailCollectionPartsCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
             MovieDetailWatchProvidersCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailWatchProvidersCollectionViewCell.reuseIdentifier
         )
@@ -239,7 +243,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         case .images:
             return .absolute(Layout.imagesSectionHeight)
 
-        case .recommendations, .similar:
+        case .collection, .recommendations, .similar:
             return .absolute(Layout.recommendationsSectionHeight)
 
         case .watchProviders:
@@ -523,6 +527,18 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                     selectedImageURL: imageItem.imageURL,
                     title: "劇照"
                 )
+            }
+            return cell
+
+        case .collection(let item):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MovieDetailCollectionPartsCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? MovieDetailCollectionPartsCollectionViewCell)?.configure(
+                item: item
+            ) { [weak self] movieID in
+                self?.router.showMovieDetail(movieID: movieID)
             }
             return cell
 

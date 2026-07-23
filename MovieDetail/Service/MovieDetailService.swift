@@ -20,6 +20,8 @@ nonisolated protocol MovieDetailServicing: Sendable {
 
     func fetchMovieImages(id: Int) async throws -> MovieImagesResponse
 
+    func fetchMovieCollectionDetail(id: Int) async throws -> MovieCollectionDetail
+
     func fetchMovieRecommendations(id: Int, page: Int) async throws -> MovieRecommendationsPage
 
     func fetchMovieSimilar(id: Int, page: Int) async throws -> MovieSimilarPage
@@ -113,11 +115,15 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
             try await fetchMovieWatchProviders(id: id)
         }
 
-        return try await MovieDetailContent(
-            detail: detail,
+        let loadedDetail = try await detail
+        let collection = await fetchMovieCollectionDetail(for: loadedDetail)
+
+        return await MovieDetailContent(
+            detail: loadedDetail,
             credits: credits,
             videos: videos,
             images: images,
+            collection: collection,
             recommendations: recommendations,
             similar: similar,
             watchProviders: watchProviders
@@ -149,6 +155,13 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
         try await network.get(
             path: APIConfig.Movie.images(id: id),
             queryItems: imageQueryItems
+        )
+    }
+
+    func fetchMovieCollectionDetail(id: Int) async throws -> MovieCollectionDetail {
+        try await network.get(
+            path: APIConfig.Collection.detail(id: id),
+            queryItems: localizedQueryItems
         )
     }
 
@@ -212,6 +225,18 @@ nonisolated final class MovieDetailService: MovieDetailServicing {
             URLQueryItem(name: "language", value: localization.languageParameter),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
+    }
+
+    private func fetchMovieCollectionDetail(for detail: MovieDetail) async -> MovieCollectionDetail? {
+        guard let collectionID = detail.belongsToCollection?.id else { return nil }
+
+        return await fetchAuxiliaryContent(
+            name: "movie collection",
+            id: detail.id,
+            fallback: nil as MovieCollectionDetail?
+        ) {
+            try await fetchMovieCollectionDetail(id: collectionID)
+        }
     }
 
     private func fetchAuxiliaryContent<T: Sendable>(

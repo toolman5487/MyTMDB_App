@@ -16,6 +16,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case cast([MovieDetailCastItem])
     case videos([MovieDetailVideoItem])
     case images([MovieDetailImageItem])
+    case collection(MovieDetailCollectionSectionItem)
     case watchProviders([MovieWatchProviderItem])
     case recommendations([MovieDetailRecommendationItem])
     case similar([MovieDetailSimilarItem])
@@ -39,6 +40,9 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .images:
             return "劇照"
+
+        case .collection(let item):
+            return item.title
 
         case .watchProviders:
             return "觀看平台"
@@ -103,6 +107,21 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
                         title: item.title,
                         subtitle: item.resolutionText,
                         destination: .image(url: item.imageURL)
+                    )
+                }
+            )
+
+        case .collection(let item):
+            return DetailContentListConfiguration(
+                title: item.title,
+                thumbnailStyle: .portrait,
+                items: item.parts.map { part in
+                    DetailContentListItem(
+                        id: String(part.id),
+                        imageURL: part.posterURL,
+                        title: part.title,
+                        subtitle: part.subtitle,
+                        destination: .movie(id: part.id)
                     )
                 }
             )
@@ -381,6 +400,65 @@ nonisolated struct MovieWatchProviderItem: Sendable, Equatable, Identifiable {
         self.category = category
         self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
+    }
+}
+
+// MARK: - MovieDetailCollectionSectionItem
+
+nonisolated struct MovieDetailCollectionSectionItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let title: String
+    let overview: String?
+    let parts: [MovieDetailCollectionPartItem]
+
+    var isEmpty: Bool {
+        parts.isEmpty
+    }
+
+    init(collection: MovieCollectionDetail, currentMovieID: Int) {
+        self.id = collection.id
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: collection.name)
+        self.overview = BaseDisplayTextFormatter.nonEmptyText(collection.overview)
+        self.parts = collection.parts
+            .filter { $0.id != currentMovieID }
+            .sorted { lhs, rhs in
+                switch (lhs.releaseDate.isEmpty, rhs.releaseDate.isEmpty) {
+                case (false, false):
+                    return lhs.releaseDate < rhs.releaseDate
+
+                case (false, true):
+                    return true
+
+                case (true, false), (true, true):
+                    return false
+                }
+            }
+            .map(MovieDetailCollectionPartItem.init(part:))
+    }
+}
+
+// MARK: - MovieDetailCollectionPartItem
+
+nonisolated struct MovieDetailCollectionPartItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let title: String
+    let releaseDateText: String?
+    let scoreText: String?
+    let subtitle: String?
+    let posterURL: URL?
+
+    init(part: MovieCollectionPart) {
+        self.id = part.id
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: part.title)
+        self.releaseDateText = BaseDisplayTextFormatter.nonEmptyText(part.releaseDate)
+        self.scoreText = BaseDisplayTextFormatter.score(
+            part.voteAverage,
+            voteCount: part.voteCount
+        )
+        self.subtitle = BaseDisplayTextFormatter.ratingText(scoreText)
+        self.posterURL = part.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
     }

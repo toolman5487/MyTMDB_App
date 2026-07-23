@@ -58,6 +58,16 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.append(.images(imageItems))
         }
 
+        if let collection = content.collection {
+            let collectionItem = MovieDetailCollectionSectionItem(
+                collection: collection,
+                currentMovieID: content.detail.id
+            )
+            if !collectionItem.isEmpty {
+                sections.append(.collection(collectionItem))
+            }
+        }
+
         let recommendationItems = content.recommendations.results
             .map(MovieDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {

@@ -523,6 +523,40 @@ final class MovieDetailImagesCollectionViewCell: DetailImageTitleStripCollection
     }
 }
 
+// MARK: - MovieDetailCollectionPartsCollectionViewCell
+
+@MainActor
+final class MovieDetailCollectionPartsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MovieDetailCollectionPartsCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 124, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(
+        item: MovieDetailCollectionSectionItem,
+        onMovieSelected: @escaping (Int) -> Void
+    ) {
+        configure(
+            items: item.parts.map {
+                DetailImageTitleItem(
+                    id: String($0.id),
+                    imageURL: $0.posterURL,
+                    title: $0.title,
+                    subtitle: $0.subtitle
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let movieID = Int(item.id) else { return }
+            onMovieSelected(movieID)
+        }
+    }
+}
+
 // MARK: - MovieDetailWatchProvidersCollectionViewCell
 
 @MainActor

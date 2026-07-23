@@ -176,9 +176,78 @@ nonisolated struct MovieDetailContent: Sendable, Equatable {
     let credits: MovieCreditsResponse
     let videos: MovieVideosResponse
     let images: MovieImagesResponse
+    let collection: MovieCollectionDetail?
     let recommendations: MovieRecommendationsPage
     let similar: MovieSimilarPage
     let watchProviders: MovieWatchProvidersResponse
+}
+
+// MARK: - MovieCollectionDetail
+
+nonisolated struct MovieCollectionDetail: Decodable, Sendable, Equatable, Identifiable {
+    let id: Int
+    let name: String
+    let overview: String?
+    let posterPath: String?
+    let backdropPath: String?
+    let parts: [MovieCollectionPart]
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case overview
+        case posterPath = "poster_path"
+        case backdropPath = "backdrop_path"
+        case parts
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名系列"
+        self.overview = try container.decodeIfPresent(String.self, forKey: .overview)
+        self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
+        self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
+        self.parts = try container.decodeIfPresent([MovieCollectionPart].self, forKey: .parts) ?? []
+    }
+}
+
+// MARK: - MovieCollectionPart
+
+nonisolated struct MovieCollectionPart: Decodable, Sendable, Equatable, Identifiable {
+    let id: Int
+    let title: String
+    let overview: String
+    let posterPath: String?
+    let backdropPath: String?
+    let releaseDate: String
+    let voteAverage: Double
+    let voteCount: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case overview
+        case posterPath = "poster_path"
+        case backdropPath = "backdrop_path"
+        case releaseDate = "release_date"
+        case voteAverage = "vote_average"
+        case voteCount = "vote_count"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? "未命名"
+        self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
+        self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
+        self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
+        self.releaseDate = try container.decodeIfPresent(String.self, forKey: .releaseDate) ?? ""
+        self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
+        self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
+    }
 }
 
 // MARK: - MovieCreditsResponse
