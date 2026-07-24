@@ -80,9 +80,12 @@ nonisolated enum BaseDisplayTextFormatter {
         scoreText: String?,
         voteCountText: String?
     ) -> String? {
-        guard let scoreText = nonEmptyText(scoreText),
-              let voteCountText = nonEmptyText(voteCountText) else {
+        guard let scoreText = nonEmptyText(scoreText) else {
             return nil
+        }
+
+        guard let voteCountText = nonEmptyText(voteCountText) else {
+            return ratingText(scoreText)
         }
 
         return "\(ratingText(scoreText)) (\(voteCountText))"

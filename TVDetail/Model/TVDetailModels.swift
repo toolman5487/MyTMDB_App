@@ -775,7 +775,7 @@ nonisolated struct TVDetailItem: Sendable, Equatable, Identifiable {
         self.episodeRunTimeText = BaseDisplayTextFormatter.firstMinutes(values: detail.episodeRunTime)
         self.seasonCountText = BaseDisplayTextFormatter.count(detail.numberOfSeasons, unit: "季")
         self.episodeCountText = BaseDisplayTextFormatter.count(detail.numberOfEpisodes, unit: "集")
-        self.scoreText = BaseDisplayTextFormatter.score(detail.voteAverage, voteCount: detail.voteCount)
+        self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
         self.voteCountText = BaseDisplayTextFormatter.voteCount(detail.voteCount)
         self.statusText = BaseDisplayTextFormatter.nonEmptyText(detail.status)
         self.typeText = BaseDisplayTextFormatter.nonEmptyText(detail.type)

@@ -138,8 +138,6 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
 
     private let valueLabel: UILabel = {
         let label = AppFactory.Label.sectionTitle()
-        label.minimumScaleFactor = 0.82
-        label.adjustsFontSizeToFitWidth = true
         return label
     }()
 

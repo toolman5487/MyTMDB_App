@@ -69,8 +69,6 @@ final class DetailImagePreviewViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.headline(color: ThemeColor.highlight, alignment: .center, lines: 1)
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.72
         return label
     }()
 

@@ -72,11 +72,6 @@ class DetailHeroHeaderView: UICollectionReusableView {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.title2(lines: 1)
-        label.font = UIFontMetrics(forTextStyle: .title2).scaledFont(
-            for: .systemFont(ofSize: 24, weight: .bold)
-        )
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.72
         return label
     }()
 

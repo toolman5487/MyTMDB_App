@@ -56,9 +56,6 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.title2(lines: 2)
-        label.font = UIFontMetrics(forTextStyle: .title2).scaledFont(
-            for: .systemFont(ofSize: 24, weight: .bold)
-        )
         return label
     }()
 

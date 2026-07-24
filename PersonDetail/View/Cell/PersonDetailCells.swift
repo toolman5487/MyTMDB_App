@@ -37,11 +37,6 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
 
     private let nameLabel: UILabel = {
         let label = AppFactory.Label.title1(alignment: .natural, lines: 2)
-        label.font = UIFontMetrics(forTextStyle: .title1).scaledFont(
-            for: .systemFont(ofSize: 28, weight: .bold)
-        )
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.72
         return label
     }()
 
