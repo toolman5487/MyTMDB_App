@@ -38,6 +38,7 @@ nonisolated struct DetailContentListItem: Sendable, Equatable, Identifiable {
 nonisolated enum DetailContentListDestination: Sendable, Equatable {
     case movie(id: Int)
     case tv(seriesID: Int)
+    case episode(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
     case person(id: Int)
     case youtube(videoKey: String, title: String?)
     case webVideo(url: URL, title: String?)

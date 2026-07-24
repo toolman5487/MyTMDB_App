@@ -12,6 +12,7 @@ import UIKit
 @MainActor
 protocol SeasonDetailRouting: AnyObject {
     func showEpisodeDetail(episodeNumber: Int)
+    func showContentList(_ configuration: DetailContentListConfiguration)
     func showYouTubeVideo(videoKey: String, title: String?)
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
@@ -50,6 +51,10 @@ final class SeasonDetailRouter: BaseRouter, SeasonDetailRouting {
             seasonNumber: seasonNumber,
             episodeNumber: episodeNumber
         )
+    }
+
+    func showContentList(_ configuration: DetailContentListConfiguration) {
+        detailRouter.showContentList(configuration)
     }
 
     func showYouTubeVideo(videoKey: String, title: String?) {

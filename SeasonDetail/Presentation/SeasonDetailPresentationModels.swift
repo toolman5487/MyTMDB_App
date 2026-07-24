@@ -50,6 +50,31 @@ nonisolated enum SeasonDetailSectionItem: Sendable, Equatable {
             return "我的評分"
         }
     }
+
+    func contentListConfiguration(
+        seriesID: Int,
+        seasonNumber: Int
+    ) -> DetailContentListConfiguration? {
+        guard case .episodes(let items) = self else { return nil }
+
+        return DetailContentListConfiguration(
+            title: title ?? "劇集",
+            thumbnailStyle: .landscape,
+            items: items.map { item in
+                DetailContentListItem(
+                    id: String(item.id),
+                    imageURL: item.stillURL,
+                    title: item.title,
+                    subtitle: item.subtitle,
+                    destination: .episode(
+                        seriesID: seriesID,
+                        seasonNumber: seasonNumber,
+                        episodeNumber: item.episodeNumber
+                    )
+                )
+            }
+        )
+    }
 }
 
 // MARK: - SeasonDetailOverviewSectionItem

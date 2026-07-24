@@ -459,7 +459,10 @@ nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
     init(episode: SeasonEpisode) {
         self.id = episode.id
         self.episodeNumber = episode.episodeNumber
-        self.title = "\(BaseDisplayTextFormatter.episodeNumberText(episode.episodeNumber)) \(episode.name)"
+        self.title = BaseDisplayTextFormatter.episodeTitle(
+            episode.name,
+            episodeNumber: episode.episodeNumber
+        )
         self.subtitle = Self.makeSubtitle(episode: episode)
         self.overview = BaseDisplayTextFormatter.overview(episode.overview)
         self.stillURL = episode.stillPath.flatMap {

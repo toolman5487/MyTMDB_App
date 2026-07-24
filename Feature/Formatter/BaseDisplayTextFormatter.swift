@@ -146,6 +146,11 @@ nonisolated enum BaseDisplayTextFormatter {
         "第 \(value) 集"
     }
 
+    static func episodeTitle(_ name: String?, episodeNumber: Int) -> String {
+        let title = nonEmptyText(name) ?? episodeNumberText(episodeNumber)
+        return "\(episodeNumber). \(title)"
+    }
+
     static func seasonEpisodeNumberText(
         seasonNumber: Int,
         episodeNumber: Int

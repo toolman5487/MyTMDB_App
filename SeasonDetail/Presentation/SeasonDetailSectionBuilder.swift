@@ -40,7 +40,6 @@ nonisolated enum SeasonDetailSectionBuilder {
 
         let episodes = content.detail.episodes
             .sorted { $0.episodeNumber < $1.episodeNumber }
-            .prefix(DetailSectionPreviewLimit.itemCount)
             .map(SeasonEpisodeItem.init(episode:))
         if !episodes.isEmpty {
             sections.append(.episodes(episodes))

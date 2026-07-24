@@ -39,6 +39,13 @@ final class DetailContentListRouter: DetailContentListRouting {
         case .tv(let seriesID):
             detailRouter.showTVDetail(seriesID: seriesID)
 
+        case .episode(let seriesID, let seasonNumber, let episodeNumber):
+            detailRouter.showEpisodeDetail(
+                seriesID: seriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
+            )
+
         case .person(let id):
             detailRouter.showPersonDetail(personID: id)
 

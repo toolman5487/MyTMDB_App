@@ -238,7 +238,9 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailEpisodesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailEpisodesCollectionViewCell)?.configure(episodes: episodes) { [weak self] episodeNumber in
+            (cell as? SeasonDetailEpisodesCollectionViewCell)?.configure(
+                episodes: Array(episodes.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] episodeNumber in
                 self?.router.showEpisodeDetail(episodeNumber: episodeNumber)
             }
             return cell
@@ -335,7 +337,22 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
             withReuseIdentifier: SeasonDetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        (reusableView as? SeasonDetailSectionHeaderView)?.configure(title: sections[indexPath.section].title)
+        if let headerView = reusableView as? SeasonDetailSectionHeaderView {
+            let section = sections[indexPath.section]
+            let configuration = section.contentListConfiguration(
+                seriesID: seriesID,
+                seasonNumber: seasonNumber
+            )
+            let onTap: (() -> Void)?
+            if let configuration {
+                onTap = { [weak self] in
+                    self?.router.showContentList(configuration)
+                }
+            } else {
+                onTap = nil
+            }
+            headerView.configure(title: section.title, onTap: onTap)
+        }
         return reusableView
     }
 }
