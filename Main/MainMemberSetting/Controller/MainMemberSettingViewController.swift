@@ -26,7 +26,10 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     private let viewModel: MainMemberSettingViewModel
     private lazy var router: MainMemberSettingRouting = MainMemberSettingRouter(sourceViewController: self)
+
     private var profileRefreshTask: Task<Void, Never>?
+
+    // MARK: - Override Points
 
     override var collectionViewItemHeight: CGFloat {
         Layout.itemHeight

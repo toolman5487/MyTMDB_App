@@ -15,13 +15,17 @@ final class TVReviewListViewController: ScrollTrackingBaseViewController {
 
     private let seriesID: Int
     private let viewModel: TVDetailReviewViewModel
+    private lazy var router: TVReviewListRouting = TVReviewListRouter(sourceViewController: self)
+
     private var filters: [TVDetailReviewFilterItem] = []
     private var reviews: [TVReviewDetailItem] = []
+
     private var hasNextPage = false
     private var isLoadingNextPage = false
+
     private var loadTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
-    private lazy var router: TVReviewListRouting = TVReviewListRouter(sourceViewController: self)
 
     // MARK: - Initialization
 

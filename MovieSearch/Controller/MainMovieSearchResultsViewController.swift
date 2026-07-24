@@ -21,9 +21,12 @@ final class MainMovieSearchResultsViewController: BaseViewController {
     var onSortBarButtonVisibilityChanged: ((Bool, MovieSortOption?) -> Void)?
 
     private var movies: [MovieGridMovieItem] = []
+
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
+
     private var searchTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components

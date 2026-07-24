@@ -21,9 +21,12 @@ final class MainTVSearchResultsViewController: BaseViewController {
     var onSortBarButtonVisibilityChanged: ((Bool, TVSortOption?) -> Void)?
 
     private var series: [TVGridSeriesItem] = []
+
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
+
     private var searchTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components

@@ -42,7 +42,9 @@ final class MemberCenterListViewController: BaseListViewController {
 
     private let viewModel: MemberCenterListViewModel
     private lazy var router: MemberCenterRouting = MemberCenterRouter(sourceViewController: self)
+
     private var items: [MemberCenterListItem] = []
+
     private var loadTask: Task<Void, Never>?
     private var loadNextPageTask: Task<Void, Never>?
 

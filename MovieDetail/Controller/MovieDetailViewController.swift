@@ -15,14 +15,19 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     private let movieID: Int
     private let viewModel: MovieDetailViewModel
-    private var sections: [MovieDetailSectionItem] = []
-    private var loadTask: Task<Void, Never>?
-    private var favoriteTask: Task<Void, Never>?
-    private var ratingTask: Task<Void, Never>?
     private lazy var router: MovieDetailRouting = MovieDetailRouter(
         sourceViewController: self,
         movieID: movieID
     )
+
+    private var sections: [MovieDetailSectionItem] = []
+
+    private var loadTask: Task<Void, Never>?
+    private var favoriteTask: Task<Void, Never>?
+    private var ratingTask: Task<Void, Never>?
+
+    // MARK: - UI Components
+
     private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization

@@ -16,14 +16,19 @@ final class TVDetailViewController: DetailBaseViewController {
 
     private let seriesID: Int
     private let viewModel: TVDetailViewModel
-    private var sections: [TVDetailSectionItem] = []
-    private var loadTask: Task<Void, Never>?
-    private var favoriteTask: Task<Void, Never>?
-    private var ratingTask: Task<Void, Never>?
     private lazy var router: TVDetailRouting = TVDetailRouter(
         sourceViewController: self,
         seriesID: seriesID
     )
+
+    private var sections: [TVDetailSectionItem] = []
+
+    private var loadTask: Task<Void, Never>?
+    private var favoriteTask: Task<Void, Never>?
+    private var ratingTask: Task<Void, Never>?
+
+    // MARK: - UI Components
+
     private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization

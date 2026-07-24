@@ -30,9 +30,12 @@ final class LoginViewController: BaseViewController {
     private lazy var router: LoginRouting = LoginRouter(sourceViewController: self)
 
     private var currentPage: AuthPage = .login
-    private var authFlowTask: Task<Void, Never>?
     private var handledSuccessSessionID: String?
     private var currentFailureRecoveryAction: LoginFailureRecoveryAction?
+
+    private var authFlowTask: Task<Void, Never>?
+
+    // MARK: - UI Components
 
     private lazy var loginPageView = LoginPageView()
     private lazy var guestPageView = GuestPageView()
@@ -43,29 +46,6 @@ final class LoginViewController: BaseViewController {
         guestPageView,
         registerPageView,
     ]
-
-    // MARK: - Initialization
-
-    init(
-        loginViewModel: LoginViewModel = LoginViewModel(),
-        authCoordinator: AuthFlowCoordinating = AuthFlowCoordinator()
-    ) {
-        self.loginVM = loginViewModel
-        self.authCoordinator = authCoordinator
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        self.loginVM = LoginViewModel()
-        self.authCoordinator = AuthFlowCoordinator()
-        super.init(coder: coder)
-    }
-
-    deinit {
-        authFlowTask?.cancel()
-    }
-
-    // MARK: - UI Components
 
     private let pageScrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -131,6 +111,27 @@ final class LoginViewController: BaseViewController {
         stackView.setCustomSpacing(ErrorLayout.actionTopSpacing, after: errorMessageLabel)
         return stackView
     }()
+
+    // MARK: - Initialization
+
+    init(
+        loginViewModel: LoginViewModel = LoginViewModel(),
+        authCoordinator: AuthFlowCoordinating = AuthFlowCoordinator()
+    ) {
+        self.loginVM = loginViewModel
+        self.authCoordinator = authCoordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        self.loginVM = LoginViewModel()
+        self.authCoordinator = AuthFlowCoordinator()
+        super.init(coder: coder)
+    }
+
+    deinit {
+        authFlowTask?.cancel()
+    }
 
     // MARK: - Lifecycle
 

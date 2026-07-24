@@ -15,13 +15,15 @@ final class SeasonDetailViewController: DetailBaseViewController {
     private let seriesID: Int
     private let seasonNumber: Int
     private let viewModel: SeasonDetailViewModel
-    private var sections: [SeasonDetailSectionItem] = []
-    private var loadTask: Task<Void, Never>?
     private lazy var router: SeasonDetailRouting = SeasonDetailRouter(
         sourceViewController: self,
         seriesID: seriesID,
         seasonNumber: seasonNumber
     )
+
+    private var sections: [SeasonDetailSectionItem] = []
+
+    private var loadTask: Task<Void, Never>?
 
     // MARK: - Initialization
 

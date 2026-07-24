@@ -14,9 +14,11 @@ final class PersonDetailViewController: DetailBaseViewController {
 
     private let personID: Int
     private let viewModel: PersonDetailViewModel
-    private var sections: [PersonDetailSectionItem] = []
-    private var loadTask: Task<Void, Never>?
     private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+
+    private var sections: [PersonDetailSectionItem] = []
+
+    private var loadTask: Task<Void, Never>?
 
     // MARK: - Initialization
 

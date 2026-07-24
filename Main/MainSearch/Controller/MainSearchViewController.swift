@@ -17,12 +17,18 @@ final class MainSearchViewController: MainBaseViewController {
 
     private let viewModel: MainSearchViewModel
     private lazy var router: MainSearchRouting = MainSearchRouter(sourceViewController: self)
+
     private var filters: [MainSearchFilterItem] = []
     private var results: [MainSearchResultItem] = []
+
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
+
     private var searchTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
+
+    // MARK: - Override Points
 
     override var collectionViewItemHeight: CGFloat {
         112

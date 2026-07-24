@@ -16,6 +16,7 @@ final class TVReviewDetailViewController: GlassBaseViewController {
 
     private let review: TVReviewDetailItem
     private let navigationTitle: String
+
     private var isShowingCompactTitle = false
 
     // MARK: - Layout

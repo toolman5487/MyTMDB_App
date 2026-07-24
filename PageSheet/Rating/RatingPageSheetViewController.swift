@@ -41,7 +41,9 @@ final class RatingPageSheetViewController: UIViewController {
     private let currentValue: Double?
     private let onSubmit: (Double) -> Void
     private let onDelete: () -> Void
+
     private var selectedValue: Double
+
     private var valueLabelScaleAnimator: UIViewPropertyAnimator?
 
     // MARK: - UI Components

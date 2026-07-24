@@ -18,10 +18,15 @@ final class EpisodeDetailViewController: DetailBaseViewController {
     private let seasonNumber: Int
     private let episodeNumber: Int
     private let viewModel: EpisodeDetailViewModel
+    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+
     private var sections: [EpisodeDetailSectionItem] = []
+
     private var loadTask: Task<Void, Never>?
     private var ratingTask: Task<Void, Never>?
-    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+
+    // MARK: - UI Components
+
     private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization

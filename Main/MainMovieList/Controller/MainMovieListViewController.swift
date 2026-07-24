@@ -23,13 +23,17 @@ final class MainMovieListViewController: MainBaseViewController {
 
     private let viewModel: MainMovieListViewModel
     private lazy var router: MainMovieListRouting = MainMovieListRouter(sourceViewController: self)
+
     private var filters: [MainMovieGenreItem] = []
     private var movies: [MovieGridMovieItem] = []
+
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
+
     private var loadTask: Task<Void, Never>?
     private var filterSelectionTask: Task<Void, Never>?
     private var sortSelectionTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components

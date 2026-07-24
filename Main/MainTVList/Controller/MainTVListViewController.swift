@@ -24,13 +24,17 @@ final class MainTVListViewController: MainBaseViewController {
 
     private let viewModel: MainTVListViewModel
     private lazy var router: MainTVListRouting = MainTVListRouter(sourceViewController: self)
+
     private var filters: [MainTVGenreItem] = []
     private var series: [TVGridSeriesItem] = []
+
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
+
     private var loadTask: Task<Void, Never>?
     private var filterSelectionTask: Task<Void, Never>?
     private var sortSelectionTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - UI Components

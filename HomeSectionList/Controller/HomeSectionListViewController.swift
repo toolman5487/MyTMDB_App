@@ -24,11 +24,15 @@ final class HomeSectionListViewController: BaseListViewController {
     private let category: MainHomeContentCategory
     private let viewModel: HomeSectionListViewModel
     private lazy var router: HomeSectionListRouting = HomeSectionListRouter(sourceViewController: self)
+
     private var filters: [HomeSectionListGenreItem] = []
     private var items: [MainHomeContentItem] = []
+
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
+
     private var loadTask: Task<Void, Never>?
+
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - Initialization

@@ -17,6 +17,8 @@ class BaseViewController: UIViewController {
 
     private var keyboardDismissTapGesture: UITapGestureRecognizer?
 
+    // MARK: - UI Components
+
     private lazy var baseLoadingOverlayView: UIView = {
         let view = UIView()
         view.backgroundColor = ThemeColor.background.withAlphaComponent(0.4)

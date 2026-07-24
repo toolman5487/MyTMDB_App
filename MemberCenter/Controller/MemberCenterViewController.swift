@@ -25,8 +25,10 @@ final class MemberCenterViewController: BaseListViewController {
 
     private let viewModel: MemberCenterViewModel
     private lazy var router: MemberCenterRouting = MemberCenterRouter(sourceViewController: self)
-    private var loadTask: Task<Void, Never>?
+
     private var hasStartedInitialLoad = false
+
+    private var loadTask: Task<Void, Never>?
 
     // MARK: - Initialization
 

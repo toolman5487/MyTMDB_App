@@ -34,6 +34,8 @@ final class BaseWebViewController: BaseViewController {
 
     private var bottomTabBarBottomConstraint: Constraint?
 
+    // MARK: - UI Components
+
     private lazy var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true

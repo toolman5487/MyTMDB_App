@@ -19,6 +19,8 @@ final class YouTubePlayerViewController: BaseViewController {
     private let videoKey: String
     private let preferredTitle: String?
 
+    // MARK: - UI Components
+
     private lazy var playerView: YTPlayerView = {
         let playerView = YTPlayerView()
         playerView.backgroundColor = .black

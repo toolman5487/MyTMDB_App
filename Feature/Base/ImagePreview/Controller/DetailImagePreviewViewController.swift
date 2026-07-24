@@ -28,11 +28,12 @@ final class DetailImagePreviewViewController: UIViewController {
 
     private let imageURLs: [URL]
     private let previewTitle: String?
+
     private var currentIndex: Int
     private var isPaging = false
     private var lastPageTapDate: Date?
 
-    // MARK: - Views
+    // MARK: - UI Components
 
     private lazy var pageViewController: UIPageViewController = {
         let viewController = UIPageViewController(
@@ -307,7 +308,7 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     let index: Int
     private let imageURL: URL
 
-    // MARK: - Views
+    // MARK: - UI Components
 
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()

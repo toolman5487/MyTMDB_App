@@ -13,22 +13,10 @@ import UIKit
 @MainActor
 class BaseListViewController: BaseViewController {
 
-    // MARK: - Properties
+    // MARK: - Override Points
 
     var collectionViewItemHeight: CGFloat {
         80
-    }
-
-    // MARK: - Initialization
-
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        hidesBottomBarWhenPushed = true
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        hidesBottomBarWhenPushed = true
     }
 
     // MARK: - UI Components
@@ -51,6 +39,18 @@ class BaseListViewController: BaseViewController {
         collectionView.alwaysBounceVertical = true
         return collectionView
     }()
+
+    // MARK: - Initialization
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        hidesBottomBarWhenPushed = true
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        hidesBottomBarWhenPushed = true
+    }
 
     // MARK: - BaseViewController
 

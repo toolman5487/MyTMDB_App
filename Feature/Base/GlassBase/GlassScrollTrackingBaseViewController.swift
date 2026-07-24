@@ -12,11 +12,13 @@ import UIKit
 @MainActor
 class GlassScrollTrackingBaseViewController: GlassBaseViewController {
 
-    // MARK: - Properties
+    // MARK: - Override Points
 
     var collectionViewItemHeight: CGFloat {
         80
     }
+
+    // MARK: - Properties
 
     private var tabBarVisibilityTracker = TabBarScrollVisibilityTracker()
 

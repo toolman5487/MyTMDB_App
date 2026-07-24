@@ -30,7 +30,7 @@ enum GlassBackgroundEffect {
 @MainActor
 class GlassBaseViewController: BaseViewController {
 
-    // MARK: - Properties
+    // MARK: - UI Components
 
     private let glassBackgroundView: UIVisualEffectView = {
         let view = UIVisualEffectView(effect: nil)

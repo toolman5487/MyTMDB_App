@@ -22,10 +22,14 @@ final class MainHomeViewController: MainBaseViewController {
     // MARK: - Properties
 
     private let viewModel: MainHomeViewModel
+    private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
+
     private var sections: [MainHomeSectionItem] = []
     private var carouselItems: [MainHomeContentItem] = []
+
     private var loadTask: Task<Void, Never>?
-    private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
+
+    // MARK: - Override Points
 
     override var collectionViewItemHeight: CGFloat {
         Layout.itemHeight

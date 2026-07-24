@@ -67,15 +67,17 @@ struct TabBarScrollVisibilityTracker {
 @MainActor
 class ScrollTrackingBaseViewController: BaseViewController {
 
-    // MARK: - Properties
+    // MARK: - Override Points
 
     var collectionViewItemHeight: CGFloat {
         80
     }
-    
+
     var updatesFlowLayoutItemSizeAutomatically: Bool {
         true
     }
+
+    // MARK: - Properties
 
     private var tabBarVisibilityTracker = TabBarScrollVisibilityTracker()
 

@@ -23,6 +23,7 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
     private var detailNavigationTitle: String?
     private var detailNavigationTitleRevealOffset = NavigationTitle.revealOffset
     private var isDetailNavigationTitleVisible = false
+
     private var detailRightBarButtonItems: [UIBarButtonItem] = []
 
     // MARK: - Initialization
