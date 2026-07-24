@@ -588,24 +588,6 @@
 		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0022FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0032FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
-		15E20101300F000000E20101 /* OrganizationDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20001300F000000E20001 /* OrganizationDetailModels.swift */; };
-		15E20102300F000000E20101 /* OrganizationDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20001300F000000E20001 /* OrganizationDetailModels.swift */; };
-		15E20103300F000000E20101 /* OrganizationDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20001300F000000E20001 /* OrganizationDetailModels.swift */; };
-		15E20201300F000000E20201 /* OrganizationDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20002300F000000E20001 /* OrganizationDetailService.swift */; };
-		15E20202300F000000E20201 /* OrganizationDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20002300F000000E20001 /* OrganizationDetailService.swift */; };
-		15E20203300F000000E20201 /* OrganizationDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20002300F000000E20001 /* OrganizationDetailService.swift */; };
-		15E20301300F000000E20301 /* OrganizationDetailPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20003300F000000E20001 /* OrganizationDetailPresentation.swift */; };
-		15E20302300F000000E20301 /* OrganizationDetailPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20003300F000000E20001 /* OrganizationDetailPresentation.swift */; };
-		15E20303300F000000E20301 /* OrganizationDetailPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20003300F000000E20001 /* OrganizationDetailPresentation.swift */; };
-		15E20401300F000000E20401 /* OrganizationDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20004300F000000E20001 /* OrganizationDetailViewModel.swift */; };
-		15E20402300F000000E20401 /* OrganizationDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20004300F000000E20001 /* OrganizationDetailViewModel.swift */; };
-		15E20403300F000000E20401 /* OrganizationDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20004300F000000E20001 /* OrganizationDetailViewModel.swift */; };
-		15E20501300F000000E20501 /* OrganizationDetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20005300F000000E20001 /* OrganizationDetailViews.swift */; };
-		15E20502300F000000E20501 /* OrganizationDetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20005300F000000E20001 /* OrganizationDetailViews.swift */; };
-		15E20503300F000000E20501 /* OrganizationDetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20005300F000000E20001 /* OrganizationDetailViews.swift */; };
-		15E20601300F000000E20601 /* OrganizationDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20006300F000000E20001 /* OrganizationDetailViewController.swift */; };
-		15E20602300F000000E20601 /* OrganizationDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20006300F000000E20001 /* OrganizationDetailViewController.swift */; };
-		15E20603300F000000E20601 /* OrganizationDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E20006300F000000E20001 /* OrganizationDetailViewController.swift */; };
 		15EB10023006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
 		15EB10033006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
 		15EB10043006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
@@ -879,12 +861,6 @@
 		15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
 		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
-		15E20001300F000000E20001 /* OrganizationDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDetailModels.swift; sourceTree = "<group>"; };
-		15E20002300F000000E20001 /* OrganizationDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDetailService.swift; sourceTree = "<group>"; };
-		15E20003300F000000E20001 /* OrganizationDetailPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDetailPresentation.swift; sourceTree = "<group>"; };
-		15E20004300F000000E20001 /* OrganizationDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDetailViewModel.swift; sourceTree = "<group>"; };
-		15E20005300F000000E20001 /* OrganizationDetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDetailViews.swift; sourceTree = "<group>"; };
-		15E20006300F000000E20001 /* OrganizationDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDetailViewController.swift; sourceTree = "<group>"; };
 		15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailPresentationBuilder.swift; sourceTree = "<group>"; };
 		15F000012FF7500000F00001 /* RatingPageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPageSheetViewController.swift; sourceTree = "<group>"; };
 		15F010012FF7600000F01001 /* AppAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimationView.swift; sourceTree = "<group>"; };
@@ -1813,7 +1789,6 @@
 				1598AA622DC4B6A1005E972C /* MyTMDB_AppTests */,
 				1598AA6C2DC4B6A1005E972C /* MyTMDB_AppUITests */,
 				15D196982FF1205000545A85 /* Network */,
-				15E21000300F000000E21000 /* OrganizationDetail */,
 				15BAEB602FF65395006B0E15 /* PageSheet */,
 				15BAE94A2FF6094B006B0E15 /* PersonDetail */,
 				1598AA4A2DC4B69F005E972C /* Products */,
@@ -2919,67 +2894,6 @@
 			path = Builder;
 			sourceTree = "<group>";
 		};
-		15E21000300F000000E21000 /* OrganizationDetail */ = {
-			isa = PBXGroup;
-			children = (
-				15E21001300F000000E21000 /* Controller */,
-				15E21002300F000000E21000 /* Model */,
-				15E21003300F000000E21000 /* Presentation */,
-				15E21004300F000000E21000 /* Service */,
-				15E21005300F000000E21000 /* View */,
-				15E21006300F000000E21000 /* ViewModel */,
-			);
-			path = OrganizationDetail;
-			sourceTree = "<group>";
-		};
-		15E21001300F000000E21000 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				15E20006300F000000E20001 /* OrganizationDetailViewController.swift */,
-			);
-			path = Controller;
-			sourceTree = "<group>";
-		};
-		15E21002300F000000E21000 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				15E20001300F000000E20001 /* OrganizationDetailModels.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		15E21003300F000000E21000 /* Presentation */ = {
-			isa = PBXGroup;
-			children = (
-				15E20003300F000000E20001 /* OrganizationDetailPresentation.swift */,
-			);
-			path = Presentation;
-			sourceTree = "<group>";
-		};
-		15E21004300F000000E21000 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-				15E20002300F000000E20001 /* OrganizationDetailService.swift */,
-			);
-			path = Service;
-			sourceTree = "<group>";
-		};
-		15E21005300F000000E21000 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				15E20005300F000000E20001 /* OrganizationDetailViews.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		15E21006300F000000E21000 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				15E20004300F000000E20001 /* OrganizationDetailViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		15EB10003006400000EB1001 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -3214,12 +3128,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15E20101300F000000E20101 /* OrganizationDetailModels.swift in Sources */,
-				15E20201300F000000E20201 /* OrganizationDetailService.swift in Sources */,
-				15E20301300F000000E20301 /* OrganizationDetailPresentation.swift in Sources */,
-				15E20401300F000000E20401 /* OrganizationDetailViewModel.swift in Sources */,
-				15E20501300F000000E20501 /* OrganizationDetailViews.swift in Sources */,
-				15E20601300F000000E20601 /* OrganizationDetailViewController.swift in Sources */,
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
 				1598AA912DC4B93E005E972C /* LoginRouter.swift in Sources */,
 				15D197432FF1691000545A85 /* AuthPage.swift in Sources */,
@@ -3443,12 +3351,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15E20102300F000000E20101 /* OrganizationDetailModels.swift in Sources */,
-				15E20202300F000000E20201 /* OrganizationDetailService.swift in Sources */,
-				15E20302300F000000E20301 /* OrganizationDetailPresentation.swift in Sources */,
-				15E20402300F000000E20401 /* OrganizationDetailViewModel.swift in Sources */,
-				15E20502300F000000E20501 /* OrganizationDetailViews.swift in Sources */,
-				15E20602300F000000E20601 /* OrganizationDetailViewController.swift in Sources */,
 				15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
@@ -3653,12 +3555,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15E20103300F000000E20101 /* OrganizationDetailModels.swift in Sources */,
-				15E20203300F000000E20201 /* OrganizationDetailService.swift in Sources */,
-				15E20303300F000000E20301 /* OrganizationDetailPresentation.swift in Sources */,
-				15E20403300F000000E20401 /* OrganizationDetailViewModel.swift in Sources */,
-				15E20503300F000000E20501 /* OrganizationDetailViews.swift in Sources */,
-				15E20603300F000000E20601 /* OrganizationDetailViewController.swift in Sources */,
 				15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 				15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,

@@ -17,8 +17,6 @@ protocol TVDetailRouting: AnyObject {
     func showPersonDetail(personID: Int)
     func showSeasonDetail(seasonNumber: Int)
     func showTVDetail(seriesID: Int)
-    func showCompanyDetail(companyID: Int)
-    func showNetworkDetail(networkID: Int)
     func showGenreList(genreID: Int)
     func showWatchProvider(url: URL, title: String?)
     func showContentList(_ configuration: DetailContentListConfiguration)
@@ -82,14 +80,6 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
 
     func showTVDetail(seriesID: Int) {
         detailRouter.showTVDetail(seriesID: seriesID)
-    }
-
-    func showCompanyDetail(companyID: Int) {
-        detailRouter.showCompanyDetail(companyID: companyID)
-    }
-
-    func showNetworkDetail(networkID: Int) {
-        detailRouter.showNetworkDetail(networkID: networkID)
     }
 
     func showGenreList(genreID: Int) {
