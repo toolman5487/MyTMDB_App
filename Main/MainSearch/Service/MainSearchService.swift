@@ -10,6 +10,8 @@ import Foundation
 // MARK: - MainSearchServicing
 
 nonisolated protocol MainSearchServicing: Sendable {
+    func fetchDailyTrending(page: Int) async throws -> MainSearchDailyTrendingPage
+
     func searchAll(
         keyword: String,
         page: Int
@@ -36,6 +38,23 @@ nonisolated final class MainSearchService: MainSearchServicing {
     }
 
     // MARK: - Public Methods
+
+    func fetchDailyTrending(page: Int = 1) async throws -> MainSearchDailyTrendingPage {
+        let response: TMDBPageResponse<MainSearchResult> = try await network.get(
+            path: APIConfig.Trending.all(timeWindow: "day"),
+            queryItems: [
+                URLQueryItem(name: "language", value: localization.languageParameter),
+                URLQueryItem(name: "page", value: String(max(page, 1)))
+            ]
+        )
+
+        return MainSearchDailyTrendingPage(
+            page: response.page,
+            totalPages: response.totalPages,
+            totalResults: response.totalResults,
+            results: response.results.filter { $0.mediaType != .unknown }
+        )
+    }
 
     func searchAll(
         keyword: String,

@@ -145,6 +145,56 @@ nonisolated struct MainSearchResultPage: Sendable, Equatable {
     let results: [MainSearchResult]
 }
 
+// MARK: - MainSearchDailyTrendingPage
+
+nonisolated struct MainSearchDailyTrendingPage: Sendable, Equatable {
+    let page: Int
+    let totalPages: Int
+    let totalResults: Int
+    let results: [MainSearchResult]
+}
+
+// MARK: - MainSearchDailyTrendingContent
+
+nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
+    let items: [MainSearchResultItem]
+    let currentPage: Int
+    let totalPages: Int
+    let totalResults: Int
+    let isLoadingNextPage: Bool
+
+    var canLoadNextPage: Bool {
+        currentPage < totalPages
+    }
+
+    func updatingLoadingNextPage(_ isLoading: Bool) -> MainSearchDailyTrendingContent {
+        MainSearchDailyTrendingContent(
+            items: items,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalResults: totalResults,
+            isLoadingNextPage: isLoading
+        )
+    }
+
+    func appending(page: MainSearchDailyTrendingPage) -> MainSearchDailyTrendingContent {
+        let existingIDs = Set(items.map(\.id))
+        let newItems = MainSearchContent.uniqueResults(
+            page.results.map(MainSearchResultItem.init(result:))
+        )
+        .filter { !existingIDs.contains($0.id) }
+        .shuffled()
+
+        return MainSearchDailyTrendingContent(
+            items: items + newItems,
+            currentPage: page.page,
+            totalPages: page.totalPages,
+            totalResults: page.totalResults,
+            isLoadingNextPage: false
+        )
+    }
+}
+
 // MARK: - MainSearchContent
 
 nonisolated struct MainSearchContent: Sendable, Equatable {

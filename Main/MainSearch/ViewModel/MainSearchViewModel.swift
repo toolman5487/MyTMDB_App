@@ -12,6 +12,9 @@ import Observation
 
 nonisolated enum MainSearchViewState: Equatable {
     case idle
+    case dailyTrendingLoading
+    case dailyTrending(MainSearchDailyTrendingContent)
+    case dailyTrendingEmpty
     case typing
     case searching(String)
     case results(MainSearchContent)
@@ -30,6 +33,7 @@ final class MainSearchViewModel {
     private(set) var state: MainSearchViewState = .idle
 
     private let service: MainSearchServicing
+    private var cachedDailyTrendingContent: MainSearchDailyTrendingContent?
 
     // MARK: - Initialization
 
@@ -38,6 +42,77 @@ final class MainSearchViewModel {
     }
 
     // MARK: - Public Methods
+
+    func loadDailyTrending() async {
+        if let cachedDailyTrendingContent {
+            state = .dailyTrending(cachedDailyTrendingContent)
+            return
+        }
+
+        state = .dailyTrendingLoading
+
+        do {
+            let page = try await service.fetchDailyTrending(page: 1)
+            guard !Task.isCancelled else { return }
+
+            let items = MainSearchContent.uniqueResults(
+                page.results.map(MainSearchResultItem.init(result:))
+            ).shuffled()
+
+            let content = MainSearchDailyTrendingContent(
+                items: items,
+                currentPage: page.page,
+                totalPages: page.totalPages,
+                totalResults: page.totalResults,
+                isLoadingNextPage: false
+            )
+
+            cachedDailyTrendingContent = content
+            state = items.isEmpty ? .dailyTrendingEmpty : .dailyTrending(content)
+        } catch {
+            guard !Task.isCancelled else { return }
+            state = .failed(error.errorMessage)
+        }
+    }
+
+    func loadNextDailyTrendingPageIfNeeded(currentResultID: String) async {
+        guard case .dailyTrending(let content) = state,
+              content.canLoadNextPage,
+              !content.isLoadingNextPage,
+              shouldLoadNextPage(currentResultID: currentResultID, results: content.items) else {
+            return
+        }
+
+        state = .dailyTrending(content.updatingLoadingNextPage(true))
+
+        do {
+            let nextPage = try await service.fetchDailyTrending(
+                page: content.currentPage + 1
+            )
+
+            guard !Task.isCancelled else { return }
+
+            guard case .dailyTrending(let currentContent) = state,
+                  currentContent.currentPage == content.currentPage else {
+                return
+            }
+
+            let updatedContent = currentContent.appending(page: nextPage)
+            cachedDailyTrendingContent = updatedContent
+            state = .dailyTrending(updatedContent)
+        } catch {
+            guard !Task.isCancelled else { return }
+
+            guard case .dailyTrending(let currentContent) = state,
+                  currentContent.currentPage == content.currentPage else {
+                return
+            }
+
+            let updatedContent = currentContent.updatingLoadingNextPage(false)
+            cachedDailyTrendingContent = updatedContent
+            state = .dailyTrending(updatedContent)
+        }
+    }
 
     func showTypingLoading() {
         state = .typing
@@ -52,7 +127,7 @@ final class MainSearchViewModel {
         let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmedKeyword.isEmpty else {
-            state = .idle
+            restoreDailyTrending()
             return
         }
 
@@ -118,7 +193,7 @@ final class MainSearchViewModel {
     }
 
     func reset() {
-        state = .idle
+        restoreDailyTrending()
     }
 
     // MARK: - Private Methods
@@ -136,6 +211,15 @@ final class MainSearchViewModel {
             totalResults: page.totalResults,
             isLoadingNextPage: false
         )
+    }
+
+    private func restoreDailyTrending() {
+        guard let cachedDailyTrendingContent else {
+            state = .idle
+            return
+        }
+
+        state = .dailyTrending(cachedDailyTrendingContent)
     }
 
     private func shouldLoadNextPage(

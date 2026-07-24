@@ -13,6 +13,15 @@ import UIKit
 @MainActor
 final class MainSearchViewController: MainBaseViewController {
 
+    // MARK: - Layout
+
+    private enum Layout {
+        static let searchResultHeight: CGFloat = 112
+        static let trendingTopInset: CGFloat = 12
+        static let trendingBottomInset: CGFloat = 24
+        static let filterHeaderHeight: CGFloat = 56
+    }
+
     // MARK: - Properties
 
     private let viewModel: MainSearchViewModel
@@ -20,18 +29,25 @@ final class MainSearchViewController: MainBaseViewController {
 
     private var filters: [MainSearchFilterItem] = []
     private var results: [MainSearchResultItem] = []
+    private var dailyTrendingItems: [MainSearchResultItem] = []
+    private var isShowingDailyTrending = false
 
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
 
     private var searchTask: Task<Void, Never>?
+    private var dailyTrendingTask: Task<Void, Never>?
 
     private let paginationTaskController = MovieGridPaginationTaskController()
 
     // MARK: - Override Points
 
     override var collectionViewItemHeight: CGFloat {
-        112
+        Layout.searchResultHeight
+    }
+
+    override var updatesFlowLayoutItemSizeAutomatically: Bool {
+        false
     }
 
     // MARK: - UI Components
@@ -59,6 +75,7 @@ final class MainSearchViewController: MainBaseViewController {
 
     deinit {
         searchTask?.cancel()
+        dailyTrendingTask?.cancel()
     }
 
     // MARK: - Template Methods
@@ -73,6 +90,7 @@ final class MainSearchViewController: MainBaseViewController {
     override func bindViewModel() {
         render(state: viewModel.state)
         observeViewModelState()
+        loadDailyTrending()
     }
 
     // MARK: - Setup
@@ -98,6 +116,10 @@ final class MainSearchViewController: MainBaseViewController {
             MainSearchResultCollectionViewCell.self,
             forCellWithReuseIdentifier: MainSearchResultCollectionViewCell.reuseIdentifier
         )
+        collectionView.register(
+            MainSearchTrendingCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainSearchTrendingCollectionViewCell.reuseIdentifier
+        )
     }
 
     private func configureSearchBar() {
@@ -121,23 +143,57 @@ final class MainSearchViewController: MainBaseViewController {
     }
 
     private func render(state: MainSearchViewState) {
+        setLoadingVisible(false, animated: false)
+
         switch state {
         case .idle:
             filters = []
             results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
+            canLoadNextPage = false
+            isLoadingNextPage = false
+            collectionView.backgroundView = nil
+
+        case .dailyTrendingLoading:
+            filters = []
+            results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
+            canLoadNextPage = false
+            isLoadingNextPage = false
+            collectionView.backgroundView = nil
+            setLoadingVisible(true, animated: false)
+
+        case .dailyTrending(let content):
+            filters = []
+            results = []
+            dailyTrendingItems = content.items
+            isShowingDailyTrending = true
+            canLoadNextPage = content.canLoadNextPage
+            isLoadingNextPage = content.isLoadingNextPage
+            collectionView.backgroundView = nil
+
+        case .dailyTrendingEmpty:
+            filters = []
+            results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "開始搜尋",
-                    message: "輸入關鍵字搜尋電影、劇集與人物。",
-                    systemImageName: "magnifyingglass"
+                    title: "目前沒有熱門內容",
+                    message: "稍後再回來看看近期熱門的電影、劇集與人物。",
+                    systemImageName: "flame"
                 )
             )
 
         case .typing:
             filters = []
             results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = MainMovieSearchTypingLoadingView()
@@ -145,6 +201,8 @@ final class MainSearchViewController: MainBaseViewController {
         case .searching(let keyword):
             filters = []
             results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = MainMovieSearchSubmittedLoadingView(keyword: keyword)
@@ -152,6 +210,8 @@ final class MainSearchViewController: MainBaseViewController {
         case .results(let content):
             filters = content.filters
             results = content.results
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
             canLoadNextPage = content.canLoadNextPage
             isLoadingNextPage = content.isLoadingNextPage
             collectionView.backgroundView = makeFilteredEmptyViewIfNeeded(for: content)
@@ -159,6 +219,8 @@ final class MainSearchViewController: MainBaseViewController {
         case .empty(let keyword):
             filters = []
             results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
@@ -172,18 +234,26 @@ final class MainSearchViewController: MainBaseViewController {
         case .failed(let errorMessage):
             filters = []
             results = []
+            dailyTrendingItems = []
+            isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = ErrorMessageView(message: errorMessage)
+            collectionView.backgroundView = ErrorMessageView(
+                message: errorMessage
+            ) { [weak self] in
+                self?.retryCurrentRequest()
+            }
         }
 
         collectionView.reloadData()
+        collectionView.collectionViewLayout.invalidateLayout()
     }
 
     // MARK: - Search
 
     private func submitSearch(keyword: String?) {
         searchTask?.cancel()
+        dailyTrendingTask?.cancel()
         cancelLoadNextPageTask()
 
         let trimmedKeyword = (keyword ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -203,6 +273,7 @@ final class MainSearchViewController: MainBaseViewController {
         searchTask?.cancel()
         cancelLoadNextPageTask()
         viewModel.reset()
+        loadDailyTrending()
     }
 }
 
@@ -211,17 +282,36 @@ final class MainSearchViewController: MainBaseViewController {
 extension MainSearchViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        filters.isEmpty && results.isEmpty ? 0 : 1
+        dailyTrendingItems.isEmpty && filters.isEmpty && results.isEmpty ? 0 : 1
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        results.count
+        isShowingDailyTrending ? dailyTrendingItems.count : results.count
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        if isShowingDailyTrending {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MainSearchTrendingCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let cell = cell as? MainSearchTrendingCollectionViewCell,
+               dailyTrendingItems.indices.contains(indexPath.item) {
+                cell.configure(
+                    with: dailyTrendingItems[indexPath.item],
+                    imageHeight: MovieGridLayoutMetrics.posterHeight(
+                        for: collectionView.bounds.width
+                    )
+                )
+            }
+
+            return cell
+        }
+
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: MainSearchResultCollectionViewCell.reuseIdentifier,
             for: indexPath
@@ -274,10 +364,11 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard results.indices.contains(indexPath.item) else { return }
+        let items = isShowingDailyTrending ? dailyTrendingItems : results
+        guard items.indices.contains(indexPath.item) else { return }
 
         collectionView.deselectItem(at: indexPath, animated: true)
-        router.showDetail(for: results[indexPath.item])
+        router.showDetail(for: items[indexPath.item])
     }
 
     func collectionView(
@@ -293,7 +384,56 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        CGSize(width: collectionView.bounds.width, height: filters.isEmpty ? 0 : 56)
+        CGSize(
+            width: collectionView.bounds.width,
+            height: filters.isEmpty ? 0 : Layout.filterHeaderHeight
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        guard isShowingDailyTrending else {
+            return CGSize(
+                width: collectionView.bounds.width,
+                height: Layout.searchResultHeight
+            )
+        }
+
+        return MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        guard isShowingDailyTrending else { return .zero }
+
+        return UIEdgeInsets(
+            top: Layout.trendingTopInset,
+            left: MovieGridLayoutMetrics.horizontalInset,
+            bottom: Layout.trendingBottomInset,
+            right: MovieGridLayoutMetrics.horizontalInset
+        )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        isShowingDailyTrending ? MovieGridLayoutMetrics.itemSpacing : 0
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        isShowingDailyTrending ? MovieGridLayoutMetrics.itemSpacing : 0
     }
 }
 
@@ -309,6 +449,8 @@ extension MainSearchViewController: UISearchResultsUpdating {
             return
         }
 
+        dailyTrendingTask?.cancel()
+        cancelLoadNextPageTask()
         viewModel.showTypingLoading()
     }
 }
@@ -331,20 +473,52 @@ extension MainSearchViewController: UISearchBarDelegate {
 
 private extension MainSearchViewController {
 
+    func loadDailyTrending() {
+        dailyTrendingTask?.cancel()
+        dailyTrendingTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            await viewModel.loadDailyTrending()
+        }
+    }
+
+    func retryCurrentRequest() {
+        let keyword = searchController.searchBar.text
+        let trimmedKeyword = (keyword ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedKeyword.isEmpty else {
+            loadDailyTrending()
+            return
+        }
+
+        submitSearch(keyword: trimmedKeyword)
+    }
+
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
-        guard results.indices.contains(indexPath.item) else { return }
+        let items = isShowingDailyTrending ? dailyTrendingItems : results
+        guard items.indices.contains(indexPath.item) else { return }
         guard canLoadNextPage, !isLoadingNextPage else { return }
         guard !paginationTaskController.isRunning else { return }
 
         guard MovieGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
-            itemCount: results.count
+            itemCount: items.count
         ) else { return }
 
-        let currentResultID = results[indexPath.item].id
+        let currentResultID = items[indexPath.item].id
+        let loadsDailyTrending = isShowingDailyTrending
+
         paginationTaskController.run { [weak self] in
             guard let self else { return }
-            await viewModel.loadNextPageIfNeeded(currentResultID: currentResultID)
+
+            if loadsDailyTrending {
+                await viewModel.loadNextDailyTrendingPageIfNeeded(
+                    currentResultID: currentResultID
+                )
+            } else {
+                await viewModel.loadNextPageIfNeeded(
+                    currentResultID: currentResultID
+                )
+            }
         }
     }
 
