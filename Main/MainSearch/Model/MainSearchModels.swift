@@ -154,9 +154,47 @@ nonisolated struct MainSearchDailyTrendingPage: Sendable, Equatable {
     let results: [MainSearchResult]
 }
 
+// MARK: - MainSearchPopularPerson
+
+nonisolated struct MainSearchPopularPerson: Decodable, Sendable, Equatable, Identifiable {
+    let id: Int
+    let name: String
+    let profilePath: String?
+    let knownForDepartment: String?
+    let popularity: Double
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case profilePath = "profile_path"
+        case knownForDepartment = "known_for_department"
+        case popularity
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.profilePath = try container.decodeIfPresent(String.self, forKey: .profilePath)
+        self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment)
+        self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
+    }
+}
+
+// MARK: - MainSearchPopularPeoplePage
+
+nonisolated struct MainSearchPopularPeoplePage: Sendable, Equatable {
+    let page: Int
+    let totalPages: Int
+    let totalResults: Int
+    let people: [MainSearchPopularPerson]
+}
+
 // MARK: - MainSearchDailyTrendingContent
 
 nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
+    let popularPeople: [MainSearchResultItem]
     let items: [MainSearchResultItem]
     let currentPage: Int
     let totalPages: Int
@@ -169,6 +207,7 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> MainSearchDailyTrendingContent {
         MainSearchDailyTrendingContent(
+            popularPeople: popularPeople,
             items: items,
             currentPage: currentPage,
             totalPages: totalPages,
@@ -186,6 +225,7 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
         .shuffled()
 
         return MainSearchDailyTrendingContent(
+            popularPeople: popularPeople,
             items: items + newItems,
             currentPage: page.page,
             totalPages: page.totalPages,
@@ -302,6 +342,18 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.makeSubtitle(for: result)
         self.imageURL = Self.makeImageURL(for: result)
         self.popularity = result.popularity
+    }
+
+    init(person: MainSearchPopularPerson) {
+        self.id = "\(MainSearchMediaType.person.rawValue)-\(person.id)"
+        self.sourceID = person.id
+        self.mediaType = .person
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: person.name)
+        self.subtitle = BaseDisplayTextFormatter.nonEmptyText(person.knownForDepartment)
+        self.imageURL = person.profilePath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
+        self.popularity = person.popularity
     }
 
     private static func makeSubtitle(for result: MainSearchResult) -> String? {

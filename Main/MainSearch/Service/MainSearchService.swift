@@ -12,6 +12,8 @@ import Foundation
 nonisolated protocol MainSearchServicing: Sendable {
     func fetchDailyTrending(page: Int) async throws -> MainSearchDailyTrendingPage
 
+    func fetchPopularPeople(page: Int) async throws -> MainSearchPopularPeoplePage
+
     func searchAll(
         keyword: String,
         page: Int
@@ -53,6 +55,23 @@ nonisolated final class MainSearchService: MainSearchServicing {
             totalPages: response.totalPages,
             totalResults: response.totalResults,
             results: response.results.filter { $0.mediaType != .unknown }
+        )
+    }
+
+    func fetchPopularPeople(page: Int = 1) async throws -> MainSearchPopularPeoplePage {
+        let response: TMDBPageResponse<MainSearchPopularPerson> = try await network.get(
+            path: APIConfig.Person.popular,
+            queryItems: [
+                URLQueryItem(name: "language", value: localization.languageParameter),
+                URLQueryItem(name: "page", value: String(max(page, 1)))
+            ]
+        )
+
+        return MainSearchPopularPeoplePage(
+            page: response.page,
+            totalPages: response.totalPages,
+            totalResults: response.totalResults,
+            people: response.results
         )
     }
 

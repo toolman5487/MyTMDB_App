@@ -588,9 +588,9 @@
 		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0022FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E1A0032FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
-		15E301013013000000E30101 /* MainSearchTrendingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E300013013000000E30001 /* MainSearchTrendingCollectionViewCell.swift */; };
-		15E301023013000000E30101 /* MainSearchTrendingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E300013013000000E30001 /* MainSearchTrendingCollectionViewCell.swift */; };
-		15E301033013000000E30101 /* MainSearchTrendingCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E300013013000000E30001 /* MainSearchTrendingCollectionViewCell.swift */; };
+		15E401013014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
+		15E401023014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
+		15E401033014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
 		15EB10023006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
 		15EB10033006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
 		15EB10043006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
@@ -864,7 +864,7 @@
 		15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
 		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
-		15E300013013000000E30001 /* MainSearchTrendingCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchTrendingCollectionViewCell.swift; sourceTree = "<group>"; };
+		15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchIdleCollectionViewCells.swift; sourceTree = "<group>"; };
 		15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailPresentationBuilder.swift; sourceTree = "<group>"; };
 		15F000012FF7500000F00001 /* RatingPageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPageSheetViewController.swift; sourceTree = "<group>"; };
 		15F010012FF7600000F01001 /* AppAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimationView.swift; sourceTree = "<group>"; };
@@ -1721,8 +1721,8 @@
 		1596680730120282000079DA /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */,
 				1596680630120282000079DA /* MainSearchResultCollectionViewCell.swift */,
-				15E300013013000000E30001 /* MainSearchTrendingCollectionViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -3180,7 +3180,7 @@
 				1596681430120282000079DA /* MainSearchService.swift in Sources */,
 				1596681530120282000079DA /* MainSearchModels.swift in Sources */,
 				1596681630120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */,
-				15E301023013000000E30101 /* MainSearchTrendingCollectionViewCell.swift in Sources */,
+				15E401023014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */,
 				1596681730120282000079DA /* MainSearchViewController.swift in Sources */,
 				15A950282FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,
 				15A94F4E2FF26D7900FCBB0F /* BaseViewController.swift in Sources */,
@@ -3407,7 +3407,7 @@
 				1596681A30120282000079DA /* MainSearchService.swift in Sources */,
 				1596681B30120282000079DA /* MainSearchModels.swift in Sources */,
 				1596681C30120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */,
-				15E301033013000000E30101 /* MainSearchTrendingCollectionViewCell.swift in Sources */,
+				15E401033014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */,
 				1596681D30120282000079DA /* MainSearchViewController.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15E000152FF401000000015 /* BaseFilterHeaderItem.swift in Sources */,
@@ -3752,7 +3752,7 @@
 				1596680E30120282000079DA /* MainSearchService.swift in Sources */,
 				1596680F30120282000079DA /* MainSearchModels.swift in Sources */,
 				1596681030120282000079DA /* MainSearchResultCollectionViewCell.swift in Sources */,
-				15E301013013000000E30101 /* MainSearchTrendingCollectionViewCell.swift in Sources */,
+				15E401013014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */,
 				1596681130120282000079DA /* MainSearchViewController.swift in Sources */,
 				1588090F3000D1850081E4E9 /* MemberCenterViewModel.swift in Sources */,
 				158809103000D1850081E4E9 /* MemberCenterService.swift in Sources */,

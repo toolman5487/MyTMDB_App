@@ -52,14 +52,21 @@ final class MainSearchViewModel {
         state = .dailyTrendingLoading
 
         do {
-            let page = try await service.fetchDailyTrending(page: 1)
+            async let dailyTrendingPage = service.fetchDailyTrending(page: 1)
+            async let popularPeoplePage = service.fetchPopularPeople(page: 1)
+
+            let (page, peoplePage) = try await (dailyTrendingPage, popularPeoplePage)
             guard !Task.isCancelled else { return }
 
             let items = MainSearchContent.uniqueResults(
                 page.results.map(MainSearchResultItem.init(result:))
             ).shuffled()
+            let popularPeople = MainSearchContent.uniqueResults(
+                peoplePage.people.map(MainSearchResultItem.init(person:))
+            )
 
             let content = MainSearchDailyTrendingContent(
+                popularPeople: popularPeople,
                 items: items,
                 currentPage: page.page,
                 totalPages: page.totalPages,
@@ -68,7 +75,9 @@ final class MainSearchViewModel {
             )
 
             cachedDailyTrendingContent = content
-            state = items.isEmpty ? .dailyTrendingEmpty : .dailyTrending(content)
+            state = items.isEmpty && popularPeople.isEmpty
+                ? .dailyTrendingEmpty
+                : .dailyTrending(content)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)

@@ -17,9 +17,16 @@ final class MainSearchViewController: MainBaseViewController {
 
     private enum Layout {
         static let searchResultHeight: CGFloat = 112
+        static let popularPeopleHeight: CGFloat = 112
         static let trendingTopInset: CGFloat = 12
         static let trendingBottomInset: CGFloat = 24
         static let filterHeaderHeight: CGFloat = 56
+    }
+
+    private enum Section: Equatable {
+        case popularPeople
+        case dailyTrending
+        case searchResults
     }
 
     // MARK: - Properties
@@ -29,6 +36,7 @@ final class MainSearchViewController: MainBaseViewController {
 
     private var filters: [MainSearchFilterItem] = []
     private var results: [MainSearchResultItem] = []
+    private var popularPeopleItems: [MainSearchResultItem] = []
     private var dailyTrendingItems: [MainSearchResultItem] = []
     private var isShowingDailyTrending = false
 
@@ -120,6 +128,10 @@ final class MainSearchViewController: MainBaseViewController {
             MainSearchTrendingCollectionViewCell.self,
             forCellWithReuseIdentifier: MainSearchTrendingCollectionViewCell.reuseIdentifier
         )
+        collectionView.register(
+            MainSearchPopularPeopleCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainSearchPopularPeopleCollectionViewCell.reuseIdentifier
+        )
     }
 
     private func configureSearchBar() {
@@ -149,6 +161,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .idle:
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -158,6 +171,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .dailyTrendingLoading:
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -168,6 +182,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .dailyTrending(let content):
             filters = []
             results = []
+            popularPeopleItems = content.popularPeople
             dailyTrendingItems = content.items
             isShowingDailyTrending = true
             canLoadNextPage = content.canLoadNextPage
@@ -177,6 +192,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .dailyTrendingEmpty:
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -192,6 +208,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .typing:
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -201,6 +218,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .searching(let keyword):
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -210,6 +228,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .results(let content):
             filters = content.filters
             results = content.results
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = content.canLoadNextPage
@@ -219,6 +238,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .empty(let keyword):
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -234,6 +254,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .failed(let errorMessage):
             filters = []
             results = []
+            popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
             canLoadNextPage = false
@@ -282,18 +303,48 @@ final class MainSearchViewController: MainBaseViewController {
 extension MainSearchViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        dailyTrendingItems.isEmpty && filters.isEmpty && results.isEmpty ? 0 : 1
+        visibleSections.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        isShowingDailyTrending ? dailyTrendingItems.count : results.count
+        guard visibleSections.indices.contains(section) else { return 0 }
+
+        switch visibleSections[section] {
+        case .popularPeople:
+            return 1
+
+        case .dailyTrending:
+            return dailyTrendingItems.count
+
+        case .searchResults:
+            return results.count
+        }
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        if isShowingDailyTrending {
+        guard visibleSections.indices.contains(indexPath.section) else {
+            return UICollectionViewCell()
+        }
+
+        switch visibleSections[indexPath.section] {
+        case .popularPeople:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MainSearchPopularPeopleCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let cell = cell as? MainSearchPopularPeopleCollectionViewCell {
+                cell.configure(people: popularPeopleItems) { [weak self] person in
+                    self?.router.showDetail(for: person)
+                }
+            }
+
+            return cell
+
+        case .dailyTrending:
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MainSearchTrendingCollectionViewCell.reuseIdentifier,
                 for: indexPath
@@ -310,19 +361,20 @@ extension MainSearchViewController: UICollectionViewDataSource {
             }
 
             return cell
+
+        case .searchResults:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MainSearchResultCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let cell = cell as? MainSearchResultCollectionViewCell,
+               results.indices.contains(indexPath.item) {
+                cell.configure(with: results[indexPath.item])
+            }
+
+            return cell
         }
-
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MainSearchResultCollectionViewCell.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let cell = cell as? MainSearchResultCollectionViewCell,
-           results.indices.contains(indexPath.item) {
-            cell.configure(with: results[indexPath.item])
-        }
-
-        return cell
     }
 
     func collectionView(
@@ -364,7 +416,21 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let items = isShowingDailyTrending ? dailyTrendingItems : results
+        guard visibleSections.indices.contains(indexPath.section) else { return }
+
+        let items: [MainSearchResultItem]
+
+        switch visibleSections[indexPath.section] {
+        case .popularPeople:
+            return
+
+        case .dailyTrending:
+            items = dailyTrendingItems
+
+        case .searchResults:
+            items = results
+        }
+
         guard items.indices.contains(indexPath.item) else { return }
 
         collectionView.deselectItem(at: indexPath, animated: true)
@@ -376,6 +442,11 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         willDisplay cell: UICollectionViewCell,
         forItemAt indexPath: IndexPath
     ) {
+        guard visibleSections.indices.contains(indexPath.section),
+              visibleSections[indexPath.section] != .popularPeople else {
+            return
+        }
+
         loadNextPageIfNeeded(for: indexPath)
     }
 
@@ -384,7 +455,12 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        CGSize(
+        guard visibleSections.indices.contains(section),
+              visibleSections[section] == .searchResults else {
+            return .zero
+        }
+
+        return CGSize(
             width: collectionView.bounds.width,
             height: filters.isEmpty ? 0 : Layout.filterHeaderHeight
         )
@@ -395,14 +471,26 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        guard isShowingDailyTrending else {
+        guard visibleSections.indices.contains(indexPath.section) else {
+            return .zero
+        }
+
+        switch visibleSections[indexPath.section] {
+        case .popularPeople:
+            return CGSize(
+                width: collectionView.bounds.width,
+                height: Layout.popularPeopleHeight
+            )
+
+        case .searchResults:
             return CGSize(
                 width: collectionView.bounds.width,
                 height: Layout.searchResultHeight
             )
-        }
 
-        return MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+        case .dailyTrending:
+            return MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+        }
     }
 
     func collectionView(
@@ -410,14 +498,23 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        guard isShowingDailyTrending else { return .zero }
+        guard visibleSections.indices.contains(section) else { return .zero }
 
-        return UIEdgeInsets(
-            top: Layout.trendingTopInset,
-            left: MovieGridLayoutMetrics.horizontalInset,
-            bottom: Layout.trendingBottomInset,
-            right: MovieGridLayoutMetrics.horizontalInset
-        )
+        switch visibleSections[section] {
+        case .popularPeople:
+            return UIEdgeInsets(top: Layout.trendingTopInset, left: 0, bottom: 0, right: 0)
+
+        case .searchResults:
+            return .zero
+
+        case .dailyTrending:
+            return UIEdgeInsets(
+                top: popularPeopleItems.isEmpty ? Layout.trendingTopInset : 0,
+                left: MovieGridLayoutMetrics.horizontalInset,
+                bottom: Layout.trendingBottomInset,
+                right: MovieGridLayoutMetrics.horizontalInset
+            )
+        }
     }
 
     func collectionView(
@@ -425,7 +522,12 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        isShowingDailyTrending ? MovieGridLayoutMetrics.itemSpacing : 0
+        guard visibleSections.indices.contains(section),
+              visibleSections[section] == .dailyTrending else {
+            return 0
+        }
+
+        return MovieGridLayoutMetrics.itemSpacing
     }
 
     func collectionView(
@@ -433,7 +535,12 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
-        isShowingDailyTrending ? MovieGridLayoutMetrics.itemSpacing : 0
+        guard visibleSections.indices.contains(section),
+              visibleSections[section] == .dailyTrending else {
+            return 0
+        }
+
+        return MovieGridLayoutMetrics.itemSpacing
     }
 }
 
@@ -472,6 +579,24 @@ extension MainSearchViewController: UISearchBarDelegate {
 // MARK: - Private Methods
 
 private extension MainSearchViewController {
+
+    private var visibleSections: [Section] {
+        if isShowingDailyTrending {
+            var sections: [Section] = []
+
+            if !popularPeopleItems.isEmpty {
+                sections.append(.popularPeople)
+            }
+
+            if !dailyTrendingItems.isEmpty {
+                sections.append(.dailyTrending)
+            }
+
+            return sections
+        }
+
+        return filters.isEmpty && results.isEmpty ? [] : [.searchResults]
+    }
 
     func loadDailyTrending() {
         dailyTrendingTask?.cancel()
