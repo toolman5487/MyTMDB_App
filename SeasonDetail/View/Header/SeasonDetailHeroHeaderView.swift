@@ -87,7 +87,10 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
     func configure(with item: SeasonDetailItem) {
         bannerImageView.sd_setImage(with: item.posterURL)
         posterImageView.sd_setImage(with: item.posterURL)
-        titleLabel.text = item.title
+        titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
+            item.title,
+            font: titleLabel.font ?? UIFont.preferredFont(forTextStyle: .title2)
+        )
         seasonLabel.text = item.seasonNumberText
         metadataLabel.text = BaseDisplayTextFormatter.metadata([
             item.airDateText,
@@ -160,9 +163,10 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
         posterImageView.sd_cancelCurrentImageLoad()
         bannerImageView.image = nil
         posterImageView.image = nil
-        titleLabel.text = nil
+        titleLabel.attributedText = nil
         seasonLabel.text = nil
         metadataLabel.text = nil
         scoreLabel.text = nil
     }
+
 }

@@ -5,7 +5,7 @@
 //  Created by Codex on 2026/7/20.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - BaseDisplayTextFormatter
 
@@ -166,6 +166,60 @@ nonisolated enum BaseDisplayTextFormatter {
     static func metadata(_ values: [String?]) -> String? {
         let nonEmptyValues = nonEmptyTexts(values)
         return nonEmptyValues.isEmpty ? nil : nonEmptyValues.joined(separator: " · ")
+    }
+
+    // MARK: - Attributed Text
+
+    @MainActor
+    static func titleAttributedText(
+        title: String?,
+        trailingImage: UIImage? = nil,
+        font: UIFont,
+        textColor: UIColor = ThemeColor.highlight
+    ) -> NSAttributedString? {
+        guard let title else { return nil }
+
+        let attributedString = NSMutableAttributedString(
+            string: title,
+            attributes: [
+                .font: font,
+                .foregroundColor: textColor
+            ]
+        )
+
+        guard let trailingImage else {
+            return attributedString
+        }
+
+        attributedString.append(NSAttributedString(string: " "))
+
+        let attachment = NSTextAttachment()
+        attachment.image = trailingImage.withTintColor(
+            textColor,
+            renderingMode: .alwaysOriginal
+        )
+        attachment.bounds = CGRect(
+            x: 0,
+            y: (font.capHeight - trailingImage.size.height) / 2,
+            width: trailingImage.size.width,
+            height: trailingImage.size.height
+        )
+        attributedString.append(NSAttributedString(attachment: attachment))
+
+        return attributedString
+    }
+
+    @MainActor
+    static func titleAttributedText(
+        _ title: String,
+        font: UIFont,
+        textColor: UIColor = ThemeColor.highlight
+    ) -> NSAttributedString {
+        titleAttributedText(
+            title: title,
+            font: font,
+            textColor: textColor
+        ) ?? NSAttributedString()
     }
 
     // MARK: - Private Helpers

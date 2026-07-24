@@ -31,11 +31,15 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        titleLabel.text = nil
+        titleLabel.attributedText = nil
     }
 
     func configure(title: String?) {
-        titleLabel.text = title
+        titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
+            title: title,
+            font: titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline),
+            textColor: ThemeColor.highlight
+        )
     }
 
     private func setupHierarchy() {
@@ -48,4 +52,5 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
             make.centerY.equalToSuperview()
         }
     }
+
 }

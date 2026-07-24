@@ -77,7 +77,10 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         self.onProfileImageSelected = onProfileImageSelected
         profileImageView.isUserInteractionEnabled = item.profileURL != nil && onProfileImageSelected != nil
         profileImageView.sd_setImage(with: item.profileURL)
-        nameLabel.text = item.name
+        nameLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
+            item.name,
+            font: nameLabel.font ?? UIFont.preferredFont(forTextStyle: .title1)
+        )
         metadataLabel.text = item.metadataText
         metadataLabel.isHidden = item.metadataText?.isEmpty != false
     }
@@ -119,7 +122,7 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         profileImageView.isUserInteractionEnabled = false
         profileImageView.sd_cancelCurrentImageLoad()
         profileImageView.image = nil
-        nameLabel.text = nil
+        nameLabel.attributedText = nil
         metadataLabel.text = nil
         metadataLabel.isHidden = false
     }
@@ -158,9 +161,7 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        titleLabel.text = nil
         titleLabel.attributedText = nil
-        titleLabel.textColor = ThemeColor.textPrimary
         onTap = nil
     }
 
@@ -168,13 +169,16 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
         title: String?,
         onTap: (() -> Void)? = nil
     ) {
-        if onTap == nil {
-            titleLabel.attributedText = nil
-            titleLabel.text = title
-            titleLabel.textColor = ThemeColor.textPrimary
-        } else {
-            titleLabel.attributedText = makeTitleAttributedText(title: title)
-        }
+        let font = titleLabel.font ?? .preferredFont(forTextStyle: .headline)
+        titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
+            title: title,
+            trailingImage: onTap != nil ? UIImage(
+                systemName: "chevron.right.2",
+                withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
+            ) : nil,
+            font: font,
+            textColor: ThemeColor.highlight
+        )
 
         isUserInteractionEnabled = onTap != nil
         self.onTap = onTap
@@ -189,20 +193,6 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
             make.leading.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
-    }
-
-    private func makeTitleAttributedText(title: String?) -> NSAttributedString? {
-        let font = titleLabel.font ?? .preferredFont(forTextStyle: .headline)
-
-        return MainHomeSectionTitleAttributedStringFactory.make(
-            title: title,
-            trailingImage: UIImage(
-                systemName: "chevron.right.2",
-                withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
-            ),
-            font: font,
-            textColor: ThemeColor.highlight
-        )
     }
 
     @objc

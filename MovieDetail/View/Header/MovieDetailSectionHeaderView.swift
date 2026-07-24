@@ -68,23 +68,14 @@ final class MovieDetailSectionHeaderView: UICollectionReusableView {
 
     func configure(title: String?, onTap: (() -> Void)? = nil) {
         self.onTap = onTap
-        if onTap == nil {
-            titleLabel.attributedText = nil
-            titleLabel.text = title
-        } else {
-            titleLabel.attributedText = makeTitleAttributedText(title: title)
-        }
-        isUserInteractionEnabled = onTap != nil
-    }
-
-    private func makeTitleAttributedText(title: String?) -> NSAttributedString? {
         let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .title3)
-        return MainHomeSectionTitleAttributedStringFactory.make(
+        titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
             title: title,
-            trailingImage: makeTitleTrailingImage(font: font),
+            trailingImage: onTap != nil ? makeTitleTrailingImage(font: font) : nil,
             font: font,
-            textColor: titleLabel.textColor
+            textColor: ThemeColor.highlight
         )
+        isUserInteractionEnabled = onTap != nil
     }
 
     private func makeTitleTrailingImage(font: UIFont) -> UIImage? {

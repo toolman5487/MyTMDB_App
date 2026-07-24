@@ -40,12 +40,13 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
 
     func configure(title: String?, onTap: (() -> Void)? = nil) {
         self.onTap = onTap
-        if onTap == nil {
-            titleLabel.attributedText = nil
-            titleLabel.text = title
-        } else {
-            titleLabel.attributedText = makeTitleAttributedText(title: title)
-        }
+        let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline)
+        titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
+            title: title,
+            trailingImage: onTap != nil ? makeTitleTrailingImage(font: font) : nil,
+            font: font,
+            textColor: ThemeColor.highlight
+        )
         isUserInteractionEnabled = onTap != nil
     }
 
@@ -63,16 +64,6 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
             make.leading.trailing.equalToSuperview()
             make.centerY.equalToSuperview()
         }
-    }
-
-    private func makeTitleAttributedText(title: String?) -> NSAttributedString? {
-        let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline)
-        return MainHomeSectionTitleAttributedStringFactory.make(
-            title: title,
-            trailingImage: makeTitleTrailingImage(font: font),
-            font: font,
-            textColor: titleLabel.textColor
-        )
     }
 
     private func makeTitleTrailingImage(font: UIFont) -> UIImage? {

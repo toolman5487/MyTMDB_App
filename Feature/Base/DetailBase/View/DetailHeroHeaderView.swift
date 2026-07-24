@@ -126,7 +126,10 @@ class DetailHeroHeaderView: UICollectionReusableView {
     final func configure(with content: DetailHeroHeaderContent) {
         backdropImageView.sd_setImage(with: content.backdropURL)
         posterImageView.sd_setImage(with: content.posterURL)
-        titleLabel.text = content.displayTitle
+        titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
+            content.displayTitle,
+            font: titleLabel.font ?? UIFont.preferredFont(forTextStyle: .title2)
+        )
 
         let tagline = content.tagline?.trimmingCharacters(in: .whitespacesAndNewlines)
         let hasTagline = tagline?.isEmpty == false
@@ -210,7 +213,7 @@ class DetailHeroHeaderView: UICollectionReusableView {
         posterImageView.sd_cancelCurrentImageLoad()
         backdropImageView.image = nil
         posterImageView.image = nil
-        titleLabel.text = nil
+        titleLabel.attributedText = nil
         taglineLabel.text = nil
         metadataLabel.text = nil
         metadataLabel.isHidden = false
