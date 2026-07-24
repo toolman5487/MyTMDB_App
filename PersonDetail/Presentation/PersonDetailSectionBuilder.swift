@@ -27,25 +27,20 @@ nonisolated enum PersonDetailSectionBuilder {
             sections.append(.facts(facts))
         }
 
-        let knownForItems = content.combinedCredits.cast
-            .sorted { lhs, rhs in
-                creditPriority(lhs) > creditPriority(rhs)
-            }
-            .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(PersonDetailCreditItem.init(cast:))
-        if !knownForItems.isEmpty {
-            sections.append(.knownFor(Array(knownForItems)))
+        let movieCreditItems = PersonDetailCreditsPresentationBuilder.makePreviewItems(
+            credits: content.combinedCredits,
+            mediaType: .movie
+        )
+        if !movieCreditItems.isEmpty {
+            sections.append(.movieCredits(movieCreditItems))
         }
 
-        let crewItems = content.combinedCredits.crew
-            .sorted { lhs, rhs in
-                creditPriority(lhs) > creditPriority(rhs)
-            }
-            .uniqueByContent()
-            .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(PersonDetailCreditItem.init(crew:))
-        if !crewItems.isEmpty {
-            sections.append(.crew(Array(crewItems)))
+        let tvCreditItems = PersonDetailCreditsPresentationBuilder.makePreviewItems(
+            credits: content.combinedCredits,
+            mediaType: .tv
+        )
+        if !tvCreditItems.isEmpty {
+            sections.append(.tvCredits(tvCreditItems))
         }
 
         let profileImageItems = content.images.profiles
@@ -133,23 +128,4 @@ nonisolated enum PersonDetailSectionBuilder {
         return PersonDetailExternalLinkItem(id: id, title: title, value: value, url: url)
     }
 
-    private static func creditPriority(_ credit: PersonCombinedCreditCast) -> Double {
-        credit.popularity + credit.voteAverage + Double(credit.voteCount) / 1_000
-    }
-
-    private static func creditPriority(_ credit: PersonCombinedCreditCrew) -> Double {
-        credit.popularity + credit.voteAverage + Double(credit.voteCount) / 1_000
-    }
-}
-
-private extension Sequence where Element == PersonCombinedCreditCrew {
-
-    func uniqueByContent() -> [PersonCombinedCreditCrew] {
-        var seenIDs = Set<String>()
-
-        return filter { credit in
-            let id = "\(credit.mediaType.idValue)-\(credit.id)"
-            return seenIDs.insert(id).inserted
-        }
-    }
 }

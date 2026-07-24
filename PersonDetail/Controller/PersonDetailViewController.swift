@@ -19,6 +19,7 @@ final class PersonDetailViewController: DetailBaseViewController {
     private var sections: [PersonDetailSectionItem] = []
 
     private var loadTask: Task<Void, Never>?
+    private var creditsListTask: Task<Void, Never>?
 
     // MARK: - Initialization
 
@@ -46,6 +47,7 @@ final class PersonDetailViewController: DetailBaseViewController {
 
     deinit {
         loadTask?.cancel()
+        creditsListTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -88,12 +90,12 @@ final class PersonDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: PersonDetailFactsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            PersonDetailKnownForCollectionViewCell.self,
-            forCellWithReuseIdentifier: PersonDetailKnownForCollectionViewCell.reuseIdentifier
+            PersonDetailMovieCreditsCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailMovieCreditsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            PersonDetailCrewCollectionViewCell.self,
-            forCellWithReuseIdentifier: PersonDetailCrewCollectionViewCell.reuseIdentifier
+            PersonDetailTVCreditsCollectionViewCell.self,
+            forCellWithReuseIdentifier: PersonDetailTVCreditsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             PersonDetailProfileImagesCollectionViewCell.self,
@@ -131,6 +133,30 @@ final class PersonDetailViewController: DetailBaseViewController {
 
             guard !Task.isCancelled else { return }
             render(state: viewModel.state)
+        }
+    }
+
+    private func loadCreditsList(mediaType: PersonCreditMediaType) {
+        creditsListTask?.cancel()
+        creditsListTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            setLoadingVisible(true)
+            let result = await viewModel.loadCreditsList(
+                id: personID,
+                mediaType: mediaType
+            )
+            setLoadingVisible(false)
+
+            guard !Task.isCancelled else { return }
+
+            switch result {
+            case .loaded(let configuration):
+                router.showContentList(configuration)
+
+            case .failed(let message):
+                presentAlert(title: message.title, message: message.message)
+            }
         }
     }
 
@@ -209,22 +235,22 @@ extension PersonDetailViewController: UICollectionViewDataSource {
             (cell as? PersonDetailFactsCollectionViewCell)?.configure(facts: facts)
             return cell
 
-        case .knownFor(let items):
+        case .movieCredits(let items):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: PersonDetailKnownForCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailMovieCreditsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailKnownForCollectionViewCell)?.configure(items: items) { [weak self] item in
+            (cell as? PersonDetailMovieCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
                 self?.router.showCreditDetail(item)
             }
             return cell
 
-        case .crew(let items):
+        case .tvCredits(let items):
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: PersonDetailCrewCollectionViewCell.reuseIdentifier,
+                withReuseIdentifier: PersonDetailTVCreditsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailCrewCollectionViewCell)?.configure(items: items) { [weak self] item in
+            (cell as? PersonDetailTVCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
                 self?.router.showCreditDetail(item)
             }
             return cell
@@ -291,7 +317,19 @@ extension PersonDetailViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? PersonDetailSectionHeaderView {
-            headerView.configure(title: sections[indexPath.section].title)
+            let section = sections[indexPath.section]
+            let onTap: (() -> Void)?
+
+            if let mediaType = section.creditsMediaType {
+                onTap = { [weak self] in
+                    guard let self else { return }
+                    self.loadCreditsList(mediaType: mediaType)
+                }
+            } else {
+                onTap = nil
+            }
+
+            headerView.configure(title: section.title, onTap: onTap)
         }
 
         return reusableView
@@ -323,7 +361,7 @@ extension PersonDetailViewController: UICollectionViewDataSource {
             case .profileImages(let items):
                 imageURLs.append(contentsOf: items.compactMap(\.imageURL))
 
-            case .facts, .knownFor, .crew, .aliases, .externalLinks:
+            case .facts, .movieCredits, .tvCredits, .aliases, .externalLinks:
                 break
             }
         }
@@ -419,7 +457,7 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
         case .facts:
             return Layout.factsSectionHeight
 
-        case .knownFor, .crew:
+        case .movieCredits, .tvCredits:
             return Layout.creditsSectionHeight
 
         case .profileImages:

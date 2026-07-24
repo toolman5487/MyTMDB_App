@@ -138,16 +138,20 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: PersonDetailSectionHeaderView.self)
 
+    private var onTap: (() -> Void)?
+
     private let titleLabel = AppFactory.Label.headline()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
         setupHierarchy()
         setupConstraints()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
         setupHierarchy()
         setupConstraints()
     }
@@ -155,10 +159,25 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = nil
+        titleLabel.attributedText = nil
+        titleLabel.textColor = ThemeColor.textPrimary
+        onTap = nil
     }
 
-    func configure(title: String?) {
-        titleLabel.text = title
+    func configure(
+        title: String?,
+        onTap: (() -> Void)? = nil
+    ) {
+        if onTap == nil {
+            titleLabel.attributedText = nil
+            titleLabel.text = title
+            titleLabel.textColor = ThemeColor.textPrimary
+        } else {
+            titleLabel.attributedText = makeTitleAttributedText(title: title)
+        }
+
+        isUserInteractionEnabled = onTap != nil
+        self.onTap = onTap
     }
 
     private func setupHierarchy() {
@@ -170,6 +189,25 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
             make.leading.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
+    }
+
+    private func makeTitleAttributedText(title: String?) -> NSAttributedString? {
+        let font = titleLabel.font ?? .preferredFont(forTextStyle: .headline)
+
+        return MainHomeSectionTitleAttributedStringFactory.make(
+            title: title,
+            trailingImage: UIImage(
+                systemName: "chevron.right.2",
+                withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
+            ),
+            font: font,
+            textColor: ThemeColor.highlight
+        )
+    }
+
+    @objc
+    private func handleTap() {
+        onTap?()
     }
 }
 
@@ -280,12 +318,12 @@ final class PersonDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
     }
 }
 
-// MARK: - PersonDetailKnownForCollectionViewCell
+// MARK: - PersonDetailMovieCreditsCollectionViewCell
 
 @MainActor
-final class PersonDetailKnownForCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+final class PersonDetailMovieCreditsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailKnownForCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: PersonDetailMovieCreditsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
@@ -321,12 +359,12 @@ final class PersonDetailKnownForCollectionViewCell: DetailImageTitleStripCollect
     }
 }
 
-// MARK: - PersonDetailCrewCollectionViewCell
+// MARK: - PersonDetailTVCreditsCollectionViewCell
 
 @MainActor
-final class PersonDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+final class PersonDetailTVCreditsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailCrewCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: PersonDetailTVCreditsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)

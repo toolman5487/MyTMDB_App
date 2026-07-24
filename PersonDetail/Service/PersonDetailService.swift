@@ -16,6 +16,10 @@ nonisolated protocol PersonDetailServicing: Sendable {
 
     func fetchPersonCombinedCredits(id: Int) async throws -> PersonCombinedCreditsResponse
 
+    func fetchPersonMovieCredits(id: Int) async throws -> PersonCombinedCreditsResponse
+
+    func fetchPersonTVCredits(id: Int) async throws -> PersonCombinedCreditsResponse
+
     func fetchPersonImages(id: Int) async throws -> PersonImagesResponse
 
     func fetchPersonExternalIDs(id: Int) async throws -> PersonExternalIDs
@@ -84,6 +88,20 @@ nonisolated final class PersonDetailService: PersonDetailServicing {
     func fetchPersonCombinedCredits(id: Int) async throws -> PersonCombinedCreditsResponse {
         try await network.get(
             path: APIConfig.Person.combinedCredits(id: id),
+            queryItems: localizedQueryItems
+        )
+    }
+
+    func fetchPersonMovieCredits(id: Int) async throws -> PersonCombinedCreditsResponse {
+        try await network.get(
+            path: APIConfig.Person.movieCredits(id: id),
+            queryItems: localizedQueryItems
+        )
+    }
+
+    func fetchPersonTVCredits(id: Int) async throws -> PersonCombinedCreditsResponse {
+        try await network.get(
+            path: APIConfig.Person.tvCredits(id: id),
             queryItems: localizedQueryItems
         )
     }

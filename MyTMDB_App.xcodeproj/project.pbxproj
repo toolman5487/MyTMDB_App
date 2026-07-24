@@ -636,6 +636,9 @@
 		15F12116300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */; };
 		15F12117300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */; };
 		15F12118300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */; };
+		15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
+		15E501023014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
+		15E501033014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -880,6 +883,7 @@
 		15F12006300E200000F12001 /* SeasonDetailPresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailPresentationModels.swift; sourceTree = "<group>"; };
 		15F12007300E200000F12001 /* PersonDetailSectionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailSectionBuilder.swift; sourceTree = "<group>"; };
 		15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailPresentationModels.swift; sourceTree = "<group>"; };
+		15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCreditsPresentationBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -2962,6 +2966,7 @@
 		15F1200C300E200000F12001 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
+				15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */,
 				15F12007300E200000F12001 /* PersonDetailSectionBuilder.swift */,
 				15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */,
 			);
@@ -3145,6 +3150,7 @@
 				15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9632FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
 				15BAE9732FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */,
+				15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */,
 				15F12113300E200000F12101 /* PersonDetailSectionBuilder.swift in Sources */,
 				15F12116300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */,
 				158809033000D1710081E4E9 /* MemberCenterProfileHeaderView.swift in Sources */,
@@ -3469,6 +3475,7 @@
 				15BAE9522FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9622FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
 				15BAE9722FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */,
+				15E501023014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */,
 				15F12114300E200000F12101 /* PersonDetailSectionBuilder.swift in Sources */,
 				15F12117300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */,
 				15CF9A052FF380000041F4CC /* MovieDetailService.swift in Sources */,
@@ -3615,6 +3622,7 @@
 				15BAE9512FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
 				15BAE9612FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
 				15BAE9712FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */,
+				15E501033014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */,
 				15F12115300E200000F12101 /* PersonDetailSectionBuilder.swift in Sources */,
 				15F12118300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */,
 				15A9502A2FF3B00000FCBB0F /* BaseNestedCollectionViewCell.swift in Sources */,

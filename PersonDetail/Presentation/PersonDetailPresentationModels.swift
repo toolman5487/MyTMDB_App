@@ -12,8 +12,8 @@ import Foundation
 nonisolated enum PersonDetailSectionItem: Sendable, Equatable {
     case biography(PersonDetailBiographySectionItem)
     case facts([PersonDetailFactItem])
-    case knownFor([PersonDetailCreditItem])
-    case crew([PersonDetailCreditItem])
+    case movieCredits([PersonDetailCreditItem])
+    case tvCredits([PersonDetailCreditItem])
     case profileImages([PersonDetailProfileImageItem])
     case aliases([PersonDetailAliasItem])
     case externalLinks([PersonDetailExternalLinkItem])
@@ -26,11 +26,11 @@ nonisolated enum PersonDetailSectionItem: Sendable, Equatable {
         case .facts:
             return "人物資訊"
 
-        case .knownFor:
-            return "參與作品"
+        case .movieCredits:
+            return "電影作品"
 
-        case .crew:
-            return "幕後作品"
+        case .tvCredits:
+            return "劇集作品"
 
         case .profileImages:
             return "人物照片"
@@ -40,6 +40,19 @@ nonisolated enum PersonDetailSectionItem: Sendable, Equatable {
 
         case .externalLinks:
             return "相關連結"
+        }
+    }
+
+    var creditsMediaType: PersonCreditMediaType? {
+        switch self {
+        case .movieCredits:
+            return .movie
+
+        case .tvCredits:
+            return .tv
+
+        case .biography, .facts, .profileImages, .aliases, .externalLinks:
+            return nil
         }
     }
 }
@@ -159,12 +172,16 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
     let scoreText: String?
     let posterURL: URL?
 
-    init(cast: PersonCombinedCreditCast) {
-        self.id = "cast-\(cast.mediaType.idValue)-\(cast.creditID)-\(cast.id)"
+    init(
+        cast: PersonCombinedCreditCast,
+        mediaType: PersonCreditMediaType? = nil
+    ) {
+        let resolvedMediaType = mediaType ?? cast.mediaType
+        self.id = "cast-\(resolvedMediaType.idValue)-\(cast.creditID)-\(cast.id)"
         self.sourceID = cast.id
-        self.mediaType = cast.mediaType
+        self.mediaType = resolvedMediaType
         self.title = cast.title
-        self.subtitle = Self.makeSubtitle(primary: cast.character, fallback: cast.mediaType.displayText)
+        self.subtitle = Self.makeSubtitle(primary: cast.character, fallback: resolvedMediaType.displayText)
         self.dateText = BaseDisplayTextFormatter.nonEmptyText(cast.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(cast.voteAverage, voteCount: cast.voteCount)
         self.posterURL = cast.posterPath.flatMap {
@@ -172,10 +189,14 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
         }
     }
 
-    init(crew: PersonCombinedCreditCrew) {
-        self.id = "crew-\(crew.mediaType.idValue)-\(crew.creditID)-\(crew.id)"
+    init(
+        crew: PersonCombinedCreditCrew,
+        mediaType: PersonCreditMediaType? = nil
+    ) {
+        let resolvedMediaType = mediaType ?? crew.mediaType
+        self.id = "crew-\(resolvedMediaType.idValue)-\(crew.creditID)-\(crew.id)"
         self.sourceID = crew.id
-        self.mediaType = crew.mediaType
+        self.mediaType = resolvedMediaType
         self.title = crew.title
         self.subtitle = Self.makeSubtitle(primary: crew.job, fallback: crew.department)
         self.dateText = BaseDisplayTextFormatter.nonEmptyText(crew.primaryDate)
