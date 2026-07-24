@@ -33,7 +33,7 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
             return "預告與影片"
 
         case .attributes:
-            return "類型與製作公司"
+            return "類型、電視網與製作公司"
 
         case .cast:
             return "主要演員"

@@ -139,7 +139,7 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     private var genres: [MovieDetailAttributeItem] = []
     private var productionCompanies: [MovieDetailAttributeItem] = []
-    private var onGenreSelected: ((Int) -> Void)?
+    private var onAttributeSelected: ((MovieDetailAttributeItem) -> Void)?
 
     private let genresTitleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
@@ -254,7 +254,7 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     override func resetForReuse() {
         genres = []
         productionCompanies = []
-        onGenreSelected = nil
+        onAttributeSelected = nil
         setGroup(.genres, hidden: false)
         setGroup(.productionCompanies, hidden: false)
         genresCollectionView.reloadData()
@@ -263,11 +263,11 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         with item: MovieDetailAttributeSectionItem,
-        onGenreSelected: ((Int) -> Void)? = nil
+        onAttributeSelected: ((MovieDetailAttributeItem) -> Void)? = nil
     ) {
         genres = item.genres
         productionCompanies = item.productionCompanies
-        self.onGenreSelected = onGenreSelected
+        self.onAttributeSelected = onAttributeSelected
         setGroup(.genres, hidden: genres.isEmpty)
         setGroup(.productionCompanies, hidden: productionCompanies.isEmpty)
         genresCollectionView.reloadData()
@@ -334,15 +334,9 @@ extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, U
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        let group = group(for: collectionView)
-        guard group == .genres else { return }
-
-        let items = items(for: group)
+        let items = items(for: group(for: collectionView))
         guard items.indices.contains(indexPath.item) else { return }
-
-        let item = items[indexPath.item]
-        guard item.kind == .genre else { return }
-        onGenreSelected?(item.sourceID)
+        onAttributeSelected?(items[indexPath.item])
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

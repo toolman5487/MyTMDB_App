@@ -16,6 +16,7 @@ protocol MovieDetailRouting: AnyObject {
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
     func showMovieDetail(movieID: Int)
+    func showCompanyDetail(companyID: Int)
     func showGenreList(genreID: Int)
     func showWatchProvider(url: URL, title: String?)
     func showContentList(_ configuration: DetailContentListConfiguration)
@@ -72,6 +73,10 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showMovieDetail(movieID: Int) {
         detailRouter.showMovieDetail(movieID: movieID)
+    }
+
+    func showCompanyDetail(companyID: Int) {
+        detailRouter.showCompanyDetail(companyID: companyID)
     }
 
     func showGenreList(genreID: Int) {
