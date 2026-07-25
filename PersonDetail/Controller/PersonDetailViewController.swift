@@ -70,8 +70,19 @@ final class PersonDetailViewController: DetailBaseViewController {
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
-        static let creditsSectionHeight: CGFloat = 220
-        static let profileImagesSectionHeight: CGFloat = 220
+        static var creditsSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 220,
+                imageHeight: 168
+            )
+        }
+
+        static var profileImagesSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 220,
+                imageHeight: 168
+            )
+        }
     }
 
     private func configureCollectionView() {

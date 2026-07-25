@@ -71,6 +71,13 @@ class BaseListViewController: BaseViewController {
         updateCollectionViewItemSize()
     }
 
+    override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+        updateCollectionViewItemSize()
+        collectionView.collectionViewLayout.invalidateLayout()
+        collectionView.reloadData()
+    }
+
     private func updateCollectionViewItemSize() {
         let availableWidth = collectionView.bounds.width
         guard availableWidth > 0 else { return }

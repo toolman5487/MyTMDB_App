@@ -132,6 +132,13 @@ class ScrollTrackingBaseViewController: BaseViewController {
         updateCollectionViewItemSize()
     }
 
+    override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+        updateCollectionViewItemSize()
+        collectionView.collectionViewLayout.invalidateLayout()
+        collectionView.reloadData()
+    }
+
     // MARK: - Tab Bar Visibility
 
     func resetTabBarVisibilityTracking() {

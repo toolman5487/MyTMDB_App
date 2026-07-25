@@ -432,8 +432,19 @@ final class PersonDetailAliasesCollectionViewCell: BaseNestedCollectionViewCell 
     static let reuseIdentifier = String(describing: PersonDetailAliasesCollectionViewCell.self)
 
     private enum Layout {
-        static let itemHeight: CGFloat = 44
-        static let sectionHeight: CGFloat = 44
+        static let minimumItemHeight: CGFloat = 44
+        static let verticalInset: CGFloat = 8
+
+        static var itemHeight: CGFloat {
+            max(
+                minimumItemHeight,
+                ceil(UIFont.preferredFont(forTextStyle: .callout).lineHeight) + (verticalInset * 2)
+            )
+        }
+
+        static var sectionHeight: CGFloat {
+            itemHeight
+        }
     }
 
     private var items: [PersonDetailAliasItem] = []
@@ -522,13 +533,23 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
     static let reuseIdentifier = String(describing: PersonDetailAliasPillCollectionViewCell.self)
 
     private enum Layout {
-        static let height: CGFloat = 44
+        static let minimumHeight: CGFloat = 44
         static let minimumWidth: CGFloat = 64
         static let horizontalInset: CGFloat = 16
+        static let verticalInset: CGFloat = 8
+
+        static var height: CGFloat {
+            max(
+                minimumHeight,
+                ceil(UIFont.preferredFont(forTextStyle: .callout).lineHeight) + (verticalInset * 2)
+            )
+        }
     }
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.callout(lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         return label
@@ -578,7 +599,7 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
             max(Layout.minimumWidth, maximumWidth)
         )
 
-        return CGSize(width: width, height: height)
+        return CGSize(width: width, height: max(height, Layout.height))
     }
 }
 

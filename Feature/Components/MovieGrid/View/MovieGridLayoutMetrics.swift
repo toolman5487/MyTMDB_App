@@ -12,11 +12,21 @@ import UIKit
 nonisolated enum MovieGridLayoutMetrics {
     static let horizontalInset: CGFloat = 16
     static let itemSpacing: CGFloat = 12
-    static let textHeight: CGFloat = 40
     static let paginationThreshold = 4
 
     private static let columnCount: CGFloat = 3
     private static let posterAspectRatio: CGFloat = 1.5
+    private static let minimumTextHeight: CGFloat = 40
+    private static let textVerticalSpacing: CGFloat = 4
+
+    private static var textHeight: CGFloat {
+        let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+        let metadataHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+        return max(
+            minimumTextHeight,
+            titleHeight + textVerticalSpacing + metadataHeight
+        )
+    }
 
     static func itemWidth(for collectionViewWidth: CGFloat) -> CGFloat {
         let totalHorizontalInsets = horizontalInset * 2

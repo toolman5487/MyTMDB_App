@@ -95,11 +95,40 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     private enum Layout {
         static let factsSectionHeight: CGFloat = 96
-        static let castSectionHeight: CGFloat = 220
-        static let videosSectionHeight: CGFloat = 160
-        static let imagesSectionHeight: CGFloat = 168
-        static let watchProvidersSectionHeight: CGFloat = 144
-        static let recommendationsSectionHeight: CGFloat = 220
+        static var castSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 220,
+                imageHeight: 168
+            )
+        }
+
+        static var videosSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 160,
+                imageHeight: 120
+            )
+        }
+
+        static var imagesSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 168,
+                imageHeight: 124
+            )
+        }
+
+        static var watchProvidersSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 144,
+                imageHeight: 96
+            )
+        }
+
+        static var recommendationsSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 220,
+                imageHeight: 168
+            )
+        }
     }
 
     override var updatesFlowLayoutItemSizeAutomatically: Bool {

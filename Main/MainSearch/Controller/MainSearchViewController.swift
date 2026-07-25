@@ -16,11 +16,32 @@ final class MainSearchViewController: MainBaseViewController {
     // MARK: - Layout
 
     private enum Layout {
-        static let searchResultHeight: CGFloat = 112
-        static let popularPeopleHeight: CGFloat = 112
+        private static let minimumSearchResultHeight: CGFloat = 112
+        private static let minimumPopularPeopleHeight: CGFloat = 112
+        private static let searchResultVerticalInset: CGFloat = 8
+        private static let searchResultLabelSpacing: CGFloat = 4
+        private static let popularPeopleAvatarSize: CGFloat = 72
+        private static let popularPeopleTitleTopSpacing: CGFloat = 4
         static let trendingTopInset: CGFloat = 12
         static let trendingBottomInset: CGFloat = 24
         static let filterHeaderHeight: CGFloat = 56
+
+        static var searchResultHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .headline).lineHeight) * 2
+            let subtitleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight) * 2
+            return max(
+                minimumSearchResultHeight,
+                (searchResultVerticalInset * 2) + titleHeight + searchResultLabelSpacing + subtitleHeight
+            )
+        }
+
+        static var popularPeopleHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            return max(
+                minimumPopularPeopleHeight,
+                popularPeopleAvatarSize + popularPeopleTitleTopSpacing + titleHeight
+            )
+        }
     }
 
     private enum Section: Equatable {

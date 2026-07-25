@@ -14,9 +14,22 @@ import UIKit
 class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
 
     private enum Layout {
-        static let itemSize = CGSize(width: 72, height: 88)
-        static let sectionHeight: CGFloat = 88
+        static let itemWidth: CGFloat = 72
+        static let iconContainerSize: CGFloat = 56
+        static let titleTopSpacing: CGFloat = 8
+        private static let minimumSectionHeight: CGFloat = 88
         static let itemSpacing: CGFloat = 16
+
+        static var sectionHeight: CGFloat {
+            max(
+                minimumSectionHeight,
+                iconContainerSize + titleTopSpacing + ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            )
+        }
+
+        static var itemSize: CGSize {
+            CGSize(width: itemWidth, height: sectionHeight)
+        }
     }
 
     private var items: [DetailExternalLinkItem] = []
@@ -61,6 +74,8 @@ class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
     ) {
         self.items = items
         self.onLinkSelected = onLinkSelected
+        collectionViewFlowLayout.itemSize = Layout.itemSize
+        collectionViewFlowLayout.invalidateLayout()
         collectionView.reloadData()
     }
 
@@ -124,6 +139,8 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(lines: 1)
         label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()

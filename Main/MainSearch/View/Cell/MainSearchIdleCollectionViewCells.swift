@@ -21,7 +21,17 @@ final class MainSearchPopularPeopleCollectionViewCell: BaseHorizontalStripCollec
 
     private enum Layout {
         static let itemWidth: CGFloat = 88
-        static let itemHeight: CGFloat = 112
+        static let avatarSize: CGFloat = 72
+        static let titleTopSpacing: CGFloat = 4
+        private static let minimumItemHeight: CGFloat = 112
+
+        static var itemHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            return max(
+                minimumItemHeight,
+                avatarSize + titleTopSpacing + titleHeight
+            )
+        }
     }
 
     override func configureView() {
@@ -37,6 +47,12 @@ final class MainSearchPopularPeopleCollectionViewCell: BaseHorizontalStripCollec
         people: [MainSearchResultItem],
         onPersonSelected: @escaping (MainSearchResultItem) -> Void
     ) {
+        updateItemSize(
+            CGSize(
+                width: Layout.itemWidth,
+                height: Layout.itemHeight
+            )
+        )
         configureItems(
             people,
             onItemSelected: onPersonSelected
@@ -67,7 +83,13 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
         return imageView
     }()
 
-    private let titleLabel = AppFactory.Label.captionPrimary(alignment: .center, lines: 1)
+    private let titleLabel: UILabel = {
+        let label = AppFactory.Label.captionPrimary(alignment: .center, lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
 
     override func configureView() {
         super.configureView()

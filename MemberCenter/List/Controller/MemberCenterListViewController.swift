@@ -20,10 +20,20 @@ final class MemberCenterListViewController: BaseListViewController {
         static let topInset: CGFloat = 16
         static let bottomInset: CGFloat = 32
         static let itemSpacing: CGFloat = 12
-        static let textHeight: CGFloat = 44
         static let columnCount: CGFloat = 3
         static let posterAspectRatio: CGFloat = 1.5
         static let paginationThreshold = 4
+        private static let minimumTextHeight: CGFloat = 44
+        private static let textVerticalSpacing: CGFloat = 4
+
+        private static var textHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            let metadataHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+            return max(
+                minimumTextHeight,
+                titleHeight + textVerticalSpacing + metadataHeight
+            )
+        }
 
         static func itemSize(for collectionViewWidth: CGFloat) -> CGSize {
             let totalHorizontalInsets = horizontalInset * 2

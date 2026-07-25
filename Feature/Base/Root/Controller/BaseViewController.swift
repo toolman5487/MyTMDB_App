@@ -39,11 +39,21 @@ class BaseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleContentSizeCategoryDidChange),
+            name: UIContentSizeCategory.didChangeNotification,
+            object: nil
+        )
         view.backgroundColor = ThemeColor.background
         configureView()
         setupHierarchy()
         setupConstraints()
         bindViewModel()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: - Template Methods
@@ -55,6 +65,8 @@ class BaseViewController: UIViewController {
     func setupConstraints() {}
 
     func bindViewModel() {}
+
+    func contentSizeCategoryDidChange() {}
 
     // MARK: - Loading
 
@@ -115,6 +127,10 @@ class BaseViewController: UIViewController {
 
     @objc private func handleKeyboardDismissTap() {
         view.endEditing(true)
+    }
+
+    @objc private func handleContentSizeCategoryDidChange() {
+        contentSizeCategoryDidChange()
     }
 
     // MARK: - Private Methods

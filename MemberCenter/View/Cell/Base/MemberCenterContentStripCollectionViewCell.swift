@@ -19,7 +19,18 @@ class MemberCenterContentStripCollectionViewCell: BaseHorizontalStripCollectionV
 
     private enum Layout {
         static let posterWidth: CGFloat = 124
-        static let itemHeight: CGFloat = 232
+        static let posterHeight: CGFloat = 186
+        static let titleTopSpacing: CGFloat = 4
+        private static let minimumItemHeight: CGFloat = 232
+
+        static var itemHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            let metadataHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+            return max(
+                minimumItemHeight,
+                posterHeight + titleTopSpacing + titleHeight + metadataHeight
+            )
+        }
     }
 
     override func configureView() {
@@ -38,6 +49,12 @@ class MemberCenterContentStripCollectionViewCell: BaseHorizontalStripCollectionV
         items: [MemberCenterListItem],
         onItemSelected: @escaping (MemberCenterListItem) -> Void
     ) {
+        updateItemSize(
+            CGSize(
+                width: Layout.posterWidth,
+                height: Layout.itemHeight
+            )
+        )
         configureItems(
             items,
             onItemSelected: onItemSelected
@@ -57,7 +74,18 @@ class MemberCenterListStripCollectionViewCell: BaseHorizontalStripCollectionView
 
     private enum Layout {
         static let itemWidth: CGFloat = 124
-        static let itemHeight: CGFloat = 232
+        static let folderHeight: CGFloat = 186
+        static let titleTopSpacing: CGFloat = 4
+        private static let minimumItemHeight: CGFloat = 232
+
+        static var itemHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            let metadataHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+            return max(
+                minimumItemHeight,
+                folderHeight + titleTopSpacing + titleHeight + metadataHeight
+            )
+        }
     }
 
     override func configureView() {
@@ -76,6 +104,12 @@ class MemberCenterListStripCollectionViewCell: BaseHorizontalStripCollectionView
         items: [MemberCenterListItem],
         onItemSelected: @escaping (MemberCenterListItem) -> Void
     ) {
+        updateItemSize(
+            CGSize(
+                width: Layout.itemWidth,
+                height: Layout.itemHeight
+            )
+        )
         configureItems(
             items,
             onItemSelected: onItemSelected
@@ -128,12 +162,16 @@ final class MemberCenterPlaylistCollectionViewCell: BaseCollectionViewCell {
 
     private let countBadgeLabel: UILabel = {
         let label = AppFactory.Label.captionSecondary(color: ThemeColor.textSecondary, lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()

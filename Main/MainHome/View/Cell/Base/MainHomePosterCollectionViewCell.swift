@@ -35,9 +35,21 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         return imageView
     }()
 
-    private let titleLabel = AppFactory.Label.captionPrimary(lines: 1)
+    private let titleLabel: UILabel = {
+        let label = AppFactory.Label.captionPrimary(lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
 
-    private let scoreLabel = AppFactory.Label.captionSecondary(color: ThemeColor.textSecondary, lines: 1)
+    private let scoreLabel: UILabel = {
+        let label = AppFactory.Label.captionSecondary(color: ThemeColor.textSecondary, lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
 
     override func configureView() {
         contentView.backgroundColor = .clear

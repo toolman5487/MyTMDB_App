@@ -20,6 +20,17 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
     private enum Layout {
         static let defaultItemSize = CGSize(width: 124, height: 220)
         static let defaultImageHeight: CGFloat = 168
+        static let textVerticalSpacing: CGFloat = 4
+
+        static func itemSize(_ itemSize: CGSize, fittingImageHeight imageHeight: CGFloat) -> CGSize {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            let subtitleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+            let fittingHeight = imageHeight + textVerticalSpacing + titleHeight + textVerticalSpacing + subtitleHeight
+            return CGSize(
+                width: itemSize.width,
+                height: max(itemSize.height, fittingHeight)
+            )
+        }
     }
 
     override func configureView() {
@@ -27,13 +38,21 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
         configureHorizontalStrip(
             cellType: DetailImageTitleCollectionViewCell.self,
             reuseIdentifier: DetailImageTitleCollectionViewCell.reuseIdentifier,
-            itemSize: Layout.defaultItemSize
+            itemSize: Layout.itemSize(
+                Layout.defaultItemSize,
+                fittingImageHeight: Layout.defaultImageHeight
+            )
         )
     }
 
     override func resetForReuse() {
         super.resetForReuse()
-        updateItemSize(Layout.defaultItemSize)
+        updateItemSize(
+            Layout.itemSize(
+                Layout.defaultItemSize,
+                fittingImageHeight: Layout.defaultImageHeight
+            )
+        )
     }
 
     func configure(
@@ -42,13 +61,28 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
         imageHeight: CGFloat = Layout.defaultImageHeight,
         onItemSelected: ((DetailImageTitleItem) -> Void)? = nil
     ) {
-        updateItemSize(itemSize)
+        updateItemSize(
+            Layout.itemSize(
+                itemSize,
+                fittingImageHeight: imageHeight
+            )
+        )
         configureItems(
             items,
             onItemSelected: onItemSelected
         ) { cell, item in
             cell.configure(with: item, imageHeight: imageHeight)
         }
+    }
+
+    nonisolated static func fittingHeight(
+        minimumHeight: CGFloat,
+        imageHeight: CGFloat
+    ) -> CGFloat {
+        Layout.itemSize(
+            CGSize(width: 0, height: minimumHeight),
+            fittingImageHeight: imageHeight
+        ).height
     }
 }
 
@@ -87,12 +121,16 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
     private let subtitleLabel: UILabel = {
         let label = AppFactory.Label.captionSecondary(color: ThemeColor.textSecondary, lines: 1)
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()

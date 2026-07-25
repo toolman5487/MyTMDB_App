@@ -17,7 +17,18 @@ class MainHomeContentStripCollectionViewCell: BaseHorizontalStripCollectionViewC
 
     private enum Layout {
         static let posterWidth: CGFloat = 124
-        static let itemHeight: CGFloat = 232
+        static let posterHeight: CGFloat = 186
+        static let titleTopSpacing: CGFloat = 4
+        private static let minimumItemHeight: CGFloat = 232
+
+        static var itemHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            let scoreHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+            return max(
+                minimumItemHeight,
+                posterHeight + titleTopSpacing + titleHeight + scoreHeight
+            )
+        }
     }
 
     override func configureView() {
@@ -36,6 +47,12 @@ class MainHomeContentStripCollectionViewCell: BaseHorizontalStripCollectionViewC
         contents: [MainHomeContentItem],
         onContentSelected: @escaping (MainHomeContentItem) -> Void
     ) {
+        updateItemSize(
+            CGSize(
+                width: Layout.posterWidth,
+                height: Layout.itemHeight
+            )
+        )
         configureItems(
             contents,
             onItemSelected: onContentSelected

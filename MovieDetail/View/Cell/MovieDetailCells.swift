@@ -376,14 +376,24 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
     static let reuseIdentifier = String(describing: MovieDetailAttributePillCollectionViewCell.self)
 
     private enum Layout {
-        static let height: CGFloat = 36
+        static let minimumHeight: CGFloat = 36
         static let minimumWidth: CGFloat = 64
         static let horizontalInset: CGFloat = 16
+        static let verticalInset: CGFloat = 8
+
+        static var height: CGFloat {
+            max(
+                minimumHeight,
+                ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight) + (verticalInset * 2)
+            )
+        }
     }
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(lines: 1)
         label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()

@@ -79,9 +79,26 @@ final class SeasonDetailViewController: DetailBaseViewController {
         static let defaultHorizontalInset: CGFloat = 16
         static let defaultSectionBottomInset: CGFloat = 24
         static let factsSectionHeight: CGFloat = 96
-        static let trailerStyleSectionHeight: CGFloat = 160
-        static let imageStripSectionHeight: CGFloat = 220
-        static let watchProvidersSectionHeight: CGFloat = 144
+        static var trailerStyleSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 160,
+                imageHeight: 120
+            )
+        }
+
+        static var imageStripSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 220,
+                imageHeight: 168
+            )
+        }
+
+        static var watchProvidersSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 144,
+                imageHeight: 96
+            )
+        }
         static let textSectionMinimumHeight: CGFloat = 80
     }
 

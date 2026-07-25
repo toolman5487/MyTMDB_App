@@ -14,9 +14,20 @@ final class MainHomeViewController: MainBaseViewController {
 
     private enum Layout {
         static let headerHeight: CGFloat = 32
-        static let itemHeight: CGFloat = 232
         static let headerContentSpacing: CGFloat = 8
         static let sectionBottomSpacing: CGFloat = 16
+        private static let posterHeight: CGFloat = 186
+        private static let titleTopSpacing: CGFloat = 4
+        private static let minimumItemHeight: CGFloat = 232
+
+        static var itemHeight: CGFloat {
+            let titleHeight = ceil(UIFont.preferredFont(forTextStyle: .caption1).lineHeight)
+            let scoreHeight = ceil(UIFont.preferredFont(forTextStyle: .caption2).lineHeight)
+            return max(
+                minimumItemHeight,
+                posterHeight + titleTopSpacing + titleHeight + scoreHeight
+            )
+        }
     }
 
     // MARK: - Properties
