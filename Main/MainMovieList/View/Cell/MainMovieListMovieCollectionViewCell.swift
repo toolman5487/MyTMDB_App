@@ -22,7 +22,24 @@ final class MainMovieListMovieCollectionViewCell: ImageTitleBaseCollectionViewCe
             imageURL: item.posterURL,
             title: item.title,
             subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
-            imageHeight: imageHeight
+            imageHeight: imageHeight,
+            accessibilityText: item.mainMovieListAccessibilityText
         ))
+    }
+}
+
+// MARK: - Accessibility
+
+private extension MovieGridMovieItem {
+
+    var mainMovieListAccessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.metadata([
+                BaseDisplayTextFormatter.ratingText(scoreText),
+                "上映日期 \(releaseDateText)"
+            ]),
+            hint: "點兩下開啟電影詳細資料"
+        )
     }
 }

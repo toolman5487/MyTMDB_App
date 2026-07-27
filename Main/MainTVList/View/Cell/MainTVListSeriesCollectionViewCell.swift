@@ -22,7 +22,24 @@ final class MainTVListSeriesCollectionViewCell: ImageTitleBaseCollectionViewCell
             imageURL: item.posterURL,
             title: item.title,
             subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
-            imageHeight: imageHeight
+            imageHeight: imageHeight,
+            accessibilityText: item.mainTVListAccessibilityText
         ))
+    }
+}
+
+// MARK: - Accessibility
+
+private extension TVGridSeriesItem {
+
+    var mainTVListAccessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.metadata([
+                BaseDisplayTextFormatter.ratingText(scoreText),
+                "首播日期 \(firstAirDateText)"
+            ]),
+            hint: "點兩下開啟劇集詳細資料"
+        )
     }
 }

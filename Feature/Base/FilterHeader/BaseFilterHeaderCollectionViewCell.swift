@@ -103,6 +103,7 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         titleLabel.textColor = style.unselectedTitleColor
         containerView.backgroundColor = ThemeColor.backgroundTertiary
         containerView.layer.borderColor = style.resetBorderColor.cgColor
+        accessibilityTraits = .button
     }
 
     // MARK: - Configuration
@@ -111,6 +112,7 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         titleLabel.isHidden = true
         containerView.backgroundColor = ThemeColor.backgroundTertiary
         containerView.layer.borderColor = style.resetBorderColor.cgColor
+        resetAccessibility()
         showSkeletonIfNeeded()
     }
 
@@ -124,6 +126,14 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         titleLabel.textColor = isSelected ? style.selectedTitleColor : style.unselectedTitleColor
         containerView.backgroundColor = isSelected ? ThemeColor.primary : ThemeColor.backgroundTertiary
         containerView.layer.borderColor = borderColor(isSelected: isSelected).cgColor
+        applyAccessibility(
+            AccessibilityText(
+                label: title,
+                value: isSelected ? "已選取" : "未選取",
+                hint: isSelected ? "目前套用的篩選" : "點兩下套用篩選"
+            )
+        )
+        accessibilityTraits = isSelected ? [.button, .selected] : .button
     }
 
     func applyTextPillStyle(_ style: TextPillStyle) {

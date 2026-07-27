@@ -159,6 +159,8 @@ final class MainSearchViewController: MainBaseViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
+        searchController.searchBar.searchTextField.accessibilityLabel = "搜尋電影、劇集、人物"
+        searchController.searchBar.searchTextField.accessibilityHint = "輸入關鍵字後搜尋"
     }
 
     // MARK: - Rendering

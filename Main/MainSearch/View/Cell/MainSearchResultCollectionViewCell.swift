@@ -74,6 +74,15 @@ final class MainSearchResultCollectionViewCell: BaseCollectionViewCell {
         containerView.addSubview(separatorView)
     }
 
+    override func configureView() {
+        super.configureView()
+        thumbnailImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        subtitleLabel.isAccessibilityElement = false
+        chevronImageView.isAccessibilityElement = false
+        separatorView.isAccessibilityElement = false
+    }
+
     override func setupConstraints() {
         super.setupConstraints()
 
@@ -125,5 +134,6 @@ final class MainSearchResultCollectionViewCell: BaseCollectionViewCell {
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
         subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
+        applyAccessibility(item.accessibilityText)
     }
 }

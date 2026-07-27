@@ -94,6 +94,8 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
     override func configureView() {
         super.configureView()
         contentView.backgroundColor = .clear
+        avatarImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -126,6 +128,7 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
     func configure(with person: MainSearchResultItem) {
         avatarImageView.sd_setImage(with: person.imageURL)
         titleLabel.text = person.title
+        applyAccessibility(person.accessibilityText)
     }
 }
 
@@ -145,7 +148,8 @@ final class MainSearchTrendingCollectionViewCell: ImageTitleBaseCollectionViewCe
                 imageURL: item.imageURL,
                 title: item.title,
                 subtitle: item.subtitle,
-                imageHeight: imageHeight
+                imageHeight: imageHeight,
+                accessibilityText: item.accessibilityText
             )
         )
     }

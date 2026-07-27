@@ -61,12 +61,16 @@ final class MainMovieListViewController: MainBaseViewController {
         return searchController
     }()
 
-    private lazy var sortBarButtonItem = AppFactory.SortMenu.makeBarButtonItem(
-        selectedOption: nil as MovieSortOption?,
-        onSelect: { [weak self] option in
-            self?.selectSortOption(option)
-        }
-    )
+    private lazy var sortBarButtonItem: UIBarButtonItem = {
+        let item = AppFactory.SortMenu.makeBarButtonItem(
+            selectedOption: nil as MovieSortOption?,
+            onSelect: { [weak self] option in
+                self?.selectSortOption(option)
+            }
+        )
+        self.applySortBarButtonAccessibility(to: item, selectedOption: nil)
+        return item
+    }()
 
     // MARK: - Initialization
 
@@ -156,6 +160,8 @@ final class MainMovieListViewController: MainBaseViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
+        searchController.searchBar.searchTextField.accessibilityLabel = "搜尋電影"
+        searchController.searchBar.searchTextField.accessibilityHint = "輸入電影名稱後搜尋"
     }
 
     // MARK: - Data Loading
@@ -268,6 +274,7 @@ final class MainMovieListViewController: MainBaseViewController {
                 self?.selectSortOption(option, isSearchMode: isSearchMode)
             }
         )
+        applySortBarButtonAccessibility(to: sortBarButtonItem, selectedOption: selectedSortOption)
         applySortBarButtonItem(isSearchMode: isSearchMode)
     }
 
@@ -284,6 +291,15 @@ final class MainMovieListViewController: MainBaseViewController {
             navigationItem.rightBarButtonItem = sortBarButtonItem
             searchResultsViewController.navigationItem.rightBarButtonItem = nil
         }
+    }
+
+    private func applySortBarButtonAccessibility(
+        to item: UIBarButtonItem,
+        selectedOption: MovieSortOption?
+    ) {
+        item.accessibilityLabel = "排序電影"
+        item.accessibilityValue = selectedOption?.title ?? "尚未選擇"
+        item.accessibilityHint = "點兩下選擇電影排序方式"
     }
 
     private func selectSortOption(

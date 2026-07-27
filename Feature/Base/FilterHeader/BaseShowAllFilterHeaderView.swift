@@ -49,6 +49,11 @@ class BaseShowAllFilterHeaderView: BaseFilterHeaderView {
 
     // MARK: - Setup
 
+    override func configureView() {
+        super.configureView()
+        updateShowAllButtonAccessibility()
+    }
+
     override func setupHierarchy() {
         super.setupHierarchy()
         addSubview(showAllButton)
@@ -81,11 +86,13 @@ class BaseShowAllFilterHeaderView: BaseFilterHeaderView {
         showAllButton.isHidden = isShowingSkeleton
         showAllButton.isEnabled = !isShowingSkeleton
         setShowAllButtonExpanded(isExpanded)
+        updateShowAllButtonAccessibility()
     }
 
     func setShowAllButtonExpanded(_ isExpanded: Bool, animated: Bool = false) {
         let didChange = isShowAllButtonExpanded != isExpanded
         isShowAllButtonExpanded = isExpanded
+        updateShowAllButtonAccessibility()
 
         let transform: CGAffineTransform = isExpanded
             ? CGAffineTransform(rotationAngle: Layout.showAllButtonExpandedRotation)
@@ -113,5 +120,20 @@ class BaseShowAllFilterHeaderView: BaseFilterHeaderView {
     @objc private func handleShowAllButtonTapped() {
         guard !isShowingSkeleton else { return }
         onShowAllFilters?()
+    }
+
+    private func updateShowAllButtonAccessibility() {
+        guard !isShowingSkeleton else {
+            showAllButton.applyAccessibilityText(nil)
+            return
+        }
+
+        showAllButton.applyAccessibilityText(
+            AccessibilityText(
+                label: "顯示全部篩選",
+                value: isShowAllButtonExpanded ? "已展開" : "已收合",
+                hint: isShowAllButtonExpanded ? "點兩下收合篩選選單" : "點兩下展開完整篩選選單"
+            )
+        )
     }
 }

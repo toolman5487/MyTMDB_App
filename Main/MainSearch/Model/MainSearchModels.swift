@@ -389,3 +389,35 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         }
     }
 }
+
+// MARK: - Accessibility
+
+extension MainSearchResultItem {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.metadata([
+                mediaType.title,
+                subtitle
+            ]),
+            hint: accessibilityHint
+        )
+    }
+
+    private var accessibilityHint: String {
+        switch mediaType {
+        case .movie:
+            return "點兩下開啟電影詳細資料"
+
+        case .tv:
+            return "點兩下開啟劇集詳細資料"
+
+        case .person:
+            return "點兩下開啟人物詳細資料"
+
+        case .unknown:
+            return "點兩下開啟詳細資料"
+        }
+    }
+}
