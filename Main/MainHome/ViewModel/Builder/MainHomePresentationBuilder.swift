@@ -82,12 +82,12 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
         self.accessibilityText = AccessibilityText(
             label: content.title,
             value: accessibilityValue,
-            hint: "點兩下開啟詳細資料"
+            hint: mediaType.accessibilityDetailHint
         )
         self.featuredAccessibilityText = AccessibilityText(
             label: "現正熱映，\(content.title)",
             value: accessibilityValue,
-            hint: "點兩下開啟詳細資料"
+            hint: mediaType.accessibilityDetailHint
         )
     }
 }
@@ -140,6 +140,16 @@ private extension MainHomeMediaType {
 
         case .tv:
             return "影集"
+        }
+    }
+
+    var accessibilityDetailHint: String {
+        switch self {
+        case .movie:
+            return "點兩下開啟電影詳細資料"
+
+        case .tv:
+            return "點兩下開啟劇集詳細資料"
         }
     }
 }

@@ -22,7 +22,8 @@ final class HomeSectionListItemCollectionViewCell: ImageTitleBaseCollectionViewC
             imageURL: item.posterURL,
             title: item.title,
             subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
-            imageHeight: imageHeight
+            imageHeight: imageHeight,
+            accessibilityText: item.accessibilityText
         ))
     }
 }

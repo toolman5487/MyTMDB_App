@@ -57,13 +57,27 @@ final class YouTubePlayerViewController: BaseViewController {
     override func configureView() {
         super.configureView()
         title = preferredTitle ?? "預告片"
+        view.accessibilityViewIsModal = true
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        let closeButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "xmark"),
             style: .plain,
             target: self,
             action: #selector(handleCloseButtonTapped)
         )
+        closeButtonItem.accessibilityLabel = "關閉"
+        closeButtonItem.accessibilityHint = "點兩下關閉影片播放器"
+        navigationItem.rightBarButtonItem = closeButtonItem
+
+        playerView.isAccessibilityElement = false
+        playerView.accessibilityLabel = "影片播放器"
+        playerView.accessibilityHint = "使用播放器內的控制項播放、暫停或調整影片"
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        UIAccessibility.post(notification: .screenChanged, argument: title)
     }
 
     override func setupHierarchy() {

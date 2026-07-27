@@ -97,6 +97,12 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
         configureNavigationItem()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        UIAccessibility.post(notification: .screenChanged, argument: pageTitle)
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -123,12 +129,15 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
     }
 
     private func configureNavigationItem() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        let closeButtonItem = UIBarButtonItem(
             systemItem: .close,
             primaryAction: UIAction { [weak self] _ in
                 self?.dismiss(animated: true)
             }
         )
+        closeButtonItem.accessibilityLabel = "關閉"
+        closeButtonItem.accessibilityHint = "點兩下關閉篩選選單"
+        navigationItem.rightBarButtonItem = closeButtonItem
     }
 
     // MARK: - UICollectionViewDataSource

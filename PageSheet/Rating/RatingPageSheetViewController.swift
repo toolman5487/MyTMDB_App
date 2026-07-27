@@ -133,6 +133,12 @@ final class RatingPageSheetViewController: UIViewController {
         updateValueLabel()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        UIAccessibility.post(notification: .screenChanged, argument: starSliderView)
+    }
+
     // MARK: - Setup
 
     private func configureView() {
@@ -212,6 +218,8 @@ final class RatingPageSheetViewController: UIViewController {
     }
 
     private func enlargeValueLabel() {
+        guard !UIAccessibility.isReduceMotionEnabled else { return }
+
         valueLabelScaleAnimator?.stopAnimation(true)
         valueLabel.transform = CGAffineTransform(scaleX: 1.08, y: 1.08)
 
@@ -226,6 +234,11 @@ final class RatingPageSheetViewController: UIViewController {
     }
 
     private func resetValueLabelScale() {
+        guard !UIAccessibility.isReduceMotionEnabled else {
+            valueLabel.transform = .identity
+            return
+        }
+
         valueLabelScaleAnimator?.stopAnimation(true)
 
         let animator = UIViewPropertyAnimator(duration: 0.16, curve: .easeOut) { [valueLabel] in
@@ -443,6 +456,8 @@ private final class RatingStarSliderView: UIControl {
     }
 
     private func animateStarShake() {
+        guard !UIAccessibility.isReduceMotionEnabled else { return }
+
         let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
         animation.values = [
             -Metrics.shakeOffset,
