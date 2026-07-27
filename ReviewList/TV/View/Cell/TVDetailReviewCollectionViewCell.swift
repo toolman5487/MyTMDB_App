@@ -65,6 +65,10 @@ final class TVDetailReviewCollectionViewCell: BaseCollectionViewCell {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.layer.masksToBounds = true
+        authorLabel.isAccessibilityElement = false
+        ratingLabel.isAccessibilityElement = false
+        dateLabel.isAccessibilityElement = false
+        contentLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -97,13 +101,26 @@ final class TVDetailReviewCollectionViewCell: BaseCollectionViewCell {
     // MARK: - Configuration
 
     func configure(with item: TVReviewDetailItem) {
-        authorLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
+        let authorText = item.authorText.isEmpty ? "匿名使用者" : item.authorText
+        authorLabel.text = authorText
         ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
         ratingLabel.isHidden = item.ratingText == nil
         dateLabel.text = item.updatedDateText
         dateLabel.isHidden = item.updatedDateText == nil
         metadataStackView.isHidden = ratingLabel.isHidden && dateLabel.isHidden
         contentLabel.text = item.content
+        applyAccessibility(
+            AccessibilityText(
+                label: "\(authorText) 的評論",
+                value: BaseDisplayTextFormatter.metadata([
+                    BaseDisplayTextFormatter.ratingText(item.ratingText),
+                    item.updatedDateText,
+                    item.content
+                ]),
+                hint: "點兩下查看完整評論"
+            )
+        )
+        accessibilityTraits = .button
     }
 
     static func fittingHeight(for item: TVReviewDetailItem, width: CGFloat) -> CGFloat {

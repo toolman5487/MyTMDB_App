@@ -260,6 +260,7 @@ private final class RatingStarSliderView: UIControl {
         didSet {
             value = RatingPageSheetViewController.RatingStarValue.normalized(value)
             updateStarImages()
+            updateAccessibilityValue()
         }
     }
 
@@ -343,6 +344,37 @@ private final class RatingStarSliderView: UIControl {
         backgroundColor = .clear
         starContainerView.isUserInteractionEnabled = false
         filledContainerView.isUserInteractionEnabled = false
+        isAccessibilityElement = true
+        accessibilityTraits = .adjustable
+        accessibilityLabel = "評分"
+        accessibilityHint = "上下調整評分星等"
+        updateAccessibilityValue()
+        (emptyStarImageViews + filledStarImageViews).forEach {
+            $0.isAccessibilityElement = false
+        }
+    }
+
+    override func accessibilityIncrement() {
+        let step = RatingPageSheetViewController.RatingStarValue.step
+        let newValue = RatingPageSheetViewController.RatingStarValue.normalized(value + step)
+        guard newValue != value else { return }
+        value = newValue
+        sendActions(for: .valueChanged)
+    }
+
+    override func accessibilityDecrement() {
+        let step = RatingPageSheetViewController.RatingStarValue.step
+        let newValue = RatingPageSheetViewController.RatingStarValue.normalized(value - step)
+        guard newValue != value else { return }
+        value = newValue
+        sendActions(for: .valueChanged)
+    }
+
+    private func updateAccessibilityValue() {
+        let displayValue = value.truncatingRemainder(dividingBy: 1) == 0
+            ? String(Int(value))
+            : String(format: "%.1f", value)
+        accessibilityValue = "\(displayValue) 星"
     }
 
     private func setupHierarchy() {

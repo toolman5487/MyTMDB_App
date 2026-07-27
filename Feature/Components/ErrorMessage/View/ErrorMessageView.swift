@@ -104,13 +104,24 @@ final class ErrorMessageView: UIView {
         imageView.image = UIImage(systemName: message.systemImageName)
         titleLabel.text = message.title
         messageLabel.text = message.message
+        isAccessibilityElement = false
+        imageView.isAccessibilityElement = false
+        messageLabel.isAccessibilityElement = false
+        titleLabel.applyAccessibilityText(
+            AccessibilityText(
+                label: message.title,
+                value: BaseDisplayTextFormatter.nonEmptyText(message.message)
+            )
+        )
 
         if let actionTitle = message.actionTitle, action != nil {
             actionButton.configuration?.title = actionTitle
             actionButton.isHidden = false
+            actionButton.accessibilityHint = "點兩下\(actionTitle)"
         } else {
             actionButton.configuration?.title = nil
             actionButton.isHidden = true
+            actionButton.accessibilityHint = nil
         }
     }
 

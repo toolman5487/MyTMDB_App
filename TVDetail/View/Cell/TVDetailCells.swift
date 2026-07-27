@@ -406,6 +406,7 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
         containerView.layer.borderWidth = 2
         containerView.layer.cornerRadius = Layout.height / 2
         containerView.clipsToBounds = true
+        titleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -428,6 +429,13 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
 
     func configure(with item: TVDetailAttributeItem) {
         titleLabel.text = item.title
+        applyAccessibility(
+            AccessibilityText(
+                label: item.title,
+                hint: item.kind == .genre ? "點兩下查看此類型劇集" : nil
+            )
+        )
+        accessibilityTraits = item.kind == .genre ? .button : .staticText
     }
 
     static func fittingSize(for item: TVDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {

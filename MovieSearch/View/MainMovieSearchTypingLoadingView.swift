@@ -34,5 +34,13 @@ final class MainMovieSearchTypingLoadingView: UIView {
         animationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+        animationView.isAccessibilityElement = false
+        applyAccessibilityText(
+            AccessibilityText(
+                label: "搜尋中",
+                value: "正在輸入關鍵字"
+            )
+        )
+        accessibilityTraits.insert(.updatesFrequently)
     }
 }

@@ -65,12 +65,15 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
         isShowingCompactTitle = false
         applyNavigationTitle(compact: false)
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        let closeButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "xmark"),
             style: .plain,
             target: self,
             action: #selector(handleCloseButtonTapped)
         )
+        closeButtonItem.accessibilityLabel = "關閉"
+        closeButtonItem.accessibilityHint = "點兩下關閉評論詳情"
+        navigationItem.rightBarButtonItem = closeButtonItem
     }
 
     override func setupHierarchy() {

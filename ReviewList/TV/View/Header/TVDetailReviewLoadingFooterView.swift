@@ -30,17 +30,28 @@ final class TVDetailReviewLoadingFooterView: UICollectionReusableView {
         super.init(frame: frame)
         setupHierarchy()
         setupConstraints()
+        applyAccessibilityText(
+            AccessibilityText(label: "正在載入更多評論")
+        )
+        accessibilityTraits.insert(.updatesFrequently)
+        loadingView.isAccessibilityElement = false
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupHierarchy()
         setupConstraints()
+        applyAccessibilityText(
+            AccessibilityText(label: "正在載入更多評論")
+        )
+        accessibilityTraits.insert(.updatesFrequently)
+        loadingView.isAccessibilityElement = false
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         loadingView.setAnimating(false)
+        applyAccessibilityText(nil)
     }
 
     // MARK: - Setup
@@ -59,5 +70,8 @@ final class TVDetailReviewLoadingFooterView: UICollectionReusableView {
 
     func configure(isAnimating: Bool) {
         loadingView.setAnimating(isAnimating)
+        applyAccessibilityText(
+            isAnimating ? AccessibilityText(label: "正在載入更多評論") : nil
+        )
     }
 }

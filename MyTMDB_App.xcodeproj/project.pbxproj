@@ -19,6 +19,9 @@
 		150337102FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
 		150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
 		150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
+		15ACCE013014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
+		15ACCE023014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
+		15ACCE033014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
 		152BE7242FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
 		152BE7252FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
 		152BE7262FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
@@ -765,6 +768,7 @@
 		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
 		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
+		15ACCE003014900000ACCE01 /* AccessibilityText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityText.swift; sourceTree = "<group>"; };
 		15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeModels.swift; sourceTree = "<group>"; };
 		15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeService.swift; sourceTree = "<group>"; };
 		15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewModel.swift; sourceTree = "<group>"; };
@@ -1968,6 +1972,7 @@
 		15A94F4B2FF26D7900FCBB0F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				15ACCE003014900000ACCE00 /* Accessibility */,
 				15CF99CE2FF370970041F4CC /* DetailBase */,
 				15E000102FF401000000010 /* FilterHeader */,
 				152BE7222FF4FA26006681A5 /* GlassBase */,
@@ -1980,6 +1985,14 @@
 				15CF99E22FF621000041F4CC /* WebView */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		15ACCE003014900000ACCE00 /* Accessibility */ = {
+			isa = PBXGroup;
+			children = (
+				15ACCE003014900000ACCE01 /* AccessibilityText.swift */,
+			);
+			path = Accessibility;
 			sourceTree = "<group>";
 		};
 		15A94F622FF26FA000FCBB0F /* MainBase */ = {
@@ -3175,6 +3188,7 @@
 				158809233000DA6E0081E4E9 /* MemberCenterListItemCollectionViewCell.swift in Sources */,
 				158809263000DA6E0081E4E9 /* MemberCenterListViewModel.swift in Sources */,
 				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
+				15ACCE013014900000ACCE01 /* AccessibilityText.swift in Sources */,
 				15E000142FF401000000014 /* BaseFilterHeaderItem.swift in Sources */,
 				15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001A2FF40100000001A /* BaseFilterHeaderView.swift in Sources */,
@@ -3416,6 +3430,7 @@
 				15E401033014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */,
 				1596681D30120282000079DA /* MainSearchViewController.swift in Sources */,
 				15A950082FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
+				15ACCE023014900000ACCE01 /* AccessibilityText.swift in Sources */,
 				15E000152FF401000000015 /* BaseFilterHeaderItem.swift in Sources */,
 				15E000182FF401000000018 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001B2FF40100000001B /* BaseFilterHeaderView.swift in Sources */,
@@ -3613,6 +3628,7 @@
 				15A6A0943005600000AD5E46 /* MainTabBarAvatarService.swift in Sources */,
 				15A6A0993005700000AD5E46 /* UserProfileStore.swift in Sources */,
 				15A950092FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
+				15ACCE033014900000ACCE01 /* AccessibilityText.swift in Sources */,
 				15E000162FF401000000016 /* BaseFilterHeaderItem.swift in Sources */,
 				15E000192FF401000000019 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001C2FF40100000001C /* BaseFilterHeaderView.swift in Sources */,

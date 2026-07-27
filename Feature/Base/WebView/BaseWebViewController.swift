@@ -67,11 +67,13 @@ final class BaseWebViewController: BaseViewController {
 
     private lazy var backButton = makeTabBarButton(
         symbolName: "chevron.backward",
+        accessibilityLabel: "上一頁",
         action: #selector(handleBackButtonTapped)
     )
 
     private lazy var forwardButton = makeTabBarButton(
         symbolName: "chevron.forward",
+        accessibilityLabel: "下一頁",
         action: #selector(handleForwardButtonTapped)
     )
 
@@ -87,6 +89,7 @@ final class BaseWebViewController: BaseViewController {
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = ThemeColor.textSecondary
         imageView.image = UIImage(systemName: "globe")
+        imageView.isAccessibilityElement = false
         return imageView
     }()
 
@@ -106,7 +109,8 @@ final class BaseWebViewController: BaseViewController {
         textField.keyboardType = .URL
         textField.clearButtonMode = .whileEditing
         textField.delegate = self
-        textField.isAccessibilityElement = false
+        textField.accessibilityLabel = "網址"
+        textField.accessibilityHint = "輸入網址後按前往開啟頁面"
         textField.attributedPlaceholder = NSAttributedString(
             string: "搜尋或輸入網址",
             attributes: [.foregroundColor: ThemeColor.textTertiary]
@@ -149,14 +153,18 @@ final class BaseWebViewController: BaseViewController {
 
         title = preferredTitle ?? url.host()
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        let reloadButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "arrow.clockwise"),
             style: .plain,
             target: self,
             action: #selector(handleReloadButtonTapped)
         )
+        reloadButtonItem.accessibilityLabel = "重新整理"
+        reloadButtonItem.accessibilityHint = "點兩下重新載入目前頁面"
+        navigationItem.rightBarButtonItem = reloadButtonItem
 
         urlFieldContainerView.layer.cornerRadius = Layout.urlFieldHeight / 2
+        urlFieldContainerView.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -299,6 +307,7 @@ private extension BaseWebViewController {
 
     func makeTabBarButton(
         symbolName: String,
+        accessibilityLabel: String,
         action: Selector
     ) -> UIButton {
         var configuration = UIButton.Configuration.plain()
@@ -312,7 +321,7 @@ private extension BaseWebViewController {
         )
 
         let button = UIButton(configuration: configuration)
-        button.isAccessibilityElement = false
+        button.accessibilityLabel = accessibilityLabel
         button.addTarget(self, action: action, for: .touchUpInside)
         return button
     }
@@ -320,6 +329,7 @@ private extension BaseWebViewController {
     func updateNavigationState() {
         backButton.isEnabled = webView.canGoBack
         forwardButton.isEnabled = webView.canGoForward
+        updateNavigationButtonAccessibility()
 
         guard !urlTextField.isFirstResponder else { return }
         updateURLField()
@@ -328,7 +338,15 @@ private extension BaseWebViewController {
     func updateURLField() {
         let currentURL = webView.url ?? url
         urlTextField.text = displayText(for: currentURL)
+        urlTextField.accessibilityValue = currentURL.absoluteString
         updateSecurityIcon(for: currentURL)
+    }
+
+    func updateNavigationButtonAccessibility() {
+        backButton.accessibilityValue = webView.canGoBack ? "可返回" : "無法返回"
+        backButton.accessibilityHint = webView.canGoBack ? "點兩下返回上一頁" : nil
+        forwardButton.accessibilityValue = webView.canGoForward ? "可前進" : "無法前進"
+        forwardButton.accessibilityHint = webView.canGoForward ? "點兩下前往下一頁" : nil
     }
 
     func updateSecurityIcon(for url: URL) {

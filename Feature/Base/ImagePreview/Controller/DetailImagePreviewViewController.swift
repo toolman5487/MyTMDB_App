@@ -51,11 +51,14 @@ final class DetailImagePreviewViewController: UIViewController {
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = UIColor.white.withAlphaComponent(0.32)
         pageControl.allowsContinuousInteraction = false
+        pageControl.accessibilityLabel = "圖片頁碼"
         return pageControl
     }()
 
     private let pageTextLabel: UILabel = {
-        AppFactory.Label.captionPrimary(color: .white, alignment: .center, lines: 1)
+        let label = AppFactory.Label.captionPrimary(color: .white, alignment: .center, lines: 1)
+        label.isAccessibilityElement = false
+        return label
     }()
 
     private let closeButton: UIButton = {
@@ -64,11 +67,14 @@ final class DetailImagePreviewViewController: UIViewController {
         button.backgroundColor = UIColor.black.withAlphaComponent(0.48)
         button.layer.cornerRadius = Layout.closeButtonSize / 2
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
+        button.accessibilityLabel = "關閉"
+        button.accessibilityHint = "點兩下關閉圖片預覽"
         return button
     }()
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.headline(color: ThemeColor.highlight, alignment: .center, lines: 1)
+        label.isAccessibilityElement = false
         return label
     }()
 
@@ -175,7 +181,12 @@ final class DetailImagePreviewViewController: UIViewController {
 
     private func imagePageViewController(at index: Int) -> DetailImagePreviewPageViewController? {
         guard imageURLs.indices.contains(index) else { return nil }
-        return DetailImagePreviewPageViewController(imageURL: imageURLs[index], index: index)
+        return DetailImagePreviewPageViewController(
+            imageURL: imageURLs[index],
+            index: index,
+            totalCount: imageURLs.count,
+            previewTitle: previewTitle
+        )
     }
 
     // MARK: - Gesture Handling
@@ -226,6 +237,12 @@ final class DetailImagePreviewViewController: UIViewController {
         pageControl.currentPage = currentIndex
         pageTextLabel.text = "\(currentIndex + 1) / \(imageURLs.count)"
         pageTextLabel.isHidden = imageURLs.isEmpty
+        pageControl.accessibilityValue = imageURLs.isEmpty
+            ? nil
+            : "第 \(currentIndex + 1) 張，共 \(imageURLs.count) 張"
+        pageControl.accessibilityHint = imageURLs.count > 1
+            ? "左右滑動可切換圖片"
+            : nil
     }
 }
 
@@ -305,6 +322,8 @@ private final class DetailImagePreviewPageViewController: UIViewController {
 
     let index: Int
     private let imageURL: URL
+    private let totalCount: Int
+    private let previewTitle: String?
 
     // MARK: - UI Components
 
@@ -320,14 +339,23 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.isAccessibilityElement = true
+        imageView.accessibilityTraits = .image
         return imageView
     }()
 
     // MARK: - Initialization
 
-    init(imageURL: URL, index: Int) {
+    init(
+        imageURL: URL,
+        index: Int,
+        totalCount: Int,
+        previewTitle: String?
+    ) {
         self.imageURL = imageURL
         self.index = index
+        self.totalCount = totalCount
+        self.previewTitle = previewTitle
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -355,6 +383,9 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     private func configureView() {
         view.backgroundColor = .black
         scrollView.delegate = self
+        let titleText = BaseDisplayTextFormatter.nonEmptyText(previewTitle) ?? "圖片"
+        imageView.accessibilityLabel = "\(titleText)，第 \(index + 1) 張，共 \(totalCount) 張"
+        imageView.accessibilityHint = totalCount > 1 ? "左右滑動可切換圖片，雙指縮放可放大縮小" : "雙指縮放可放大縮小"
     }
 
     private func setupHierarchy() {

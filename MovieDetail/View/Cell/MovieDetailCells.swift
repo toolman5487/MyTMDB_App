@@ -412,6 +412,7 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
         containerView.layer.borderWidth = 2
         containerView.layer.cornerRadius = Layout.height / 2
         containerView.clipsToBounds = true
+        titleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -434,6 +435,13 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
 
     func configure(with item: MovieDetailAttributeItem) {
         titleLabel.text = item.title
+        applyAccessibility(
+            AccessibilityText(
+                label: item.title,
+                hint: item.kind == .genre ? "點兩下查看此類型電影" : nil
+            )
+        )
+        accessibilityTraits = item.kind == .genre ? .button : .staticText
     }
 
     static func fittingSize(for item: MovieDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {

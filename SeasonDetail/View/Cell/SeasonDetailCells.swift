@@ -271,6 +271,7 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
+        isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -363,6 +364,14 @@ private final class SeasonDetailTextListRowView: UIView {
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
         subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
+        titleLabel.isAccessibilityElement = false
+        subtitleLabel.isAccessibilityElement = false
+        applyAccessibilityText(
+            AccessibilityText(
+                label: item.title,
+                value: BaseDisplayTextFormatter.nonEmptyText(item.subtitle)
+            )
+        )
     }
 
     private func setupHierarchy() {

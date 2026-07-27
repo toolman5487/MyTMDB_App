@@ -620,6 +620,7 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
         containerView.layer.borderWidth = 2
         containerView.layer.cornerRadius = Layout.height / 2
         containerView.clipsToBounds = true
+        titleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -642,6 +643,12 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
 
     func configure(with item: PersonDetailAliasItem) {
         titleLabel.text = item.name
+        applyAccessibility(
+            AccessibilityText(
+                label: "別名",
+                value: item.name
+            )
+        )
     }
 
     static func fittingSize(

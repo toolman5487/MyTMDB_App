@@ -62,6 +62,15 @@ final class DetailContentListRowCollectionViewCell: BaseCollectionViewCell {
         return view
     }()
 
+    override func configureView() {
+        super.configureView()
+        thumbnailImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        subtitleLabel.isAccessibilityElement = false
+        chevronImageView.isAccessibilityElement = false
+        separatorView.isAccessibilityElement = false
+    }
+
     override func setupHierarchy() {
         super.setupHierarchy()
         containerView.addSubview(thumbnailImageView)
@@ -133,6 +142,9 @@ final class DetailContentListRowCollectionViewCell: BaseCollectionViewCell {
         case .gallery:
             break
         }
+
+        applyAccessibility(item.accessibilityText)
+        accessibilityTraits = item.destination == .none ? .staticText : .button
     }
 }
 
@@ -157,6 +169,11 @@ final class DetailContentListGalleryCollectionViewCell: BaseCollectionViewCell {
         imageView.layer.cornerRadius = Layout.cornerRadius
         return imageView
     }()
+
+    override func configureView() {
+        super.configureView()
+        galleryImageView.isAccessibilityElement = false
+    }
 
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -184,5 +201,7 @@ final class DetailContentListGalleryCollectionViewCell: BaseCollectionViewCell {
 
     func configure(with item: DetailContentListItem) {
         galleryImageView.sd_setImage(with: item.imageURL)
+        applyAccessibility(item.accessibilityText)
+        accessibilityTraits = [.image, .button]
     }
 }

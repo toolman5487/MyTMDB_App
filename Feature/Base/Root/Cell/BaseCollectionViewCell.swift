@@ -8,24 +8,6 @@
 import SnapKit
 import UIKit
 
-// MARK: - AccessibilityText
-
-nonisolated struct AccessibilityText: Sendable, Equatable {
-    let label: String
-    let value: String?
-    let hint: String?
-
-    init(
-        label: String,
-        value: String? = nil,
-        hint: String? = nil
-    ) {
-        self.label = label
-        self.value = value
-        self.hint = hint
-    }
-}
-
 // MARK: - BaseCollectionViewCell
 
 @MainActor

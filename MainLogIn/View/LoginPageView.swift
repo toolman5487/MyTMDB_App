@@ -41,6 +41,8 @@ final class LoginPageView: UIView, AuthPageView {
         button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         button.tintColor = .secondaryLabel
         button.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        button.accessibilityLabel = "顯示密碼"
+        button.accessibilityHint = "點兩下切換密碼可見狀態"
         return button
     }()
 
@@ -143,5 +145,7 @@ final class LoginPageView: UIView, AuthPageView {
 
         let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye"
         sender.setImage(UIImage(systemName: imageName), for: .normal)
+        sender.accessibilityLabel = passField.isSecureTextEntry ? "顯示密碼" : "隱藏密碼"
+        sender.accessibilityValue = passField.isSecureTextEntry ? "目前已隱藏" : "目前可見"
     }
 }

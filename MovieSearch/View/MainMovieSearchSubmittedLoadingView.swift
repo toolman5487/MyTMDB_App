@@ -53,5 +53,15 @@ final class MainMovieSearchSubmittedLoadingView: UIView {
             make.leading.greaterThanOrEqualToSuperview().offset(24)
             make.trailing.lessThanOrEqualToSuperview().inset(24)
         }
+        animationView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        messageLabel.isAccessibilityElement = false
+        applyAccessibilityText(
+            AccessibilityText(
+                label: titleLabel.text ?? "正在搜尋",
+                value: messageLabel.text
+            )
+        )
+        accessibilityTraits.insert(.updatesFrequently)
     }
 }

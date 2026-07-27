@@ -45,3 +45,41 @@ nonisolated enum DetailContentListDestination: Sendable, Equatable {
     case image(url: URL)
     case none
 }
+
+// MARK: - Accessibility
+
+extension DetailContentListItem {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
+            hint: accessibilityHint
+        )
+    }
+
+    private var accessibilityHint: String? {
+        switch destination {
+        case .movie:
+            return "點兩下開啟電影詳細資料"
+
+        case .tv:
+            return "點兩下開啟劇集詳細資料"
+
+        case .episode:
+            return "點兩下開啟單集詳細資料"
+
+        case .person:
+            return "點兩下開啟人物詳細資料"
+
+        case .youtube, .webVideo:
+            return "點兩下播放影片"
+
+        case .image:
+            return "點兩下預覽圖片"
+
+        case .none:
+            return nil
+        }
+    }
+}

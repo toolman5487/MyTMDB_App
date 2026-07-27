@@ -226,6 +226,7 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
+        isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -256,7 +257,7 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
         removeRows()
         items.forEach { item in
             let rowView = EpisodeDetailTextListRowView()
-            rowView.configure(with: item)
+            rowView.configure(with: item, isTappable: onItemSelected != nil)
             rowView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapRow(_:))))
             rowView.isUserInteractionEnabled = onItemSelected != nil
             stackView.addArrangedSubview(rowView)
@@ -334,10 +335,20 @@ private final class EpisodeDetailTextListRowView: UIView {
         setupConstraints()
     }
 
-    func configure(with item: EpisodeDetailTextListItem) {
+    func configure(with item: EpisodeDetailTextListItem, isTappable: Bool) {
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
         subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
+        titleLabel.isAccessibilityElement = false
+        subtitleLabel.isAccessibilityElement = false
+        applyAccessibilityText(
+            AccessibilityText(
+                label: item.title,
+                value: BaseDisplayTextFormatter.nonEmptyText(item.subtitle),
+                hint: isTappable ? "點兩下執行" : nil
+            )
+        )
+        accessibilityTraits = isTappable ? .button : .staticText
     }
 
     private func setupHierarchy() {

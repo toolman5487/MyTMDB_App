@@ -72,6 +72,7 @@ final class LoginViewController: BaseViewController {
         control.currentPage = 0
         control.currentPageIndicatorTintColor = .label
         control.pageIndicatorTintColor = .tertiaryLabel
+        control.accessibilityLabel = "登入方式"
         return control
     }()
 
@@ -138,6 +139,7 @@ final class LoginViewController: BaseViewController {
     override func configureView() {
         setupNavigationBar()
         setupPageDelegates()
+        updatePageControlAccessibility(for: currentPage)
     }
 
     override func setupHierarchy() {
@@ -333,6 +335,12 @@ final class LoginViewController: BaseViewController {
     private func updateCurrentPage(_ page: AuthPage) {
         pageControl.currentPage = page.rawValue
         navigationItem.title = page.title
+        updatePageControlAccessibility(for: page)
+    }
+
+    private func updatePageControlAccessibility(for page: AuthPage) {
+        pageControl.accessibilityValue = "\(page.title)，第 \(page.rawValue + 1) 頁，共 \(AuthPage.allCases.count) 頁"
+        pageControl.accessibilityHint = "左右滑動切換登入、訪客或註冊"
     }
 
     private func setActionButtonsEnabled(_ isEnabled: Bool) {
@@ -483,6 +491,7 @@ extension LoginViewController: UIScrollViewDelegate {
         currentPage = page
         pageControl.currentPage = page.rawValue
         navigationItem.title = page.title
+        updatePageControlAccessibility(for: page)
         hideFailureState()
     }
 
