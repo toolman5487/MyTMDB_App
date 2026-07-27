@@ -32,6 +32,7 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.attributedText = nil
+        applyAccessibilityText(nil)
     }
 
     func configure(title: String?) {
@@ -40,10 +41,23 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
             font: titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline),
             textColor: ThemeColor.highlight
         )
+        applyAccessibility(title: title)
     }
 
     private func setupHierarchy() {
+        titleLabel.isAccessibilityElement = false
         addSubview(titleLabel)
+    }
+
+    private func applyAccessibility(title: String?) {
+        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+            applyAccessibilityText(nil)
+            return
+        }
+
+        applyAccessibilityText(
+            AccessibilityText(label: "\(title) 區段")
+        )
     }
 
     private func setupConstraints() {

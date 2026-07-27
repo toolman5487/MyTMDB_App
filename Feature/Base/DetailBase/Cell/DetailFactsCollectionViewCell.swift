@@ -22,6 +22,8 @@ class DetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func configureView() {
         containerView.backgroundColor = .clear
+        isAccessibilityElement = false
+        collectionView.isAccessibilityElement = false
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
@@ -145,6 +147,9 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
+        accentView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        valueLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -178,11 +183,18 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
     override func resetForReuse() {
         titleLabel.text = nil
         valueLabel.text = nil
+        resetAccessibility()
     }
 
     func configure(with item: DetailFactItem) {
         titleLabel.text = item.title
         valueLabel.text = item.value
+        applyAccessibility(
+            AccessibilityText(
+                label: item.title,
+                value: item.value
+            )
+        )
     }
 
     static func fittingSize(

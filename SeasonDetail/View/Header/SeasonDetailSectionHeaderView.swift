@@ -48,10 +48,12 @@ final class SeasonDetailSectionHeaderView: UICollectionReusableView {
             textColor: ThemeColor.highlight
         )
         isUserInteractionEnabled = onTap != nil
+        applyAccessibility(title: title, isTappable: onTap != nil)
     }
 
     private func configureView() {
         backgroundColor = .clear
+        titleLabel.isAccessibilityElement = false
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
 
@@ -71,6 +73,27 @@ final class SeasonDetailSectionHeaderView: UICollectionReusableView {
             systemName: "chevron.right.2",
             withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
         )
+    }
+
+    private func applyAccessibility(title: String?, isTappable: Bool) {
+        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+            applyAccessibilityText(nil)
+            accessibilityTraits.remove(.button)
+            return
+        }
+
+        applyAccessibilityText(
+            AccessibilityText(
+                label: "\(title) 區段",
+                hint: isTappable ? "點兩下查看完整列表" : nil
+            )
+        )
+
+        if isTappable {
+            accessibilityTraits.insert(.button)
+        } else {
+            accessibilityTraits.remove(.button)
+        }
     }
 
     @objc

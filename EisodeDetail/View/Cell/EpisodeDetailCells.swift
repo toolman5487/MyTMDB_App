@@ -373,6 +373,7 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
+        overviewLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -391,10 +392,17 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     override func resetForReuse() {
         overviewLabel.text = nil
         overviewLabel.attributedText = nil
+        resetAccessibility()
     }
 
     func configure(overview: String) {
         overviewLabel.attributedText = Self.overviewAttributedText(overview: overview)
+        applyAccessibility(
+            AccessibilityText(
+                label: "集數簡介",
+                value: overview
+            )
+        )
     }
 
     static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {

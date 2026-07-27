@@ -97,10 +97,28 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
             item.episodeCountText
         ])
         scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
+        applyAccessibilityText(
+            AccessibilityText(
+                label: item.title,
+                value: BaseDisplayTextFormatter.metadata([
+                    item.seasonNumberText,
+                    metadataLabel.text,
+                    scoreLabel.text
+                ])
+            )
+        )
     }
 
     private func configureView() {
         backgroundColor = .clear
+        bannerView.isAccessibilityElement = false
+        bannerImageView.isAccessibilityElement = false
+        bannerBlurView.isAccessibilityElement = false
+        posterImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        seasonLabel.isAccessibilityElement = false
+        metadataLabel.isAccessibilityElement = false
+        scoreLabel.isAccessibilityElement = false
     }
 
     private func setupHierarchy() {
@@ -167,6 +185,7 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
         seasonLabel.text = nil
         metadataLabel.text = nil
         scoreLabel.text = nil
+        applyAccessibilityText(nil)
     }
 
 }

@@ -71,7 +71,11 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
             items,
             onItemSelected: onItemSelected
         ) { cell, item in
-            cell.configure(with: item, imageHeight: imageHeight)
+            cell.configure(
+                with: item,
+                imageHeight: imageHeight,
+                isSelectable: onItemSelected != nil
+            )
         }
     }
 
@@ -135,6 +139,12 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
         return label
     }()
 
+    override func configureView() {
+        itemImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        subtitleLabel.isAccessibilityElement = false
+    }
+
     override func setupHierarchy() {
         super.setupHierarchy()
         containerView.addSubview(contentStackView)
@@ -173,13 +183,25 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
         subtitleLabel.text = nil
         subtitleLabel.isHidden = false
         imageHeightConstraint?.update(offset: Layout.imageHeight)
+        resetAccessibility()
     }
 
-    func configure(with item: DetailImageTitleItem, imageHeight: CGFloat) {
+    func configure(
+        with item: DetailImageTitleItem,
+        imageHeight: CGFloat,
+        isSelectable: Bool
+    ) {
         imageHeightConstraint?.update(offset: imageHeight)
         itemImageView.sd_setImage(with: item.imageURL)
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
         subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
+        applyAccessibility(
+            AccessibilityText(
+                label: item.title,
+                value: BaseDisplayTextFormatter.nonEmptyText(item.subtitle),
+                hint: isSelectable ? "點兩下開啟詳細資料" : nil
+            )
+        )
     }
 }

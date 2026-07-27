@@ -83,11 +83,25 @@ final class DetailBottomActionBarView: UIView {
     func configureFavorite(isFavorite: Bool, isEnabled: Bool) {
         favoriteButton.configuration = favoriteButtonConfiguration(isFavorite: isFavorite)
         favoriteButton.isEnabled = isEnabled
+        favoriteButton.applyAccessibilityText(
+            AccessibilityText(
+                label: "收藏",
+                value: isFavorite ? "已收藏" : "未收藏",
+                hint: "點兩下切換收藏狀態"
+            )
+        )
     }
 
     func configureRating(value: Double?, isEnabled: Bool) {
         ratingButton.configuration = ratingButtonConfiguration(value: value)
         ratingButton.isEnabled = isEnabled
+        ratingButton.applyAccessibilityText(
+            AccessibilityText(
+                label: "評分",
+                value: value.map { "目前 \(BaseDisplayTextFormatter.decimal($0)) 分" } ?? "尚未評分",
+                hint: "點兩下開啟評分"
+            )
+        )
     }
 
     func setFavoriteAction(target: Any?, action: Selector) {
@@ -125,6 +139,27 @@ final class DetailBottomActionBarView: UIView {
 
     private func configureView() {
         backgroundColor = ThemeColor.backgroundSecondary
+        separatorView.isAccessibilityElement = false
+        favoriteButton.applyAccessibilityText(
+            AccessibilityText(
+                label: "收藏",
+                value: "未收藏",
+                hint: "點兩下切換收藏狀態"
+            )
+        )
+        ratingButton.applyAccessibilityText(
+            AccessibilityText(
+                label: "評分",
+                value: "尚未評分",
+                hint: "點兩下開啟評分"
+            )
+        )
+        reviewButton.applyAccessibilityText(
+            AccessibilityText(
+                label: "評論",
+                hint: "點兩下查看評論"
+            )
+        )
     }
 
     private func setupHierarchy() {

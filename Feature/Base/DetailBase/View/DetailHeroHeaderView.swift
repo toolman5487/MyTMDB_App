@@ -146,12 +146,20 @@ class DetailHeroHeaderView: UICollectionReusableView {
             scoreLabel.text = nil
             scoreLabel.isHidden = true
         }
+
+        applyAccessibility(content)
     }
 
     private func configureView() {
         backgroundColor = .clear
         containerView.backgroundColor = .clear
         containerView.clipsToBounds = false
+        backdropImageView.isAccessibilityElement = false
+        posterImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        taglineLabel.isAccessibilityElement = false
+        metadataLabel.isAccessibilityElement = false
+        scoreLabel.isAccessibilityElement = false
     }
 
     private func setupHierarchy() {
@@ -219,7 +227,21 @@ class DetailHeroHeaderView: UICollectionReusableView {
         metadataLabel.isHidden = false
         scoreLabel.text = nil
         scoreLabel.isHidden = false
+        applyAccessibilityText(nil)
         updateTaglineVisibility(isVisible: false)
+    }
+
+    private func applyAccessibility(_ content: DetailHeroHeaderContent) {
+        applyAccessibilityText(
+            AccessibilityText(
+                label: content.displayTitle,
+                value: BaseDisplayTextFormatter.metadata([
+                    content.metadataText,
+                    content.scoreDisplayText,
+                    content.tagline
+                ])
+            )
+        )
     }
 
     private func updateTaglineVisibility(isVisible: Bool) {

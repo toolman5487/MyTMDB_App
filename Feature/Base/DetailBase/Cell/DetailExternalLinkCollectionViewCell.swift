@@ -37,6 +37,8 @@ class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
 
     override func configureView() {
         containerView.backgroundColor = .clear
+        isAccessibilityElement = false
+        collectionView.isAccessibilityElement = false
         collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
@@ -158,6 +160,9 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         containerView.backgroundColor = .clear
+        iconContainerView.isAccessibilityElement = false
+        iconImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -194,6 +199,7 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
         iconImageView.tintColor = nil
         iconContainerView.backgroundColor = nil
         titleLabel.text = nil
+        resetAccessibility()
     }
 
     func configure(with item: DetailExternalLinkItem) {
@@ -210,6 +216,12 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
 
         iconContainerView.backgroundColor = .clear
         titleLabel.text = item.title
+        applyAccessibility(
+            AccessibilityText(
+                label: item.title,
+                hint: "點兩下開啟連結"
+            )
+        )
     }
 }
 

@@ -86,6 +86,10 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         )
         metadataLabel.text = item.metadataText
         metadataLabel.isHidden = item.metadataText?.isEmpty != false
+        applyProfileImageAccessibility(
+            name: item.name,
+            isSelectable: item.profileURL != nil && onProfileImageSelected != nil
+        )
     }
 
     static func headerHeight() -> CGFloat {
@@ -94,6 +98,7 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
 
     private func configureView() {
         backgroundColor = ThemeColor.background
+        profileImageView.accessibilityTraits.insert(.image)
     }
 
     private func setupHierarchy() {
@@ -128,6 +133,24 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         nameLabel.attributedText = nil
         metadataLabel.text = nil
         metadataLabel.isHidden = false
+        profileImageView.applyAccessibilityText(nil)
+        profileImageView.accessibilityTraits.insert(.image)
+    }
+
+    private func applyProfileImageAccessibility(name: String, isSelectable: Bool) {
+        profileImageView.applyAccessibilityText(
+            AccessibilityText(
+                label: "\(name) 照片",
+                hint: isSelectable ? "點兩下預覽圖片" : nil
+            )
+        )
+        profileImageView.accessibilityTraits.insert(.image)
+
+        if isSelectable {
+            profileImageView.accessibilityTraits.insert(.button)
+        } else {
+            profileImageView.accessibilityTraits.remove(.button)
+        }
     }
 
     @objc
@@ -166,6 +189,8 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
         super.prepareForReuse()
         titleLabel.attributedText = nil
         onTap = nil
+        applyAccessibilityText(nil)
+        accessibilityTraits.remove(.button)
     }
 
     func configure(
@@ -185,9 +210,11 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
         isUserInteractionEnabled = onTap != nil
         self.onTap = onTap
+        applyAccessibility(title: title, isTappable: onTap != nil)
     }
 
     private func setupHierarchy() {
+        titleLabel.isAccessibilityElement = false
         addSubview(titleLabel)
     }
 
@@ -195,6 +222,27 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
+        }
+    }
+
+    private func applyAccessibility(title: String?, isTappable: Bool) {
+        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+            applyAccessibilityText(nil)
+            accessibilityTraits.remove(.button)
+            return
+        }
+
+        applyAccessibilityText(
+            AccessibilityText(
+                label: "\(title) 區段",
+                hint: isTappable ? "點兩下查看完整列表" : nil
+            )
+        )
+
+        if isTappable {
+            accessibilityTraits.insert(.button)
+        } else {
+            accessibilityTraits.remove(.button)
         }
     }
 
@@ -223,6 +271,7 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
+        biographyLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -240,10 +289,17 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
 
     override func resetForReuse() {
         biographyLabel.attributedText = nil
+        resetAccessibility()
     }
 
     func configure(biography: String) {
         biographyLabel.attributedText = Self.makeAttributedText(biography: biography)
+        applyAccessibility(
+            AccessibilityText(
+                label: "人物簡介",
+                value: biography
+            )
+        )
     }
 
     static func fittingHeight(for biography: String, width: CGFloat) -> CGFloat {
