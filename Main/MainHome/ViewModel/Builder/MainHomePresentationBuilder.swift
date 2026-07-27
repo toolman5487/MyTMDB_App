@@ -54,8 +54,18 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
     let dateText: String
     let scoreText: String
     let genreIDs: [Int]
+    let accessibilityText: AccessibilityText
+    let featuredAccessibilityText: AccessibilityText
 
     init(content: MainHomeContent, mediaType: MainHomeMediaType) {
+        let dateText = BaseDisplayTextFormatter.announcedText(content.primaryDate)
+        let scoreText = BaseDisplayTextFormatter.decimal(content.voteAverage)
+        let accessibilityValue = BaseDisplayTextFormatter.metadata([
+            mediaType.accessibilityName,
+            dateText,
+            BaseDisplayTextFormatter.ratingText(scoreText)
+        ])
+
         self.id = content.id
         self.title = content.title
         self.mediaType = mediaType
@@ -66,9 +76,19 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
         self.backdropURL = content.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.dateText = BaseDisplayTextFormatter.announcedText(content.primaryDate)
-        self.scoreText = BaseDisplayTextFormatter.decimal(content.voteAverage)
+        self.dateText = dateText
+        self.scoreText = scoreText
         self.genreIDs = content.genreIDs
+        self.accessibilityText = AccessibilityText(
+            label: content.title,
+            value: accessibilityValue,
+            hint: "點兩下開啟詳細資料"
+        )
+        self.featuredAccessibilityText = AccessibilityText(
+            label: "現正熱映，\(content.title)",
+            value: accessibilityValue,
+            hint: "點兩下開啟詳細資料"
+        )
     }
 }
 
@@ -107,6 +127,19 @@ extension MainHomeContentCategory {
 
         case .topRatedTV:
             return "高分影集"
+        }
+    }
+}
+
+private extension MainHomeMediaType {
+
+    var accessibilityName: String {
+        switch self {
+        case .movie:
+            return "電影"
+
+        case .tv:
+            return "影集"
         }
     }
 }

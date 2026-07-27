@@ -16,6 +16,35 @@ nonisolated struct ImageTitleCellContent: Sendable, Equatable {
     let title: String
     let subtitle: String?
     let imageHeight: CGFloat
+    let accessibilityText: AccessibilityText?
+
+    init(
+        imageURL: URL?,
+        title: String,
+        subtitle: String?,
+        imageHeight: CGFloat,
+        accessibilityText: AccessibilityText? = nil
+    ) {
+        self.imageURL = imageURL
+        self.title = title
+        self.subtitle = subtitle
+        self.imageHeight = imageHeight
+        self.accessibilityText = accessibilityText ?? Self.defaultAccessibilityText(
+            title: title,
+            subtitle: subtitle
+        )
+    }
+
+    private static func defaultAccessibilityText(
+        title: String,
+        subtitle: String?
+    ) -> AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
+            hint: "點兩下開啟詳細資料"
+        )
+    }
 }
 
 // MARK: - ImageTitleBaseCollectionViewCell
@@ -67,6 +96,9 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         itemImageView.layer.cornerRadius = imageCornerRadius
+        itemImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        subtitleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -106,6 +138,7 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
         titleLabel.text = nil
         subtitleLabel.text = nil
         subtitleLabel.isHidden = false
+        resetAccessibility()
     }
 
     func configure(with content: ImageTitleCellContent) {
@@ -115,6 +148,7 @@ class ImageTitleBaseCollectionViewCell: BaseCollectionViewCell {
             title: content.title,
             subtitle: content.subtitle
         )
+        applyAccessibility(content.accessibilityText)
     }
 
     private func configure(

@@ -45,6 +45,11 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
     override func configureView() {
         contentView.backgroundColor = .clear
         contentView.clipsToBounds = true
+        backdropImageView.isAccessibilityElement = false
+        gradientView.isAccessibilityElement = false
+        statusLabel.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        metadataLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -89,6 +94,7 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
         statusLabel.text = nil
         titleLabel.text = nil
         metadataLabel.text = nil
+        resetAccessibility()
     }
 
     // MARK: - Configuration
@@ -108,6 +114,7 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
             item.dateText,
             BaseDisplayTextFormatter.ratingText(item.scoreText)
         ])
+        applyAccessibility(item.featuredAccessibilityText)
     }
 }
 

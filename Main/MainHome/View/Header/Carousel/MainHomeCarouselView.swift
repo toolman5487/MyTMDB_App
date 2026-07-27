@@ -104,6 +104,8 @@ final class MainHomeCarouselView: UIView {
 
     private func configureView() {
         backgroundColor = .clear
+        isAccessibilityElement = false
+        collectionView.isAccessibilityElement = false
     }
 
     private func setupHierarchy() {

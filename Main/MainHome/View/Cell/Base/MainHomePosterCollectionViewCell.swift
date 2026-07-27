@@ -53,6 +53,9 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         contentView.backgroundColor = .clear
+        posterImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        scoreLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -87,6 +90,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         showPosterSkeletonIfNeeded()
         titleLabel.text = nil
         scoreLabel.text = nil
+        resetAccessibility()
     }
 
     func configure(with item: MainHomeContentItem) {
@@ -107,6 +111,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
 
         titleLabel.text = item.title
         scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
+        applyAccessibility(item.accessibilityText)
     }
 
     private func showPosterSkeletonIfNeeded() {

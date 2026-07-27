@@ -128,6 +128,8 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
         titleLabel.text = nil
         titleLabel.attributedText = nil
         carouselView.configure(items: [])
+        titleRowStackView.applyAccessibilityText(nil)
+        titleRowStackView.accessibilityTraits.remove(.button)
         onCarouselSelected = nil
         onTitleTapped = nil
     }
@@ -136,6 +138,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     private func configureView() {
         backgroundColor = .clear
+        titleLabel.isAccessibilityElement = false
         titleRowStackView.isUserInteractionEnabled = true
         titleRowStackView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(handleTitleTap))
@@ -191,9 +194,27 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
             textColor: ThemeColor.highlight
         )
         carouselView.configure(items: carouselItems)
+        applyTitleAccessibility(title: title)
         carouselView.onItemSelected = { [weak self] item in
             self?.onCarouselSelected?(item)
         }
+    }
+
+    private func applyTitleAccessibility(title: String?) {
+        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+            titleRowStackView.applyAccessibilityText(nil)
+            titleRowStackView.accessibilityTraits.remove(.button)
+            return
+        }
+
+        titleRowStackView.applyAccessibilityText(
+            AccessibilityText(
+                label: "\(title) 分類",
+                value: "可查看更多",
+                hint: "點兩下查看\(title)完整列表"
+            )
+        )
+        titleRowStackView.accessibilityTraits.insert(.button)
     }
 
     @objc private func handleTitleTap() {

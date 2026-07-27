@@ -17,10 +17,13 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
     static let reuseIdentifier = String(describing: PersonDetailHeroHeaderView.self)
 
     private enum Layout {
-        static let height: CGFloat = 292
         static let contentInset: CGFloat = 16
         static let profileWidth: CGFloat = 132
         static let profileHeight: CGFloat = 198
+
+        static var height: CGFloat {
+            profileHeight + contentInset * 2
+        }
     }
 
     private var profileURL: URL?
@@ -104,7 +107,7 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
     private func setupConstraints() {
         profileImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(Layout.contentInset)
-            make.bottom.equalToSuperview().inset(24)
+            make.top.equalToSuperview().inset(Layout.contentInset)
             make.width.equalTo(Layout.profileWidth)
             make.height.equalTo(Layout.profileHeight)
         }

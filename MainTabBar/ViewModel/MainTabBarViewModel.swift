@@ -17,7 +17,8 @@ struct MainTabBarViewModel: Sendable {
                 kind: tab.kind,
                 title: tab.title,
                 imageName: tab.imageName,
-                selectedImageName: tab.selectedImageName
+                selectedImageName: tab.selectedImageName,
+                accessibilityText: tab.accessibilityText
             )
         }
     }
@@ -70,6 +71,7 @@ struct MainTabItem: Sendable {
     let title: String
     let imageName: String
     let selectedImageName: String
+    let accessibilityText: AccessibilityText
 }
 
 // MARK: - MainTabNavigationDirection
@@ -179,5 +181,12 @@ private enum MainTab: CaseIterable, Sendable {
         case .memberSetting:
             return "person.crop.circle.fill"
         }
+    }
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: "\(title) 分頁",
+            hint: "點兩下切換到\(title)"
+        )
     }
 }

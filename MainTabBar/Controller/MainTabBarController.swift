@@ -148,6 +148,7 @@ final class MainTabBarController: UITabBarController {
         viewControllers = viewModel.items.map { item in
             makeNavigationController(for: item)
         }
+        updateTabBarAccessibilityValues()
     }
 
     private func makeNavigationController(for item: MainTabItem) -> UINavigationController {
@@ -193,6 +194,7 @@ final class MainTabBarController: UITabBarController {
             selectedImage: UIImage(systemName: item.selectedImageName)
         )
         applyTextlessTabBarItemAppearance(to: tabBarItem)
+        applyAccessibility(item.accessibilityText, to: tabBarItem)
         return tabBarItem
     }
 
@@ -210,6 +212,23 @@ final class MainTabBarController: UITabBarController {
         tabBarItem.title = ""
         tabBarItem.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 100)
         tabBarItem.imageInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
+    }
+
+    private func applyAccessibility(
+        _ accessibilityText: AccessibilityText,
+        to tabBarItem: UITabBarItem
+    ) {
+        tabBarItem.accessibilityLabel = accessibilityText.label
+        tabBarItem.accessibilityHint = accessibilityText.hint
+    }
+
+    private func updateTabBarAccessibilityValues() {
+        guard let viewControllers else { return }
+
+        for (index, viewController) in viewControllers.enumerated() {
+            let accessibilityValue = index == selectedIndex ? "已選取" : "未選取"
+            viewController.tabBarItem.accessibilityValue = accessibilityValue
+        }
     }
 
     private func configureTabBarAppearance() {
@@ -258,10 +277,12 @@ final class MainTabBarController: UITabBarController {
         tabBarItem?.selectedImage = image
         if let tabBarItem {
             applyTextlessTabBarItemAppearance(to: tabBarItem)
+            applyAccessibility(items[index].accessibilityText, to: tabBarItem)
             viewController.tabBarItem = tabBarItem
         } else {
             viewController.tabBarItem = makeTabBarItem(for: items[index])
         }
+        updateTabBarAccessibilityValues()
     }
 
     private func popMainMemberSettingToRootIfNeeded(
@@ -290,6 +311,7 @@ final class MainTabBarController: UITabBarController {
 
         setTabBarVisibility(.visible, animated: false)
         selectedIndex = index
+        updateTabBarAccessibilityValues()
         navigationController.popToRootViewController(animated: false)
         rootViewController.loadViewIfNeeded()
         return rootViewController
@@ -317,6 +339,7 @@ final class MainTabBarController: UITabBarController {
         setTabBarVisibility(.visible, animated: false)
         pendingTransitionDirection = direction
         selectedIndex = index
+        updateTabBarAccessibilityValues()
     }
 
     private func tabNavigationDirection(
@@ -383,6 +406,7 @@ final class MainTabBarController: UITabBarController {
         tabBar.transform = isHidden ? hiddenTabBarTransform() : .identity
         tabBar.alpha = isHidden ? 0 : 1
         tabBar.isUserInteractionEnabled = !isHidden
+        tabBar.accessibilityElementsHidden = isHidden
     }
 
     private func visibleTabBarFrame() -> CGRect {
@@ -468,6 +492,7 @@ extension MainTabBarController: UITabBarControllerDelegate {
     ) {
         let isReselection = isReselectingSelectedTab
         isReselectingSelectedTab = false
+        updateTabBarAccessibilityValues()
         popMainMemberSettingToRootIfNeeded(for: viewController, isReselection: isReselection)
     }
 

@@ -33,6 +33,8 @@ class MainHomeContentStripCollectionViewCell: BaseHorizontalStripCollectionViewC
 
     override func configureView() {
         super.configureView()
+        isAccessibilityElement = false
+        collectionView.isAccessibilityElement = false
         configureHorizontalStrip(
             cellType: MainHomePosterCollectionViewCell.self,
             reuseIdentifier: MainHomePosterCollectionViewCell.reuseIdentifier,

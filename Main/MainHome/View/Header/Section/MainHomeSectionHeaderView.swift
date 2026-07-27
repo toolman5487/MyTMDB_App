@@ -40,6 +40,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         )
         backgroundColor = .clear
         addSubview(titleLabel)
+        titleLabel.isAccessibilityElement = false
         titleLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
         }
@@ -53,6 +54,7 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         )
         backgroundColor = .clear
         addSubview(titleLabel)
+        titleLabel.isAccessibilityElement = false
         titleLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
         }
@@ -63,6 +65,8 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
         titleLabel.text = nil
         titleLabel.attributedText = nil
         onTitleTapped = nil
+        applyAccessibilityText(nil)
+        accessibilityTraits.remove(.button)
     }
 
     func configure(title: String?) {
@@ -73,6 +77,24 @@ final class MainHomeSectionHeaderView: UICollectionReusableView {
             font: font,
             textColor: ThemeColor.highlight
         )
+        applyAccessibility(title: title)
+    }
+
+    private func applyAccessibility(title: String?) {
+        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+            applyAccessibilityText(nil)
+            accessibilityTraits.remove(.button)
+            return
+        }
+
+        applyAccessibilityText(
+            AccessibilityText(
+                label: "\(title) 分類",
+                value: "可查看更多",
+                hint: "點兩下查看\(title)完整列表"
+            )
+        )
+        accessibilityTraits.insert(.button)
     }
 
     private static func makeTitleTrailingImage(font: UIFont) -> UIImage? {
