@@ -59,6 +59,9 @@ final class MemberCenterListItemCollectionViewCell: BaseCollectionViewCell {
         contentView.backgroundColor = .clear
         containerView.backgroundColor = .clear
         posterImageView.layer.cornerRadius = Layout.posterCornerRadius
+        posterImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        metadataLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -92,6 +95,7 @@ final class MemberCenterListItemCollectionViewCell: BaseCollectionViewCell {
         posterImageView.image = nil
         titleLabel.text = nil
         metadataLabel.text = nil
+        resetAccessibility()
     }
 
     // MARK: - Configuration
@@ -104,5 +108,6 @@ final class MemberCenterListItemCollectionViewCell: BaseCollectionViewCell {
         )
         titleLabel.text = item.title
         metadataLabel.text = item.metadataText
+        applyAccessibility(item.accessibilityText)
     }
 }

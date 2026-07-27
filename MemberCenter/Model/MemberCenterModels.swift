@@ -99,6 +99,32 @@ nonisolated struct MemberCenterProfileHeaderContent: Sendable, Equatable {
     }
 }
 
+// MARK: - MemberCenterProfileHeaderContent Accessibility
+
+extension MemberCenterProfileHeaderContent {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: displayName,
+            value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
+            hint: "點兩下開啟設定或登入"
+        )
+    }
+}
+
+// MARK: - MemberCenterGuestLoginPrompt Accessibility
+
+extension MemberCenterGuestLoginPrompt {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.nonEmptyText(message),
+            hint: "點兩下\(actionTitle)"
+        )
+    }
+}
+
 // MARK: - MemberCenterContentSnapshot
 
 nonisolated struct MemberCenterContentSnapshot: Sendable {

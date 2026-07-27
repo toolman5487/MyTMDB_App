@@ -129,3 +129,53 @@ nonisolated struct MainMemberSettingSectionItem: Sendable, Equatable, Identifiab
         kind
     }
 }
+
+// MARK: - Accessibility
+
+extension MainMemberSettingRowItem {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: accessibilityValue,
+            hint: accessibilityHint
+        )
+    }
+
+    private var accessibilityValue: String? {
+        switch accessory {
+        case .none, .disclosure:
+            return BaseDisplayTextFormatter.nonEmptyText(subtitle)
+
+        case .value(let value):
+            return BaseDisplayTextFormatter.metadata([subtitle, value])
+
+        case .toggle(let isOn):
+            return BaseDisplayTextFormatter.metadata([
+                subtitle,
+                isOn ? "開啟" : "關閉"
+            ])
+        }
+    }
+
+    private var accessibilityHint: String? {
+        guard action != nil else { return nil }
+
+        if role == .destructive {
+            return "點兩下執行，可能造成無法復原的變更"
+        }
+
+        return "點兩下執行"
+    }
+}
+
+extension MainMemberSettingProfileSummaryItem {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: displayName,
+            value: BaseDisplayTextFormatter.nonEmptyText(usernameText),
+            hint: "點兩下開啟會員中心"
+        )
+    }
+}

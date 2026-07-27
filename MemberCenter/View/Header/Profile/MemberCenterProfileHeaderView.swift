@@ -127,6 +127,8 @@ final class MemberCenterProfileHeaderView: UICollectionReusableView {
         setPlaceholderAvatar()
         displayNameLabel.text = nil
         usernameLabel.text = nil
+        applyAccessibilityText(nil)
+        accessibilityTraits.remove(.button)
     }
 
     // MARK: - Configuration
@@ -138,6 +140,7 @@ final class MemberCenterProfileHeaderView: UICollectionReusableView {
             avatarImageView.image = image
             displayNameLabel.text = content.displayName
             usernameLabel.text = content.subtitle
+            applyAccessibility(with: content)
             return
         }
 
@@ -145,6 +148,7 @@ final class MemberCenterProfileHeaderView: UICollectionReusableView {
             setPlaceholderAvatar()
             displayNameLabel.text = content.displayName
             usernameLabel.text = content.subtitle
+            applyAccessibility(with: content)
             return
         }
 
@@ -163,6 +167,7 @@ final class MemberCenterProfileHeaderView: UICollectionReusableView {
         }
         displayNameLabel.text = content.displayName
         usernameLabel.text = content.subtitle
+        applyAccessibility(with: content)
     }
 
     // MARK: - Private Methods
@@ -170,10 +175,20 @@ final class MemberCenterProfileHeaderView: UICollectionReusableView {
     private func configureView() {
         backgroundColor = ThemeColor.background
         isUserInteractionEnabled = true
-        accessibilityTraits.insert(.button)
+        avatarImageView.isAccessibilityElement = false
+        displayNameLabel.isAccessibilityElement = false
+        usernameLabel.isAccessibilityElement = false
+        chevronImageView.isAccessibilityElement = false
+        textStackView.isAccessibilityElement = false
+        contentStackView.isAccessibilityElement = false
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         addGestureRecognizer(tapGesture)
+    }
+
+    private func applyAccessibility(with content: MemberCenterProfileHeaderContent) {
+        applyAccessibilityText(content.accessibilityText)
+        accessibilityTraits.insert(.button)
     }
 
     private func setupHierarchy() {

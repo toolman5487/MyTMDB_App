@@ -182,3 +182,35 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         ]) ?? ""
     }
 }
+
+// MARK: - Accessibility
+
+extension MemberCenterListItem {
+
+    var accessibilityText: AccessibilityText {
+        AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.metadata([
+                subtitle,
+                metadataText
+            ]),
+            hint: accessibilityHint
+        )
+    }
+
+    private var accessibilityHint: String {
+        switch detailTarget {
+        case .movie:
+            return "點兩下開啟電影詳細資料"
+
+        case .tv:
+            return "點兩下開啟劇集詳細資料"
+
+        case .episode:
+            return "點兩下開啟單集詳細資料"
+
+        case .list:
+            return "點兩下開啟片單"
+        }
+    }
+}

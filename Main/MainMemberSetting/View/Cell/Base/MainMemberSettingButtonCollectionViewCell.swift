@@ -51,6 +51,8 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         valueLabel.text = nil
         toggleSwitch.setOn(false, animated: false)
         toggleValueChangedHandler = nil
+        applyAccessibilityText(nil)
+        accessibilityTraits = .none
     }
 
     // MARK: - Configuration
@@ -65,6 +67,14 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         contentConfiguration = makeContentConfiguration(for: item)
         backgroundConfiguration = makeBackgroundConfiguration()
         accessories = makeAccessories(for: item.accessory)
+        configureAccessibility(for: item)
+    }
+
+    private func configureAccessibility(for item: MainMemberSettingRowItem) {
+        valueLabel.isAccessibilityElement = false
+        toggleSwitch.isAccessibilityElement = false
+        applyAccessibilityText(item.accessibilityText)
+        accessibilityTraits = item.action == nil ? .staticText : .button
     }
 
     private func makeContentConfiguration(for item: MainMemberSettingRowItem) -> UIListContentConfiguration {

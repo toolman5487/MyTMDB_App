@@ -42,6 +42,8 @@ final class MainMemberSettingSectionHeaderView: UICollectionReusableView {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = nil
+        applyAccessibilityText(nil)
+        accessibilityTraits.remove(.header)
     }
 
     override func layoutSubviews() {
@@ -58,8 +60,24 @@ final class MainMemberSettingSectionHeaderView: UICollectionReusableView {
     // MARK: - Configuration
 
     func configure(title: String?) {
-        titleLabel.text = title?.uppercased()
+        let trimmedTitle = BaseDisplayTextFormatter.nonEmptyText(title)
+        titleLabel.text = trimmedTitle?.uppercased()
+        applyAccessibility(title: trimmedTitle)
         setNeedsLayout()
+    }
+
+    private func applyAccessibility(title: String?) {
+        guard let title else {
+            applyAccessibilityText(nil)
+            accessibilityTraits.remove(.header)
+            return
+        }
+
+        applyAccessibilityText(
+            AccessibilityText(label: "\(title) 設定")
+        )
+        accessibilityTraits.insert(.header)
+        titleLabel.isAccessibilityElement = false
     }
 
     private func configureView() {

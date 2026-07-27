@@ -35,6 +35,8 @@ class MemberCenterContentStripCollectionViewCell: BaseHorizontalStripCollectionV
 
     override func configureView() {
         super.configureView()
+        isAccessibilityElement = false
+        collectionView.isAccessibilityElement = false
         configureHorizontalStrip(
             cellType: MemberCenterListItemCollectionViewCell.self,
             reuseIdentifier: MemberCenterListItemCollectionViewCell.reuseIdentifier,
@@ -90,6 +92,8 @@ class MemberCenterListStripCollectionViewCell: BaseHorizontalStripCollectionView
 
     override func configureView() {
         super.configureView()
+        isAccessibilityElement = false
+        collectionView.isAccessibilityElement = false
         configureHorizontalStrip(
             cellType: MemberCenterPlaylistCollectionViewCell.self,
             reuseIdentifier: MemberCenterPlaylistCollectionViewCell.reuseIdentifier,
@@ -181,6 +185,11 @@ final class MemberCenterPlaylistCollectionViewCell: BaseCollectionViewCell {
         contentView.backgroundColor = .clear
         containerView.backgroundColor = .clear
         containerView.clipsToBounds = false
+        thumbnailContainerView.isAccessibilityElement = false
+        thumbnailImageView.isAccessibilityElement = false
+        placeholderIconView.isAccessibilityElement = false
+        countBadgeLabel.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -226,6 +235,7 @@ final class MemberCenterPlaylistCollectionViewCell: BaseCollectionViewCell {
         placeholderIconView.isHidden = false
         countBadgeLabel.text = nil
         titleLabel.text = nil
+        resetAccessibility()
     }
 
     func configure(with item: MemberCenterListItem) {
@@ -241,5 +251,6 @@ final class MemberCenterPlaylistCollectionViewCell: BaseCollectionViewCell {
 
         countBadgeLabel.text = item.metadataText
         titleLabel.text = item.title
+        applyAccessibility(item.accessibilityText)
     }
 }

@@ -39,6 +39,8 @@ final class MainMemberSettingProfileSummaryCollectionViewCell: UICollectionViewL
         contentConfiguration = nil
         backgroundConfiguration = nil
         accessories = []
+        applyAccessibilityText(nil)
+        accessibilityTraits = .none
     }
 
     // MARK: - Configuration
@@ -51,6 +53,8 @@ final class MainMemberSettingProfileSummaryCollectionViewCell: UICollectionViewL
         )
         backgroundConfiguration = makeBackgroundConfiguration()
         accessories = [.disclosureIndicator()]
+        applyAccessibilityText(item.accessibilityText)
+        accessibilityTraits = .button
         loadAvatarImageIfNeeded(from: item.avatarURL)
     }
 

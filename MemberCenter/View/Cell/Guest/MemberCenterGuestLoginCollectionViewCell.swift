@@ -76,6 +76,11 @@ final class MemberCenterGuestLoginCollectionViewCell: BaseCollectionViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         containerView.backgroundColor = .clear
+        iconImageView.isAccessibilityElement = false
+        titleLabel.isAccessibilityElement = false
+        messageLabel.isAccessibilityElement = false
+        actionButton.isAccessibilityElement = false
+        contentStackView.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
@@ -106,6 +111,7 @@ final class MemberCenterGuestLoginCollectionViewCell: BaseCollectionViewCell {
         titleLabel.text = nil
         messageLabel.text = nil
         actionButton.configuration?.title = nil
+        resetAccessibility()
     }
 
     // MARK: - Configuration
@@ -115,5 +121,6 @@ final class MemberCenterGuestLoginCollectionViewCell: BaseCollectionViewCell {
         titleLabel.text = prompt.title
         messageLabel.text = prompt.message
         actionButton.configuration?.title = prompt.actionTitle
+        applyAccessibility(prompt.accessibilityText)
     }
 }
