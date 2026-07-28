@@ -10,7 +10,7 @@ import AppIntents
 // MARK: - CineBaseAppShortcuts
 
 nonisolated struct CineBaseAppShortcuts: AppShortcutsProvider {
-    static let shortcutTileColor: ShortcutTileColor = .blue
+    static let shortcutTileColor: ShortcutTileColor = .navy
 
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
@@ -20,7 +20,7 @@ nonisolated struct CineBaseAppShortcuts: AppShortcutsProvider {
                 "用 \(.applicationName) 打開我的收藏電影"
             ],
             shortTitle: "收藏電影",
-            systemImageName: "heart"
+            systemImageName: "bookmark.fill"
         )
 
         AppShortcut(
@@ -30,7 +30,7 @@ nonisolated struct CineBaseAppShortcuts: AppShortcutsProvider {
                 "用 \(.applicationName) 打開我的收藏影集"
             ],
             shortTitle: "收藏影集",
-            systemImageName: "heart"
+            systemImageName: "bookmark.fill"
         )
 
         AppShortcut(
@@ -40,7 +40,7 @@ nonisolated struct CineBaseAppShortcuts: AppShortcutsProvider {
                 "用 \(.applicationName) 看 \(\.$movie)"
             ],
             shortTitle: "電影詳情",
-            systemImageName: "film"
+            systemImageName: "film.fill"
         )
 
         AppShortcut(
@@ -50,7 +50,7 @@ nonisolated struct CineBaseAppShortcuts: AppShortcutsProvider {
                 "用 \(.applicationName) 看 \(\.$series)"
             ],
             shortTitle: "影集詳情",
-            systemImageName: "tv"
+            systemImageName: "tv.fill"
         )
     }
 }
