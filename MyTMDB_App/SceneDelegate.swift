@@ -14,6 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let sessionStore: SessionStoring = SessionStore()
     private let userProfileStore: UserProfileStoring = UserProfileStore()
     private let sessionValidator = AuthSessionValidator()
+    private var pendingIntentDestination: AppIntentDestination?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
@@ -24,6 +25,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         self.window = window
         window.makeKeyAndVisible()
+
+        pendingIntentDestination = connectionOptions.urlContexts
+            .compactMap { AppIntentDestination(url: $0.url) }
+            .first
 
         validateStoredSession(in: window)
     }
@@ -42,6 +47,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             AppRootFactory.replaceRoot(in: window, for: validatedSession)
+            await routePendingIntentDestinationIfNeeded(in: window)
+        }
+    }
+
+    @MainActor
+    private func routePendingIntentDestinationIfNeeded(in window: UIWindow) async {
+        guard let destination = pendingIntentDestination else { return }
+        pendingIntentDestination = nil
+        _ = await AppIntentNavigator.open(destination, in: window)
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let window else { return }
+
+        for context in URLContexts {
+            guard let destination = AppIntentDestination(url: context.url) else {
+                continue
+            }
+
+            Task { @MainActor in
+                _ = await AppIntentNavigator.open(destination, in: window)
+            }
+            return
         }
     }
     

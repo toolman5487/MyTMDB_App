@@ -19,9 +19,6 @@
 		150337102FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
 		150337112FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
 		150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150337132FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift */; };
-		15ACCE013014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
-		15ACCE023014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
-		15ACCE033014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
 		152BE7242FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
 		152BE7252FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
 		152BE7262FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152BE7232FF4FA60006681A5 /* GlassBaseViewController.swift */; };
@@ -336,6 +333,66 @@
 		15AB10013005000000AB1001 /* MovieDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AB10003005000000AB1001 /* MovieDetailRouter.swift */; };
 		15AB10023005000000AB1001 /* MovieDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AB10003005000000AB1001 /* MovieDetailRouter.swift */; };
 		15AB10033005000000AB1001 /* MovieDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AB10003005000000AB1001 /* MovieDetailRouter.swift */; };
+		15ACCE013014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
+		15ACCE023014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
+		15ACCE033014900000ACCE01 /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACCE003014900000ACCE01 /* AccessibilityText.swift */; };
+		15AF10013015000000AF0001 /* MovieEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00013015000000AF0001 /* MovieEntity.swift */; };
+		15AF10023015000000AF0002 /* TVSeriesEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00023015000000AF0002 /* TVSeriesEntity.swift */; };
+		15AF10033015000000AF0003 /* MovieEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00033015000000AF0003 /* MovieEntityQuery.swift */; };
+		15AF10043015000000AF0004 /* TVSeriesEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00043015000000AF0004 /* TVSeriesEntityQuery.swift */; };
+		15AF10053015000000AF0005 /* AppIntentEntityLookupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00053015000000AF0005 /* AppIntentEntityLookupService.swift */; };
+		15AF10063015000000AF0006 /* AppIntentSessionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00063015000000AF0006 /* AppIntentSessionResolver.swift */; };
+		15AF10073015000000AF0007 /* AppIntentFavoriteActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00073015000000AF0007 /* AppIntentFavoriteActionHandler.swift */; };
+		15AF10083015000000AF0008 /* AppIntentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00083015000000AF0008 /* AppIntentDestination.swift */; };
+		15AF10093015000000AF0009 /* AppIntentNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00093015000000AF0009 /* AppIntentNavigator.swift */; };
+		15AF100A3015000000AF000A /* DetailUserActivityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000A3015000000AF000A /* DetailUserActivityFactory.swift */; };
+		15AF100B3015000000AF000B /* OpenMovieDetailIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000B3015000000AF000B /* OpenMovieDetailIntent.swift */; };
+		15AF100C3015000000AF000C /* OpenTVSeriesDetailIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000C3015000000AF000C /* OpenTVSeriesDetailIntent.swift */; };
+		15AF100D3015000000AF000D /* OpenFavoriteMoviesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000D3015000000AF000D /* OpenFavoriteMoviesIntent.swift */; };
+		15AF100E3015000000AF000E /* OpenFavoriteTVIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000E3015000000AF000E /* OpenFavoriteTVIntent.swift */; };
+		15AF100F3015000000AF000F /* AddMovieToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000F3015000000AF000F /* AddMovieToFavoritesIntent.swift */; };
+		15AF10103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift */; };
+		15AF10113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */; };
+		15AF10123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */; };
+		15AF10133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */; };
+		15AF20013015000000AF0001 /* MovieEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00013015000000AF0001 /* MovieEntity.swift */; };
+		15AF20023015000000AF0002 /* TVSeriesEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00023015000000AF0002 /* TVSeriesEntity.swift */; };
+		15AF20033015000000AF0003 /* MovieEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00033015000000AF0003 /* MovieEntityQuery.swift */; };
+		15AF20043015000000AF0004 /* TVSeriesEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00043015000000AF0004 /* TVSeriesEntityQuery.swift */; };
+		15AF20053015000000AF0005 /* AppIntentEntityLookupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00053015000000AF0005 /* AppIntentEntityLookupService.swift */; };
+		15AF20063015000000AF0006 /* AppIntentSessionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00063015000000AF0006 /* AppIntentSessionResolver.swift */; };
+		15AF20073015000000AF0007 /* AppIntentFavoriteActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00073015000000AF0007 /* AppIntentFavoriteActionHandler.swift */; };
+		15AF20083015000000AF0008 /* AppIntentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00083015000000AF0008 /* AppIntentDestination.swift */; };
+		15AF20093015000000AF0009 /* AppIntentNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00093015000000AF0009 /* AppIntentNavigator.swift */; };
+		15AF200A3015000000AF000A /* DetailUserActivityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000A3015000000AF000A /* DetailUserActivityFactory.swift */; };
+		15AF200B3015000000AF000B /* OpenMovieDetailIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000B3015000000AF000B /* OpenMovieDetailIntent.swift */; };
+		15AF200C3015000000AF000C /* OpenTVSeriesDetailIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000C3015000000AF000C /* OpenTVSeriesDetailIntent.swift */; };
+		15AF200D3015000000AF000D /* OpenFavoriteMoviesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000D3015000000AF000D /* OpenFavoriteMoviesIntent.swift */; };
+		15AF200E3015000000AF000E /* OpenFavoriteTVIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000E3015000000AF000E /* OpenFavoriteTVIntent.swift */; };
+		15AF200F3015000000AF000F /* AddMovieToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000F3015000000AF000F /* AddMovieToFavoritesIntent.swift */; };
+		15AF20103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift */; };
+		15AF20113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */; };
+		15AF20123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */; };
+		15AF20133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */; };
+		15AF30013015000000AF0001 /* MovieEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00013015000000AF0001 /* MovieEntity.swift */; };
+		15AF30023015000000AF0002 /* TVSeriesEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00023015000000AF0002 /* TVSeriesEntity.swift */; };
+		15AF30033015000000AF0003 /* MovieEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00033015000000AF0003 /* MovieEntityQuery.swift */; };
+		15AF30043015000000AF0004 /* TVSeriesEntityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00043015000000AF0004 /* TVSeriesEntityQuery.swift */; };
+		15AF30053015000000AF0005 /* AppIntentEntityLookupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00053015000000AF0005 /* AppIntentEntityLookupService.swift */; };
+		15AF30063015000000AF0006 /* AppIntentSessionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00063015000000AF0006 /* AppIntentSessionResolver.swift */; };
+		15AF30073015000000AF0007 /* AppIntentFavoriteActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00073015000000AF0007 /* AppIntentFavoriteActionHandler.swift */; };
+		15AF30083015000000AF0008 /* AppIntentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00083015000000AF0008 /* AppIntentDestination.swift */; };
+		15AF30093015000000AF0009 /* AppIntentNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00093015000000AF0009 /* AppIntentNavigator.swift */; };
+		15AF300A3015000000AF000A /* DetailUserActivityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000A3015000000AF000A /* DetailUserActivityFactory.swift */; };
+		15AF300B3015000000AF000B /* OpenMovieDetailIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000B3015000000AF000B /* OpenMovieDetailIntent.swift */; };
+		15AF300C3015000000AF000C /* OpenTVSeriesDetailIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000C3015000000AF000C /* OpenTVSeriesDetailIntent.swift */; };
+		15AF300D3015000000AF000D /* OpenFavoriteMoviesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000D3015000000AF000D /* OpenFavoriteMoviesIntent.swift */; };
+		15AF300E3015000000AF000E /* OpenFavoriteTVIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000E3015000000AF000E /* OpenFavoriteTVIntent.swift */; };
+		15AF300F3015000000AF000F /* AddMovieToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF000F3015000000AF000F /* AddMovieToFavoritesIntent.swift */; };
+		15AF30103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift */; };
+		15AF30113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */; };
+		15AF30123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */; };
+		15AF30133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */; };
 		15BAE9512FF60A00006B0E15 /* PersonDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */; };
 		15BAE9522FF60A00006B0E15 /* PersonDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */; };
 		15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */; };
@@ -594,6 +651,9 @@
 		15E401013014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
 		15E401023014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
 		15E401033014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
+		15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
+		15E501023014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
+		15E501033014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
 		15EB10023006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
 		15EB10033006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
 		15EB10043006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
@@ -639,9 +699,6 @@
 		15F12116300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */; };
 		15F12117300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */; };
 		15F12118300E200000F12101 /* PersonDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */; };
-		15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
-		15E501023014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
-		15E501033014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -768,7 +825,6 @@
 		15A94F9B2FF27D3500FCBB0F /* MainHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewController.swift; sourceTree = "<group>"; };
 		15A950012FF281000FCBB0F /* MainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewModel.swift; sourceTree = "<group>"; };
 		15A950062FF286000FCBB0F /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
-		15ACCE003014900000ACCE01 /* AccessibilityText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityText.swift; sourceTree = "<group>"; };
 		15A9500D2FF2A10000FCBB0F /* MainHomeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeModels.swift; sourceTree = "<group>"; };
 		15A9500E2FF2A10000FCBB0F /* MainHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeService.swift; sourceTree = "<group>"; };
 		15A9500F2FF2A10000FCBB0F /* MainHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeViewModel.swift; sourceTree = "<group>"; };
@@ -780,6 +836,26 @@
 		15A9503A2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeCarouselCollectionViewCell.swift; sourceTree = "<group>"; };
 		15A951002FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseHorizontalStripCollectionViewCell.swift; sourceTree = "<group>"; };
 		15AB10003005000000AB1001 /* MovieDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailRouter.swift; sourceTree = "<group>"; };
+		15ACCE003014900000ACCE01 /* AccessibilityText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityText.swift; sourceTree = "<group>"; };
+		15AF00013015000000AF0001 /* MovieEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEntity.swift; sourceTree = "<group>"; };
+		15AF00023015000000AF0002 /* TVSeriesEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSeriesEntity.swift; sourceTree = "<group>"; };
+		15AF00033015000000AF0003 /* MovieEntityQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEntityQuery.swift; sourceTree = "<group>"; };
+		15AF00043015000000AF0004 /* TVSeriesEntityQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSeriesEntityQuery.swift; sourceTree = "<group>"; };
+		15AF00053015000000AF0005 /* AppIntentEntityLookupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntentEntityLookupService.swift; sourceTree = "<group>"; };
+		15AF00063015000000AF0006 /* AppIntentSessionResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntentSessionResolver.swift; sourceTree = "<group>"; };
+		15AF00073015000000AF0007 /* AppIntentFavoriteActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntentFavoriteActionHandler.swift; sourceTree = "<group>"; };
+		15AF00083015000000AF0008 /* AppIntentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntentDestination.swift; sourceTree = "<group>"; };
+		15AF00093015000000AF0009 /* AppIntentNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntentNavigator.swift; sourceTree = "<group>"; };
+		15AF000A3015000000AF000A /* DetailUserActivityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailUserActivityFactory.swift; sourceTree = "<group>"; };
+		15AF000B3015000000AF000B /* OpenMovieDetailIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenMovieDetailIntent.swift; sourceTree = "<group>"; };
+		15AF000C3015000000AF000C /* OpenTVSeriesDetailIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenTVSeriesDetailIntent.swift; sourceTree = "<group>"; };
+		15AF000D3015000000AF000D /* OpenFavoriteMoviesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFavoriteMoviesIntent.swift; sourceTree = "<group>"; };
+		15AF000E3015000000AF000E /* OpenFavoriteTVIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFavoriteTVIntent.swift; sourceTree = "<group>"; };
+		15AF000F3015000000AF000F /* AddMovieToFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMovieToFavoritesIntent.swift; sourceTree = "<group>"; };
+		15AF00103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveMovieFromFavoritesIntent.swift; sourceTree = "<group>"; };
+		15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTVSeriesToFavoritesIntent.swift; sourceTree = "<group>"; };
+		15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveTVSeriesFromFavoritesIntent.swift; sourceTree = "<group>"; };
+		15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CineBaseAppShortcuts.swift; sourceTree = "<group>"; };
 		15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailModels.swift; sourceTree = "<group>"; };
 		15BAE9602FF60B00006B0E15 /* PersonDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailService.swift; sourceTree = "<group>"; };
 		15BAE9702FF60B10006B0E15 /* PersonDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailViewModel.swift; sourceTree = "<group>"; };
@@ -872,6 +948,7 @@
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
 		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
 		15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchIdleCollectionViewCells.swift; sourceTree = "<group>"; };
+		15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCreditsPresentationBuilder.swift; sourceTree = "<group>"; };
 		15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailPresentationBuilder.swift; sourceTree = "<group>"; };
 		15F000012FF7500000F00001 /* RatingPageSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPageSheetViewController.swift; sourceTree = "<group>"; };
 		15F010012FF7600000F01001 /* AppAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimationView.swift; sourceTree = "<group>"; };
@@ -887,7 +964,6 @@
 		15F12006300E200000F12001 /* SeasonDetailPresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailPresentationModels.swift; sourceTree = "<group>"; };
 		15F12007300E200000F12001 /* PersonDetailSectionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailSectionBuilder.swift; sourceTree = "<group>"; };
 		15F12008300E200000F12001 /* PersonDetailPresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailPresentationModels.swift; sourceTree = "<group>"; };
-		15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCreditsPresentationBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -1987,14 +2063,6 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
-		15ACCE003014900000ACCE00 /* Accessibility */ = {
-			isa = PBXGroup;
-			children = (
-				15ACCE003014900000ACCE01 /* AccessibilityText.swift */,
-			);
-			path = Accessibility;
-			sourceTree = "<group>";
-		};
 		15A94F622FF26FA000FCBB0F /* MainBase */ = {
 			isa = PBXGroup;
 			children = (
@@ -2099,6 +2167,96 @@
 				15AB10003005000000AB1001 /* MovieDetailRouter.swift */,
 			);
 			path = Router;
+			sourceTree = "<group>";
+		};
+		15ACCE003014900000ACCE00 /* Accessibility */ = {
+			isa = PBXGroup;
+			children = (
+				15ACCE003014900000ACCE01 /* AccessibilityText.swift */,
+			);
+			path = Accessibility;
+			sourceTree = "<group>";
+		};
+		15AF01013015000000AF0101 /* AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				15AF01023015000000AF0102 /* Entities */,
+				15AF01033015000000AF0103 /* Queries */,
+				15AF01043015000000AF0104 /* Support */,
+				15AF01053015000000AF0105 /* Navigation */,
+				15AF01063015000000AF0106 /* OnScreen */,
+				15AF01073015000000AF0107 /* Intents */,
+				15AF01083015000000AF0108 /* Shortcuts */,
+			);
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
+		15AF01023015000000AF0102 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				15AF00013015000000AF0001 /* MovieEntity.swift */,
+				15AF00023015000000AF0002 /* TVSeriesEntity.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		15AF01033015000000AF0103 /* Queries */ = {
+			isa = PBXGroup;
+			children = (
+				15AF00053015000000AF0005 /* AppIntentEntityLookupService.swift */,
+				15AF00033015000000AF0003 /* MovieEntityQuery.swift */,
+				15AF00043015000000AF0004 /* TVSeriesEntityQuery.swift */,
+			);
+			path = Queries;
+			sourceTree = "<group>";
+		};
+		15AF01043015000000AF0104 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				15AF00073015000000AF0007 /* AppIntentFavoriteActionHandler.swift */,
+				15AF00063015000000AF0006 /* AppIntentSessionResolver.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		15AF01053015000000AF0105 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				15AF00083015000000AF0008 /* AppIntentDestination.swift */,
+				15AF00093015000000AF0009 /* AppIntentNavigator.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		15AF01063015000000AF0106 /* OnScreen */ = {
+			isa = PBXGroup;
+			children = (
+				15AF000A3015000000AF000A /* DetailUserActivityFactory.swift */,
+			);
+			path = OnScreen;
+			sourceTree = "<group>";
+		};
+		15AF01073015000000AF0107 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				15AF000F3015000000AF000F /* AddMovieToFavoritesIntent.swift */,
+				15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */,
+				15AF000D3015000000AF000D /* OpenFavoriteMoviesIntent.swift */,
+				15AF000E3015000000AF000E /* OpenFavoriteTVIntent.swift */,
+				15AF000B3015000000AF000B /* OpenMovieDetailIntent.swift */,
+				15AF000C3015000000AF000C /* OpenTVSeriesDetailIntent.swift */,
+				15AF00103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift */,
+				15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		15AF01083015000000AF0108 /* Shortcuts */ = {
+			isa = PBXGroup;
+			children = (
+				15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */,
+			);
+			path = Shortcuts;
 			sourceTree = "<group>";
 		};
 		15B067462DDC76C0009591F9 /* Service */ = {
@@ -2634,6 +2792,7 @@
 		15D198632FF210DE00545A85 /* Feature */ = {
 			isa = PBXGroup;
 			children = (
+				15AF01013015000000AF0101 /* AppIntents */,
 				15D547122DF01A2700CAA0EE /* Animations */,
 				15A94F4B2FF26D7900FCBB0F /* Base */,
 				1503369E2FF35CFC003125EC /* Components */,
@@ -3152,6 +3311,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
+				15AF10013015000000AF0001 /* MovieEntity.swift in Sources */,
+				15AF10023015000000AF0002 /* TVSeriesEntity.swift in Sources */,
+				15AF10033015000000AF0003 /* MovieEntityQuery.swift in Sources */,
+				15AF10043015000000AF0004 /* TVSeriesEntityQuery.swift in Sources */,
+				15AF10053015000000AF0005 /* AppIntentEntityLookupService.swift in Sources */,
+				15AF10063015000000AF0006 /* AppIntentSessionResolver.swift in Sources */,
+				15AF10073015000000AF0007 /* AppIntentFavoriteActionHandler.swift in Sources */,
+				15AF10083015000000AF0008 /* AppIntentDestination.swift in Sources */,
+				15AF10093015000000AF0009 /* AppIntentNavigator.swift in Sources */,
+				15AF100A3015000000AF000A /* DetailUserActivityFactory.swift in Sources */,
+				15AF100B3015000000AF000B /* OpenMovieDetailIntent.swift in Sources */,
+				15AF100C3015000000AF000C /* OpenTVSeriesDetailIntent.swift in Sources */,
+				15AF100D3015000000AF000D /* OpenFavoriteMoviesIntent.swift in Sources */,
+				15AF100E3015000000AF000E /* OpenFavoriteTVIntent.swift in Sources */,
+				15AF100F3015000000AF000F /* AddMovieToFavoritesIntent.swift in Sources */,
+				15AF10103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift in Sources */,
+				15AF10113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */,
+				15AF10123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */,
+				15AF10133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */,
 				1598AA912DC4B93E005E972C /* LoginRouter.swift in Sources */,
 				15D197432FF1691000545A85 /* AuthPage.swift in Sources */,
 				15D197442FF1692000545A85 /* AuthPageStyle.swift in Sources */,
@@ -3378,6 +3556,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				15D1969C2FF1238E00545A85 /* APIConfig.swift in Sources */,
+				15AF20013015000000AF0001 /* MovieEntity.swift in Sources */,
+				15AF20023015000000AF0002 /* TVSeriesEntity.swift in Sources */,
+				15AF20033015000000AF0003 /* MovieEntityQuery.swift in Sources */,
+				15AF20043015000000AF0004 /* TVSeriesEntityQuery.swift in Sources */,
+				15AF20053015000000AF0005 /* AppIntentEntityLookupService.swift in Sources */,
+				15AF20063015000000AF0006 /* AppIntentSessionResolver.swift in Sources */,
+				15AF20073015000000AF0007 /* AppIntentFavoriteActionHandler.swift in Sources */,
+				15AF20083015000000AF0008 /* AppIntentDestination.swift in Sources */,
+				15AF20093015000000AF0009 /* AppIntentNavigator.swift in Sources */,
+				15AF200A3015000000AF000A /* DetailUserActivityFactory.swift in Sources */,
+				15AF200B3015000000AF000B /* OpenMovieDetailIntent.swift in Sources */,
+				15AF200C3015000000AF000C /* OpenTVSeriesDetailIntent.swift in Sources */,
+				15AF200D3015000000AF000D /* OpenFavoriteMoviesIntent.swift in Sources */,
+				15AF200E3015000000AF000E /* OpenFavoriteTVIntent.swift in Sources */,
+				15AF200F3015000000AF000F /* AddMovieToFavoritesIntent.swift in Sources */,
+				15AF20103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift in Sources */,
+				15AF20113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */,
+				15AF20123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */,
+				15AF20133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */,
 				15D1972B2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15A94F702FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A6A0933005600000AD5E46 /* MainTabBarAvatarService.swift in Sources */,
@@ -3585,6 +3782,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				15A94F712FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
+				15AF30013015000000AF0001 /* MovieEntity.swift in Sources */,
+				15AF30023015000000AF0002 /* TVSeriesEntity.swift in Sources */,
+				15AF30033015000000AF0003 /* MovieEntityQuery.swift in Sources */,
+				15AF30043015000000AF0004 /* TVSeriesEntityQuery.swift in Sources */,
+				15AF30053015000000AF0005 /* AppIntentEntityLookupService.swift in Sources */,
+				15AF30063015000000AF0006 /* AppIntentSessionResolver.swift in Sources */,
+				15AF30073015000000AF0007 /* AppIntentFavoriteActionHandler.swift in Sources */,
+				15AF30083015000000AF0008 /* AppIntentDestination.swift in Sources */,
+				15AF30093015000000AF0009 /* AppIntentNavigator.swift in Sources */,
+				15AF300A3015000000AF000A /* DetailUserActivityFactory.swift in Sources */,
+				15AF300B3015000000AF000B /* OpenMovieDetailIntent.swift in Sources */,
+				15AF300C3015000000AF000C /* OpenTVSeriesDetailIntent.swift in Sources */,
+				15AF300D3015000000AF000D /* OpenFavoriteMoviesIntent.swift in Sources */,
+				15AF300E3015000000AF000E /* OpenFavoriteTVIntent.swift in Sources */,
+				15AF300F3015000000AF000F /* AddMovieToFavoritesIntent.swift in Sources */,
+				15AF30103015000000AF0010 /* RemoveMovieFromFavoritesIntent.swift in Sources */,
+				15AF30113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */,
+				15AF30123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */,
+				15AF30133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */,
 				15A94F9E2FF27D3500FCBB0F /* MainHomeViewController.swift in Sources */,
 				15A950322FF5100000FCBB0F /* MainHomeRouter.swift in Sources */,
 				15A950352FF5100000FCBB0F /* MainHomePresentationBuilder.swift in Sources */,

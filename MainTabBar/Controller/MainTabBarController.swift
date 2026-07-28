@@ -142,6 +142,53 @@ final class MainTabBarController: UITabBarController {
         viewController.routeToGenre(id: genreID)
     }
 
+    func showMovieDetailFromIntent(movieID: Int) {
+        guard movieID > 0,
+              let navigationController = navigationController(for: .movie) else {
+            return
+        }
+
+        let sourceViewController = navigationController.topViewController ?? navigationController
+        DetailRouter(sourceViewController: sourceViewController).showMovieDetail(movieID: movieID)
+    }
+
+    func showTVDetailFromIntent(seriesID: Int) {
+        guard seriesID > 0,
+              let navigationController = navigationController(for: .series) else {
+            return
+        }
+
+        let sourceViewController = navigationController.topViewController ?? navigationController
+        DetailRouter(sourceViewController: sourceViewController).showTVDetail(seriesID: seriesID)
+    }
+
+    func showMemberCenterListFromIntent(
+        destination: MemberCenterDestination,
+        accountContext: MemberCenterAccountContext
+    ) {
+        guard let navigationController = navigationController(for: .memberSetting) else {
+            return
+        }
+
+        navigationController.pushViewController(
+            MemberCenterListViewController(
+                destination: destination,
+                accountId: accountContext.accountId,
+                sessionId: accountContext.sessionId
+            ),
+            animated: true
+        )
+    }
+
+    func showLoginFromIntent() {
+        guard let navigationController = selectedViewController as? UINavigationController else {
+            present(UINavigationController(rootViewController: LoginViewController()), animated: true)
+            return
+        }
+
+        DetailRouter(sourceViewController: navigationController.topViewController ?? navigationController).showLogin()
+    }
+
     // MARK: - Setup
 
     private func setupViewControllers() {
@@ -301,11 +348,20 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func rootViewController(for tabKind: MainTabKind) -> UIViewController? {
+        guard let navigationController = navigationController(for: tabKind),
+              let rootViewController = navigationController.viewControllers.first else {
+            return nil
+        }
+
+        rootViewController.loadViewIfNeeded()
+        return rootViewController
+    }
+
+    private func navigationController(for tabKind: MainTabKind) -> UINavigationController? {
         guard let index = viewModel.items.firstIndex(where: { $0.kind == tabKind }),
               let viewControllers,
               viewControllers.indices.contains(index),
-              let navigationController = viewControllers[index] as? UINavigationController,
-              let rootViewController = navigationController.viewControllers.first else {
+              let navigationController = viewControllers[index] as? UINavigationController else {
             return nil
         }
 
@@ -313,8 +369,7 @@ final class MainTabBarController: UITabBarController {
         selectedIndex = index
         updateTabBarAccessibilityValues()
         navigationController.popToRootViewController(animated: false)
-        rootViewController.loadViewIfNeeded()
-        return rootViewController
+        return navigationController
     }
 
     // MARK: - Tab Selection

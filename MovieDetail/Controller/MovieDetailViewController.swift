@@ -309,18 +309,21 @@ final class MovieDetailViewController: DetailBaseViewController {
             setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
+            clearDetailUserActivity()
 
         case .loading:
             sections = []
             setDetailNavigationTitle(nil)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
+            clearDetailUserActivity()
 
         case .loaded(let loadedSections):
             sections = loadedSections
             setDetailNavigationTitle(detailNavigationTitle(from: loadedSections))
             setLoadingVisible(false)
             collectionView.backgroundView = nil
+            updateDetailUserActivity(from: loadedSections)
 
         case .failed(let message):
             sections = []
@@ -329,9 +332,25 @@ final class MovieDetailViewController: DetailBaseViewController {
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadMovieDetail()
             }
+            clearDetailUserActivity()
         }
 
         collectionView.reloadData()
+    }
+
+    private func updateDetailUserActivity(from sections: [MovieDetailSectionItem]) {
+        guard let hero = sections.compactMap(\.heroItem).first else {
+            clearDetailUserActivity()
+            return
+        }
+
+        userActivity = DetailUserActivityFactory.movieActivity(hero: hero)
+        userActivity?.becomeCurrent()
+    }
+
+    private func clearDetailUserActivity() {
+        userActivity?.resignCurrent()
+        userActivity = nil
     }
 
     // MARK: - Actions
@@ -469,6 +488,28 @@ final class MovieDetailViewController: DetailBaseViewController {
 
         collectionView.contentInset.bottom = bottomInset
         collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
+    }
+}
+
+// MARK: - MovieDetailSectionItem Intent Support
+
+private extension MovieDetailSectionItem {
+    var heroItem: MovieDetailHeroItem? {
+        switch self {
+        case .overview(let item):
+            return item.hero
+
+        case .facts,
+             .attributes,
+             .cast,
+             .videos,
+             .images,
+             .collection,
+             .watchProviders,
+             .recommendations,
+             .similar:
+            return nil
+        }
     }
 }
 

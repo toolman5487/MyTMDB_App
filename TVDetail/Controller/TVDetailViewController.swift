@@ -320,18 +320,21 @@ final class TVDetailViewController: DetailBaseViewController {
             setDetailNavigationTitle(nil)
             setLoadingVisible(false)
             collectionView.backgroundView = nil
+            clearDetailUserActivity()
 
         case .loading:
             sections = []
             setDetailNavigationTitle(nil)
             setLoadingVisible(true)
             collectionView.backgroundView = nil
+            clearDetailUserActivity()
 
         case .loaded(let loadedSections):
             sections = loadedSections
             setDetailNavigationTitle(detailNavigationTitle(from: loadedSections))
             setLoadingVisible(false)
             collectionView.backgroundView = nil
+            updateDetailUserActivity(from: loadedSections)
 
         case .failed(let message):
             sections = []
@@ -340,9 +343,25 @@ final class TVDetailViewController: DetailBaseViewController {
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
                 self?.loadTVDetail()
             }
+            clearDetailUserActivity()
         }
 
         collectionView.reloadData()
+    }
+
+    private func updateDetailUserActivity(from sections: [TVDetailSectionItem]) {
+        guard let hero = sections.compactMap(\.heroItem).first else {
+            clearDetailUserActivity()
+            return
+        }
+
+        userActivity = DetailUserActivityFactory.tvActivity(hero: hero)
+        userActivity?.becomeCurrent()
+    }
+
+    private func clearDetailUserActivity() {
+        userActivity?.resignCurrent()
+        userActivity = nil
     }
 
     // MARK: - Actions
@@ -480,6 +499,28 @@ final class TVDetailViewController: DetailBaseViewController {
 
         collectionView.contentInset.bottom = bottomInset
         collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
+    }
+}
+
+// MARK: - TVDetailSectionItem Intent Support
+
+private extension TVDetailSectionItem {
+    var heroItem: TVDetailHeroItem? {
+        switch self {
+        case .overview(let item):
+            return item.hero
+
+        case .facts,
+             .videos,
+             .attributes,
+             .cast,
+             .seasons,
+             .images,
+             .recommendations,
+             .similar,
+             .watchProviders:
+            return nil
+        }
     }
 }
 
