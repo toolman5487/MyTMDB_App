@@ -97,46 +97,66 @@ nonisolated protocol UserProfileStoring: Sendable {
 
 // MARK: - UserProfileStore
 
-final class UserProfileStore: UserProfileStoring, @unchecked Sendable {
+final class UserProfileStore: UserProfileStoring {
 
     // MARK: - Properties
 
-    private let defaults: UserDefaults
+    private let preferences: AppPreferencesStorage
     private let storageKey = "StoredUserProfile"
 
     // MARK: - Initialization
 
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
+    init(preferences: AppPreferencesStorage = .standard) {
+        self.preferences = preferences
     }
 
     // MARK: - UserProfileStoring
 
     func load() -> StoredUserProfile? {
-        guard let data = defaults.data(forKey: storageKey) else { return nil }
-        return try? JSONDecoder().decode(StoredUserProfile.self, from: data)
+        preferences.performLocked { preferencesStore in
+            load(from: preferencesStore)
+        }
     }
 
     func save(_ profile: StoredUserProfile) {
-        guard let data = try? JSONEncoder().encode(profile) else { return }
-        defaults.set(data, forKey: storageKey)
+        preferences.performLocked { preferencesStore in
+            save(profile, to: preferencesStore)
+        }
     }
 
     func save(account: Account) {
-        let profile = StoredUserProfile(account: account)
-        let existingProfile = load()
-        let avatarImageData = existingProfile?.avatarURL == profile.avatarURL
-            ? existingProfile?.avatarImageData
-            : nil
-        save(StoredUserProfile(account: account, avatarImageData: avatarImageData))
+        preferences.performLocked { preferencesStore in
+            let profile = StoredUserProfile(account: account)
+            let existingProfile = load(from: preferencesStore)
+            let avatarImageData = existingProfile?.avatarURL == profile.avatarURL
+                ? existingProfile?.avatarImageData
+                : nil
+            save(StoredUserProfile(account: account, avatarImageData: avatarImageData), to: preferencesStore)
+        }
     }
 
     func saveAvatarImageData(_ data: Data?) {
-        guard let profile = load() else { return }
-        save(profile.updatingAvatarImageData(data))
+        preferences.performLocked { preferencesStore in
+            guard let profile = load(from: preferencesStore) else { return }
+            save(profile.updatingAvatarImageData(data), to: preferencesStore)
+        }
     }
 
     func clear() {
-        defaults.removeObject(forKey: storageKey)
+        preferences.performLocked { preferencesStore in
+            preferencesStore.removeObject(forKey: storageKey)
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func load(from preferencesStore: UserDefaults) -> StoredUserProfile? {
+        guard let data = preferencesStore.data(forKey: storageKey) else { return nil }
+        return try? JSONDecoder().decode(StoredUserProfile.self, from: data)
+    }
+
+    private func save(_ profile: StoredUserProfile, to preferencesStore: UserDefaults) {
+        guard let data = try? JSONEncoder().encode(profile) else { return }
+        preferencesStore.set(data, forKey: storageKey)
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Synchronization
 
 // MARK: - SessionStoring
 
@@ -15,13 +16,40 @@ protocol SessionStoring: Sendable {
     func clear()
 }
 
-// MARK: - SessionStore
+// MARK: - AppPreferencesStorage
 
-final class SessionStore: SessionStoring, @unchecked Sendable {
+nonisolated final class AppPreferencesStorage: Sendable {
 
     // MARK: - Properties
 
-    private let defaults: UserDefaults
+    static let standard = AppPreferencesStorage()
+
+    private let lock = Mutex(())
+    private let suiteName: String?
+
+    // MARK: - Initialization
+
+    init(suiteName: String? = nil) {
+        self.suiteName = suiteName
+    }
+
+    // MARK: - Public Methods
+
+    func performLocked<Result>(_ work: (UserDefaults) -> Result) -> Result {
+        lock.withLock { _ in
+            let preferencesStore = suiteName.flatMap(UserDefaults.init(suiteName:)) ?? .standard
+            return work(preferencesStore)
+        }
+    }
+}
+
+// MARK: - SessionStore
+
+final class SessionStore: SessionStoring {
+
+    // MARK: - Properties
+
+    private let preferences: AppPreferencesStorage
     private let storageKey = "AuthSession"
 
     private enum LegacyKey {
@@ -32,62 +60,80 @@ final class SessionStore: SessionStoring, @unchecked Sendable {
 
     // MARK: - Initialization
 
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
+    init(preferences: AppPreferencesStorage = .standard) {
+        self.preferences = preferences
     }
 
     // MARK: - SessionStoring
 
     func load() -> AuthSession {
-        if let data = defaults.data(forKey: storageKey),
-           let session = try? JSONDecoder().decode(AuthSession.self, from: data) {
-            return session
+        preferences.performLocked { preferencesStore in
+            load(from: preferencesStore)
         }
-        return migrateLegacySession()
     }
 
     func save(_ session: AuthSession) {
-        switch session {
-        case .loggedOut:
-            clear()
-            return
-
-        case .guest, .user:
-            guard let data = try? JSONEncoder().encode(session) else { return }
-            defaults.set(data, forKey: storageKey)
-            removeLegacyKeys()
+        preferences.performLocked { preferencesStore in
+            save(session, to: preferencesStore)
         }
     }
 
     func clear() {
-        defaults.removeObject(forKey: storageKey)
-        removeLegacyKeys()
+        preferences.performLocked { preferencesStore in
+            clear(in: preferencesStore)
+        }
     }
 
     // MARK: - Private Methods
 
-    private func migrateLegacySession() -> AuthSession {
-        if defaults.bool(forKey: LegacyKey.isGuest),
-           let guestSessionId = defaults.string(forKey: LegacyKey.guestSession),
+    private func load(from preferencesStore: UserDefaults) -> AuthSession {
+        if let data = preferencesStore.data(forKey: storageKey),
+           let session = try? JSONDecoder().decode(AuthSession.self, from: data) {
+            return session
+        }
+        return migrateLegacySession(from: preferencesStore)
+    }
+
+    private func save(_ session: AuthSession, to preferencesStore: UserDefaults) {
+        switch session {
+        case .loggedOut:
+            clear(in: preferencesStore)
+            return
+
+        case .guest, .user:
+            guard let data = try? JSONEncoder().encode(session) else { return }
+            preferencesStore.set(data, forKey: storageKey)
+            removeLegacyKeys(from: preferencesStore)
+        }
+    }
+
+    private func clear(in preferencesStore: UserDefaults) {
+        preferencesStore.removeObject(forKey: storageKey)
+        removeLegacyKeys(from: preferencesStore)
+    }
+
+    private func migrateLegacySession(from preferencesStore: UserDefaults) -> AuthSession {
+        if preferencesStore.bool(forKey: LegacyKey.isGuest),
+           let guestSessionId = preferencesStore.string(forKey: LegacyKey.guestSession),
            !guestSessionId.isEmpty {
             let session = AuthSession.guest(sessionId: guestSessionId)
-            save(session)
+            save(session, to: preferencesStore)
             return session
         }
 
-        if let userSessionId = defaults.string(forKey: LegacyKey.userSession),
+        if let userSessionId = preferencesStore.string(forKey: LegacyKey.userSession),
            !userSessionId.isEmpty {
             let session = AuthSession.user(sessionId: userSessionId)
-            save(session)
+            save(session, to: preferencesStore)
             return session
         }
 
         return .loggedOut
     }
 
-    private func removeLegacyKeys() {
-        defaults.removeObject(forKey: LegacyKey.userSession)
-        defaults.removeObject(forKey: LegacyKey.guestSession)
-        defaults.removeObject(forKey: LegacyKey.isGuest)
+    private func removeLegacyKeys(from preferencesStore: UserDefaults) {
+        preferencesStore.removeObject(forKey: LegacyKey.userSession)
+        preferencesStore.removeObject(forKey: LegacyKey.guestSession)
+        preferencesStore.removeObject(forKey: LegacyKey.isGuest)
     }
 }
