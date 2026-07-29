@@ -33,19 +33,27 @@ final class MainSearchViewModel {
     private(set) var state: MainSearchViewState = .idle
 
     private let service: MainSearchServicing
+    private let searchHistoryStore: SearchHistoryStoring
+    private let recentSearchLimit = 15
     private var cachedDailyTrendingContent: MainSearchDailyTrendingContent?
 
     // MARK: - Initialization
 
-    init(service: MainSearchServicing = MainSearchService()) {
+    init(
+        service: MainSearchServicing = MainSearchService(),
+        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore()
+    ) {
         self.service = service
+        self.searchHistoryStore = searchHistoryStore
     }
 
     // MARK: - Public Methods
 
     func loadDailyTrending() async {
         if let cachedDailyTrendingContent {
-            state = .dailyTrending(cachedDailyTrendingContent)
+            let content = cachedDailyTrendingContent.updatingRecentSearchEntries(loadRecentSearchEntries())
+            self.cachedDailyTrendingContent = content
+            state = dailyTrendingState(for: content)
             return
         }
 
@@ -66,6 +74,7 @@ final class MainSearchViewModel {
             )
 
             let content = MainSearchDailyTrendingContent(
+                recentSearchEntries: loadRecentSearchEntries(),
                 popularPeople: popularPeople,
                 items: items,
                 currentPage: page.page,
@@ -75,9 +84,7 @@ final class MainSearchViewModel {
             )
 
             cachedDailyTrendingContent = content
-            state = items.isEmpty && popularPeople.isEmpty
-                ? .dailyTrendingEmpty
-                : .dailyTrending(content)
+            state = dailyTrendingState(for: content)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -130,6 +137,19 @@ final class MainSearchViewModel {
     func showSearchLoading(keyword: String) {
         let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
         state = trimmedKeyword.isEmpty ? .idle : .searching(trimmedKeyword)
+    }
+
+    func addSearchHistory(keyword: String) {
+        searchHistoryStore.add(keyword: keyword, scope: .multi)
+        cachedDailyTrendingContent = cachedDailyTrendingContent?.updatingRecentSearchEntries(loadRecentSearchEntries())
+    }
+
+    func refreshRecentSearchEntriesIfShowingDailyTrending() {
+        guard case .dailyTrending(let content) = state else { return }
+
+        let updatedContent = content.updatingRecentSearchEntries(loadRecentSearchEntries())
+        cachedDailyTrendingContent = updatedContent
+        state = dailyTrendingState(for: updatedContent)
     }
 
     func search(keyword: String) async {
@@ -228,7 +248,19 @@ final class MainSearchViewModel {
             return
         }
 
-        state = .dailyTrending(cachedDailyTrendingContent)
+        let content = cachedDailyTrendingContent.updatingRecentSearchEntries(loadRecentSearchEntries())
+        self.cachedDailyTrendingContent = content
+        state = dailyTrendingState(for: content)
+    }
+
+    private func loadRecentSearchEntries() -> [SearchHistoryEntry] {
+        searchHistoryStore.load(scope: .multi, limit: recentSearchLimit)
+    }
+
+    private func dailyTrendingState(for content: MainSearchDailyTrendingContent) -> MainSearchViewState {
+        content.items.isEmpty && content.popularPeople.isEmpty && content.recentSearchEntries.isEmpty
+            ? .dailyTrendingEmpty
+            : .dailyTrending(content)
     }
 
     private func shouldLoadNextPage(

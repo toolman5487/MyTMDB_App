@@ -14,6 +14,7 @@ nonisolated enum MainMemberSettingAction: Sendable, Equatable {
     case refreshProfile
     case clearProfileCache
     case clearImageCache
+    case clearSearchHistory
     case clearAllLocalData
     case tmdbAttribution
     case logout

@@ -145,6 +145,8 @@
 		15AF10113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */; };
 		15AF10123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */; };
 		15AF10133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */; };
+		15BE10013016000000BE1001 /* SearchHistoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BE01013016000000BE0101 /* SearchHistoryModels.swift */; };
+		15BE10023016000000BE1002 /* SearchHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BE01023016000000BE0102 /* SearchHistoryStore.swift */; };
 		15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */; };
 		15BAE9632FF60B00006B0E15 /* PersonDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9602FF60B00006B0E15 /* PersonDetailService.swift */; };
 		15BAE9732FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9702FF60B10006B0E15 /* PersonDetailViewModel.swift */; };
@@ -392,6 +394,8 @@
 		15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTVSeriesToFavoritesIntent.swift; sourceTree = "<group>"; };
 		15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveTVSeriesFromFavoritesIntent.swift; sourceTree = "<group>"; };
 		15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CineBaseAppShortcuts.swift; sourceTree = "<group>"; };
+		15BE01013016000000BE0101 /* SearchHistoryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryModels.swift; sourceTree = "<group>"; };
+		15BE01023016000000BE0102 /* SearchHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryStore.swift; sourceTree = "<group>"; };
 		15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailModels.swift; sourceTree = "<group>"; };
 		15BAE9602FF60B00006B0E15 /* PersonDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailService.swift; sourceTree = "<group>"; };
 		15BAE9702FF60B10006B0E15 /* PersonDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailViewModel.swift; sourceTree = "<group>"; };
@@ -1767,6 +1771,31 @@
 			path = Shortcuts;
 			sourceTree = "<group>";
 		};
+		15BE02003016000000BE0200 /* SearchHistory */ = {
+			isa = PBXGroup;
+			children = (
+				15BE02013016000000BE0201 /* Model */,
+				15BE02023016000000BE0202 /* Service */,
+			);
+			path = SearchHistory;
+			sourceTree = "<group>";
+		};
+		15BE02013016000000BE0201 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				15BE01013016000000BE0101 /* SearchHistoryModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		15BE02023016000000BE0202 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				15BE01023016000000BE0102 /* SearchHistoryStore.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
 		15B067462DDC76C0009591F9 /* Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -2308,6 +2337,7 @@
 				15D197282FF167E300545A85 /* Extension */,
 				15F11000300E100000F11000 /* Formatter */,
 				15D196C42FF14CD300545A85 /* Logger */,
+				15BE02003016000000BE0200 /* SearchHistory */,
 			);
 			path = Feature;
 			sourceTree = "<group>";
@@ -2763,6 +2793,8 @@
 				15AF10113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */,
 				15AF10123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */,
 				15AF10133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */,
+				15BE10013016000000BE1001 /* SearchHistoryModels.swift in Sources */,
+				15BE10023016000000BE1002 /* SearchHistoryStore.swift in Sources */,
 				1598AA912DC4B93E005E972C /* LoginRouter.swift in Sources */,
 				15D197432FF1691000545A85 /* AuthPage.swift in Sources */,
 				15D197442FF1692000545A85 /* AuthPageStyle.swift in Sources */,

@@ -45,6 +45,7 @@ final class MainSearchViewController: MainBaseViewController {
     }
 
     private enum Section: Equatable {
+        case recentSearchHistory
         case popularPeople
         case dailyTrending
         case searchResults
@@ -57,6 +58,7 @@ final class MainSearchViewController: MainBaseViewController {
 
     private var filters: [MainSearchFilterItem] = []
     private var results: [MainSearchResultItem] = []
+    private var recentSearchEntries: [SearchHistoryEntry] = []
     private var popularPeopleItems: [MainSearchResultItem] = []
     private var dailyTrendingItems: [MainSearchResultItem] = []
     private var isShowingDailyTrending = false
@@ -107,6 +109,11 @@ final class MainSearchViewController: MainBaseViewController {
         dailyTrendingTask?.cancel()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.refreshRecentSearchEntriesIfShowingDailyTrending()
+    }
+
     // MARK: - Template Methods
 
     override func configureView() {
@@ -144,6 +151,10 @@ final class MainSearchViewController: MainBaseViewController {
         collectionView.register(
             MainSearchResultCollectionViewCell.self,
             forCellWithReuseIdentifier: MainSearchResultCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MainSearchRecentHistoryCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainSearchRecentHistoryCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             MainSearchTrendingCollectionViewCell.self,
@@ -184,6 +195,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .idle:
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -194,6 +206,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .dailyTrendingLoading:
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -205,6 +218,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .dailyTrending(let content):
             filters = []
             results = []
+            recentSearchEntries = content.recentSearchEntries
             popularPeopleItems = content.popularPeople
             dailyTrendingItems = content.items
             isShowingDailyTrending = true
@@ -215,6 +229,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .dailyTrendingEmpty:
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -231,6 +246,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .typing:
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -241,6 +257,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .searching(let keyword):
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -251,6 +268,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .results(let content):
             filters = content.filters
             results = content.results
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -261,6 +279,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .empty(let keyword):
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -277,6 +296,7 @@ final class MainSearchViewController: MainBaseViewController {
         case .failed(let errorMessage):
             filters = []
             results = []
+            recentSearchEntries = []
             popularPeopleItems = []
             dailyTrendingItems = []
             isShowingDailyTrending = false
@@ -306,6 +326,7 @@ final class MainSearchViewController: MainBaseViewController {
             return
         }
 
+        viewModel.addSearchHistory(keyword: trimmedKeyword)
         viewModel.showSearchLoading(keyword: trimmedKeyword)
         searchTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
@@ -333,6 +354,9 @@ extension MainSearchViewController: UICollectionViewDataSource {
         guard visibleSections.indices.contains(section) else { return 0 }
 
         switch visibleSections[section] {
+        case .recentSearchHistory:
+            return 1
+
         case .popularPeople:
             return 1
 
@@ -353,6 +377,20 @@ extension MainSearchViewController: UICollectionViewDataSource {
         }
 
         switch visibleSections[indexPath.section] {
+        case .recentSearchHistory:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MainSearchRecentHistoryCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+
+            if let cell = cell as? MainSearchRecentHistoryCollectionViewCell {
+                cell.configure(entries: recentSearchEntries) { [weak self] keyword in
+                    self?.selectRecentSearch(keyword: keyword)
+                }
+            }
+
+            return cell
+
         case .popularPeople:
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MainSearchPopularPeopleCollectionViewCell.reuseIdentifier,
@@ -444,6 +482,9 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         let items: [MainSearchResultItem]
 
         switch visibleSections[indexPath.section] {
+        case .recentSearchHistory:
+            return
+
         case .popularPeople:
             return
 
@@ -466,6 +507,7 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         forItemAt indexPath: IndexPath
     ) {
         guard visibleSections.indices.contains(indexPath.section),
+              visibleSections[indexPath.section] != .recentSearchHistory,
               visibleSections[indexPath.section] != .popularPeople else {
             return
         }
@@ -499,6 +541,14 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         }
 
         switch visibleSections[indexPath.section] {
+        case .recentSearchHistory:
+            return CGSize(
+                width: collectionView.bounds.width,
+                height: MainSearchRecentHistoryCollectionViewCell.preferredHeight(
+                    entryCount: recentSearchEntries.count
+                )
+            )
+
         case .popularPeople:
             return CGSize(
                 width: collectionView.bounds.width,
@@ -524,6 +574,14 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         guard visibleSections.indices.contains(section) else { return .zero }
 
         switch visibleSections[section] {
+        case .recentSearchHistory:
+            return UIEdgeInsets(
+                top: Layout.trendingTopInset,
+                left: 0,
+                bottom: 8,
+                right: 0
+            )
+
         case .popularPeople:
             return UIEdgeInsets(top: Layout.trendingTopInset, left: 0, bottom: 0, right: 0)
 
@@ -607,6 +665,10 @@ private extension MainSearchViewController {
         if isShowingDailyTrending {
             var sections: [Section] = []
 
+            if !recentSearchEntries.isEmpty {
+                sections.append(.recentSearchHistory)
+            }
+
             if !popularPeopleItems.isEmpty {
                 sections.append(.popularPeople)
             }
@@ -676,6 +738,12 @@ private extension MainSearchViewController {
 
     func selectFilter(_ filter: MainSearchFilter) {
         viewModel.selectFilter(filter)
+    }
+
+    func selectRecentSearch(keyword: String) {
+        searchController.searchBar.text = keyword
+        submitSearch(keyword: keyword)
+        searchController.searchBar.resignFirstResponder()
     }
 
     func makeFilteredEmptyViewIfNeeded(for content: MainSearchContent) -> UIView? {

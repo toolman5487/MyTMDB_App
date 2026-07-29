@@ -18,6 +18,8 @@ protocol MainMemberSettingRouting: AnyObject {
     func showProfileCacheCleared()
     func showClearImageCacheConfirmation(onConfirm: @escaping () -> Void)
     func showImageCacheCleared()
+    func showClearSearchHistoryConfirmation(onConfirm: @escaping () -> Void)
+    func showSearchHistoryCleared()
     func showClearAllLocalDataConfirmation(onConfirm: @escaping () -> Void)
     func openTMDBAttribution(_ url: URL)
     func showLogoutConfirmation(onConfirm: @escaping () -> Void)
@@ -67,10 +69,23 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
         showAlert(title: "已清除", message: "圖片快取已清除。")
     }
 
+    func showClearSearchHistoryConfirmation(onConfirm: @escaping () -> Void) {
+        showConfirmationAlert(
+            title: "清除搜尋紀錄？",
+            message: "將刪除本機所有搜尋關鍵字紀錄。此操作無法復原。",
+            actionTitle: "清除",
+            onConfirm: onConfirm
+        )
+    }
+
+    func showSearchHistoryCleared() {
+        showAlert(title: "已清除", message: "搜尋紀錄已清除。")
+    }
+
     func showClearAllLocalDataConfirmation(onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
             title: "清除所有本機資料",
-            message: "會清除會員資料、Session 與圖片快取，並返回登入頁。",
+            message: "會清除會員資料、Session、搜尋紀錄與圖片快取，並返回登入頁。",
             actionTitle: "清除",
             onConfirm: onConfirm
         )

@@ -151,6 +151,18 @@ final class MainMemberSettingViewController: MainBaseViewController {
         }
     }
 
+    private func presentClearSearchHistoryConfirmation() {
+        router.showClearSearchHistoryConfirmation { [weak self] in
+            self?.clearSearchHistory()
+        }
+    }
+
+    private func clearSearchHistory() {
+        viewModel.clearSearchHistory()
+        collectionView.reloadData()
+        router.showSearchHistoryCleared()
+    }
+
     private func presentClearAllLocalDataConfirmation() {
         router.showClearAllLocalDataConfirmation { [weak self] in
             self?.clearAllLocalData()
@@ -347,6 +359,9 @@ extension MainMemberSettingViewController: UICollectionViewDelegateFlowLayout {
 
         case .clearImageCache:
             presentClearImageCacheConfirmation()
+
+        case .clearSearchHistory:
+            presentClearSearchHistoryConfirmation()
 
         case .clearAllLocalData:
             presentClearAllLocalDataConfirmation()

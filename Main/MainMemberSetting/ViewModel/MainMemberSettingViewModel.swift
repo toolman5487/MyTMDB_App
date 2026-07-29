@@ -16,6 +16,7 @@ final class MainMemberSettingViewModel {
 
     private let sessionStore: SessionStoring
     private let userProfileStore: UserProfileStoring
+    private let searchHistoryStore: SearchHistoryStoring
     private let accountService: AccountServiceProtocol
     private let localization: AppLocalization
     private let bundle: Bundle
@@ -62,12 +63,14 @@ final class MainMemberSettingViewModel {
     init(
         sessionStore: SessionStoring = SessionStore(),
         userProfileStore: UserProfileStoring = UserProfileStore(),
+        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore(),
         accountService: AccountServiceProtocol = AccountService(),
         localization: AppLocalization = .current,
         bundle: Bundle = .main
     ) {
         self.sessionStore = sessionStore
         self.userProfileStore = userProfileStore
+        self.searchHistoryStore = searchHistoryStore
         self.accountService = accountService
         self.localization = localization
         self.bundle = bundle
@@ -103,9 +106,14 @@ final class MainMemberSettingViewModel {
         userProfileStore.clear()
     }
 
+    func clearSearchHistory() {
+        searchHistoryStore.clear(scope: nil)
+    }
+
     func clearAllLocalData() {
         sessionStore.clear()
         userProfileStore.clear()
+        searchHistoryStore.clear(scope: nil)
     }
 
     func logout() {
@@ -174,7 +182,8 @@ final class MainMemberSettingViewModel {
                     kind: .clearSearchHistory,
                     title: "清除搜尋紀錄",
                     systemImageName: "magnifyingglass.circle",
-                    accessory: .value("尚未支援")
+                    accessory: .disclosure,
+                    action: .clearSearchHistory
                 ),
                 MainMemberSettingRowItem(
                     kind: .clearAllLocalData,

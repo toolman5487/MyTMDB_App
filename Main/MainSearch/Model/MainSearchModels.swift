@@ -194,6 +194,7 @@ nonisolated struct MainSearchPopularPeoplePage: Sendable, Equatable {
 // MARK: - MainSearchDailyTrendingContent
 
 nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
+    let recentSearchEntries: [SearchHistoryEntry]
     let popularPeople: [MainSearchResultItem]
     let items: [MainSearchResultItem]
     let currentPage: Int
@@ -207,6 +208,7 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> MainSearchDailyTrendingContent {
         MainSearchDailyTrendingContent(
+            recentSearchEntries: recentSearchEntries,
             popularPeople: popularPeople,
             items: items,
             currentPage: currentPage,
@@ -225,12 +227,25 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
         .shuffled()
 
         return MainSearchDailyTrendingContent(
+            recentSearchEntries: recentSearchEntries,
             popularPeople: popularPeople,
             items: items + newItems,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
             isLoadingNextPage: false
+        )
+    }
+
+    func updatingRecentSearchEntries(_ entries: [SearchHistoryEntry]) -> MainSearchDailyTrendingContent {
+        MainSearchDailyTrendingContent(
+            recentSearchEntries: entries,
+            popularPeople: popularPeople,
+            items: items,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalResults: totalResults,
+            isLoadingNextPage: isLoadingNextPage
         )
     }
 }
