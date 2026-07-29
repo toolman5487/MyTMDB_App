@@ -607,8 +607,6 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.callout(lines: 1)
-        label.adjustsFontSizeToFitWidth = true
-        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         return label

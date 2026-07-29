@@ -241,8 +241,6 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(alignment: .center, lines: 1)
-        label.adjustsFontSizeToFitWidth = true
-        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()

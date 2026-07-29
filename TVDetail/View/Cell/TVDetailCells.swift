@@ -394,8 +394,6 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(lines: 1)
         label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.allowsDefaultTighteningForTruncation = true
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
