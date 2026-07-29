@@ -153,15 +153,6 @@ MyTMDB_App/
 - 新增共用 UI 前先確認是否屬於真正跨 feature 的需求，避免把 feature-only 邏輯放進 base class。
 - 新增檔案後需確認 `MyTMDB_App.xcodeproj/project.pbxproj` 的 target membership。
 
-## 測試
-
-專案包含：
-
-- `MyTMDB_AppTests`
-- `MyTMDB_AppUITests`
-
-可在 Xcode 內使用 Test action 執行。若要用命令列驗證，請依目前本機 Xcode 與 Simulator SDK 狀態調整目的地與 DerivedData 路徑。
-
 ## 資料來源
 
 本專案使用 TMDB API，但未由 TMDB 官方背書或認證。內容、圖片與相關資料版權歸 TMDB 與原權利人所有。

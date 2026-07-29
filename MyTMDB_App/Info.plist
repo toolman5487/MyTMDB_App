@@ -13,6 +13,11 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>co.willyhsu.CineBase.movie-detail</string>
+		<string>co.willyhsu.CineBase.tv-detail</string>
+	</array>
 	<key>TMDBAPIKey</key>
 	<string>12d7b94da2ec3652e41b0750c13548db</string>
 	<key>UIApplicationSceneManifest</key>
