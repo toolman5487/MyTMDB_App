@@ -14,6 +14,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case facts([MovieDetailFactItem])
     case attributes(MovieDetailAttributeSectionItem)
     case cast([MovieDetailCastItem])
+    case crew([MovieDetailCrewItem])
     case videos([MovieDetailVideoItem])
     case images([MovieDetailImageItem])
     case collection(MovieDetailCollectionSectionItem)
@@ -34,6 +35,9 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .cast:
             return "主要演員"
+
+        case .crew:
+            return "幕後人員"
 
         case .videos:
             return "預告與影片"
@@ -68,6 +72,21 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
                         title: item.name,
                         subtitle: item.characterText,
                         destination: .person(id: item.id)
+                    )
+                }
+            )
+
+        case .crew(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "幕後人員",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: item.id,
+                        imageURL: item.profileURL,
+                        title: item.name,
+                        subtitle: item.jobText,
+                        destination: .person(id: item.personID)
                     )
                 }
             )
@@ -321,6 +340,33 @@ nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
         self.profileURL = cast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
+    }
+}
+
+// MARK: - MovieDetailCrewItem
+
+nonisolated struct MovieDetailCrewItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let personID: Int
+    let name: String
+    let jobText: String
+    let profileURL: URL?
+
+    init(crew: MovieCreditCrew) {
+        self.id = crew.creditID.isEmpty ? "\(crew.id)-\(crew.department)-\(crew.job)" : crew.creditID
+        self.personID = crew.id
+        self.name = crew.name
+        self.jobText = Self.makeJobText(crew: crew)
+        self.profileURL = crew.profilePath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
+    }
+
+    private static func makeJobText(crew: MovieCreditCrew) -> String {
+        BaseFormatter.CrewJobDisplayMapper.displayText(
+            job: crew.job,
+            department: crew.department
+        ) ?? ""
     }
 }
 

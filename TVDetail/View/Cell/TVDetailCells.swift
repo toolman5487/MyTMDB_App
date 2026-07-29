@@ -494,6 +494,45 @@ final class TVDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewC
 }
 
 @MainActor
+final class TVDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: TVDetailCrewCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 112, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(
+        items: [TVDetailCrewItem],
+        onPersonSelected: @escaping (Int) -> Void
+    ) {
+        configure(
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.personID),
+                    imageURL: $0.profileURL,
+                    title: $0.name,
+                    subtitle: Self.makeSubtitle(for: $0)
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let personID = Int(item.id) else { return }
+            onPersonSelected(personID)
+        }
+    }
+
+    private static func makeSubtitle(for item: TVDetailCrewItem) -> String? {
+        BaseDisplayTextFormatter.metadata([
+            item.jobText,
+            item.episodeCountText
+        ])
+    }
+}
+
+@MainActor
 final class TVDetailVideosCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailVideosCollectionViewCell.self)

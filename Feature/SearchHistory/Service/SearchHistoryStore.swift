@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - SearchHistoryStoring
 
-nonisolated protocol SearchHistoryStoring: Sendable {
+nonisolated protocol SearchHistoryStoring {
     func load(scope: SearchHistoryScope?, limit: Int) -> [SearchHistoryEntry]
     func add(keyword: String, scope: SearchHistoryScope)
     func remove(id: UUID)
@@ -18,7 +18,7 @@ nonisolated protocol SearchHistoryStoring: Sendable {
 
 // MARK: - SearchHistoryStore
 
-final class SearchHistoryStore: SearchHistoryStoring, @unchecked Sendable {
+final class SearchHistoryStore: SearchHistoryStoring {
 
     // MARK: - Properties
 

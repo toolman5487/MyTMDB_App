@@ -492,6 +492,40 @@ final class MovieDetailCastCollectionViewCell: DetailImageTitleStripCollectionVi
     }
 }
 
+// MARK: - MovieDetailCrewCollectionViewCell
+
+@MainActor
+final class MovieDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MovieDetailCrewCollectionViewCell.self)
+
+    private enum Layout {
+        static let itemSize = CGSize(width: 112, height: 220)
+        static let imageHeight: CGFloat = 168
+    }
+
+    func configure(
+        items: [MovieDetailCrewItem],
+        onPersonSelected: @escaping (Int) -> Void
+    ) {
+        configure(
+            items: items.map {
+                DetailImageTitleItem(
+                    id: String($0.personID),
+                    imageURL: $0.profileURL,
+                    title: $0.name,
+                    subtitle: $0.jobText
+                )
+            },
+            itemSize: Layout.itemSize,
+            imageHeight: Layout.imageHeight
+        ) { item in
+            guard let personID = Int(item.id) else { return }
+            onPersonSelected(personID)
+        }
+    }
+}
+
 // MARK: - MovieDetailVideosCollectionViewCell
 
 @MainActor

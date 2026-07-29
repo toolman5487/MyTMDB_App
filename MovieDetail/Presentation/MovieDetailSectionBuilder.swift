@@ -51,6 +51,23 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.append(.cast(Array(castItems)))
         }
 
+        let crewItems = content.credits.crew
+            .sorted { lhs, rhs in
+                if lhs.department != rhs.department {
+                    return lhs.department < rhs.department
+                }
+
+                if lhs.job != rhs.job {
+                    return lhs.job < rhs.job
+                }
+
+                return lhs.name < rhs.name
+            }
+            .map(MovieDetailCrewItem.init(crew:))
+        if !crewItems.isEmpty {
+            sections.append(.crew(Array(crewItems)))
+        }
+
         let imageItems = content.images.backdrops.enumerated().compactMap { index, image in
             MovieDetailImageItem(image: image, index: index)
         }

@@ -147,7 +147,10 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
         self.id = "\(aggregateCrew.id)-\(aggregateCrew.department)"
         self.personID = aggregateCrew.id
         self.title = aggregateCrew.name
-        self.subtitle = aggregateCrew.jobs.first?.job ?? aggregateCrew.department
+        self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
+            job: aggregateCrew.jobs.first?.job,
+            department: aggregateCrew.department
+        )
         self.profileURL = aggregateCrew.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -157,7 +160,10 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
         self.id = creditCrew.creditID
         self.personID = creditCrew.id
         self.title = creditCrew.name
-        self.subtitle = creditCrew.job.isEmpty ? creditCrew.department : creditCrew.job
+        self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
+            job: creditCrew.job,
+            department: creditCrew.department
+        )
         self.profileURL = creditCrew.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }

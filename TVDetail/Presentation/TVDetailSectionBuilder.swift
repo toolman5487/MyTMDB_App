@@ -51,6 +51,25 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.cast(Array(castItems)))
         }
 
+        let crewItems = content.aggregateCredits.crew
+            .sorted { lhs, rhs in
+                if lhs.department != rhs.department {
+                    return lhs.department < rhs.department
+                }
+
+                let lhsJob = lhs.jobs.first?.job ?? ""
+                let rhsJob = rhs.jobs.first?.job ?? ""
+                if lhsJob != rhsJob {
+                    return lhsJob < rhsJob
+                }
+
+                return lhs.name < rhs.name
+            }
+            .map(TVDetailCrewItem.init(crew:))
+        if !crewItems.isEmpty {
+            sections.append(.crew(Array(crewItems)))
+        }
+
         let seasonItems = content.detail.seasons
             .sorted { $0.seasonNumber < $1.seasonNumber }
             .prefix(DetailSectionPreviewLimit.itemCount)

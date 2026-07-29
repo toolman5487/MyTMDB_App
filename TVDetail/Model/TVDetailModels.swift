@@ -899,6 +899,37 @@ nonisolated struct TVDetailCastItem: Sendable, Equatable, Identifiable {
     }
 }
 
+nonisolated struct TVDetailCrewItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let personID: Int
+    let name: String
+    let jobText: String
+    let episodeCountText: String
+    let profileURL: URL?
+
+    init(crew: TVAggregateCreditCrew) {
+        self.id = "\(crew.id)-\(crew.department)"
+        self.personID = crew.id
+        self.name = crew.name
+        self.jobText = Self.makeJobText(crew: crew)
+        self.episodeCountText = BaseDisplayTextFormatter.count(crew.totalEpisodeCount, unit: "集") ?? ""
+        self.profileURL = crew.profilePath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w185)
+        }
+    }
+
+    private static func makeJobText(crew: TVAggregateCreditCrew) -> String {
+        let primaryJob = crew.jobs
+            .map(\.job)
+            .first { BaseDisplayTextFormatter.nonEmptyText($0) != nil }
+
+        return BaseFormatter.CrewJobDisplayMapper.displayText(
+            job: primaryJob,
+            department: crew.department
+        ) ?? ""
+    }
+}
+
 nonisolated struct TVDetailSeasonItem: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String

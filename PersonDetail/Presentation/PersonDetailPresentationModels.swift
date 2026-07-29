@@ -90,7 +90,7 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
         self.birthdayText = BaseDisplayTextFormatter.nonEmptyText(detail.birthday)
         self.deathdayText = BaseDisplayTextFormatter.nonEmptyText(detail.deathday)
         self.placeOfBirthText = BaseDisplayTextFormatter.nonEmptyText(detail.placeOfBirth)
-        self.knownForDepartmentText = BaseDisplayTextFormatter.nonEmptyText(detail.knownForDepartment)
+        self.knownForDepartmentText = BaseFormatter.CrewJobDisplayMapper.departmentText(detail.knownForDepartment)
         self.genderText = Self.makeGenderText(detail.gender)
         self.popularityText = BaseDisplayTextFormatter.positiveDecimal(detail.popularity)
         self.homepageURL = Self.makeURL(from: detail.homepage)
@@ -198,7 +198,10 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
         self.sourceID = crew.id
         self.mediaType = resolvedMediaType
         self.title = crew.title
-        self.subtitle = Self.makeSubtitle(primary: crew.job, fallback: crew.department)
+        self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
+            job: crew.job,
+            department: crew.department
+        ) ?? ""
         self.dateText = BaseDisplayTextFormatter.nonEmptyText(crew.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(crew.voteAverage, voteCount: crew.voteCount)
         self.posterURL = crew.posterPath.flatMap {

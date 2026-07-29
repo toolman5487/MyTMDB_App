@@ -103,6 +103,13 @@ final class TVDetailViewController: DetailBaseViewController {
             )
         }
 
+        static var crewSectionHeight: CGFloat {
+            DetailImageTitleStripCollectionViewCell.fittingHeight(
+                minimumHeight: 220,
+                imageHeight: 168
+            )
+        }
+
         static var videosSectionHeight: CGFloat {
             DetailImageTitleStripCollectionViewCell.fittingHeight(
                 minimumHeight: 148,
@@ -185,6 +192,10 @@ final class TVDetailViewController: DetailBaseViewController {
         collectionView.register(
             TVDetailCastCollectionViewCell.self,
             forCellWithReuseIdentifier: TVDetailCastCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            TVDetailCrewCollectionViewCell.self,
+            forCellWithReuseIdentifier: TVDetailCrewCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             TVDetailVideosCollectionViewCell.self,
@@ -281,6 +292,9 @@ final class TVDetailViewController: DetailBaseViewController {
 
         case .cast:
             return .absolute(Layout.castSectionHeight)
+
+        case .crew:
+            return .absolute(Layout.crewSectionHeight)
 
         case .seasons:
             return .absolute(Layout.seasonsSectionHeight)
@@ -514,6 +528,7 @@ private extension TVDetailSectionItem {
              .videos,
              .attributes,
              .cast,
+             .crew,
              .seasons,
              .images,
              .recommendations,
@@ -598,6 +613,18 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailCastCollectionViewCell)?.configure(
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            ) { [weak self] personID in
+                self?.router.showPersonDetail(personID: personID)
+            }
+            return cell
+
+        case .crew(let items):
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: TVDetailCrewCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? TVDetailCrewCollectionViewCell)?.configure(
                 items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
             ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)

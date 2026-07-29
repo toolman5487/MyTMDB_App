@@ -15,6 +15,7 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
     case videos([TVDetailVideoItem])
     case attributes(TVDetailAttributeSectionItem)
     case cast([TVDetailCastItem])
+    case crew([TVDetailCrewItem])
     case seasons([TVDetailSeasonItem])
     case images([TVDetailImageItem])
     case recommendations([TVDetailRecommendationItem])
@@ -37,6 +38,9 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
 
         case .cast:
             return "主要演員"
+
+        case .crew:
+            return "幕後人員"
 
         case .seasons:
             return "季數"
@@ -68,6 +72,24 @@ nonisolated enum TVDetailSectionItem: Sendable, Equatable {
                         title: item.name,
                         subtitle: item.characterText,
                         destination: .person(id: item.id)
+                    )
+                }
+            )
+
+        case .crew(let items):
+            return DetailContentListConfiguration(
+                title: title ?? "幕後人員",
+                thumbnailStyle: .portrait,
+                items: items.map { item in
+                    DetailContentListItem(
+                        id: item.id,
+                        imageURL: item.profileURL,
+                        title: item.name,
+                        subtitle: BaseDisplayTextFormatter.metadata([
+                            item.jobText,
+                            item.episodeCountText
+                        ]),
+                        destination: .person(id: item.personID)
                     )
                 }
             )

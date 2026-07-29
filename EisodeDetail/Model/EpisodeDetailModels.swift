@@ -399,7 +399,10 @@ nonisolated struct EpisodePersonItem: Sendable, Equatable, Identifiable {
         self.id = crew.creditID
         self.personID = crew.id
         self.title = crew.name
-        self.subtitle = crew.job.isEmpty ? crew.department : crew.job
+        self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
+            job: crew.job,
+            department: crew.department
+        )
         self.profileURL = crew.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
