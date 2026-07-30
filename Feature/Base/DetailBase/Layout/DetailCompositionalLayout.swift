@@ -17,7 +17,7 @@ enum DetailCompositionalLayout {
     enum Metrics {
         static let sectionHeaderHeight: CGFloat = 28
         static let headerContentSpacing: CGFloat = 8
-        static let horizontalInset: CGFloat = 16
+        static let horizontalInset: CGFloat = 0
         static let sectionBottomInset: CGFloat = 24
         static let estimatedHeroHeight: CGFloat = 360
     }
@@ -93,16 +93,21 @@ enum DetailCompositionalLayout {
             ]
 
         case .sectionTitle:
-            return [
-                NSCollectionLayoutBoundarySupplementaryItem(
-                    layoutSize: NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1),
-                        heightDimension: .absolute(Metrics.sectionHeaderHeight)
-                    ),
-                    elementKind: UICollectionView.elementKindSectionHeader,
-                    alignment: .top
-                )
-            ]
+            let header = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(Metrics.sectionHeaderHeight)
+                ),
+                elementKind: UICollectionView.elementKindSectionHeader,
+                alignment: .top
+            )
+            header.contentInsets = NSDirectionalEdgeInsets(
+                top: 0,
+                leading: Metrics.horizontalInset,
+                bottom: 0,
+                trailing: Metrics.horizontalInset
+            )
+            return [header]
         }
     }
 }

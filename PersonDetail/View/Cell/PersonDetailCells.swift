@@ -169,7 +169,9 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
     private var onTap: (() -> Void)?
 
-    private let titleLabel = AppFactory.Label.headline()
+    private let titleLabel = AppFactory.Label.sectionTitle()
+    private var titleLeadingConstraint: Constraint?
+    private var titleTrailingConstraint: Constraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -195,9 +197,10 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
     func configure(
         title: String?,
-        onTap: (() -> Void)? = nil
+        onTap: (() -> Void)? = nil,
+        contentInsets: UIEdgeInsets = .zero
     ) {
-        let font = titleLabel.font ?? .preferredFont(forTextStyle: .headline)
+        let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
         titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
             title: title,
             trailingImage: onTap != nil ? UIImage(
@@ -207,6 +210,8 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
             font: font,
             textColor: ThemeColor.highlight
         )
+        titleLeadingConstraint?.update(inset: contentInsets.left)
+        titleTrailingConstraint?.update(inset: contentInsets.right)
 
         isUserInteractionEnabled = onTap != nil
         self.onTap = onTap
@@ -220,8 +225,9 @@ final class PersonDetailSectionHeaderView: UICollectionReusableView {
 
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            titleLeadingConstraint = make.leading.equalToSuperview().constraint
+            titleTrailingConstraint = make.trailing.equalToSuperview().constraint
         }
     }
 

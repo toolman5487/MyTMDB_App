@@ -15,7 +15,9 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = String(describing: EpisodeDetailSectionHeaderView.self)
 
-    private let titleLabel = AppFactory.Label.headline()
+    private let titleLabel = AppFactory.Label.sectionTitle()
+    private var titleLeadingConstraint: Constraint?
+    private var titleTrailingConstraint: Constraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,12 +37,14 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
         applyAccessibilityText(nil)
     }
 
-    func configure(title: String?) {
+    func configure(title: String?, contentInsets: UIEdgeInsets = .zero) {
         titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
             title: title,
-            font: titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline),
+            font: titleLabel.font ?? UIFont.preferredFont(forTextStyle: .title3),
             textColor: ThemeColor.highlight
         )
+        titleLeadingConstraint?.update(inset: contentInsets.left)
+        titleTrailingConstraint?.update(inset: contentInsets.right)
         applyAccessibility(title: title)
     }
 
@@ -62,8 +66,9 @@ final class EpisodeDetailSectionHeaderView: UICollectionReusableView {
 
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            titleLeadingConstraint = make.leading.equalToSuperview().constraint
+            titleTrailingConstraint = make.trailing.equalToSuperview().constraint
         }
     }
 

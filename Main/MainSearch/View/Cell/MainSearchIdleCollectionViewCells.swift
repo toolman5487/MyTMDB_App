@@ -16,11 +16,15 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MainSearchRecentHistoryCollectionViewCell.self)
 
+    // MARK: - Constants
+
     private enum Layout {
         static let horizontalInset: CGFloat = 16
         static let itemSpacing: CGFloat = 8
         static let itemHeight: CGFloat = 44
     }
+
+    // MARK: - UI Components
 
     private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
@@ -56,15 +60,14 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
         return collectionView
     }()
 
+    // MARK: - Properties
+
     private var entries: [SearchHistoryEntry] = []
     private var onKeywordSelected: ((String) -> Void)?
     private var onKeywordDeleted: ((SearchHistoryEntry) -> Void)?
     private var onEntryMoved: ((SearchHistoryEntry, Int) -> Void)?
 
-    static func preferredHeight(entryCount: Int) -> CGFloat {
-        guard entryCount > 0 else { return 0 }
-        return Layout.itemHeight
-    }
+    // MARK: - BaseCollectionViewCell
 
     override func configureView() {
         super.configureView()
@@ -96,6 +99,13 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
         collectionView.reloadData()
     }
 
+    // MARK: - Configuration
+
+    static func preferredHeight(entryCount: Int) -> CGFloat {
+        guard entryCount > 0 else { return 0 }
+        return Layout.itemHeight
+    }
+
     func configure(
         entries: [SearchHistoryEntry],
         onKeywordSelected: @escaping (String) -> Void,
@@ -108,6 +118,8 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
         self.onEntryMoved = onEntryMoved
         collectionView.reloadData()
     }
+
+    // MARK: - Actions
 
     @objc private func handleReorderGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
         let location = gestureRecognizer.location(in: collectionView)
@@ -204,6 +216,8 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MainSearchHistoryPillCollectionViewCell.self)
 
+    // MARK: - Constants
+
     private enum Layout {
         static let horizontalInset: CGFloat = 16
         static let deleteButtonWidth: CGFloat = 44
@@ -211,6 +225,8 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
         static let cornerRadius: CGFloat = 20
         static let borderWidth: CGFloat = 1
     }
+
+    // MARK: - UI Components
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.subheadline(alignment: .center)
@@ -231,19 +247,12 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
         return button
     }()
 
+    // MARK: - Properties
+
     private var entry: SearchHistoryEntry?
     private var onDeleteRequested: ((SearchHistoryEntry) -> Void)?
 
-    static func preferredSize(for keyword: String) -> CGSize {
-        let font = UIFont.preferredFont(forTextStyle: .subheadline)
-        let titleWidth = (keyword as NSString).size(withAttributes: [.font: font]).width
-        let width = Layout.horizontalInset + titleWidth + Layout.deleteButtonWidth
-
-        return CGSize(
-            width: ceil(width),
-            height: Layout.itemHeight
-        )
-    }
+    // MARK: - BaseCollectionViewCell
 
     override func configureView() {
         super.configureView()
@@ -285,6 +294,17 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
 
     // MARK: - Configuration
 
+    static func preferredSize(for keyword: String) -> CGSize {
+        let font = UIFont.preferredFont(forTextStyle: .subheadline)
+        let titleWidth = (keyword as NSString).size(withAttributes: [.font: font]).width
+        let width = Layout.horizontalInset + titleWidth + Layout.deleteButtonWidth
+
+        return CGSize(
+            width: ceil(width),
+            height: Layout.itemHeight
+        )
+    }
+
     func configure(
         with entry: SearchHistoryEntry,
         onDeleteRequested: @escaping (SearchHistoryEntry) -> Void
@@ -308,6 +328,8 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
         ]
     }
 
+    // MARK: - Actions
+
     @objc private func deleteButtonTapped() {
         guard let entry else { return }
         onDeleteRequested?(entry)
@@ -330,6 +352,8 @@ final class MainSearchPopularPeopleCollectionViewCell: BaseHorizontalStripCollec
 
     static let reuseIdentifier = String(describing: MainSearchPopularPeopleCollectionViewCell.self)
 
+    // MARK: - Constants
+
     private enum Layout {
         static let itemWidth: CGFloat = 88
         static let avatarSize: CGFloat = 72
@@ -345,6 +369,8 @@ final class MainSearchPopularPeopleCollectionViewCell: BaseHorizontalStripCollec
         }
     }
 
+    // MARK: - BaseCollectionViewCell
+
     override func configureView() {
         super.configureView()
         configureHorizontalStrip(
@@ -353,6 +379,8 @@ final class MainSearchPopularPeopleCollectionViewCell: BaseHorizontalStripCollec
             itemSize: CGSize(width: Layout.itemWidth, height: Layout.itemHeight)
         )
     }
+
+    // MARK: - Configuration
 
     func configure(
         people: [MainSearchResultItem],
@@ -380,10 +408,14 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MainSearchPopularPersonCollectionViewCell.self)
 
+    // MARK: - Constants
+
     private enum Layout {
         static let avatarSize: CGFloat = 72
         static let titleTopSpacing: CGFloat = 4
     }
+
+    // MARK: - UI Components
 
     private let avatarImageView: UIImageView = {
         let imageView = AppFactory.ImageView.avatar(size: Layout.avatarSize)
@@ -399,6 +431,8 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
+
+    // MARK: - BaseCollectionViewCell
 
     override func configureView() {
         super.configureView()
@@ -434,6 +468,8 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
         titleLabel.text = nil
     }
 
+    // MARK: - Configuration
+
     func configure(with person: MainSearchResultItem) {
         avatarImageView.sd_setImage(with: person.imageURL)
         titleLabel.text = person.title
@@ -447,6 +483,8 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
 final class MainSearchTrendingCollectionViewCell: ImageTitleBaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: MainSearchTrendingCollectionViewCell.self)
+
+    // MARK: - Configuration
 
     func configure(
         with item: MainSearchResultItem,

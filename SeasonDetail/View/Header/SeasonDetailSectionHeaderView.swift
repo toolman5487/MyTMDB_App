@@ -17,7 +17,9 @@ final class SeasonDetailSectionHeaderView: UICollectionReusableView {
 
     private var onTap: (() -> Void)?
 
-    private let titleLabel = AppFactory.Label.headline()
+    private let titleLabel = AppFactory.Label.sectionTitle()
+    private var titleLeadingConstraint: Constraint?
+    private var titleTrailingConstraint: Constraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -38,15 +40,21 @@ final class SeasonDetailSectionHeaderView: UICollectionReusableView {
         configure(title: nil)
     }
 
-    func configure(title: String?, onTap: (() -> Void)? = nil) {
+    func configure(
+        title: String?,
+        onTap: (() -> Void)? = nil,
+        contentInsets: UIEdgeInsets = .zero
+    ) {
         self.onTap = onTap
-        let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline)
+        let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .title3)
         titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
             title: title,
             trailingImage: onTap != nil ? makeTitleTrailingImage(font: font) : nil,
             font: font,
             textColor: ThemeColor.highlight
         )
+        titleLeadingConstraint?.update(inset: contentInsets.left)
+        titleTrailingConstraint?.update(inset: contentInsets.right)
         isUserInteractionEnabled = onTap != nil
         applyAccessibility(title: title, isTappable: onTap != nil)
     }
@@ -63,8 +71,9 @@ final class SeasonDetailSectionHeaderView: UICollectionReusableView {
 
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            titleLeadingConstraint = make.leading.equalToSuperview().constraint
+            titleTrailingConstraint = make.trailing.equalToSuperview().constraint
         }
     }
 

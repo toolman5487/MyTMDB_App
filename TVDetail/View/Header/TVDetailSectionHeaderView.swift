@@ -17,7 +17,7 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
 
     private var onTap: (() -> Void)?
 
-    private let titleLabel = AppFactory.Label.headline()
+    private let titleLabel = AppFactory.Label.sectionTitle()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,7 +40,7 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
 
     func configure(title: String?, onTap: (() -> Void)? = nil) {
         self.onTap = onTap
-        let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .headline)
+        let font = titleLabel.font ?? UIFont.preferredFont(forTextStyle: .title3)
         titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
             title: title,
             trailingImage: onTap != nil ? makeTitleTrailingImage(font: font) : nil,
@@ -64,7 +64,7 @@ final class TVDetailSectionHeaderView: UICollectionReusableView {
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.top.bottom.equalToSuperview()
         }
     }
 

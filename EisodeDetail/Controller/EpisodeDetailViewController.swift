@@ -103,10 +103,10 @@ final class EpisodeDetailViewController: DetailBaseViewController {
     // MARK: - Setup
 
     private enum Layout {
-        static let headerHeight: CGFloat = 28
-        static let headerContentSpacing: CGFloat = 8
-        static let defaultHorizontalInset: CGFloat = 16
-        static let defaultSectionBottomInset: CGFloat = 24
+        static let headerHeight = DetailCompositionalLayout.Metrics.sectionHeaderHeight
+        static let headerContentSpacing = DetailCompositionalLayout.Metrics.headerContentSpacing
+        static let defaultHorizontalInset = DetailCompositionalLayout.Metrics.horizontalInset
+        static let defaultSectionBottomInset = DetailCompositionalLayout.Metrics.sectionBottomInset
         static let factsSectionHeight: CGFloat = 96
         static var trailerStyleSectionHeight: CGFloat {
             DetailImageTitleStripCollectionViewCell.fittingHeight(
@@ -476,7 +476,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
             withReuseIdentifier: EpisodeDetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        (reusableView as? EpisodeDetailSectionHeaderView)?.configure(title: sections[indexPath.section].title)
+        (reusableView as? EpisodeDetailSectionHeaderView)?.configure(
+            title: sections[indexPath.section].title,
+            contentInsets: sectionHeaderContentInsets
+        )
         return reusableView
     }
 }
@@ -550,6 +553,15 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
             top: topInset,
             left: Layout.defaultHorizontalInset,
             bottom: Layout.defaultSectionBottomInset,
+            right: Layout.defaultHorizontalInset
+        )
+    }
+
+    private var sectionHeaderContentInsets: UIEdgeInsets {
+        UIEdgeInsets(
+            top: 0,
+            left: Layout.defaultHorizontalInset,
+            bottom: 0,
             right: Layout.defaultHorizontalInset
         )
     }
