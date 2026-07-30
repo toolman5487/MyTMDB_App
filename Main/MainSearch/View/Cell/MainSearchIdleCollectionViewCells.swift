@@ -19,7 +19,7 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
     private enum Layout {
         static let horizontalInset: CGFloat = 16
         static let itemSpacing: CGFloat = 8
-        static let itemHeight: CGFloat = 36
+        static let itemHeight: CGFloat = 44
     }
 
     private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
@@ -48,6 +48,7 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
         collectionView.decelerationRate = .fast
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.dragInteractionEnabled = false
         collectionView.register(
             MainSearchHistoryPillCollectionViewCell.self,
             forCellWithReuseIdentifier: MainSearchHistoryPillCollectionViewCell.reuseIdentifier
@@ -57,6 +58,8 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
 
     private var entries: [SearchHistoryEntry] = []
     private var onKeywordSelected: ((String) -> Void)?
+    private var onKeywordDeleted: ((SearchHistoryEntry) -> Void)?
+    private var onEntryMoved: ((SearchHistoryEntry, Int) -> Void)?
 
     static func preferredHeight(entryCount: Int) -> CGFloat {
         guard entryCount > 0 else { return 0 }
@@ -67,6 +70,9 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
         super.configureView()
         contentView.backgroundColor = .clear
         containerView.backgroundColor = .clear
+        collectionView.addGestureRecognizer(
+            UILongPressGestureRecognizer(target: self, action: #selector(handleReorderGesture(_:)))
+        )
     }
 
     override func setupHierarchy() {
@@ -85,16 +91,41 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
     override func resetForReuse() {
         entries = []
         onKeywordSelected = nil
+        onKeywordDeleted = nil
+        onEntryMoved = nil
         collectionView.reloadData()
     }
 
     func configure(
         entries: [SearchHistoryEntry],
-        onKeywordSelected: @escaping (String) -> Void
+        onKeywordSelected: @escaping (String) -> Void,
+        onKeywordDeleted: @escaping (SearchHistoryEntry) -> Void,
+        onEntryMoved: @escaping (SearchHistoryEntry, Int) -> Void
     ) {
         self.entries = entries
         self.onKeywordSelected = onKeywordSelected
+        self.onKeywordDeleted = onKeywordDeleted
+        self.onEntryMoved = onEntryMoved
         collectionView.reloadData()
+    }
+
+    @objc private func handleReorderGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        let location = gestureRecognizer.location(in: collectionView)
+
+        switch gestureRecognizer.state {
+        case .began:
+            guard let indexPath = collectionView.indexPathForItem(at: location) else { return }
+            collectionView.beginInteractiveMovementForItem(at: indexPath)
+
+        case .changed:
+            collectionView.updateInteractiveMovementTargetPosition(location)
+
+        case .ended:
+            collectionView.endInteractiveMovement()
+
+        default:
+            collectionView.cancelInteractiveMovement()
+        }
     }
 }
 
@@ -117,10 +148,33 @@ extension MainSearchRecentHistoryCollectionViewCell: UICollectionViewDataSource 
 
         if let cell = cell as? MainSearchHistoryPillCollectionViewCell,
            entries.indices.contains(indexPath.item) {
-            cell.configure(with: entries[indexPath.item])
+            let entry = entries[indexPath.item]
+            cell.configure(with: entry) { [weak self] entry in
+                self?.onKeywordDeleted?(entry)
+            }
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        entries.indices.contains(indexPath.item)
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        moveItemAt sourceIndexPath: IndexPath,
+        to destinationIndexPath: IndexPath
+    ) {
+        guard entries.indices.contains(sourceIndexPath.item) else {
+            collectionView.reloadData()
+            return
+        }
+
+        let movedEntry = entries.remove(at: sourceIndexPath.item)
+        let boundedDestinationIndex = min(max(0, destinationIndexPath.item), entries.count)
+        entries.insert(movedEntry, at: boundedDestinationIndex)
+        onEntryMoved?(movedEntry, boundedDestinationIndex)
     }
 }
 
@@ -139,29 +193,130 @@ extension MainSearchRecentHistoryCollectionViewCell: UICollectionViewDelegateFlo
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         guard entries.indices.contains(indexPath.item) else { return .zero }
-        return BaseFilterHeaderView.filterItemSize(for: entries[indexPath.item].keyword)
+        return MainSearchHistoryPillCollectionViewCell.preferredSize(for: entries[indexPath.item].keyword)
     }
 }
 
 // MARK: - MainSearchHistoryPillCollectionViewCell
 
 @MainActor
-final class MainSearchHistoryPillCollectionViewCell: BaseFilterHeaderCollectionViewCell {
+final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MainSearchHistoryPillCollectionViewCell.self)
+
+    private enum Layout {
+        static let horizontalInset: CGFloat = 16
+        static let deleteButtonWidth: CGFloat = 44
+        static let itemHeight: CGFloat = 44
+        static let cornerRadius: CGFloat = 20
+        static let borderWidth: CGFloat = 1
+    }
+
+    private let titleLabel: UILabel = {
+        let label = AppFactory.Label.subheadline(alignment: .center)
+        label.textColor = .label
+        label.numberOfLines = 1
+        return label
+    }()
+
+    private lazy var deleteButton: UIButton = {
+        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: "xmark.circle.fill")
+        configuration.baseForegroundColor = ThemeColor.highlight
+        configuration.contentInsets = .zero
+        button.configuration = configuration
+        button.isAccessibilityElement = false
+        button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+        return button
+    }()
+
+    private var entry: SearchHistoryEntry?
+    private var onDeleteRequested: ((SearchHistoryEntry) -> Void)?
+
+    static func preferredSize(for keyword: String) -> CGSize {
+        let font = UIFont.preferredFont(forTextStyle: .subheadline)
+        let titleWidth = (keyword as NSString).size(withAttributes: [.font: font]).width
+        let width = Layout.horizontalInset + titleWidth + Layout.deleteButtonWidth
+
+        return CGSize(
+            width: ceil(width),
+            height: Layout.itemHeight
+        )
+    }
+
+    override func configureView() {
+        super.configureView()
+        containerView.backgroundColor = ThemeColor.primary
+        containerView.layer.cornerRadius = Layout.cornerRadius
+        containerView.layer.borderWidth = Layout.borderWidth
+        containerView.layer.borderColor = ThemeColor.highlight.cgColor
+        containerView.layer.masksToBounds = true
+    }
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        containerView.addSubview(titleLabel)
+        containerView.addSubview(deleteButton)
+    }
+
+    override func setupConstraints() {
+        super.setupConstraints()
+
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Layout.horizontalInset)
+            make.trailing.equalTo(deleteButton.snp.leading)
+            make.top.bottom.equalToSuperview()
+        }
+
+        deleteButton.snp.makeConstraints { make in
+            make.top.trailing.bottom.equalToSuperview()
+            make.width.equalTo(Layout.deleteButtonWidth)
+        }
+    }
+
+    override func resetForReuse() {
+        super.resetForReuse()
+        titleLabel.text = nil
+        entry = nil
+        onDeleteRequested = nil
+        accessibilityCustomActions = nil
+    }
 
     // MARK: - Configuration
 
-    func configure(with entry: SearchHistoryEntry) {
-        configure(
-            title: entry.keyword,
-            isSelected: true
-        )
+    func configure(
+        with entry: SearchHistoryEntry,
+        onDeleteRequested: @escaping (SearchHistoryEntry) -> Void
+    ) {
+        self.entry = entry
+        self.onDeleteRequested = onDeleteRequested
+        titleLabel.text = entry.keyword
         applyAccessibility(
             AccessibilityText(
                 label: "最近搜尋：\(entry.keyword)",
-                hint: "點兩下以再次搜尋"
+                hint: "點兩下以再次搜尋，長按可拖曳排序"
             )
         )
         accessibilityTraits = .button
+        accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: "刪除",
+                target: self,
+                selector: #selector(deleteAccessibilityAction(_:))
+            )
+        ]
+    }
+
+    @objc private func deleteButtonTapped() {
+        guard let entry else { return }
+        onDeleteRequested?(entry)
+    }
+
+    @objc private func deleteAccessibilityAction(_ action: UIAccessibilityCustomAction) -> Bool {
+        guard let entry else { return false }
+        onDeleteRequested?(entry)
+        return true
     }
 }
 

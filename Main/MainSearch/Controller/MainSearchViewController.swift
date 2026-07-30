@@ -384,9 +384,18 @@ extension MainSearchViewController: UICollectionViewDataSource {
             )
 
             if let cell = cell as? MainSearchRecentHistoryCollectionViewCell {
-                cell.configure(entries: recentSearchEntries) { [weak self] keyword in
-                    self?.selectRecentSearch(keyword: keyword)
-                }
+                cell.configure(
+                    entries: recentSearchEntries,
+                    onKeywordSelected: { [weak self] keyword in
+                        self?.selectRecentSearch(keyword: keyword)
+                    },
+                    onKeywordDeleted: { [weak self] entry in
+                        self?.deleteRecentSearch(entry: entry)
+                    },
+                    onEntryMoved: { [weak self] entry, destinationIndex in
+                        self?.moveRecentSearch(entry: entry, to: destinationIndex)
+                    }
+                )
             }
 
             return cell
@@ -744,6 +753,14 @@ private extension MainSearchViewController {
         searchController.searchBar.text = keyword
         submitSearch(keyword: keyword)
         searchController.searchBar.resignFirstResponder()
+    }
+
+    func deleteRecentSearch(entry: SearchHistoryEntry) {
+        viewModel.removeSearchHistory(id: entry.id)
+    }
+
+    func moveRecentSearch(entry: SearchHistoryEntry, to destinationIndex: Int) {
+        viewModel.moveSearchHistory(id: entry.id, to: destinationIndex)
     }
 
     func makeFilteredEmptyViewIfNeeded(for content: MainSearchContent) -> UIView? {

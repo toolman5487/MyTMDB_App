@@ -144,6 +144,16 @@ final class MainSearchViewModel {
         cachedDailyTrendingContent = cachedDailyTrendingContent?.updatingRecentSearchEntries(loadRecentSearchEntries())
     }
 
+    func removeSearchHistory(id: UUID) {
+        searchHistoryStore.remove(id: id)
+        refreshRecentSearchEntries()
+    }
+
+    func moveSearchHistory(id: UUID, to destinationIndex: Int) {
+        searchHistoryStore.move(id: id, to: destinationIndex, scope: .multi)
+        refreshRecentSearchEntries()
+    }
+
     func refreshRecentSearchEntriesIfShowingDailyTrending() {
         guard case .dailyTrending(let content) = state else { return }
 
@@ -251,6 +261,17 @@ final class MainSearchViewModel {
         let content = cachedDailyTrendingContent.updatingRecentSearchEntries(loadRecentSearchEntries())
         self.cachedDailyTrendingContent = content
         state = dailyTrendingState(for: content)
+    }
+
+    private func refreshRecentSearchEntries() {
+        guard let cachedDailyTrendingContent else { return }
+
+        let updatedContent = cachedDailyTrendingContent.updatingRecentSearchEntries(loadRecentSearchEntries())
+        self.cachedDailyTrendingContent = updatedContent
+
+        if case .dailyTrending = state {
+            state = dailyTrendingState(for: updatedContent)
+        }
     }
 
     private func loadRecentSearchEntries() -> [SearchHistoryEntry] {

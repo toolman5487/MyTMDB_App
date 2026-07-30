@@ -13,6 +13,7 @@ nonisolated protocol SearchHistoryStoring {
     func load(scope: SearchHistoryScope?, limit: Int) -> [SearchHistoryEntry]
     func add(keyword: String, scope: SearchHistoryScope)
     func remove(id: UUID)
+    func move(id: UUID, to destinationIndex: Int, scope: SearchHistoryScope)
     func clear(scope: SearchHistoryScope?)
 }
 
@@ -60,26 +61,33 @@ final class SearchHistoryStore: SearchHistoryStoring {
         lock.performLocked {
             let normalizedKeyword = SearchHistoryEntry.normalizedKeyword(trimmedKeyword)
             var entries = loadEntries()
-            let existingEntry = entries.first { entry in
+            let matchesDuplicate: (SearchHistoryEntry) -> Bool = { entry in
                 entry.scope == scope &&
                     SearchHistoryEntry.normalizedKeyword(entry.keyword) == normalizedKeyword
             }
+            let existingEntry = sortedEntries(entries.filter(matchesDuplicate)).first
 
-            entries.removeAll { entry in
-                entry.scope == scope &&
-                    SearchHistoryEntry.normalizedKeyword(entry.keyword) == normalizedKeyword
-            }
+            entries.removeAll(where: matchesDuplicate)
 
-            entries.append(
-                SearchHistoryEntry(
-                    id: existingEntry?.id ?? UUID(),
-                    keyword: trimmedKeyword,
-                    scope: scope,
-                    createdAt: Date()
+            if let existingEntry {
+                entries.append(
+                    existingEntry.updating(
+                        keyword: trimmedKeyword,
+                        createdAt: Date()
+                    )
                 )
-            )
+            } else {
+                entries.append(
+                    SearchHistoryEntry(
+                        keyword: trimmedKeyword,
+                        scope: scope,
+                        createdAt: Date(),
+                        sortIndex: 0
+                    )
+                )
+            }
 
-            saveEntries(prunedEntries(entries))
+            saveEntries(normalizedEntries(entries))
         }
     }
 
@@ -87,7 +95,29 @@ final class SearchHistoryStore: SearchHistoryStoring {
         lock.performLocked {
             var entries = loadEntries()
             entries.removeAll { $0.id == id }
-            saveEntries(entries)
+            saveEntries(normalizedEntries(entries))
+        }
+    }
+
+    func move(id: UUID, to destinationIndex: Int, scope: SearchHistoryScope) {
+        lock.performLocked {
+            let entries = loadEntries()
+            var scopedEntries = sortedEntries(entries.filter { $0.scope == scope })
+
+            guard let sourceIndex = scopedEntries.firstIndex(where: { $0.id == id }) else {
+                return
+            }
+
+            let movedEntry = scopedEntries.remove(at: sourceIndex)
+            let boundedDestinationIndex = min(max(0, destinationIndex), scopedEntries.count)
+            scopedEntries.insert(movedEntry, at: boundedDestinationIndex)
+
+            let reorderedScopedEntries = scopedEntries.enumerated().map { index, entry in
+                entry.updatingSortIndex(index)
+            }
+            let otherEntries = entries.filter { $0.scope != scope }
+
+            saveEntries(normalizedEntries(otherEntries + reorderedScopedEntries))
         }
     }
 
@@ -99,7 +129,7 @@ final class SearchHistoryStore: SearchHistoryStoring {
             }
 
             let entries = loadEntries().filter { $0.scope != scope }
-            saveEntries(entries)
+            saveEntries(normalizedEntries(entries))
         }
     }
 
@@ -120,17 +150,25 @@ final class SearchHistoryStore: SearchHistoryStoring {
         defaults.set(data, forKey: storageKey)
     }
 
-    private func prunedEntries(_ entries: [SearchHistoryEntry]) -> [SearchHistoryEntry] {
+    private func normalizedEntries(_ entries: [SearchHistoryEntry]) -> [SearchHistoryEntry] {
         let limit = max(0, maxEntriesPerScope)
 
         return SearchHistoryScope.allCases.flatMap { scope in
             sortedEntries(entries.filter { $0.scope == scope })
                 .prefix(limit)
+                .enumerated()
+                .map { index, entry in
+                    entry.updatingSortIndex(index)
+                }
         }
     }
 
     private func sortedEntries(_ entries: [SearchHistoryEntry]) -> [SearchHistoryEntry] {
         entries.sorted { lhs, rhs in
+            if lhs.sortIndex != rhs.sortIndex {
+                return lhs.sortIndex < rhs.sortIndex
+            }
+
             if lhs.createdAt != rhs.createdAt {
                 return lhs.createdAt > rhs.createdAt
             }
