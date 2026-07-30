@@ -121,9 +121,9 @@ final class PersonDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: PersonDetailExternalLinksCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            PersonDetailSectionHeaderView.self,
+            DetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: PersonDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
         )
         collectionView.register(
             PersonDetailHeroHeaderView.self,
@@ -323,11 +323,11 @@ extension PersonDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: PersonDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if let headerView = reusableView as? PersonDetailSectionHeaderView {
+        if let headerView = reusableView as? DetailSectionHeaderView {
             let section = sections[indexPath.section]
             let onTap: (() -> Void)?
 

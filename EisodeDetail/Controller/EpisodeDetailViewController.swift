@@ -109,10 +109,7 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         static let defaultSectionBottomInset = DetailCompositionalLayout.Metrics.sectionBottomInset
         static let factsSectionHeight: CGFloat = 96
         static var trailerStyleSectionHeight: CGFloat {
-            DetailImageTitleStripCollectionViewCell.fittingHeight(
-                minimumHeight: 160,
-                imageHeight: 120
-            )
+            DetailImageTitleStripMetrics.landscapePreviewSectionHeight
         }
 
         static var imageStripSectionHeight: CGFloat {
@@ -184,9 +181,9 @@ final class EpisodeDetailViewController: DetailBaseViewController {
             withReuseIdentifier: EpisodeDetailHeroHeaderView.reuseIdentifier
         )
         collectionView.register(
-            EpisodeDetailSectionHeaderView.self,
+            DetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: EpisodeDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
         )
     }
 
@@ -473,10 +470,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: EpisodeDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        (reusableView as? EpisodeDetailSectionHeaderView)?.configure(
+        (reusableView as? DetailSectionHeaderView)?.configure(
             title: sections[indexPath.section].title,
             contentInsets: sectionHeaderContentInsets
         )

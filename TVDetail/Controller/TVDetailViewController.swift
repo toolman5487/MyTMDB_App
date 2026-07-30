@@ -218,9 +218,9 @@ final class TVDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: TVDetailWatchProvidersCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            TVDetailSectionHeaderView.self,
+            DetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: TVDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
         )
         collectionView.register(
             TVDetailHeroHeaderView.self,
@@ -722,11 +722,11 @@ extension TVDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: TVDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if let headerView = reusableView as? TVDetailSectionHeaderView {
+        if let headerView = reusableView as? DetailSectionHeaderView {
             let section = sections[indexPath.section]
             let onTap: (() -> Void)?
             if let configuration = section.contentListConfiguration {

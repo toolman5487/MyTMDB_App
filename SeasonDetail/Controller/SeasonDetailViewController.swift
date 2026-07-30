@@ -80,10 +80,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
         static let defaultSectionBottomInset = DetailCompositionalLayout.Metrics.sectionBottomInset
         static let factsSectionHeight: CGFloat = 96
         static var trailerStyleSectionHeight: CGFloat {
-            DetailImageTitleStripCollectionViewCell.fittingHeight(
-                minimumHeight: 160,
-                imageHeight: 120
-            )
+            DetailImageTitleStripMetrics.landscapePreviewSectionHeight
         }
 
         static var imageStripSectionHeight: CGFloat {
@@ -156,9 +153,9 @@ final class SeasonDetailViewController: DetailBaseViewController {
             withReuseIdentifier: SeasonDetailHeroHeaderView.reuseIdentifier
         )
         collectionView.register(
-            SeasonDetailSectionHeaderView.self,
+            DetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SeasonDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
         )
     }
 
@@ -351,10 +348,10 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: SeasonDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        if let headerView = reusableView as? SeasonDetailSectionHeaderView {
+        if let headerView = reusableView as? DetailSectionHeaderView {
             let section = sections[indexPath.section]
             let configuration = section.contentListConfiguration(
                 seriesID: seriesID,

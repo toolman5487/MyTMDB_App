@@ -110,10 +110,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         }
 
         static var videosSectionHeight: CGFloat {
-            DetailImageTitleStripCollectionViewCell.fittingHeight(
-                minimumHeight: 160,
-                imageHeight: 120
-            )
+            DetailImageTitleStripMetrics.landscapePreviewSectionHeight
         }
 
         static var imagesSectionHeight: CGFloat {
@@ -210,9 +207,9 @@ final class MovieDetailViewController: DetailBaseViewController {
             forCellWithReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailSectionHeaderView.self,
+            DetailSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: MovieDetailSectionHeaderView.reuseIdentifier
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
         )
         collectionView.register(
             MovieDetailHeroHeaderView.self,
@@ -713,11 +710,11 @@ extension MovieDetailViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: MovieDetailSectionHeaderView.reuseIdentifier,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if let headerView = reusableView as? MovieDetailSectionHeaderView {
+        if let headerView = reusableView as? DetailSectionHeaderView {
             let section = sections[indexPath.section]
             let onTap: (() -> Void)?
             if let configuration = section.contentListConfiguration {

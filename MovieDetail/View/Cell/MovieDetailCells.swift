@@ -532,8 +532,8 @@ final class MovieDetailVideosCollectionViewCell: DetailImageTitleStripCollection
     static let reuseIdentifier = String(describing: MovieDetailVideosCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 220, height: 148)
-        static let imageHeight: CGFloat = 120
+        static let itemSize = DetailImageTitleStripMetrics.landscapePreviewItemSize
+        static let imageHeight = DetailImageTitleStripMetrics.landscapePreviewImageHeight
     }
 
     func configure(

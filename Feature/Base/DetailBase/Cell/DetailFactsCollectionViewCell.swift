@@ -123,10 +123,9 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
 
     private enum Layout {
         static let accentWidth: CGFloat = 4
-        static let titleTopInset: CGFloat = 12
+        static let verticalInset: CGFloat = 12
         static let contentLeadingInset: CGFloat = 16
         static let contentTrailingInset: CGFloat = 12
-        static let valueBottomInset: CGFloat = 12
         static let minimumWidth: CGFloat = 120
     }
 
@@ -168,7 +167,7 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
         }
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(Layout.titleTopInset)
+            make.top.equalToSuperview().inset(Layout.verticalInset)
             make.leading.equalToSuperview().inset(Layout.contentLeadingInset)
             make.trailing.equalToSuperview().inset(Layout.contentTrailingInset)
         }
@@ -176,7 +175,7 @@ private final class DetailFactCardCollectionViewCell: BaseCollectionViewCell {
         valueLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel)
             make.trailing.equalToSuperview().inset(Layout.contentTrailingInset)
-            make.bottom.equalToSuperview().inset(Layout.valueBottomInset)
+            make.bottom.equalToSuperview().inset(Layout.verticalInset)
         }
     }
 

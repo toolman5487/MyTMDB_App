@@ -9,6 +9,20 @@ import SDWebImage
 import SnapKit
 import UIKit
 
+// MARK: - DetailImageTitleStripMetrics
+
+nonisolated enum DetailImageTitleStripMetrics {
+    static let landscapePreviewItemSize = CGSize(width: 220, height: 160)
+    static let landscapePreviewImageHeight: CGFloat = 120
+
+    static var landscapePreviewSectionHeight: CGFloat {
+        DetailImageTitleStripCollectionViewCell.fittingHeight(
+            minimumHeight: landscapePreviewItemSize.height,
+            imageHeight: landscapePreviewImageHeight
+        )
+    }
+}
+
 // MARK: - DetailImageTitleStripCollectionViewCell
 
 @MainActor

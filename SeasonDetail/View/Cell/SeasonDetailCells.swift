@@ -32,8 +32,8 @@ final class SeasonDetailEpisodesCollectionViewCell: DetailImageTitleStripCollect
     static let reuseIdentifier = String(describing: SeasonDetailEpisodesCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 220, height: 148)
-        static let imageHeight: CGFloat = 120
+        static let itemSize = DetailImageTitleStripMetrics.landscapePreviewItemSize
+        static let imageHeight = DetailImageTitleStripMetrics.landscapePreviewImageHeight
     }
 
     func configure(
@@ -66,8 +66,8 @@ final class SeasonDetailVideosCollectionViewCell: DetailImageTitleStripCollectio
     static let reuseIdentifier = String(describing: SeasonDetailVideosCollectionViewCell.self)
 
     private enum Layout {
-        static let itemSize = CGSize(width: 220, height: 148)
-        static let imageHeight: CGFloat = 120
+        static let itemSize = DetailImageTitleStripMetrics.landscapePreviewItemSize
+        static let imageHeight = DetailImageTitleStripMetrics.landscapePreviewImageHeight
     }
 
     func configure(
