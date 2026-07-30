@@ -210,6 +210,7 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
     private enum Layout {
         static let contentInset: CGFloat = 16
         static let itemSpacing: CGFloat = 12
+        static let rowTitleSubtitleSpacing: CGFloat = 4
     }
 
     private var items: [EpisodeDetailTextListItem] = []
@@ -272,15 +273,19 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
         guard contentWidth > 0 else { return 80 }
 
         let textHeight = items.reduce(CGFloat.zero) { result, item in
-            result
+            let subtitleHeight = item.subtitle?.height(
+                constrainedTo: contentWidth,
+                font: .preferredFont(forTextStyle: .subheadline)
+            ) ?? 0
+            let titleSubtitleSpacing = subtitleHeight > 0 ? Layout.rowTitleSubtitleSpacing : 0
+
+            return result
                 + item.title.height(
                     constrainedTo: contentWidth,
                     font: .preferredFont(forTextStyle: .headline)
                 )
-                + (item.subtitle?.height(
-                    constrainedTo: contentWidth,
-                    font: .preferredFont(forTextStyle: .subheadline)
-                ) ?? 0)
+                + titleSubtitleSpacing
+                + subtitleHeight
         }
         let spacing = CGFloat(max(items.count - 1, 0)) * Layout.itemSpacing
         return ceil(textHeight + spacing + (Layout.contentInset * 2))

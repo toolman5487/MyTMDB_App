@@ -18,7 +18,7 @@ enum DetailCompositionalLayout {
         static let sectionHeaderHeight: CGFloat = 28
         static let headerContentSpacing: CGFloat = 8
         static let horizontalInset: CGFloat = 0
-        static let sectionBottomInset: CGFloat = 24
+        static let sectionBottomInset: CGFloat = 8
         static let estimatedHeroHeight: CGFloat = 360
     }
 
