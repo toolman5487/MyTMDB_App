@@ -175,6 +175,7 @@
 		15BAEBD72FF7D100006B0E15 /* TVDetailReviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBD62FF7D100006B0E15 /* TVDetailReviewCollectionViewCell.swift */; };
 		15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
 		15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */; };
+		15E100162FF7000000E10001 /* DetailActionBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100172FF7000000E10001 /* DetailActionBarViewController.swift */; };
 		15CF99DB2FF620000041F4CC /* DetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99DD2FF620000041F4CC /* DetailRouter.swift */; };
 		15CF99DF2FF621000041F4CC /* BaseWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99E12FF621000041F4CC /* BaseWebViewController.swift */; };
 		15CF99E72FF622000041F4CC /* YouTubePlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99E52FF622000041F4CC /* YouTubePlayerViewController.swift */; };
@@ -235,6 +236,7 @@
 		15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */; };
 		15E1000A2FF7200000E10001 /* DetailSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100092FF7200000E10001 /* DetailSectionHeaderView.swift */; };
 		15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
+		15E100142FF7100000E10001 /* DetailLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100152FF7100000E10001 /* DetailLayoutMetrics.swift */; };
 		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E401023014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
 		15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
@@ -421,6 +423,7 @@
 		15BAEBD62FF7D100006B0E15 /* TVDetailReviewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailReviewCollectionViewCell.swift; sourceTree = "<group>"; };
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBaseViewController.swift; sourceTree = "<group>"; };
+		15E100172FF7000000E10001 /* DetailActionBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailActionBarViewController.swift; sourceTree = "<group>"; };
 		15CF99DD2FF620000041F4CC /* DetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRouter.swift; sourceTree = "<group>"; };
 		15CF99E12FF621000041F4CC /* BaseWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseWebViewController.swift; sourceTree = "<group>"; };
 		15CF99E52FF622000041F4CC /* YouTubePlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubePlayerViewController.swift; sourceTree = "<group>"; };
@@ -480,6 +483,7 @@
 		15E100052FF7200000E10001 /* DetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15E100092FF7200000E10001 /* DetailSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSectionHeaderView.swift; sourceTree = "<group>"; };
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
+		15E100152FF7100000E10001 /* DetailLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailLayoutMetrics.swift; sourceTree = "<group>"; };
 		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
 		15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchIdleCollectionViewCells.swift; sourceTree = "<group>"; };
 		15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCreditsPresentationBuilder.swift; sourceTree = "<group>"; };
@@ -2417,6 +2421,7 @@
 		15DAB01C2FFDFC19009FB88A /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				15E100172FF7000000E10001 /* DetailActionBarViewController.swift */,
 				15CF99D32FF371130041F4CC /* DetailBaseViewController.swift */,
 			);
 			path = Controller;
@@ -2576,6 +2581,7 @@
 			isa = PBXGroup;
 			children = (
 				15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */,
+				15E100152FF7100000E10001 /* DetailLayoutMetrics.swift */,
 			);
 			path = Layout;
 			sourceTree = "<group>";
@@ -2972,6 +2978,7 @@
 				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
 				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
+				15E100162FF7000000E10001 /* DetailActionBarViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15DCC003300D000000DCC003 /* DetailContentListViewController.swift in Sources */,
 				15DAB0223007D00009FB88A /* DetailImagePreviewViewController.swift in Sources */,
@@ -2979,6 +2986,7 @@
 				15F000032FF7500000F00001 /* RatingPageSheetViewController.swift in Sources */,
 				15E100072FF7200000E10001 /* DetailHeroHeaderView.swift in Sources */,
 				15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */,
+				15E100142FF7100000E10001 /* DetailLayoutMetrics.swift in Sources */,
 				15CFA1022FFAA000041F4CC /* DetailFactsCollectionViewCell.swift in Sources */,
 				15CFA1062FFAA100041F4CC /* DetailImageTitleStripCollectionViewCell.swift in Sources */,
 				15CFA10A2FFAA200041F4CC /* DetailExternalLinkCollectionViewCell.swift in Sources */,
@@ -3024,7 +3032,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3056,7 +3064,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3124,7 +3132,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -3184,7 +3192,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

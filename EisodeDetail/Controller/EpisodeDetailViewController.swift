@@ -6,28 +6,19 @@
 //
 
 import Foundation
-import SnapKit
 import UIKit
 
 @MainActor
-final class EpisodeDetailViewController: DetailBaseViewController {
+final class EpisodeDetailViewController: DetailActionBarViewController {
 
     // MARK: - Properties
 
-    private let seriesID: Int
-    private let seasonNumber: Int
-    private let episodeNumber: Int
     private let viewModel: EpisodeDetailViewModel
     private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
 
     private var sections: [EpisodeDetailSectionItem] = []
 
     private var loadTask: Task<Void, Never>?
-    private var ratingTask: Task<Void, Never>?
-
-    // MARK: - UI Components
-
-    private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization
 
@@ -36,38 +27,32 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         seasonNumber: Int,
         episodeNumber: Int
     ) {
-        self.init(
+        let input = EpisodeDetailInput(
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            episodeNumber: episodeNumber,
-            viewModel: EpisodeDetailViewModel()
+            episodeNumber: episodeNumber
         )
+        self.init(viewModel: EpisodeDetailViewModel(input: input))
     }
 
-    init(
-        seriesID: Int,
-        seasonNumber: Int,
-        episodeNumber: Int,
-        viewModel: EpisodeDetailViewModel
-    ) {
-        self.seriesID = seriesID
-        self.seasonNumber = seasonNumber
-        self.episodeNumber = episodeNumber
+    init(viewModel: EpisodeDetailViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        self.seriesID = 0
-        self.seasonNumber = 0
-        self.episodeNumber = 0
-        self.viewModel = EpisodeDetailViewModel()
+        self.viewModel = EpisodeDetailViewModel(
+            input: EpisodeDetailInput(
+                seriesID: 0,
+                seasonNumber: 0,
+                episodeNumber: 0
+            )
+        )
         super.init(coder: coder)
     }
 
     deinit {
         loadTask?.cancel()
-        ratingTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -79,35 +64,20 @@ final class EpisodeDetailViewController: DetailBaseViewController {
     }
 
     override func bindViewModel() {
+        viewModel.bind(
+            onStateChange: { [weak self] state in
+                self?.render(state: state)
+            },
+            onRatingStateChange: { [weak self] state in
+                self?.updateRatingAction(with: state)
+            }
+        )
         loadEpisodeDetail()
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        view.addSubview(bottomActionBarView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        bottomActionBarView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-        }
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateCollectionViewBottomInset()
     }
 
     // MARK: - Setup
 
     private enum Layout {
-        static let headerHeight = DetailCompositionalLayout.Metrics.sectionHeaderHeight
-        static let headerContentSpacing = DetailCompositionalLayout.Metrics.headerContentSpacing
-        static let defaultHorizontalInset = DetailCompositionalLayout.Metrics.horizontalInset
-        static let defaultSectionBottomInset = DetailCompositionalLayout.Metrics.sectionBottomInset
-        static let factsSectionHeight: CGFloat = 96
         static var trailerStyleSectionHeight: CGFloat {
             DetailImageTitleStripMetrics.landscapePreviewSectionHeight
         }
@@ -122,9 +92,12 @@ final class EpisodeDetailViewController: DetailBaseViewController {
     }
 
     private func configureActionBar() {
-        bottomActionBarView.setVisibleActions(favorite: false, rating: true, review: false)
-        bottomActionBarView.configureRating(value: nil, isEnabled: false)
-        bottomActionBarView.setRatingAction(target: self, action: #selector(handleRatingButtonTapped))
+        configureDetailActions(
+            showsFavorite: false,
+            showsRating: true,
+            showsReview: false,
+            ratingAction: { [weak self] in self?.handleRatingButtonTapped() }
+        )
     }
 
     private func configureCollectionView() {
@@ -132,12 +105,6 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
         collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.sectionInset = UIEdgeInsets(
-            top: 0,
-            left: Layout.defaultHorizontalInset,
-            bottom: 0,
-            right: Layout.defaultHorizontalInset
-        )
 
         collectionView.register(
             EpisodeDetailOverviewCollectionViewCell.self,
@@ -180,11 +147,7 @@ final class EpisodeDetailViewController: DetailBaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: EpisodeDetailHeroHeaderView.reuseIdentifier
         )
-        collectionView.register(
-            DetailSectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
-        )
+        registerDetailSectionHeader()
     }
 
     // MARK: - Data Loading
@@ -193,17 +156,7 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
-            render(state: .loading)
-            await viewModel.loadEpisodeDetail(
-                seriesID: seriesID,
-                seasonNumber: seasonNumber,
-                episodeNumber: episodeNumber
-            )
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
-            updateRatingButton()
+            await viewModel.loadEpisodeDetail()
         }
     }
 
@@ -211,29 +164,21 @@ final class EpisodeDetailViewController: DetailBaseViewController {
         switch state {
         case .idle:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(.idle)
 
         case .loading:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(true)
-            collectionView.backgroundView = nil
+            renderDetailContent(.loading)
 
         case .loaded(let content):
             sections = content.sections
-            setDetailNavigationTitle(content.navigationTitle)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(.loaded(navigationTitle: content.navigationTitle))
 
         case .failed(let message):
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadEpisodeDetail()
-            }
+            renderDetailContent(
+                .failed(message: message) { [weak self] in self?.loadEpisodeDetail() }
+            )
         }
 
         collectionView.reloadData()
@@ -241,8 +186,8 @@ final class EpisodeDetailViewController: DetailBaseViewController {
 
     // MARK: - Actions
 
-    @objc private func handleRatingButtonTapped() {
-        if shouldNavigateToLoginForRating() {
+    private func handleRatingButtonTapped() {
+        if viewModel.ratingState.requiresUserLogin {
             router.showLogin()
             return
         }
@@ -265,71 +210,23 @@ final class EpisodeDetailViewController: DetailBaseViewController {
     }
 
     private func submitRating(_ value: Double) {
-        bottomActionBarView.configureRating(value: value, isEnabled: false)
-        ratingTask?.cancel()
-        ratingTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            let message = await viewModel.submitRating(
-                seriesID: seriesID,
-                seasonNumber: seasonNumber,
-                episodeNumber: episodeNumber,
-                value: value
-            )
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
-            updateRatingButton()
-
-            if let message {
-                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+        performRatingUpdate(
+            pendingValue: value,
+            operation: { [weak self] in
+                guard let self else { return nil }
+                return await viewModel.submitRating(value: value)
             }
-        }
-    }
-
-    private func deleteRating() {
-        bottomActionBarView.configureRating(value: nil, isEnabled: false)
-        ratingTask?.cancel()
-        ratingTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            let message = await viewModel.deleteRating(
-                seriesID: seriesID,
-                seasonNumber: seasonNumber,
-                episodeNumber: episodeNumber
-            )
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
-            updateRatingButton()
-
-            if let message {
-                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
-            }
-        }
-    }
-
-    private func updateRatingButton() {
-        bottomActionBarView.configureRating(
-            value: viewModel.ratingState.value,
-            isEnabled: viewModel.ratingState.isButtonEnabled
         )
     }
 
-    private func shouldNavigateToLoginForRating() -> Bool {
-        if case .requiresUserLogin = viewModel.ratingState {
-            return true
-        }
-
-        return false
-    }
-
-    private func updateCollectionViewBottomInset() {
-        let bottomInset = bottomActionBarView.bounds.height
-        guard collectionView.contentInset.bottom != bottomInset else { return }
-
-        collectionView.contentInset.bottom = bottomInset
-        collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
+    private func deleteRating() {
+        performRatingUpdate(
+            pendingValue: nil,
+            operation: { [weak self] in
+                guard let self else { return nil }
+                return await viewModel.deleteRating()
+            }
+        )
     }
 }
 
@@ -400,7 +297,9 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailGuestStarsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailGuestStarsCollectionViewCell)?.configure(guestStars: people) { [weak self] personID in
+            (cell as? EpisodeDetailGuestStarsCollectionViewCell)?.configure(
+                guestStars: people
+            ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
@@ -440,7 +339,9 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailAccountStateCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailAccountStateCollectionViewCell)?.configure(items: accountStateRows(from: accountState))
+            (cell as? EpisodeDetailAccountStateCollectionViewCell)?.configure(
+                items: accountStateRows(from: accountState)
+            )
             return cell
         }
     }
@@ -468,15 +369,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
             return reusableView
         }
 
-        let reusableView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
-            for: indexPath
-        )
-        (reusableView as? DetailSectionHeaderView)?.configure(
+        return dequeueDetailSectionHeader(
+            at: indexPath,
             title: sections[indexPath.section].title
         )
-        return reusableView
     }
 }
 
@@ -506,7 +402,7 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
 
         return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.headerHeight
+            height: DetailLayoutMetrics.sectionHeaderHeight
         )
     }
 
@@ -523,11 +419,7 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let sectionInsets = sectionInset(for: indexPath.section)
-        let width = collectionView.bounds.width
-            - sectionInsets.left
-            - sectionInsets.right
-        let itemWidth = max(width, 0)
+        let itemWidth = collectionView.bounds.width
         let itemHeight = height(for: sections[indexPath.section], width: itemWidth)
 
         return CGSize(width: itemWidth, height: itemHeight)
@@ -535,22 +427,14 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
 
     private func sectionInset(for section: Int) -> UIEdgeInsets {
         if case .overview(let item) = sections[section] {
-            return UIEdgeInsets(
-                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
-                left: Layout.defaultHorizontalInset,
-                bottom: Layout.defaultSectionBottomInset,
-                right: Layout.defaultHorizontalInset
+            return DetailLayoutMetrics.sectionInsets(
+                top: item.overview == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
             )
         }
 
-        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+        let topInset = sections[section].title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
 
-        return UIEdgeInsets(
-            top: topInset,
-            left: Layout.defaultHorizontalInset,
-            bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
+        return DetailLayoutMetrics.sectionInsets(top: topInset)
     }
 
     private func height(
@@ -567,7 +451,7 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
             )
 
         case .facts:
-            return Layout.factsSectionHeight
+            return DetailLayoutMetrics.factsSectionHeight
 
         case .videos, .images:
             return Layout.trailerStyleSectionHeight

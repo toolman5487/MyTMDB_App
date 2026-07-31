@@ -59,17 +59,15 @@ final class PersonDetailViewController: DetailBaseViewController {
     }
 
     override func bindViewModel() {
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
         loadPersonDetail()
     }
 
     // MARK: - Setup
 
     private enum Layout {
-        static let headerHeight = DetailCompositionalLayout.Metrics.sectionHeaderHeight
-        static let headerContentSpacing = DetailCompositionalLayout.Metrics.headerContentSpacing
-        static let defaultHorizontalInset = DetailCompositionalLayout.Metrics.horizontalInset
-        static let defaultSectionBottomInset = DetailCompositionalLayout.Metrics.sectionBottomInset
-        static let factsSectionHeight: CGFloat = 96
         static var creditsSectionHeight: CGFloat {
             DetailImageTitleStripCollectionViewCell.fittingHeight(
                 minimumHeight: 220,
@@ -90,12 +88,6 @@ final class PersonDetailViewController: DetailBaseViewController {
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
         collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.sectionInset = UIEdgeInsets(
-            top: 0,
-            left: Layout.defaultHorizontalInset,
-            bottom: 0,
-            right: Layout.defaultHorizontalInset
-        )
 
         collectionView.register(
             PersonDetailBiographyCollectionViewCell.self,
@@ -125,11 +117,7 @@ final class PersonDetailViewController: DetailBaseViewController {
             PersonDetailExternalLinksCollectionViewCell.self,
             forCellWithReuseIdentifier: PersonDetailExternalLinksCollectionViewCell.reuseIdentifier
         )
-        collectionView.register(
-            DetailSectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
-        )
+        registerDetailSectionHeader()
         collectionView.register(
             PersonDetailHeroHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -143,12 +131,7 @@ final class PersonDetailViewController: DetailBaseViewController {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
-            render(state: .loading)
             await viewModel.loadPersonDetail(id: personID)
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
         }
     }
 
@@ -180,29 +163,23 @@ final class PersonDetailViewController: DetailBaseViewController {
         switch state {
         case .idle:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(.idle)
 
         case .loading:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(true)
-            collectionView.backgroundView = nil
+            renderDetailContent(.loading)
 
         case .loaded(let loadedSections):
             sections = loadedSections
-            setDetailNavigationTitle(detailNavigationTitle(from: loadedSections))
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(
+                .loaded(navigationTitle: detailNavigationTitle(from: loadedSections))
+            )
 
         case .failed(let message):
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadPersonDetail()
-            }
+            renderDetailContent(
+                .failed(message: message) { [weak self] in self?.loadPersonDetail() }
+            )
         }
 
         collectionView.reloadData()
@@ -326,32 +303,18 @@ extension PersonDetailViewController: UICollectionViewDataSource {
             return reusableView
         }
 
-        let reusableView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
-            for: indexPath
-        )
+        let section = sections[indexPath.section]
+        let onTap: (() -> Void)?
 
-        if let headerView = reusableView as? DetailSectionHeaderView {
-            let section = sections[indexPath.section]
-            let onTap: (() -> Void)?
-
-            if let mediaType = section.creditsMediaType {
-                onTap = { [weak self] in
-                    guard let self else { return }
-                    self.loadCreditsList(mediaType: mediaType)
-                }
-            } else {
-                onTap = nil
+        if let mediaType = section.creditsMediaType {
+            onTap = { [weak self] in
+                guard let self else { return }
+                self.loadCreditsList(mediaType: mediaType)
             }
-
-            headerView.configure(
-                title: section.title,
-                onTap: onTap
-            )
+        } else {
+            onTap = nil
         }
-
-        return reusableView
+        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
     }
 
     private func showImagePreview(selectedImageURL: URL) {
@@ -415,7 +378,7 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
 
         return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.headerHeight
+            height: DetailLayoutMetrics.sectionHeaderHeight
         )
     }
 
@@ -432,35 +395,24 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let sectionInsets = sectionInset(for: indexPath.section)
         let width = collectionView.bounds.width
-            - sectionInsets.left
-            - sectionInsets.right
 
         return CGSize(
-            width: max(width, 0),
-            height: height(for: sections[indexPath.section], width: max(width, 0))
+            width: width,
+            height: height(for: sections[indexPath.section], width: width)
         )
     }
 
     private func sectionInset(for section: Int) -> UIEdgeInsets {
         if case .biography(let item) = sections[section] {
-            return UIEdgeInsets(
-                top: item.biography == nil ? 0 : Layout.headerContentSpacing,
-                left: Layout.defaultHorizontalInset,
-                bottom: Layout.defaultSectionBottomInset,
-                right: Layout.defaultHorizontalInset
+            return DetailLayoutMetrics.sectionInsets(
+                top: item.biography == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
             )
         }
 
-        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+        let topInset = sections[section].title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
 
-        return UIEdgeInsets(
-            top: topInset,
-            left: Layout.defaultHorizontalInset,
-            bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
+        return DetailLayoutMetrics.sectionInsets(top: topInset)
     }
 
     private func height(for section: PersonDetailSectionItem, width: CGFloat) -> CGFloat {
@@ -474,7 +426,7 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
             )
 
         case .facts:
-            return Layout.factsSectionHeight
+            return DetailLayoutMetrics.factsSectionHeight
 
         case .movieCredits, .tvCredits:
             return Layout.creditsSectionHeight

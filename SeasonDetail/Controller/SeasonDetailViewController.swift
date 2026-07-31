@@ -68,17 +68,15 @@ final class SeasonDetailViewController: DetailBaseViewController {
     }
 
     override func bindViewModel() {
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
         loadSeasonDetail()
     }
 
     // MARK: - Setup
 
     private enum Layout {
-        static let headerHeight = DetailCompositionalLayout.Metrics.sectionHeaderHeight
-        static let headerContentSpacing = DetailCompositionalLayout.Metrics.headerContentSpacing
-        static let defaultHorizontalInset = DetailCompositionalLayout.Metrics.horizontalInset
-        static let defaultSectionBottomInset = DetailCompositionalLayout.Metrics.sectionBottomInset
-        static let factsSectionHeight: CGFloat = 96
         static var trailerStyleSectionHeight: CGFloat {
             DetailImageTitleStripMetrics.landscapePreviewSectionHeight
         }
@@ -104,12 +102,6 @@ final class SeasonDetailViewController: DetailBaseViewController {
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
         collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.sectionInset = UIEdgeInsets(
-            top: 0,
-            left: Layout.defaultHorizontalInset,
-            bottom: 0,
-            right: Layout.defaultHorizontalInset
-        )
 
         collectionView.register(
             SeasonDetailOverviewCollectionViewCell.self,
@@ -152,11 +144,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: SeasonDetailHeroHeaderView.reuseIdentifier
         )
-        collectionView.register(
-            DetailSectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
-        )
+        registerDetailSectionHeader()
     }
 
     // MARK: - Data Loading
@@ -165,15 +153,10 @@ final class SeasonDetailViewController: DetailBaseViewController {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
-            render(state: .loading)
             await viewModel.loadSeasonDetail(
                 seriesID: seriesID,
                 seasonNumber: seasonNumber
             )
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
         }
     }
 
@@ -181,29 +164,21 @@ final class SeasonDetailViewController: DetailBaseViewController {
         switch state {
         case .idle:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(.idle)
 
         case .loading:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(true)
-            collectionView.backgroundView = nil
+            renderDetailContent(.loading)
 
         case .loaded(let content):
             sections = content.sections
-            setDetailNavigationTitle(content.navigationTitle)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(.loaded(navigationTitle: content.navigationTitle))
 
         case .failed(let message):
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadSeasonDetail()
-            }
+            renderDetailContent(
+                .failed(message: message) { [weak self] in self?.loadSeasonDetail() }
+            )
         }
 
         collectionView.reloadData()
@@ -307,7 +282,9 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailWatchProvidersCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailWatchProvidersCollectionViewCell)?.configure(providers: providers) { [weak self] provider in
+            (cell as? SeasonDetailWatchProvidersCollectionViewCell)?.configure(
+                providers: providers
+            ) { [weak self] provider in
                 guard let linkURL = provider.linkURL else { return }
                 self?.router.showWatchProvider(url: linkURL, title: provider.title)
             }
@@ -346,31 +323,20 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
             return reusableView
         }
 
-        let reusableView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
-            for: indexPath
+        let section = sections[indexPath.section]
+        let configuration = section.contentListConfiguration(
+            seriesID: seriesID,
+            seasonNumber: seasonNumber
         )
-        if let headerView = reusableView as? DetailSectionHeaderView {
-            let section = sections[indexPath.section]
-            let configuration = section.contentListConfiguration(
-                seriesID: seriesID,
-                seasonNumber: seasonNumber
-            )
-            let onTap: (() -> Void)?
-            if let configuration {
-                onTap = { [weak self] in
-                    self?.router.showContentList(configuration)
-                }
-            } else {
-                onTap = nil
+        let onTap: (() -> Void)?
+        if let configuration {
+            onTap = { [weak self] in
+                self?.router.showContentList(configuration)
             }
-            headerView.configure(
-                title: section.title,
-                onTap: onTap
-            )
+        } else {
+            onTap = nil
         }
-        return reusableView
+        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
     }
 }
 
@@ -400,7 +366,7 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
 
         return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.headerHeight
+            height: DetailLayoutMetrics.sectionHeaderHeight
         )
     }
 
@@ -417,11 +383,7 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let sectionInsets = sectionInset(for: indexPath.section)
-        let width = collectionView.bounds.width
-            - sectionInsets.left
-            - sectionInsets.right
-        let itemWidth = max(width, 0)
+        let itemWidth = collectionView.bounds.width
         let itemHeight = height(for: sections[indexPath.section], width: itemWidth)
 
         return CGSize(width: itemWidth, height: itemHeight)
@@ -429,22 +391,14 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
 
     private func sectionInset(for section: Int) -> UIEdgeInsets {
         if case .overview(let item) = sections[section] {
-            return UIEdgeInsets(
-                top: item.overview == nil ? 0 : Layout.headerContentSpacing,
-                left: Layout.defaultHorizontalInset,
-                bottom: Layout.defaultSectionBottomInset,
-                right: Layout.defaultHorizontalInset
+            return DetailLayoutMetrics.sectionInsets(
+                top: item.overview == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
             )
         }
 
-        let topInset = sections[section].title == nil ? 0 : Layout.headerContentSpacing
+        let topInset = sections[section].title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
 
-        return UIEdgeInsets(
-            top: topInset,
-            left: Layout.defaultHorizontalInset,
-            bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
+        return DetailLayoutMetrics.sectionInsets(top: topInset)
     }
 
     private func height(
@@ -461,7 +415,7 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
             )
 
         case .facts:
-            return Layout.factsSectionHeight
+            return DetailLayoutMetrics.factsSectionHeight
 
         case .episodes, .videos:
             return Layout.trailerStyleSectionHeight

@@ -304,7 +304,11 @@ final class MainTabBarController: UITabBarController {
         avatarTask?.cancel()
         avatarTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            guard let image = await avatarProvider.fetchAvatarImage(sessionId: sessionId) else { return }
+            let image = await avatarProvider.fetchAvatarImage(
+                sessionId: sessionId,
+                displayScale: traitCollection.displayScale
+            )
+            guard let image else { return }
             guard !Task.isCancelled else { return }
             updateMemberTabBarItemImage(image)
         }

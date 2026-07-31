@@ -5,7 +5,6 @@
 //  Created by Willy Hsu on 2026/7/2.
 //
 
-import Observation
 import UIKit
 
 // MARK: - MainMovieListViewController
@@ -106,8 +105,9 @@ final class MainMovieListViewController: MainBaseViewController {
     }
 
     override func bindViewModel() {
-        render(state: viewModel.state)
-        observeViewModelState()
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
         loadInitialContent()
     }
 
@@ -183,18 +183,6 @@ final class MainMovieListViewController: MainBaseViewController {
         filterSelectionTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             await viewModel.selectGenre(id: id)
-        }
-    }
-
-    private func observeViewModelState() {
-        withObservationTracking {
-            _ = viewModel.state
-        } onChange: { [weak self] in
-            Task(priority: .userInitiated) { @MainActor [weak self] in
-                guard let self else { return }
-                render(state: viewModel.state)
-                observeViewModelState()
-            }
         }
     }
 

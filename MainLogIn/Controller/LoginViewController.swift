@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import SnapKit
-import Observation
+import UIKit
 
 @MainActor
 final class LoginViewController: BaseViewController {
@@ -219,8 +218,9 @@ final class LoginViewController: BaseViewController {
         pageScrollView.delegate = self
         pageControl.addTarget(self, action: #selector(pageControlChanged), for: .valueChanged)
 
-        handleLoginState(loginVM.state)
-        observeLoginState()
+        loginVM.bind { [weak self] state in
+            self?.handleLoginState(state)
+        }
     }
 
     // MARK: - Setup
@@ -248,20 +248,6 @@ final class LoginViewController: BaseViewController {
     @objc private func handleErrorActionButtonTapped() {
         guard let currentFailureRecoveryAction else { return }
         performRecoveryAction(currentFailureRecoveryAction)
-    }
-
-    // MARK: - Observation
-
-    private func observeLoginState() {
-        withObservationTracking {
-            _ = loginVM.state
-        } onChange: { [weak self] in
-            Task(priority: .userInitiated) { @MainActor in
-                guard let self else { return }
-                self.handleLoginState(self.loginVM.state)
-                self.observeLoginState()
-            }
-        }
     }
 
     // MARK: - State Handling

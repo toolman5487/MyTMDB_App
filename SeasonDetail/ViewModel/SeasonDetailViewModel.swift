@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - SeasonDetailViewState
 
@@ -27,19 +26,37 @@ nonisolated struct SeasonDetailViewContent: Sendable, Equatable {
 // MARK: - SeasonDetailViewModel
 
 @MainActor
-@Observable
 final class SeasonDetailViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: SeasonDetailViewState = .idle
+    private(set) var state: SeasonDetailViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (SeasonDetailViewState) -> Void)?
     private let service: SeasonDetailServicing
 
     // MARK: - Initialization
 
-    init(service: SeasonDetailServicing? = nil) {
-        self.service = service ?? SeasonDetailService(session: SessionStore().load())
+    init(service: SeasonDetailServicing) {
+        self.service = service
+    }
+
+    convenience init() {
+        self.init(
+            service: SeasonDetailService(session: SessionStore().load())
+        )
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (SeasonDetailViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

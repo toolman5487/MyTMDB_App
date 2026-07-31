@@ -8,6 +8,8 @@
 import SnapKit
 import UIKit
 
+// MARK: - DetailBottomActionBarView
+
 @MainActor
 final class DetailBottomActionBarView: UIView {
 
@@ -28,6 +30,9 @@ final class DetailBottomActionBarView: UIView {
     private var isFavoriteActionVisible = true
     private var isRatingActionVisible = true
     private var isReviewActionVisible = true
+    private var favoriteAction: (@MainActor () -> Void)?
+    private var ratingAction: (@MainActor () -> Void)?
+    private var reviewAction: (@MainActor () -> Void)?
 
     // MARK: - UI Components
 
@@ -80,7 +85,7 @@ final class DetailBottomActionBarView: UIView {
 
     // MARK: - Configuration
 
-    func configureFavorite(isFavorite: Bool, isEnabled: Bool) {
+    private func configureFavorite(isFavorite: Bool, isEnabled: Bool) {
         favoriteButton.configuration = favoriteButtonConfiguration(isFavorite: isFavorite)
         favoriteButton.isEnabled = isEnabled
         favoriteButton.applyAccessibilityText(
@@ -92,7 +97,7 @@ final class DetailBottomActionBarView: UIView {
         )
     }
 
-    func configureRating(value: Double?, isEnabled: Bool) {
+    private func configureRating(value: Double?, isEnabled: Bool) {
         ratingButton.configuration = ratingButtonConfiguration(value: value)
         ratingButton.isEnabled = isEnabled
         ratingButton.applyAccessibilityText(
@@ -104,19 +109,34 @@ final class DetailBottomActionBarView: UIView {
         )
     }
 
-    func setFavoriteAction(target: Any?, action: Selector) {
-        favoriteButton.removeTarget(nil, action: nil, for: .allEvents)
-        favoriteButton.addTarget(target, action: action, for: .touchUpInside)
+    func configureFavorite(with state: AccountMediaFavoriteState) {
+        configureFavorite(
+            isFavorite: state.isFavorite,
+            isEnabled: state.isButtonEnabled
+        )
     }
 
-    func setRatingAction(target: Any?, action: Selector) {
-        ratingButton.removeTarget(nil, action: nil, for: .allEvents)
-        ratingButton.addTarget(target, action: action, for: .touchUpInside)
+    func configurePendingFavorite(from state: AccountMediaFavoriteState) {
+        guard case .ready(let isFavorite) = state else { return }
+        configureFavorite(isFavorite: !isFavorite, isEnabled: false)
     }
 
-    func setReviewAction(target: Any?, action: Selector) {
-        reviewButton.removeTarget(nil, action: nil, for: .allEvents)
-        reviewButton.addTarget(target, action: action, for: .touchUpInside)
+    func configureRating(with state: AccountMediaRatingState) {
+        configureRating(value: state.value, isEnabled: state.isButtonEnabled)
+    }
+
+    func configurePendingRating(value: Double?) {
+        configureRating(value: value, isEnabled: false)
+    }
+
+    func setActionHandlers(
+        favorite: (@MainActor () -> Void)?,
+        rating: (@MainActor () -> Void)?,
+        review: (@MainActor () -> Void)?
+    ) {
+        favoriteAction = favorite
+        ratingAction = rating
+        reviewAction = review
     }
 
     func setVisibleActions(
@@ -160,6 +180,9 @@ final class DetailBottomActionBarView: UIView {
                 hint: "點兩下查看評論"
             )
         )
+        favoriteButton.addTarget(self, action: #selector(handleFavoriteAction), for: .touchUpInside)
+        ratingButton.addTarget(self, action: #selector(handleRatingAction), for: .touchUpInside)
+        reviewButton.addTarget(self, action: #selector(handleReviewAction), for: .touchUpInside)
     }
 
     private func setupHierarchy() {
@@ -263,5 +286,22 @@ final class DetailBottomActionBarView: UIView {
     private func ratingButtonTitle(value: Double?) -> String {
         guard let value else { return "評分" }
         return BaseDisplayTextFormatter.decimal(value)
+    }
+
+    // MARK: - Actions
+
+    @objc
+    private func handleFavoriteAction() {
+        favoriteAction?()
+    }
+
+    @objc
+    private func handleRatingAction() {
+        ratingAction?()
+    }
+
+    @objc
+    private func handleReviewAction() {
+        reviewAction?()
     }
 }

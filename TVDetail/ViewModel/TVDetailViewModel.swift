@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - State
 
@@ -20,26 +19,32 @@ nonisolated enum TVDetailViewState: Equatable {
 // MARK: - TVDetailViewModel
 
 @MainActor
-@Observable
 final class TVDetailViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: TVDetailViewState = .idle
-    private(set) var favoriteState: AccountMediaFavoriteState = .unavailable
-    private(set) var ratingState: AccountMediaRatingState = .unavailable
-    private(set) var ratingDefaultValue: Double = AccountMediaRatingValue.fallback
+    private(set) var state: TVDetailViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
+    var favoriteState: AccountMediaFavoriteState { accountMediaController.favoriteState }
+    var ratingState: AccountMediaRatingState { accountMediaController.ratingState }
+    var ratingDefaultValue: Double { accountMediaController.ratingDefaultValue }
 
+    private var onStateChange: (@MainActor (TVDetailViewState) -> Void)?
+    private var onAccountStateChange: (@MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void)?
     private let service: TVDetailServicing
     private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
     init(
-        service: TVDetailServicing = TVDetailService(),
-        sessionStore: SessionStoring = SessionStore(),
-        accountService: AccountServiceProtocol = AccountService(),
-        accountMediaService: MemberCenterServicing = MemberCenterService()
+        service: TVDetailServicing,
+        sessionStore: SessionStoring,
+        accountService: AccountServiceProtocol,
+        accountMediaService: MemberCenterServicing
     ) {
         self.service = service
         self.accountMediaController = DetailAccountMediaStateController(
@@ -47,13 +52,33 @@ final class TVDetailViewModel {
             accountService: accountService,
             accountMediaService: accountMediaService
         )
-        accountMediaController.stateDidChange = { [weak self] in
-            self?.syncAccountMediaState()
+        self.accountMediaController.stateDidChange = { [weak self] in
+            self?.notifyAccountStateChange()
         }
-        syncAccountMediaState()
     }
 
-    // MARK: - Public Methods
+    convenience init() {
+        self.init(
+            service: TVDetailService(),
+            sessionStore: SessionStore(),
+            accountService: AccountService(),
+            accountMediaService: MemberCenterService()
+        )
+    }
+
+    // MARK: - Output Binding
+
+    func bind(
+        onStateChange: @escaping @MainActor (TVDetailViewState) -> Void,
+        onAccountStateChange: @escaping @MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void
+    ) {
+        self.onStateChange = onStateChange
+        self.onAccountStateChange = onAccountStateChange
+        onStateChange(state)
+        notifyAccountStateChange()
+    }
+
+    // MARK: - Data Loading
 
     func loadTVDetail(seriesID: Int) async {
         guard seriesID > 0 else {
@@ -78,6 +103,8 @@ final class TVDetailViewModel {
                 try await service.fetchTVAccountStates(seriesID: seriesID, sessionId: sessionID)
             }
             let loadedContent = try await content
+            guard !Task.isCancelled else { return }
+
             accountMediaController.updateDefaultRating(
                 fromPublicRating: loadedContent.detail.voteCount > 0
                     ? loadedContent.detail.voteAverage
@@ -85,39 +112,51 @@ final class TVDetailViewModel {
             )
             state = .loaded(TVDetailSectionBuilder.makeSections(content: loadedContent))
         } catch {
+            guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
             accountMediaController.markUnavailable()
         }
     }
 
+    // MARK: - Favorite
+
     func toggleFavorite(seriesID: Int) async -> ErrorMessage? {
         await accountMediaController.toggleFavorite(
             mediaID: seriesID,
             mediaType: .tv,
-            invalidMessage: ErrorMessage(title: "無法收藏", message: "影集 ID 不正確，請返回上一頁後再試。")
+            invalidMessage: ErrorMessage(
+                title: "無法收藏",
+                message: "影集 ID 不正確，請返回上一頁後再試。"
+            )
         )
     }
+
+    // MARK: - Rating
 
     func submitRating(seriesID: Int, value: Double) async -> ErrorMessage? {
         await accountMediaController.submitRating(
             target: .tv(seriesID: seriesID),
             value: value,
-            invalidMessage: ErrorMessage(title: "無法評分", message: "影集 ID 不正確，請返回上一頁後再試。")
+            invalidMessage: ErrorMessage(
+                title: "無法評分",
+                message: "影集 ID 不正確，請返回上一頁後再試。"
+            )
         )
     }
 
     func deleteRating(seriesID: Int) async -> ErrorMessage? {
         await accountMediaController.deleteRating(
             target: .tv(seriesID: seriesID),
-            invalidMessage: ErrorMessage(title: "無法刪除評分", message: "影集 ID 不正確，請返回上一頁後再試。")
+            invalidMessage: ErrorMessage(
+                title: "無法刪除評分",
+                message: "影集 ID 不正確，請返回上一頁後再試。"
+            )
         )
     }
 
-    // MARK: - Private Methods
+    // MARK: - Private Helpers
 
-    private func syncAccountMediaState() {
-        favoriteState = accountMediaController.favoriteState
-        ratingState = accountMediaController.ratingState
-        ratingDefaultValue = accountMediaController.ratingDefaultValue
+    private func notifyAccountStateChange() {
+        onAccountStateChange?(favoriteState, ratingState)
     }
 }

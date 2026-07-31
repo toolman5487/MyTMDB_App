@@ -112,6 +112,13 @@ nonisolated enum AccountMediaFavoriteState: Sendable, Equatable {
             return true
         }
     }
+
+    var requiresUserLogin: Bool {
+        if case .requiresUserLogin = self {
+            return true
+        }
+        return false
+    }
 }
 
 // MARK: - Account Media Rating State
@@ -140,6 +147,13 @@ nonisolated enum AccountMediaRatingState: Sendable, Equatable {
         case .requiresUserLogin, .ready:
             return true
         }
+    }
+
+    var requiresUserLogin: Bool {
+        if case .requiresUserLogin = self {
+            return true
+        }
+        return false
     }
 }
 

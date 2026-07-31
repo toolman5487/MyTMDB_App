@@ -5,11 +5,10 @@
 //  Created by Willy Hsu on 2026/6/30.
 //
 
-import SnapKit
 import UIKit
 
 @MainActor
-final class MovieDetailViewController: DetailBaseViewController {
+final class MovieDetailViewController: DetailActionBarViewController {
 
     // MARK: - Properties
 
@@ -23,12 +22,6 @@ final class MovieDetailViewController: DetailBaseViewController {
     private var sections: [MovieDetailSectionItem] = []
 
     private var loadTask: Task<Void, Never>?
-    private var favoriteTask: Task<Void, Never>?
-    private var ratingTask: Task<Void, Never>?
-
-    // MARK: - UI Components
-
-    private let bottomActionBarView = DetailBottomActionBarView()
 
     // MARK: - Initialization
 
@@ -56,45 +49,32 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     deinit {
         loadTask?.cancel()
-        favoriteTask?.cancel()
-        ratingTask?.cancel()
     }
 
     // MARK: - BaseViewController
 
     override func configureView() {
         super.configureView()
-        navigationItem.largeTitleDisplayMode = .never
         configureActionBar()
         configureCollectionView()
     }
 
     override func bindViewModel() {
+        viewModel.bind(
+            onStateChange: { [weak self] state in
+                self?.render(state: state)
+            },
+            onAccountStateChange: { [weak self] favoriteState, ratingState in
+                self?.updateFavoriteAction(with: favoriteState)
+                self?.updateRatingAction(with: ratingState)
+            }
+        )
         loadMovieDetail()
-    }
-
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        view.addSubview(bottomActionBarView)
-    }
-
-    override func setupConstraints() {
-        super.setupConstraints()
-
-        bottomActionBarView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-        }
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateCollectionViewBottomInset()
     }
 
     // MARK: - Setup
 
     private enum Layout {
-        static let factsSectionHeight: CGFloat = 96
         static var castSectionHeight: CGFloat {
             DetailImageTitleStripCollectionViewCell.fittingHeight(
                 minimumHeight: 220,
@@ -144,7 +124,8 @@ final class MovieDetailViewController: DetailBaseViewController {
             guard let self, sectionIndex < self.sections.count else {
                 return DetailCompositionalLayout.singleItemSection(
                     height: .absolute(1),
-                    contentInsets: .zero,
+                    topContentInset: 0,
+                    bottomContentInset: 0,
                     header: .none
                 )
             }
@@ -154,11 +135,14 @@ final class MovieDetailViewController: DetailBaseViewController {
     }
 
     private func configureActionBar() {
-        bottomActionBarView.configureFavorite(isFavorite: false, isEnabled: false)
-        bottomActionBarView.configureRating(value: nil, isEnabled: false)
-        bottomActionBarView.setFavoriteAction(target: self, action: #selector(handleBottomFavoriteButtonTapped))
-        bottomActionBarView.setRatingAction(target: self, action: #selector(handleRatingButtonTapped))
-        bottomActionBarView.setReviewAction(target: self, action: #selector(handleReviewButtonTapped))
+        configureDetailActions(
+            showsFavorite: true,
+            showsRating: true,
+            showsReview: true,
+            favoriteAction: { [weak self] in self?.handleFavoriteButtonTapped() },
+            ratingAction: { [weak self] in self?.handleRatingButtonTapped() },
+            reviewAction: { [weak self] in self?.router.showReviewList() }
+        )
     }
 
     private func configureCollectionView() {
@@ -206,11 +190,7 @@ final class MovieDetailViewController: DetailBaseViewController {
             MovieDetailRecommendationsCollectionViewCell.self,
             forCellWithReuseIdentifier: MovieDetailRecommendationsCollectionViewCell.reuseIdentifier
         )
-        collectionView.register(
-            DetailSectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
-        )
+        registerDetailSectionHeader()
         collectionView.register(
             MovieDetailHeroHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -219,14 +199,11 @@ final class MovieDetailViewController: DetailBaseViewController {
     }
 
     private func makeLayoutSection(for section: MovieDetailSectionItem) -> NSCollectionLayoutSection {
-        let contentWidth = max(
-            collectionView.bounds.width - (DetailCompositionalLayout.Metrics.horizontalInset * 2),
-            0
-        )
+        let contentWidth = collectionView.bounds.width
 
         return DetailCompositionalLayout.singleItemSection(
             height: itemHeightDimension(for: section, width: contentWidth),
-            contentInsets: sectionContentInsets(for: section),
+            topContentInset: sectionTopContentInset(for: section),
             header: sectionHeader(for: section)
         )
     }
@@ -241,16 +218,12 @@ final class MovieDetailViewController: DetailBaseViewController {
         }
     }
 
-    private func sectionContentInsets(for section: MovieDetailSectionItem) -> NSDirectionalEdgeInsets {
+    private func sectionTopContentInset(for section: MovieDetailSectionItem) -> CGFloat {
         if case .overview(let item) = section {
-            return DetailCompositionalLayout.contentInsets(
-                top: item.overview == nil ? 0 : DetailCompositionalLayout.Metrics.headerContentSpacing
-            )
+            return item.overview == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
         }
 
-        return DetailCompositionalLayout.contentInsets(
-            top: section.title == nil ? 0 : DetailCompositionalLayout.Metrics.headerContentSpacing
-        )
+        return section.title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
     }
 
     private func itemHeightDimension(
@@ -271,7 +244,7 @@ final class MovieDetailViewController: DetailBaseViewController {
             )
 
         case .facts:
-            return .absolute(Layout.factsSectionHeight)
+            return .absolute(DetailLayoutMetrics.factsSectionHeight)
 
         case .attributes(let item):
             return .absolute(MovieDetailAttributesCollectionViewCell.fittingHeight(for: item))
@@ -302,14 +275,7 @@ final class MovieDetailViewController: DetailBaseViewController {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
-            render(state: .loading)
             await viewModel.loadMovieDetail(id: movieID)
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
-            updateFavoriteButton()
-            updateRatingButton()
         }
     }
 
@@ -317,32 +283,26 @@ final class MovieDetailViewController: DetailBaseViewController {
         switch state {
         case .idle:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(.idle)
             clearDetailUserActivity()
 
         case .loading:
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(true)
-            collectionView.backgroundView = nil
+            renderDetailContent(.loading)
             clearDetailUserActivity()
 
         case .loaded(let loadedSections):
             sections = loadedSections
-            setDetailNavigationTitle(detailNavigationTitle(from: loadedSections))
-            setLoadingVisible(false)
-            collectionView.backgroundView = nil
+            renderDetailContent(
+                .loaded(navigationTitle: detailNavigationTitle(from: loadedSections))
+            )
             updateDetailUserActivity(from: loadedSections)
 
         case .failed(let message):
             sections = []
-            setDetailNavigationTitle(nil)
-            setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadMovieDetail()
-            }
+            renderDetailContent(
+                .failed(message: message) { [weak self] in self?.loadMovieDetail() }
+            )
             clearDetailUserActivity()
         }
 
@@ -366,16 +326,8 @@ final class MovieDetailViewController: DetailBaseViewController {
 
     // MARK: - Actions
 
-    @objc private func handleReviewButtonTapped() {
-        router.showReviewList()
-    }
-
-    @objc private func handleBottomFavoriteButtonTapped() {
-        handleFavoriteButtonTapped()
-    }
-
-    @objc private func handleRatingButtonTapped() {
-        if shouldNavigateToLoginForRating() {
+    private func handleRatingButtonTapped() {
+        if viewModel.ratingState.requiresUserLogin {
             router.showLogin()
             return
         }
@@ -384,25 +336,18 @@ final class MovieDetailViewController: DetailBaseViewController {
     }
 
     private func handleFavoriteButtonTapped() {
-        if shouldNavigateToLogin() {
+        if viewModel.favoriteState.requiresUserLogin {
             router.showLogin()
             return
         }
 
-        setPendingFavoriteButtonState()
-        favoriteTask?.cancel()
-        favoriteTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            let message = await viewModel.toggleFavorite(movieID: movieID)
-
-            guard !Task.isCancelled else { return }
-            updateFavoriteButton()
-
-            if let message {
-                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+        performFavoriteUpdate(
+            from: viewModel.favoriteState,
+            operation: { [weak self] in
+                guard let self else { return nil }
+                return await viewModel.toggleFavorite(movieID: movieID)
             }
-        }
+        )
     }
 
     private func presentRatingSheet() {
@@ -420,85 +365,28 @@ final class MovieDetailViewController: DetailBaseViewController {
     }
 
     private func submitRating(_ value: Double) {
-        bottomActionBarView.configureRating(value: value, isEnabled: false)
-        ratingTask?.cancel()
-        ratingTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            let message = await viewModel.submitRating(movieID: movieID, value: value)
-
-            guard !Task.isCancelled else { return }
-            updateRatingButton()
-
-            if let message {
-                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+        performRatingUpdate(
+            pendingValue: value,
+            operation: { [weak self] in
+                guard let self else { return nil }
+                return await viewModel.submitRating(movieID: movieID, value: value)
             }
-        }
+        )
     }
 
     private func deleteRating() {
-        bottomActionBarView.configureRating(value: nil, isEnabled: false)
-        ratingTask?.cancel()
-        ratingTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            let message = await viewModel.deleteRating(movieID: movieID)
-
-            guard !Task.isCancelled else { return }
-            updateRatingButton()
-
-            if let message {
-                presentAlert(title: message.title, message: message.message, actionTitle: message.actionTitle ?? "OK")
+        performRatingUpdate(
+            pendingValue: nil,
+            operation: { [weak self] in
+                guard let self else { return nil }
+                return await viewModel.deleteRating(movieID: movieID)
             }
-        }
+        )
     }
 
     private func detailNavigationTitle(from sections: [MovieDetailSectionItem]) -> String? {
         guard case .overview(let item) = sections.first else { return nil }
         return item.hero.title.isEmpty ? item.hero.originalTitle : item.hero.title
-    }
-
-    private func updateFavoriteButton() {
-        bottomActionBarView.configureFavorite(
-            isFavorite: viewModel.favoriteState.isFavorite,
-            isEnabled: viewModel.favoriteState.isButtonEnabled
-        )
-    }
-
-    private func updateRatingButton() {
-        bottomActionBarView.configureRating(
-            value: viewModel.ratingState.value,
-            isEnabled: viewModel.ratingState.isButtonEnabled
-        )
-    }
-
-    private func setPendingFavoriteButtonState() {
-        guard case .ready(let isFavorite) = viewModel.favoriteState else { return }
-        bottomActionBarView.configureFavorite(isFavorite: !isFavorite, isEnabled: false)
-    }
-
-    private func shouldNavigateToLogin() -> Bool {
-        if case .requiresUserLogin = viewModel.favoriteState {
-            return true
-        }
-
-        return false
-    }
-
-    private func shouldNavigateToLoginForRating() -> Bool {
-        if case .requiresUserLogin = viewModel.ratingState {
-            return true
-        }
-
-        return false
-    }
-
-    private func updateCollectionViewBottomInset() {
-        let bottomInset = bottomActionBarView.bounds.height
-        guard collectionView.contentInset.bottom != bottomInset else { return }
-
-        collectionView.contentInset.bottom = bottomInset
-        collectionView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
 }
 
@@ -708,26 +596,16 @@ extension MovieDetailViewController: UICollectionViewDataSource {
             return reusableView
         }
 
-        let reusableView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
-            for: indexPath
-        )
-
-        if let headerView = reusableView as? DetailSectionHeaderView {
-            let section = sections[indexPath.section]
-            let onTap: (() -> Void)?
-            if let configuration = section.contentListConfiguration {
-                onTap = { [weak self] in
-                    self?.router.showContentList(configuration)
-                }
-            } else {
-                onTap = nil
+        let section = sections[indexPath.section]
+        let onTap: (() -> Void)?
+        if let configuration = section.contentListConfiguration {
+            onTap = { [weak self] in
+                self?.router.showContentList(configuration)
             }
-            headerView.configure(title: section.title, onTap: onTap)
+        } else {
+            onTap = nil
         }
-
-        return reusableView
+        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
     }
 }
 

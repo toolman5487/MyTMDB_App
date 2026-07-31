@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - MainSearchViewState
 
@@ -25,13 +24,18 @@ nonisolated enum MainSearchViewState: Equatable {
 // MARK: - MainSearchViewModel
 
 @MainActor
-@Observable
 final class MainSearchViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MainSearchViewState = .idle
+    private(set) var state: MainSearchViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (MainSearchViewState) -> Void)?
     private let service: MainSearchServicing
     private let searchHistoryStore: SearchHistoryStoring
     private let recentSearchLimit = 15
@@ -45,6 +49,13 @@ final class MainSearchViewModel {
     ) {
         self.service = service
         self.searchHistoryStore = searchHistoryStore
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (MainSearchViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

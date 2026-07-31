@@ -95,9 +95,9 @@ MyTMDB_App/
 
 ## 環境需求
 
-- iOS Deployment Target：18.4
+- iOS Deployment Target：26.0
 - Swift：6.0
-- Xcode：建議使用支援 Swift 6 與 iOS 18.4 SDK 的版本
+- Xcode：建議使用支援 Swift 6 與 iOS 26 SDK 的版本
 - Swift Package Manager 依賴：
   - [SnapKit](https://github.com/SnapKit/SnapKit) `5.7.1+`
   - [SDWebImage](https://github.com/SDWebImage/SDWebImage) `5.21.0+`

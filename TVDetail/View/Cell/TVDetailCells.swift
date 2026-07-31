@@ -738,12 +738,6 @@ private enum TVDetailCellStyle {
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = Layout.itemSpacing
         layout.minimumInteritemSpacing = Layout.itemSpacing
-        layout.sectionInset = UIEdgeInsets(
-            top: 0,
-            left: DetailCompositionalLayout.Metrics.horizontalInset,
-            bottom: 0,
-            right: DetailCompositionalLayout.Metrics.horizontalInset
-        )
         return layout
     }
 }

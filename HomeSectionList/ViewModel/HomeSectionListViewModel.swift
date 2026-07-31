@@ -6,18 +6,22 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - HomeSectionListViewModel
 
 @MainActor
-@Observable
 final class HomeSectionListViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: HomeSectionListViewState = .idle
+    private(set) var state: HomeSectionListViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (HomeSectionListViewState) -> Void)?
     private let category: MainHomeContentCategory
     private let homeService: MainHomeServicing
     private let genreService: HomeSectionListServicing
@@ -34,6 +38,13 @@ final class HomeSectionListViewModel {
         self.category = category
         self.homeService = homeService
         self.genreService = genreService
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (HomeSectionListViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

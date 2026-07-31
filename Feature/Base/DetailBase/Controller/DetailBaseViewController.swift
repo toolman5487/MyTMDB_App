@@ -7,6 +7,16 @@
 
 import UIKit
 
+// MARK: - DetailContentPresentationState
+
+@MainActor
+enum DetailContentPresentationState {
+    case idle
+    case loading
+    case loaded(navigationTitle: String?)
+    case failed(message: ErrorMessage, retry: @MainActor () -> Void)
+}
+
 @MainActor
 class DetailBaseViewController: ScrollTrackingBaseViewController {
 
@@ -21,10 +31,7 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
     // MARK: - Properties
 
     private var detailNavigationTitle: String?
-    private var detailNavigationTitleRevealOffset = NavigationTitle.revealOffset
     private var isDetailNavigationTitleVisible = false
-
-    private var detailRightBarButtonItems: [UIBarButtonItem] = []
 
     // MARK: - Initialization
 
@@ -46,25 +53,57 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
         navigationItem.title = nil
     }
 
-    // MARK: - Navigation Items
+    // MARK: - Content Presentation
 
-    func setDetailRightBarButtonItems(_ items: [UIBarButtonItem]) {
-        detailRightBarButtonItems = items
-        updateRightBarButtonItems()
+    func renderDetailContent(_ state: DetailContentPresentationState) {
+        switch state {
+        case .idle:
+            setDetailNavigationTitle(nil)
+            setLoadingVisible(false)
+            collectionView.backgroundView = nil
+
+        case .loading:
+            setDetailNavigationTitle(nil)
+            setLoadingVisible(true)
+            collectionView.backgroundView = nil
+
+        case .loaded(let navigationTitle):
+            setDetailNavigationTitle(navigationTitle)
+            setLoadingVisible(false)
+            collectionView.backgroundView = nil
+
+        case .failed(let message, let retry):
+            setDetailNavigationTitle(nil)
+            setLoadingVisible(false)
+            collectionView.backgroundView = ErrorMessageView(message: message, action: retry)
+        }
+    }
+
+    // MARK: - Section Header
+
+    func registerDetailSectionHeader() {
+        collectionView.register(
+            DetailSectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier
+        )
+    }
+
+    func dequeueDetailSectionHeader(
+        at indexPath: IndexPath,
+        title: String?,
+        onTap: (() -> Void)? = nil
+    ) -> UICollectionReusableView {
+        let reusableView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
+            for: indexPath
+        )
+        (reusableView as? DetailSectionHeaderView)?.configure(title: title, onTap: onTap)
+        return reusableView
     }
 
     // MARK: - Navigation Title
-
-    func setDetailNavigationTitle(_ title: String?) {
-        setDetailNavigationTitle(title, revealOffset: NavigationTitle.revealOffset)
-    }
-
-    func setDetailNavigationTitle(_ title: String?, revealOffset: CGFloat) {
-        let normalizedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines)
-        detailNavigationTitle = normalizedTitle?.isEmpty == false ? normalizedTitle : nil
-        detailNavigationTitleRevealOffset = revealOffset
-        setDetailNavigationTitleVisible(false, animated: false)
-    }
 
     func updateDetailNavigationTitleVisibility(for scrollView: UIScrollView) {
         guard scrollView === collectionView else { return }
@@ -82,9 +121,15 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
             return
         }
 
-        if offsetY >= topBoundary + detailNavigationTitleRevealOffset {
+        if offsetY >= topBoundary + NavigationTitle.revealOffset {
             setDetailNavigationTitleVisible(true, animated: true)
         }
+    }
+
+    private func setDetailNavigationTitle(_ title: String?) {
+        let normalizedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines)
+        detailNavigationTitle = normalizedTitle?.isEmpty == false ? normalizedTitle : nil
+        setDetailNavigationTitleVisible(false, animated: false)
     }
 
     private func setDetailNavigationTitleVisible(_ isVisible: Bool, animated: Bool) {
@@ -111,9 +156,5 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
             options: [.transitionCrossDissolve, .allowUserInteraction],
             animations: updates
         )
-    }
-
-    private func updateRightBarButtonItems() {
-        navigationItem.rightBarButtonItems = detailRightBarButtonItems
     }
 }

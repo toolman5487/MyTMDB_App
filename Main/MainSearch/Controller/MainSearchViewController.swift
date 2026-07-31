@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/7/23.
 //
 
-import Observation
 import UIKit
 
 // MARK: - MainSearchViewController
@@ -124,8 +123,9 @@ final class MainSearchViewController: MainBaseViewController {
     }
 
     override func bindViewModel() {
-        render(state: viewModel.state)
-        observeViewModelState()
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
         loadDailyTrending()
     }
 
@@ -175,18 +175,6 @@ final class MainSearchViewController: MainBaseViewController {
     }
 
     // MARK: - Rendering
-
-    private func observeViewModelState() {
-        withObservationTracking {
-            _ = viewModel.state
-        } onChange: { [weak self] in
-            Task(priority: .userInitiated) { @MainActor [weak self] in
-                guard let self else { return }
-                render(state: viewModel.state)
-                observeViewModelState()
-            }
-        }
-    }
 
     private func render(state: MainSearchViewState) {
         setLoadingVisible(false, animated: false)

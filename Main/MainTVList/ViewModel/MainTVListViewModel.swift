@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - MainTVListViewState
 
@@ -22,13 +21,18 @@ nonisolated enum MainTVListViewState: Equatable {
 // MARK: - MainTVListViewModel
 
 @MainActor
-@Observable
 final class MainTVListViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MainTVListViewState = .idle
+    private(set) var state: MainTVListViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (MainTVListViewState) -> Void)?
     private let service: MainTVListServicing
     private var preferredGenreID: Int?
     private var genres: [MainTVGenre] = []
@@ -42,6 +46,13 @@ final class MainTVListViewModel {
     ) {
         self.service = service
         self.preferredGenreID = initialGenreID
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (MainTVListViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

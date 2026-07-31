@@ -6,19 +6,23 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - MemberCenterListViewModel
 
 @MainActor
-@Observable
 final class MemberCenterListViewModel {
 
     // MARK: - Properties
 
     let destination: MemberCenterDestination
-    private(set) var state: MemberCenterListViewState = .idle
+    private(set) var state: MemberCenterListViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (MemberCenterListViewState) -> Void)?
     private let accountId: Int
     private let sessionId: String
     private let service: MemberCenterServicing
@@ -38,6 +42,13 @@ final class MemberCenterListViewModel {
         self.sessionId = sessionId
         self.service = service
         self.listPosterEnricher = listPosterEnricher ?? MemberCenterListPosterEnricher(service: service)
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (MemberCenterListViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

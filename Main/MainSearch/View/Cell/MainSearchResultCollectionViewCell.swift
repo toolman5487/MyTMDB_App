@@ -112,7 +112,7 @@ final class MainSearchResultCollectionViewCell: BaseCollectionViewCell {
         separatorView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel)
             make.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1 / UIScreen.main.scale)
+            make.height.equalTo(1 / max(traitCollection.displayScale, 1))
         }
     }
 

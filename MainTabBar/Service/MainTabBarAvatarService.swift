@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 protocol MainTabBarAvatarProviding: AnyObject {
-    func fetchAvatarImage(sessionId: String) async -> UIImage?
+    func fetchAvatarImage(sessionId: String, displayScale: CGFloat) async -> UIImage?
 }
 
 // MARK: - MainTabBarAvatarService
@@ -43,9 +43,9 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
 
     // MARK: - MainTabBarAvatarProviding
 
-    func fetchAvatarImage(sessionId: String) async -> UIImage? {
-        if let cachedAvatarImage = makeCachedAvatarImage() {
-            return cachedAvatarImage
+    func fetchAvatarImage(sessionId: String, displayScale: CGFloat) async -> UIImage? {
+        if let cachedAvatarImage = loadCachedAvatarImage() {
+            return makeTabBarAvatarImage(from: cachedAvatarImage, displayScale: displayScale)
         }
 
         do {
@@ -59,7 +59,7 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
             guard let image = UIImage(data: data) else { return nil }
 
             userProfileStore.saveAvatarImageData(data)
-            return makeTabBarAvatarImage(from: image)
+            return makeTabBarAvatarImage(from: image, displayScale: displayScale)
         } catch {
             AppLogger.authentication.error(
                 "Failed to fetch tab bar avatar: \(error.errorMessage.message, privacy: .public)"
@@ -70,18 +70,18 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
 
     // MARK: - Private Methods
 
-    private func makeCachedAvatarImage() -> UIImage? {
+    private func loadCachedAvatarImage() -> UIImage? {
         guard let data = userProfileStore.load()?.avatarImageData,
               let image = UIImage(data: data) else {
             return nil
         }
 
-        return makeTabBarAvatarImage(from: image)
+        return image
     }
 
-    private func makeTabBarAvatarImage(from image: UIImage) -> UIImage {
+    private func makeTabBarAvatarImage(from image: UIImage, displayScale: CGFloat) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
-        format.scale = UIScreen.main.scale
+        format.scale = max(displayScale, 1)
         format.opaque = false
 
         let renderer = UIGraphicsImageRenderer(size: Layout.imageSize, format: format)

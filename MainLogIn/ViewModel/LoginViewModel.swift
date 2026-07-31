@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - State
 
@@ -28,15 +27,20 @@ nonisolated enum LoginFailureRecoveryAction: Equatable {
 // MARK: - LoginViewModel
 
 @MainActor
-@Observable
 final class LoginViewModel {
 
     // MARK: - Properties
 
     var username = ""
     var password = ""
-    private(set) var state: LoginState = .idle
+    private(set) var state: LoginState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (LoginState) -> Void)?
     private let authService: TMDBAuthServicing
     private var authenticationTask: Task<Void, Never>?
 
@@ -44,6 +48,13 @@ final class LoginViewModel {
 
     init(authService: TMDBAuthServicing = TMDBAuthService()) {
         self.authService = authService
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (LoginState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

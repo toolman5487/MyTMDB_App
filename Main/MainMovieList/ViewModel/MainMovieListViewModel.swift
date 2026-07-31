@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - MainMovieListViewState
 
@@ -22,13 +21,18 @@ nonisolated enum MainMovieListViewState: Equatable {
 // MARK: - MainMovieListViewModel
 
 @MainActor
-@Observable
 final class MainMovieListViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MainMovieListViewState = .idle
+    private(set) var state: MainMovieListViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (MainMovieListViewState) -> Void)?
     private let service: MainMovieListServicing
     private var preferredGenreID: Int?
     private var genres: [MainMovieGenre] = []
@@ -42,6 +46,13 @@ final class MainMovieListViewModel {
     ) {
         self.service = service
         self.preferredGenreID = initialGenreID
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (MainMovieListViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

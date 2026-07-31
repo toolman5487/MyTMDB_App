@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - State
 
@@ -27,19 +26,35 @@ nonisolated enum PersonDetailCreditsListResult: Equatable {
 // MARK: - PersonDetailViewModel
 
 @MainActor
-@Observable
 final class PersonDetailViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: PersonDetailViewState = .idle
+    private(set) var state: PersonDetailViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
+    private var onStateChange: (@MainActor (PersonDetailViewState) -> Void)?
     private let service: PersonDetailServicing
 
     // MARK: - Initialization
 
-    init(service: PersonDetailServicing = PersonDetailService()) {
+    init(service: PersonDetailServicing) {
         self.service = service
+    }
+
+    convenience init() {
+        self.init(service: PersonDetailService())
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (PersonDetailViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods
@@ -60,8 +75,10 @@ final class PersonDetailViewModel {
 
         do {
             let content = try await service.fetchPersonDetailContent(id: id)
+            guard !Task.isCancelled else { return }
             state = .loaded(PersonDetailSectionBuilder.makeSections(content: content))
         } catch {
+            guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
         }
     }

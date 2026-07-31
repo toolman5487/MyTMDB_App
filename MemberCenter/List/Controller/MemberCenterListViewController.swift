@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/7/10.
 //
 
-import Observation
 import UIKit
 
 // MARK: - MemberCenterListViewController
@@ -104,8 +103,9 @@ final class MemberCenterListViewController: BaseListViewController {
     }
 
     override func bindViewModel() {
-        render(state: viewModel.state)
-        observeViewModelState()
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
         loadInitialContent()
     }
 
@@ -133,18 +133,6 @@ final class MemberCenterListViewController: BaseListViewController {
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             await viewModel.loadInitialContent()
-        }
-    }
-
-    private func observeViewModelState() {
-        withObservationTracking {
-            _ = viewModel.state
-        } onChange: { [weak self] in
-            Task(priority: .userInitiated) { @MainActor [weak self] in
-                guard let self else { return }
-                render(state: viewModel.state)
-                observeViewModelState()
-            }
         }
     }
 

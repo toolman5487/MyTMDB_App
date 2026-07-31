@@ -6,20 +6,24 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - MemberCenterViewModel
 
 @MainActor
-@Observable
 final class MemberCenterViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MemberCenterViewState = .idle
+    private(set) var state: MemberCenterViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
     private(set) var headerContent: MemberCenterProfileHeaderContent?
     private(set) var displaySections: [MemberCenterDisplaySection] = []
 
+    private var onStateChange: (@MainActor (MemberCenterViewState) -> Void)?
     private let session: AuthSession
     private let contentRepository: MemberCenterContentProviding
     private var cachedHeaderContent: MemberCenterProfileHeaderContent?
@@ -36,6 +40,13 @@ final class MemberCenterViewModel {
         self.contentRepository = contentRepository
         self.cachedHeaderContent = contentRepository.cachedHeaderContent(for: session)
         self.headerContent = cachedHeaderContent
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (MemberCenterViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

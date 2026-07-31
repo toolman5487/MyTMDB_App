@@ -255,7 +255,7 @@ private extension BaseWebViewController {
         bottomTabBarSeparatorView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.bottom.equalTo(bottomTabBarContentView.snp.top)
-            make.height.equalTo(1.0 / UIScreen.main.scale)
+            make.height.equalTo(1.0 / max(traitCollection.displayScale, 1))
         }
     }
 
