@@ -18,8 +18,6 @@ final class DetailSectionHeaderView: UICollectionReusableView {
     private var onTap: (() -> Void)?
 
     private let titleLabel = AppFactory.Label.sectionTitle()
-    private var titleLeadingConstraint: Constraint?
-    private var titleTrailingConstraint: Constraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -42,8 +40,7 @@ final class DetailSectionHeaderView: UICollectionReusableView {
 
     func configure(
         title: String?,
-        onTap: (() -> Void)? = nil,
-        contentInsets: UIEdgeInsets = .zero
+        onTap: (() -> Void)? = nil
     ) {
         self.onTap = onTap
 
@@ -54,8 +51,6 @@ final class DetailSectionHeaderView: UICollectionReusableView {
             font: font,
             textColor: ThemeColor.highlight
         )
-        titleLeadingConstraint?.update(inset: contentInsets.left)
-        titleTrailingConstraint?.update(inset: contentInsets.right)
 
         let isTappable = onTap != nil
         isUserInteractionEnabled = isTappable
@@ -80,8 +75,7 @@ final class DetailSectionHeaderView: UICollectionReusableView {
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            titleLeadingConstraint = make.leading.equalToSuperview().constraint
-            titleTrailingConstraint = make.trailing.equalToSuperview().constraint
+            make.leading.trailing.equalToSuperview()
         }
     }
 

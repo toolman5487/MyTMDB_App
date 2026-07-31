@@ -474,8 +474,7 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
             for: indexPath
         )
         (reusableView as? DetailSectionHeaderView)?.configure(
-            title: sections[indexPath.section].title,
-            contentInsets: sectionHeaderContentInsets
+            title: sections[indexPath.section].title
         )
         return reusableView
     }
@@ -550,15 +549,6 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
             top: topInset,
             left: Layout.defaultHorizontalInset,
             bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
-    }
-
-    private var sectionHeaderContentInsets: UIEdgeInsets {
-        UIEdgeInsets(
-            top: 0,
-            left: Layout.defaultHorizontalInset,
-            bottom: 0,
             right: Layout.defaultHorizontalInset
         )
     }

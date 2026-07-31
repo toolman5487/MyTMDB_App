@@ -90,7 +90,12 @@ final class PersonDetailViewController: DetailBaseViewController {
         collectionView.dataSource = self
         collectionView.backgroundColor = ThemeColor.background
         collectionViewFlowLayout.minimumLineSpacing = 8
-        collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        collectionViewFlowLayout.sectionInset = UIEdgeInsets(
+            top: 0,
+            left: Layout.defaultHorizontalInset,
+            bottom: 0,
+            right: Layout.defaultHorizontalInset
+        )
 
         collectionView.register(
             PersonDetailBiographyCollectionViewCell.self,
@@ -342,8 +347,7 @@ extension PersonDetailViewController: UICollectionViewDataSource {
 
             headerView.configure(
                 title: section.title,
-                onTap: onTap,
-                contentInsets: sectionHeaderContentInsets
+                onTap: onTap
             )
         }
 
@@ -455,15 +459,6 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
             top: topInset,
             left: Layout.defaultHorizontalInset,
             bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
-    }
-
-    private var sectionHeaderContentInsets: UIEdgeInsets {
-        UIEdgeInsets(
-            top: 0,
-            left: Layout.defaultHorizontalInset,
-            bottom: 0,
             right: Layout.defaultHorizontalInset
         )
     }

@@ -367,8 +367,7 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
             }
             headerView.configure(
                 title: section.title,
-                onTap: onTap,
-                contentInsets: sectionHeaderContentInsets
+                onTap: onTap
             )
         }
         return reusableView
@@ -444,15 +443,6 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
             top: topInset,
             left: Layout.defaultHorizontalInset,
             bottom: Layout.defaultSectionBottomInset,
-            right: Layout.defaultHorizontalInset
-        )
-    }
-
-    private var sectionHeaderContentInsets: UIEdgeInsets {
-        UIEdgeInsets(
-            top: 0,
-            left: Layout.defaultHorizontalInset,
-            bottom: 0,
             right: Layout.defaultHorizontalInset
         )
     }
