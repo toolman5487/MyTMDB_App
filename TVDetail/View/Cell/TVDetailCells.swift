@@ -365,9 +365,16 @@ extension TVDetailAttributesCollectionViewCell: UICollectionViewDataSource, UICo
             return .zero
         }
 
+        let sectionInsets = (collectionViewLayout as? UICollectionViewFlowLayout)?
+            .sectionInset ?? .zero
+        let maximumWidth = max(
+            collectionView.bounds.width - sectionInsets.left - sectionInsets.right,
+            0
+        )
+
         return TVDetailAttributePillCollectionViewCell.fittingSize(
             for: items[indexPath.item],
-            maximumWidth: collectionView.bounds.width
+            maximumWidth: maximumWidth
         )
     }
 }
@@ -731,6 +738,12 @@ private enum TVDetailCellStyle {
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = Layout.itemSpacing
         layout.minimumInteritemSpacing = Layout.itemSpacing
+        layout.sectionInset = UIEdgeInsets(
+            top: 0,
+            left: DetailCompositionalLayout.Metrics.horizontalInset,
+            bottom: 0,
+            right: DetailCompositionalLayout.Metrics.horizontalInset
+        )
         return layout
     }
 }
