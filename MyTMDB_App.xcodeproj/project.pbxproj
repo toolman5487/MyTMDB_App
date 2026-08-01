@@ -62,6 +62,7 @@
 		158809203000DA6E0081E4E9 /* MemberCenterListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588091A3000DA6E0081E4E9 /* MemberCenterListModels.swift */; };
 		158809233000DA6E0081E4E9 /* MemberCenterListItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588091B3000DA6E0081E4E9 /* MemberCenterListItemCollectionViewCell.swift */; };
 		158809263000DA6E0081E4E9 /* MemberCenterListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1588091C3000DA6E0081E4E9 /* MemberCenterListViewModel.swift */; };
+		15FBC6013014000000FBC601 /* MemberCenterListContentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FBC6033014000000FBC603 /* MemberCenterListContentRepository.swift */; };
 		158809A32FFEA0010081E4E9 /* MemberCenterContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A12FFEA0010081E4E9 /* MemberCenterContentStripCollectionViewCell.swift */; };
 		158809A62FFEA0010081E4E9 /* MemberCenterSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809A22FFEA0010081E4E9 /* MemberCenterSectionCollectionViewCells.swift */; };
 		158809AD2FFEB0010081E4E9 /* MemberCenterRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158809AC2FFEB0010081E4E9 /* MemberCenterRouter.swift */; };
@@ -312,6 +313,7 @@
 		1588091A3000DA6E0081E4E9 /* MemberCenterListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterListModels.swift; sourceTree = "<group>"; };
 		1588091B3000DA6E0081E4E9 /* MemberCenterListItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterListItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		1588091C3000DA6E0081E4E9 /* MemberCenterListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterListViewModel.swift; sourceTree = "<group>"; };
+		15FBC6033014000000FBC603 /* MemberCenterListContentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterListContentRepository.swift; sourceTree = "<group>"; };
 		158809A12FFEA0010081E4E9 /* MemberCenterContentStripCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterContentStripCollectionViewCell.swift; sourceTree = "<group>"; };
 		158809A22FFEA0010081E4E9 /* MemberCenterSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterSectionCollectionViewCells.swift; sourceTree = "<group>"; };
 		158809AC2FFEB0010081E4E9 /* MemberCenterRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCenterRouter.swift; sourceTree = "<group>"; };
@@ -1068,6 +1070,7 @@
 			children = (
 				158809143000DA6E0081E4E9 /* Controller */,
 				158809153000DA6E0081E4E9 /* Model */,
+				15FBC6043014000000FBC604 /* Repository */,
 				158809163000DA6E0081E4E9 /* View */,
 				158809173000DA6E0081E4E9 /* ViewModel */,
 			);
@@ -1088,6 +1091,14 @@
 				1588091A3000DA6E0081E4E9 /* MemberCenterListModels.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		15FBC6043014000000FBC604 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				15FBC6033014000000FBC603 /* MemberCenterListContentRepository.swift */,
+			);
+			path = Repository;
 			sourceTree = "<group>";
 		};
 		158809163000DA6E0081E4E9 /* View */ = {
@@ -2827,6 +2838,7 @@
 				158809203000DA6E0081E4E9 /* MemberCenterListModels.swift in Sources */,
 				158809233000DA6E0081E4E9 /* MemberCenterListItemCollectionViewCell.swift in Sources */,
 				158809263000DA6E0081E4E9 /* MemberCenterListViewModel.swift in Sources */,
+				15FBC6013014000000FBC601 /* MemberCenterListContentRepository.swift in Sources */,
 				15A950072FF286000FCBB0F /* BaseCollectionViewCell.swift in Sources */,
 				15ACCE013014900000ACCE01 /* AccessibilityText.swift in Sources */,
 				15E000142FF401000000014 /* BaseFilterHeaderItem.swift in Sources */,
