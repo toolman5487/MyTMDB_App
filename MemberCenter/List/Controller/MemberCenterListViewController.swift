@@ -63,13 +63,13 @@ final class MemberCenterListViewController: BaseListViewController {
         destination: MemberCenterDestination,
         accountId: Int,
         sessionId: String,
-        service: MemberCenterServicing = MemberCenterService()
+        contentRepository: any MemberCenterListContentProviding = MemberCenterListContentRepository()
     ) {
         self.viewModel = MemberCenterListViewModel(
             destination: destination,
             accountId: accountId,
             sessionId: sessionId,
-            service: service
+            contentRepository: contentRepository
         )
         super.init(nibName: nil, bundle: nil)
     }

@@ -29,6 +29,7 @@ final class MainHomeViewModel {
     private(set) var state: MainHomeViewState = .idle
 
     private let service: MainHomeServicing
+    private var loadGeneration = 0
 
     // MARK: - Initialization
 
@@ -39,14 +40,27 @@ final class MainHomeViewModel {
     // MARK: - Public Methods
 
     func loadHome() async {
+        loadGeneration += 1
+        let currentGeneration = loadGeneration
         state = .loading
 
         do {
             let sections = try await service.fetchHomeSections()
+            guard isCurrentLoad(generation: currentGeneration) else { return }
+
             let visibleSections = MainHomePresentationBuilder.makeSections(from: sections)
             state = visibleSections.isEmpty ? .empty : .loaded(visibleSections)
+        } catch is CancellationError {
+            return
         } catch {
+            guard isCurrentLoad(generation: currentGeneration) else { return }
             state = .failed(error.errorMessage)
         }
+    }
+
+    // MARK: - Private Methods
+
+    private func isCurrentLoad(generation: Int) -> Bool {
+        !Task.isCancelled && generation == loadGeneration
     }
 }

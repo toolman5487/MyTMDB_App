@@ -20,7 +20,7 @@ nonisolated protocol MemberCenterListPosterEnriching: Sendable {
     func enrichingListsWithFirstItemPoster(
         _ lists: [MemberCenterList],
         limit: Int
-    ) async -> [MemberCenterList]
+    ) async throws -> [MemberCenterList]
 }
 
 // MARK: - MemberCenterListPosterEnricher
@@ -42,36 +42,58 @@ nonisolated final class MemberCenterListPosterEnricher: MemberCenterListPosterEn
     func enrichingListsWithFirstItemPoster(
         _ lists: [MemberCenterList],
         limit: Int
-    ) async -> [MemberCenterList] {
-        await withTaskGroup(of: (Int, MemberCenterList).self) { group in
-            for (index, list) in lists.enumerated() {
-                group.addTask(priority: .utility) { [service] in
-                    guard index < limit,
-                          list.posterPath == nil else {
-                        return (index, list)
-                    }
+    ) async throws -> [MemberCenterList] {
+        var inputs: [MemberCenterListPosterEnrichmentInput] = []
+        inputs.reserveCapacity(min(max(limit, 0), lists.count))
 
+        for (index, list) in lists.prefix(max(limit, 0)).enumerated() {
+            guard list.posterPath == nil else { continue }
+            inputs.append(MemberCenterListPosterEnrichmentInput(index: index, list: list))
+        }
+
+        return try await withThrowingTaskGroup(
+            of: MemberCenterListPosterEnrichmentResult.self,
+            returning: [MemberCenterList].self
+        ) { group in
+            for input in inputs {
+                group.addTask(priority: .utility) { [service] in
                     do {
-                        let detail = try await service.fetchListDetail(listId: list.id)
-                        return (index, list.replacingMissingPosterPath(with: detail.firstPosterPath))
+                        let detail = try await service.fetchListDetail(listId: input.list.id)
+                        return MemberCenterListPosterEnrichmentResult(
+                            index: input.index,
+                            list: input.list.replacingMissingPosterPath(with: detail.firstPosterPath)
+                        )
+                    } catch is CancellationError {
+                        throw CancellationError()
                     } catch {
-                        return (index, list)
+                        try Task.checkCancellation()
+                        return MemberCenterListPosterEnrichmentResult(
+                            index: input.index,
+                            list: input.list
+                        )
                     }
                 }
             }
 
-            var indexedLists: [(Int, MemberCenterList)] = []
-            indexedLists.reserveCapacity(lists.count)
-
-            for await indexedList in group {
-                indexedLists.append(indexedList)
+            var updatedLists = lists
+            for try await enrichedList in group where updatedLists.indices.contains(enrichedList.index) {
+                updatedLists[enrichedList.index] = enrichedList.list
             }
-
-            return indexedLists
-                .sorted { $0.0 < $1.0 }
-                .map { $0.1 }
+            return updatedLists
         }
     }
+}
+
+// MARK: - MemberCenterListPosterEnrichment
+
+private nonisolated struct MemberCenterListPosterEnrichmentInput: Sendable {
+    let index: Int
+    let list: MemberCenterList
+}
+
+private nonisolated struct MemberCenterListPosterEnrichmentResult: Sendable {
+    let index: Int
+    let list: MemberCenterList
 }
 
 // MARK: - MemberCenterContentRepository
@@ -110,14 +132,14 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
     }
 
     func fetchContent(sessionId: String) async throws -> MemberCenterContentSnapshot {
-        if let cachedSnapshot = await makeCachedContentSnapshot(sessionId: sessionId) {
+        if let cachedSnapshot = try await makeCachedContentSnapshot(sessionId: sessionId) {
             return cachedSnapshot
         }
 
         let account = try await service.fetchAccount(sessionId: sessionId)
         userProfileStore.save(account: account)
         let profile = MemberCenterProfile(account: account)
-        let previewPages = await fetchPreviewPages(
+        let previewPages = try await fetchPreviewPages(
             accountId: profile.id,
             sessionId: sessionId
         )
@@ -130,13 +152,13 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
 
     // MARK: - Private Methods
 
-    private func makeCachedContentSnapshot(sessionId: String) async -> MemberCenterContentSnapshot? {
+    private func makeCachedContentSnapshot(sessionId: String) async throws -> MemberCenterContentSnapshot? {
         guard let storedProfile = userProfileStore.load(),
               let profile = MemberCenterProfile(storedProfile: storedProfile) else {
             return nil
         }
 
-        let previewPages = await fetchPreviewPages(
+        let previewPages = try await fetchPreviewPages(
             accountId: profile.id,
             sessionId: sessionId
         )
@@ -150,31 +172,40 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
     private func fetchPreviewPages(
         accountId: Int,
         sessionId: String
-    ) async -> [MemberCenterPreviewPage] {
-        var previewPages: [MemberCenterPreviewPage] = []
-
-        for destination in MemberCenterDestination.allCases {
-            guard !Task.isCancelled else { break }
-
-            guard let previewPage = await fetchPreviewPage(
-                destination: destination,
-                accountId: accountId,
-                sessionId: sessionId
-            ) else {
-                continue
+    ) async throws -> [MemberCenterPreviewPage] {
+        try await withThrowingTaskGroup(
+            of: MemberCenterPreviewPageLoadResult.self,
+            returning: [MemberCenterPreviewPage].self
+        ) { group in
+            for (index, destination) in MemberCenterDestination.allCases.enumerated() {
+                group.addTask(priority: .userInitiated) { [self] in
+                    let page = try await fetchPreviewPage(
+                        destination: destination,
+                        accountId: accountId,
+                        sessionId: sessionId
+                    )
+                    return MemberCenterPreviewPageLoadResult(index: index, page: page)
+                }
             }
 
-            previewPages.append(previewPage)
-        }
+            var completedPages: [MemberCenterPreviewPageLoadResult] = []
+            completedPages.reserveCapacity(MemberCenterDestination.allCases.count)
 
-        return previewPages
+            for try await page in group {
+                completedPages.append(page)
+            }
+
+            return completedPages
+                .sorted { $0.index < $1.index }
+                .compactMap(\.page)
+        }
     }
 
     private func fetchPreviewPage(
         destination: MemberCenterDestination,
         accountId: Int,
         sessionId: String
-    ) async -> MemberCenterPreviewPage? {
+    ) async throws -> MemberCenterPreviewPage? {
         do {
             switch destination {
             case .favoriteMovies:
@@ -242,9 +273,9 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
                 return .lists(page)
             }
         } catch is CancellationError {
-            return nil
+            throw CancellationError()
         } catch {
-            guard !Task.isCancelled else { return nil }
+            try Task.checkCancellation()
 
             AppLogger.network.warning(
                 "Failed to load member center preview \(destination.rawValue, privacy: .public): \(error.localizedDescription, privacy: .public)"
@@ -263,7 +294,7 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
             sessionId: sessionId,
             page: page
         )
-        let enrichedResults = await listPosterEnricher.enrichingListsWithFirstItemPoster(
+        let enrichedResults = try await listPosterEnricher.enrichingListsWithFirstItemPoster(
             pageResponse.results,
             limit: Configuration.listPreviewPosterFallbackLimit
         )
@@ -275,4 +306,11 @@ nonisolated final class MemberCenterContentRepository: MemberCenterContentProvid
             totalResults: pageResponse.totalResults
         )
     }
+}
+
+// MARK: - MemberCenterPreviewPageLoadResult
+
+private nonisolated struct MemberCenterPreviewPageLoadResult: Sendable {
+    let index: Int
+    let page: MemberCenterPreviewPage?
 }

@@ -25,8 +25,7 @@ final class MemberCenterListViewModel {
     private var onStateChange: (@MainActor (MemberCenterListViewState) -> Void)?
     private let accountId: Int
     private let sessionId: String
-    private let service: MemberCenterServicing
-    private let listPosterEnricher: any MemberCenterListPosterEnriching
+    private let contentRepository: any MemberCenterListContentProviding
 
     // MARK: - Initialization
 
@@ -34,14 +33,12 @@ final class MemberCenterListViewModel {
         destination: MemberCenterDestination,
         accountId: Int,
         sessionId: String,
-        service: MemberCenterServicing = MemberCenterService(),
-        listPosterEnricher: (any MemberCenterListPosterEnriching)? = nil
+        contentRepository: any MemberCenterListContentProviding = MemberCenterListContentRepository()
     ) {
         self.destination = destination
         self.accountId = accountId
         self.sessionId = sessionId
-        self.service = service
-        self.listPosterEnricher = listPosterEnricher ?? MemberCenterListPosterEnricher(service: service)
+        self.contentRepository = contentRepository
     }
 
     // MARK: - Output Binding
@@ -104,137 +101,13 @@ final class MemberCenterListViewModel {
     // MARK: - Private Methods
 
     private func fetchPage(page: Int) async throws -> MemberCenterListPageResult {
-        switch destination {
-        case .favoriteMovies:
-            let response = try await service.fetchFavoriteMovies(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .favoriteTV:
-            let response = try await service.fetchFavoriteTV(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .watchlistMovies:
-            let response = try await service.fetchWatchlistMovies(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .watchlistTV:
-            let response = try await service.fetchWatchlistTV(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .ratedMovies:
-            let response = try await service.fetchRatedMovies(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .ratedTV:
-            let response = try await service.fetchRatedTV(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .ratedEpisodes:
-            let response = try await service.fetchRatedEpisodes(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: response.results,
-                    destination: destination
-                )
-            )
-
-        case .lists:
-            let response = try await service.fetchLists(
-                accountId: accountId,
-                sessionId: sessionId,
-                page: page
-            )
-            let enrichedResults = await listPosterEnricher.enrichingListsWithFirstItemPoster(
-                response.results,
-                limit: response.results.count
-            )
-
-            return makePageResult(
-                response: response,
-                items: MemberCenterPresentationBuilder.makeItems(
-                    from: enrichedResults,
-                    destination: destination
-                )
-            )
-        }
-    }
-
-    private func makePageResult<Element: Decodable & Sendable>(
-        response: TMDBPageResponse<Element>,
-        items: [MemberCenterListItem]
-    ) -> MemberCenterListPageResult {
-        MemberCenterListPageResult(
-            destination: destination,
-            page: response.page,
-            totalPages: response.totalPages,
-            totalResults: response.totalResults,
-            items: items
+        let previewPage = try await contentRepository.fetchPage(
+            for: destination,
+            accountID: accountId,
+            sessionID: sessionId,
+            page: page
         )
+        return MemberCenterPresentationBuilder.makeListPage(from: previewPage)
     }
 
     private func shouldLoadNextPage(

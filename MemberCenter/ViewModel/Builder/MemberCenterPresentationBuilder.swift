@@ -38,6 +38,68 @@ nonisolated enum MemberCenterPresentationBuilder {
         previewPages.compactMap(makeSection)
     }
 
+    static func makeListPage(from previewPage: MemberCenterPreviewPage) -> MemberCenterListPageResult {
+        let destination = previewPage.destination
+
+        switch previewPage {
+        case .favoriteMovies(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .favoriteTV(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .watchlistMovies(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .watchlistTV(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .ratedMovies(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .ratedTV(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .ratedEpisodes(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+
+        case .lists(let page):
+            return makeListPage(
+                response: page,
+                destination: destination,
+                items: makeItems(from: page.results, destination: destination)
+            )
+        }
+    }
+
     static func makeItems(
         from movies: [MovieGridMovie],
         destination: MemberCenterDestination
@@ -90,6 +152,20 @@ nonisolated enum MemberCenterPresentationBuilder {
         lists.map {
             MemberCenterListItem(list: $0, destination: destination)
         }
+    }
+
+    private static func makeListPage<Element: Decodable & Sendable>(
+        response: TMDBPageResponse<Element>,
+        destination: MemberCenterDestination,
+        items: [MemberCenterListItem]
+    ) -> MemberCenterListPageResult {
+        MemberCenterListPageResult(
+            destination: destination,
+            page: response.page,
+            totalPages: response.totalPages,
+            totalResults: response.totalResults,
+            items: items
+        )
     }
 
     private static func makeSection(from previewPage: MemberCenterPreviewPage) -> MemberCenterSection? {

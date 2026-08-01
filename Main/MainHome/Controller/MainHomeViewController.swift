@@ -57,6 +57,10 @@ final class MainHomeViewController: MainBaseViewController {
         super.init(coder: coder)
     }
 
+    deinit {
+        loadTask?.cancel()
+    }
+
     // MARK: - BaseViewController
 
     override func configureView() {
@@ -133,12 +137,12 @@ final class MainHomeViewController: MainBaseViewController {
     private func loadHome() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
+            guard let viewModel = self?.viewModel else { return }
 
-            render(state: .loading)
+            self?.render(state: .loading)
             await viewModel.loadHome()
 
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, let self else { return }
             render(state: viewModel.state)
         }
     }
