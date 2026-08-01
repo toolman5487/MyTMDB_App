@@ -40,12 +40,6 @@ final class MainHomeViewController: MainBaseViewController {
 
     private var loadTask: Task<Void, Never>?
 
-    // MARK: - Override Points
-
-    override var collectionViewItemHeight: CGFloat {
-        Layout.itemHeight
-    }
-
     // MARK: - Initialization
 
     init() {
@@ -307,7 +301,7 @@ extension MainHomeViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         return CGSize(
             width: collectionView.bounds.width,
-            height: collectionViewItemHeight
+            height: Layout.itemHeight
         )
     }
 

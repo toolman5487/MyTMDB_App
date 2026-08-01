@@ -21,7 +21,7 @@ final class DetailContentListViewController: BaseListViewController {
 
     // MARK: - Override Points
 
-    override var collectionViewItemHeight: CGFloat {
+    override var fallbackCollectionViewItemHeight: CGFloat {
         switch configuration.thumbnailStyle {
         case .portrait, .landscape:
             return 112

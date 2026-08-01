@@ -126,10 +126,6 @@ final class TVDetailViewController: DetailActionBarViewController {
         }
     }
 
-    override var updatesFlowLayoutItemSizeAutomatically: Bool {
-        false
-    }
-
     override func makeCollectionViewLayout() -> UICollectionViewLayout {
         UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
             guard let self, sectionIndex < self.sections.count else {

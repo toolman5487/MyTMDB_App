@@ -8,6 +8,44 @@
 import SnapKit
 import UIKit
 
+// MARK: - CollectionViewItemSizingProviding
+
+@MainActor
+protocol CollectionViewItemSizingProviding: AnyObject {
+    var collectionView: UICollectionView { get }
+    var fallbackCollectionViewItemHeight: CGFloat { get }
+}
+
+extension CollectionViewItemSizingProviding {
+
+    func updateCollectionViewItemSizeIfNeeded() {
+        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else {
+            return
+        }
+        guard flowLayout.estimatedItemSize == .zero else { return }
+        guard !collectionViewDelegateProvidesItemSize else { return }
+
+        let availableWidth = collectionView.bounds.width
+        guard availableWidth > 0, fallbackCollectionViewItemHeight > 0 else { return }
+
+        let itemSize = CGSize(
+            width: availableWidth,
+            height: fallbackCollectionViewItemHeight
+        )
+        guard flowLayout.itemSize != itemSize else { return }
+
+        flowLayout.itemSize = itemSize
+        flowLayout.invalidateLayout()
+    }
+
+    private var collectionViewDelegateProvidesItemSize: Bool {
+        let itemSizeSelector = #selector(
+            UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:)
+        )
+        return collectionView.delegate?.responds(to: itemSizeSelector) == true
+    }
+}
+
 // MARK: - TabBarScrollVisibilityTracker
 
 @MainActor
@@ -65,16 +103,12 @@ struct TabBarScrollVisibilityTracker {
 }
 
 @MainActor
-class ScrollTrackingBaseViewController: BaseViewController {
+class ScrollTrackingBaseViewController: BaseViewController, CollectionViewItemSizingProviding {
 
     // MARK: - Override Points
 
-    var collectionViewItemHeight: CGFloat {
+    var fallbackCollectionViewItemHeight: CGFloat {
         80
-    }
-
-    var updatesFlowLayoutItemSizeAutomatically: Bool {
-        true
     }
 
     // MARK: - Properties
@@ -129,12 +163,12 @@ class ScrollTrackingBaseViewController: BaseViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateCollectionViewItemSize()
+        updateCollectionViewItemSizeIfNeeded()
     }
 
     override func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
-        updateCollectionViewItemSize()
+        updateCollectionViewItemSizeIfNeeded()
         collectionView.collectionViewLayout.invalidateLayout()
         collectionView.reloadData()
     }
@@ -158,19 +192,6 @@ class ScrollTrackingBaseViewController: BaseViewController {
         guard scrollView === collectionView else { return }
         guard let visibilityState = tabBarVisibilityTracker.visibilityState(for: scrollView) else { return }
         setTabBarVisibility(visibilityState, animated: true)
-    }
-
-    private func updateCollectionViewItemSize() {
-        guard updatesFlowLayoutItemSizeAutomatically else { return }
-
-        let availableWidth = collectionView.bounds.width
-        guard availableWidth > 0 else { return }
-
-        let itemSize = CGSize(width: availableWidth, height: collectionViewItemHeight)
-        guard collectionViewFlowLayout.itemSize != itemSize else { return }
-
-        collectionViewFlowLayout.itemSize = itemSize
-        collectionViewFlowLayout.invalidateLayout()
     }
 
     private func setTabBarVisibility(

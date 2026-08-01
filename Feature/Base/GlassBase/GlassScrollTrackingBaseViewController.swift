@@ -10,11 +10,11 @@ import SnapKit
 import UIKit
 
 @MainActor
-class GlassScrollTrackingBaseViewController: GlassBaseViewController {
+class GlassScrollTrackingBaseViewController: GlassBaseViewController, CollectionViewItemSizingProviding {
 
     // MARK: - Override Points
 
-    var collectionViewItemHeight: CGFloat {
+    var fallbackCollectionViewItemHeight: CGFloat {
         80
     }
 
@@ -67,7 +67,7 @@ class GlassScrollTrackingBaseViewController: GlassBaseViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateCollectionViewItemSize()
+        updateCollectionViewItemSizeIfNeeded()
     }
     
     // MARK: - Tab Bar Visibility
@@ -89,17 +89,6 @@ class GlassScrollTrackingBaseViewController: GlassBaseViewController {
         guard scrollView === collectionView else { return }
         guard let visibilityState = tabBarVisibilityTracker.visibilityState(for: scrollView) else { return }
         setTabBarVisibility(visibilityState, animated: true)
-    }
-    
-    private func updateCollectionViewItemSize() {
-        let availableWidth = collectionView.bounds.width
-        guard availableWidth > 0 else { return }
-        
-        let itemSize = CGSize(width: availableWidth, height: collectionViewItemHeight)
-        guard collectionViewFlowLayout.itemSize != itemSize else { return }
-        
-        collectionViewFlowLayout.itemSize = itemSize
-        collectionViewFlowLayout.invalidateLayout()
     }
     
     private func setTabBarVisibility(

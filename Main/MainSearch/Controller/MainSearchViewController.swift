@@ -70,16 +70,6 @@ final class MainSearchViewController: MainBaseViewController {
 
     private let paginationTaskController = MovieGridPaginationTaskController()
 
-    // MARK: - Override Points
-
-    override var collectionViewItemHeight: CGFloat {
-        Layout.searchResultHeight
-    }
-
-    override var updatesFlowLayoutItemSizeAutomatically: Bool {
-        false
-    }
-
     // MARK: - UI Components
 
     private lazy var searchController: UISearchController = {

@@ -81,10 +81,6 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
         loadReviews()
     }
 
-    override var collectionViewItemHeight: CGFloat {
-        120
-    }
-
     // MARK: - Setup
 
     private func configureNavigationBarAppearance() {

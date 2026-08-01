@@ -29,12 +29,6 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     private var profileRefreshTask: Task<Void, Never>?
 
-    // MARK: - Override Points
-
-    override var collectionViewItemHeight: CGFloat {
-        Layout.itemHeight
-    }
-
     // MARK: - Initialization
 
     init(viewModel: MainMemberSettingViewModel = MainMemberSettingViewModel()) {

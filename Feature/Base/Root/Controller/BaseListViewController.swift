@@ -11,11 +11,11 @@ import UIKit
 // MARK: - BaseListViewController
 
 @MainActor
-class BaseListViewController: BaseViewController {
+class BaseListViewController: BaseViewController, CollectionViewItemSizingProviding {
 
     // MARK: - Override Points
 
-    var collectionViewItemHeight: CGFloat {
+    var fallbackCollectionViewItemHeight: CGFloat {
         80
     }
 
@@ -68,24 +68,13 @@ class BaseListViewController: BaseViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateCollectionViewItemSize()
+        updateCollectionViewItemSizeIfNeeded()
     }
 
     override func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
-        updateCollectionViewItemSize()
+        updateCollectionViewItemSizeIfNeeded()
         collectionView.collectionViewLayout.invalidateLayout()
         collectionView.reloadData()
-    }
-
-    private func updateCollectionViewItemSize() {
-        let availableWidth = collectionView.bounds.width
-        guard availableWidth > 0 else { return }
-
-        let itemSize = CGSize(width: availableWidth, height: collectionViewItemHeight)
-        guard collectionViewFlowLayout.itemSize != itemSize else { return }
-
-        collectionViewFlowLayout.itemSize = itemSize
-        collectionViewFlowLayout.invalidateLayout()
     }
 }
