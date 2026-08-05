@@ -255,8 +255,12 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: SeasonDetailTextListCollectionViewCell.self)
 
+    override var containerViewInsets: UIEdgeInsets {
+        DetailLayoutMetrics.horizontalContentInsets
+    }
+
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 16
         static let itemSpacing: CGFloat = 12
         static let rowTitleSubtitleSpacing: CGFloat = 4
     }
@@ -284,7 +288,8 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Layout.contentInset)
+            make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
@@ -305,7 +310,10 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
         for items: [SeasonDetailTextListItem],
         width: CGFloat
     ) -> CGFloat {
-        let contentWidth = width - (Layout.contentInset * 2)
+        let contentWidth = DetailLayoutMetrics.contentWidth(
+            for: width,
+            horizontalInsetLevelCount: 2
+        )
         guard contentWidth > 0 else { return 80 }
 
         let textHeight = items.reduce(CGFloat.zero) { result, item in
@@ -324,7 +332,7 @@ final class SeasonDetailTextListCollectionViewCell: BaseCollectionViewCell {
                 + subtitleHeight
         }
         let spacing = CGFloat(max(items.count - 1, 0)) * Layout.itemSpacing
-        return ceil(textHeight + spacing + (Layout.contentInset * 2))
+        return ceil(textHeight + spacing + (Layout.verticalContentInset * 2))
     }
 
     private func removeRows() {
@@ -399,8 +407,12 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: SeasonDetailOverviewCollectionViewCell.self)
 
+    override var containerViewInsets: UIEdgeInsets {
+        DetailLayoutMetrics.horizontalContentInsets
+    }
+
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 16
         static let minimumHeight: CGFloat = 148
         static let titleContentSpacing: CGFloat = 8
         static let bodyLineSpacing: CGFloat = 4
@@ -424,7 +436,8 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         overviewLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Layout.contentInset)
+            make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
@@ -445,7 +458,10 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     }
 
     static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
-        let contentWidth = width - (Layout.contentInset * 2)
+        let contentWidth = DetailLayoutMetrics.contentWidth(
+            for: width,
+            horizontalInsetLevelCount: 2
+        )
         guard contentWidth > 0 else {
             return Layout.minimumHeight
         }
@@ -459,7 +475,7 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
         return max(
             Layout.minimumHeight,
-            ceil(textHeight) + (Layout.contentInset * 2)
+            ceil(textHeight) + (Layout.verticalContentInset * 2)
         )
     }
 

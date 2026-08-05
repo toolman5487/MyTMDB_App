@@ -13,6 +13,12 @@ import UIKit
 @MainActor
 class BaseCollectionViewCell: UICollectionViewCell {
 
+    // MARK: - Override Points
+
+    var containerViewInsets: UIEdgeInsets {
+        .zero
+    }
+
     // MARK: - UI Components
 
     let containerView: UIView = {
@@ -55,7 +61,7 @@ class BaseCollectionViewCell: UICollectionViewCell {
 
     func setupConstraints() {
         containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges.equalToSuperview().inset(containerViewInsets)
         }
     }
 

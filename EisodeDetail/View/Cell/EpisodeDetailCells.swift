@@ -207,8 +207,12 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
 
     static let reuseIdentifier = String(describing: EpisodeDetailAccountStateCollectionViewCell.self)
 
+    override var containerViewInsets: UIEdgeInsets {
+        DetailLayoutMetrics.horizontalContentInsets
+    }
+
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 16
         static let itemSpacing: CGFloat = 12
         static let rowTitleSubtitleSpacing: CGFloat = 4
     }
@@ -239,7 +243,8 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
         super.setupConstraints()
 
         stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Layout.contentInset)
+            make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
@@ -269,7 +274,10 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
         for items: [EpisodeDetailTextListItem],
         width: CGFloat
     ) -> CGFloat {
-        let contentWidth = width - (Layout.contentInset * 2)
+        let contentWidth = DetailLayoutMetrics.contentWidth(
+            for: width,
+            horizontalInsetLevelCount: 2
+        )
         guard contentWidth > 0 else { return 80 }
 
         let textHeight = items.reduce(CGFloat.zero) { result, item in
@@ -288,7 +296,7 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
                 + subtitleHeight
         }
         let spacing = CGFloat(max(items.count - 1, 0)) * Layout.itemSpacing
-        return ceil(textHeight + spacing + (Layout.contentInset * 2))
+        return ceil(textHeight + spacing + (Layout.verticalContentInset * 2))
     }
 
     @objc
@@ -376,8 +384,12 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: EpisodeDetailOverviewCollectionViewCell.self)
 
+    override var containerViewInsets: UIEdgeInsets {
+        DetailLayoutMetrics.horizontalContentInsets
+    }
+
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 16
         static let minimumHeight: CGFloat = 148
         static let titleContentSpacing: CGFloat = 8
         static let bodyLineSpacing: CGFloat = 4
@@ -401,7 +413,8 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         overviewLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Layout.contentInset)
+            make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
@@ -422,7 +435,10 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     }
 
     static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
-        let contentWidth = width - (Layout.contentInset * 2)
+        let contentWidth = DetailLayoutMetrics.contentWidth(
+            for: width,
+            horizontalInsetLevelCount: 2
+        )
         guard contentWidth > 0 else {
             return Layout.minimumHeight
         }
@@ -436,7 +452,7 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
         return max(
             Layout.minimumHeight,
-            ceil(textHeight) + (Layout.contentInset * 2)
+            ceil(textHeight) + (Layout.verticalContentInset * 2)
         )
     }
 

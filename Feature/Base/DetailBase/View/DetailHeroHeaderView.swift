@@ -42,7 +42,7 @@ class DetailHeroHeaderView: UICollectionReusableView {
         static let backdropHeight: CGFloat = 220
         static let posterWidth: CGFloat = 112
         static let posterHeight: CGFloat = 168
-        static let contentHorizontalInset: CGFloat = 16
+        static let contentHorizontalInset = DetailLayoutMetrics.horizontalContentInset
         static let bottomInset: CGFloat = 16
         static let taglineTopSpacing: CGFloat = 8
     }

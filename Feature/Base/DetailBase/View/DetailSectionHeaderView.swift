@@ -75,7 +75,7 @@ final class DetailSectionHeaderView: UICollectionReusableView {
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 

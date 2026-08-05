@@ -17,7 +17,7 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
     static let reuseIdentifier = String(describing: PersonDetailHeroHeaderView.self)
 
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let contentInset = DetailLayoutMetrics.horizontalContentInset
         static let profileWidth: CGFloat = 132
         static let profileHeight: CGFloat = 198
 
@@ -167,8 +167,12 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: PersonDetailBiographyCollectionViewCell.self)
 
+    override var containerViewInsets: UIEdgeInsets {
+        DetailLayoutMetrics.horizontalContentInsets
+    }
+
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 16
         static let minimumHeight: CGFloat = 120
         static let titleContentSpacing: CGFloat = 8
     }
@@ -191,7 +195,8 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         biographyLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Layout.contentInset)
+            make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
@@ -211,7 +216,10 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
     }
 
     static func fittingHeight(for biography: String, width: CGFloat) -> CGFloat {
-        let contentWidth = width - (Layout.contentInset * 2)
+        let contentWidth = DetailLayoutMetrics.contentWidth(
+            for: width,
+            horizontalInsetLevelCount: 2
+        )
         guard contentWidth > 0 else {
             return Layout.minimumHeight
         }
@@ -225,7 +233,7 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
 
         return max(
             Layout.minimumHeight,
-            ceil(textHeight) + (Layout.contentInset * 2)
+            ceil(textHeight) + (Layout.verticalContentInset * 2)
         )
     }
 
@@ -418,6 +426,7 @@ final class PersonDetailAliasesCollectionViewCell: BaseNestedCollectionViewCell 
 
     override func configureView() {
         containerView.backgroundColor = .clear
+        collectionViewFlowLayout.sectionInset = DetailLayoutMetrics.horizontalContentInsets
         collectionViewFlowLayout.minimumLineSpacing = 8
         collectionViewFlowLayout.minimumInteritemSpacing = 8
         collectionView.dataSource = self

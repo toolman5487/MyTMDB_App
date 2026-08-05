@@ -18,6 +18,7 @@ nonisolated enum DetailLayoutMetrics {
     static let headerContentSpacing: CGFloat = 8
     static let sectionBottomInset: CGFloat = 8
     static let estimatedHeroHeight: CGFloat = 360
+    static let horizontalContentInset: CGFloat = 16
 
     // MARK: - Insets
 
@@ -33,5 +34,24 @@ nonisolated enum DetailLayoutMetrics {
         bottom: CGFloat = sectionBottomInset
     ) -> NSDirectionalEdgeInsets {
         NSDirectionalEdgeInsets(top: top, leading: 0, bottom: bottom, trailing: 0)
+    }
+
+    static var horizontalContentInsets: UIEdgeInsets {
+        UIEdgeInsets(
+            top: 0,
+            left: horizontalContentInset,
+            bottom: 0,
+            right: horizontalContentInset
+        )
+    }
+
+    static func contentWidth(
+        for availableWidth: CGFloat,
+        horizontalInsetLevelCount: Int = 1
+    ) -> CGFloat {
+        let totalInset = horizontalContentInset
+            * 2
+            * CGFloat(max(horizontalInsetLevelCount, 0))
+        return max(availableWidth - totalInset, 0)
     }
 }

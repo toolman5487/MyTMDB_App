@@ -16,8 +16,12 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: TVDetailOverviewCollectionViewCell.self)
 
+    override var containerViewInsets: UIEdgeInsets {
+        DetailLayoutMetrics.horizontalContentInsets
+    }
+
     private enum Layout {
-        static let contentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 16
         static let minimumHeight: CGFloat = 148
         static let titleContentSpacing: CGFloat = 8
     }
@@ -40,7 +44,8 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         overviewLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(Layout.contentInset)
+            make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
@@ -61,7 +66,10 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
     }
 
     static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
-        let contentWidth = width - (Layout.contentInset * 2)
+        let contentWidth = DetailLayoutMetrics.contentWidth(
+            for: width,
+            horizontalInsetLevelCount: 2
+        )
         guard contentWidth > 0 else {
             return Layout.minimumHeight
         }
@@ -75,7 +83,7 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
 
         return max(
             Layout.minimumHeight,
-            ceil(textHeight) + (Layout.contentInset * 2)
+            ceil(textHeight) + (Layout.verticalContentInset * 2)
         )
     }
 
@@ -201,7 +209,8 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
         super.setupConstraints()
 
         verticalStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
 
         genresCollectionView.snp.makeConstraints { make in

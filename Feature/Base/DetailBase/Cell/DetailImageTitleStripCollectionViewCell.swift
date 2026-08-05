@@ -49,6 +49,7 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
 
     override func configureView() {
         super.configureView()
+        collectionViewFlowLayout.sectionInset = DetailLayoutMetrics.horizontalContentInsets
         configureHorizontalStrip(
             cellType: DetailImageTitleCollectionViewCell.self,
             reuseIdentifier: DetailImageTitleCollectionViewCell.reuseIdentifier,

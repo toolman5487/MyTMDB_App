@@ -27,7 +27,10 @@ final class DetailContentListViewController: BaseListViewController {
             return 112
 
         case .gallery:
-            let imageWidth = max(collectionView.bounds.width - 32, 0)
+            let imageWidth = max(
+                collectionView.bounds.width - (DetailLayoutMetrics.horizontalContentInset * 2),
+                0
+            )
             return max((imageWidth * 9 / 16) + 16, 160)
         }
     }

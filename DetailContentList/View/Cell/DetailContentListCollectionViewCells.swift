@@ -17,7 +17,7 @@ final class DetailContentListRowCollectionViewCell: BaseCollectionViewCell {
     static let reuseIdentifier = String(describing: DetailContentListRowCollectionViewCell.self)
 
     private enum Layout {
-        static let horizontalInset: CGFloat = 16
+        static let horizontalInset = DetailLayoutMetrics.horizontalContentInset
         static let verticalInset: CGFloat = 8
         static let contentSpacing: CGFloat = 12
         static let labelSpacing: CGFloat = 4
@@ -156,7 +156,7 @@ final class DetailContentListGalleryCollectionViewCell: BaseCollectionViewCell {
     static let reuseIdentifier = String(describing: DetailContentListGalleryCollectionViewCell.self)
 
     private enum Layout {
-        static let horizontalInset: CGFloat = 16
+        static let horizontalInset = DetailLayoutMetrics.horizontalContentInset
         static let verticalInset: CGFloat = 8
         static let cornerRadius: CGFloat = 8
     }

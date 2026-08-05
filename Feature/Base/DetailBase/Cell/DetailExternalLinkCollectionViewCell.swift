@@ -42,7 +42,7 @@ class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
         collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
-        collectionViewFlowLayout.sectionInset = .zero
+        collectionViewFlowLayout.sectionInset = DetailLayoutMetrics.horizontalContentInsets
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(

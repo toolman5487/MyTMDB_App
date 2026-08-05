@@ -21,7 +21,7 @@ final class EpisodeDetailHeroHeaderView: UICollectionReusableView {
         static let bannerHeight: CGFloat = 148
         static let posterWidth: CGFloat = 112
         static let posterHeight: CGFloat = 168
-        static let contentHorizontalInset: CGFloat = 16
+        static let contentHorizontalInset = DetailLayoutMetrics.horizontalContentInset
         static let itemSpacing: CGFloat = 8
     }
 

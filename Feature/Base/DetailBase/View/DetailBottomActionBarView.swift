@@ -16,7 +16,7 @@ final class DetailBottomActionBarView: UIView {
     // MARK: - Metrics
 
     enum Metrics {
-        static let horizontalInset: CGFloat = 16
+        static let horizontalInset = DetailLayoutMetrics.horizontalContentInset
         static let verticalInset: CGFloat = 12
         static let buttonSpacing: CGFloat = 12
         static let buttonHeight: CGFloat = 48

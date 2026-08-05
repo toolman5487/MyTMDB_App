@@ -24,6 +24,7 @@ class DetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
         containerView.backgroundColor = .clear
         isAccessibilityElement = false
         collectionView.isAccessibilityElement = false
+        collectionViewFlowLayout.sectionInset = DetailLayoutMetrics.horizontalContentInsets
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
