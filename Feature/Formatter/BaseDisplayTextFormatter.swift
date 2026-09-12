@@ -253,22 +253,8 @@ nonisolated enum BaseDisplayTextFormatter {
 
     // MARK: - Date
 
-    static func iso8601Date(from rawValue: String?) -> Date? {
-        guard let rawValue = nonEmptyText(rawValue) else { return nil }
-
-        let fractionalSecondsFormatter = ISO8601DateFormatter()
-        fractionalSecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        return fractionalSecondsFormatter.date(from: rawValue)
-            ?? ISO8601DateFormatter().date(from: rawValue)
-    }
-
-    static func iso8601Date(from rawValue: String) -> Date? {
-        iso8601Date(from: Optional(rawValue))
-    }
-
-    static func iso8601DisplayDate(from rawValue: String?) -> String? {
-        guard let date = iso8601Date(from: rawValue) else { return nil }
+    static func displayDate(from date: Date?) -> String? {
+        guard let date else { return nil }
 
         return date.formatted(
             .dateTime

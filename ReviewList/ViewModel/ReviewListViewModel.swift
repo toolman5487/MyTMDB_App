@@ -30,7 +30,9 @@ final class ReviewListViewModel {
     private(set) var selectedFilter: ReviewFilter = .all
 
     private let mediaKind: MediaKind
-    private let service: ReviewListServicing
+    private let loadReviewsUseCase: LoadReviewsUseCase
+    private let filterReviewsUseCase: FilterReviewsUseCase
+
     private var reviews: [Review] = []
     private var currentPage: Int = 0
     private var totalPages: Int = 1
@@ -41,31 +43,22 @@ final class ReviewListViewModel {
 
     init(
         mediaKind: MediaKind,
-        service: ReviewListServicing = ReviewListService()
+        loadReviewsUseCase: LoadReviewsUseCase = DefaultLoadReviewsUseCase(repository: ReviewRepository()),
+        filterReviewsUseCase: FilterReviewsUseCase = DefaultFilterReviewsUseCase()
     ) {
         self.mediaKind = mediaKind
-        self.service = service
+        self.loadReviewsUseCase = loadReviewsUseCase
+        self.filterReviewsUseCase = filterReviewsUseCase
     }
 
     // MARK: - Public Methods
 
     func loadReviews(mediaID: Int) async {
-        guard mediaID > 0 else {
-            state = .failed(
-                ErrorMessage(
-                    title: "找不到評論",
-                    message: "\(mediaKind.displayName) ID 不正確，請返回上一頁後再試。",
-                    actionTitle: nil
-                )
-            )
-            return
-        }
-
         state = .loading
         resetPagination()
 
         do {
-            let page = try await service.fetchReviews(kind: mediaKind, mediaID: mediaID)
+            let page = try await loadReviewsUseCase(kind: mediaKind, mediaID: mediaID)
             apply(page: page, replacingCurrentReviews: true)
             renderCurrentPresentation()
         } catch {
@@ -83,18 +76,12 @@ final class ReviewListViewModel {
     }
 
     func loadNextPage(mediaID: Int) async {
-        guard mediaID > 0 else {
-            isLoadingNextPage = false
-            renderCurrentPresentation()
-            return
-        }
-
         guard isLoadingNextPage || beginLoadingNextPage() else { return }
 
         let nextPage = currentPage + 1
 
         do {
-            let page = try await service.fetchReviews(
+            let page = try await loadReviewsUseCase(
                 kind: mediaKind,
                 mediaID: mediaID,
                 page: nextPage
@@ -125,12 +112,8 @@ final class ReviewListViewModel {
             return
         }
 
-        let reviewItems = reviews(
-            reviews,
-            applying: selectedFilter
-        )
+        let reviewItems = filterReviewsUseCase(reviews, filter: selectedFilter)
             .map(ReviewItem.init(review:))
-            .filter { !$0.content.isEmpty }
 
         guard !reviewItems.isEmpty else {
             state = .empty
@@ -140,10 +123,7 @@ final class ReviewListViewModel {
         state = .loaded(
             ReviewListPresentation(
                 filters: ReviewFilter.allCases.map {
-                    ReviewFilterItem(
-                        filter: $0,
-                        selectedFilter: selectedFilter
-                    )
+                    ReviewFilterItem(filter: $0, selectedFilter: selectedFilter)
                 },
                 reviews: reviewItems,
                 page: currentPage,
@@ -162,82 +142,13 @@ final class ReviewListViewModel {
         isLoadingNextPage = false
     }
 
-    private func apply(
-        page: ReviewsPage,
-        replacingCurrentReviews: Bool
-    ) {
-        currentPage = page.page
+    private func apply(page: Page<Review>, replacingCurrentReviews: Bool) {
+        currentPage = page.number
         totalPages = page.totalPages
         totalResults = page.totalResults
 
-        if replacingCurrentReviews {
-            reviews = page.results
-            return
-        }
-
-        var existingIDs = Set(reviews.map(\.id))
-        let newReviews = page.results.filter { review in
-            guard !existingIDs.contains(review.id) else { return false }
-            existingIDs.insert(review.id)
-            return true
-        }
-
-        reviews.append(contentsOf: newReviews)
-    }
-
-    private func reviews(
-        _ reviews: [Review],
-        applying filter: ReviewFilter
-    ) -> [Review] {
-        switch filter {
-        case .all:
-            return reviews
-
-        case .rated:
-            return reviews.filter { ($0.authorDetails.rating ?? 0) > 0 }
-
-        case .unrated:
-            return reviews.filter {
-                $0.authorDetails.rating == nil || $0.authorDetails.rating == 0
-            }
-
-        case .latest:
-            return reviews.sorted {
-                isReview($0, orderedBefore: $1, ascending: false)
-            }
-
-        case .oldest:
-            return reviews.sorted {
-                isReview($0, orderedBefore: $1, ascending: true)
-            }
-        }
-    }
-
-    private func isReview(
-        _ lhs: Review,
-        orderedBefore rhs: Review,
-        ascending: Bool
-    ) -> Bool {
-        let lhsDate = reviewDate(for: lhs)
-        let rhsDate = reviewDate(for: rhs)
-
-        switch (lhsDate, rhsDate) {
-        case (.some(let lhsDate), .some(let rhsDate)):
-            return ascending ? lhsDate < rhsDate : lhsDate > rhsDate
-
-        case (.some, .none):
-            return true
-
-        case (.none, .some):
-            return false
-
-        case (.none, .none):
-            return lhs.id < rhs.id
-        }
-    }
-
-    private func reviewDate(for review: Review) -> Date? {
-        BaseDisplayTextFormatter.iso8601Date(from: review.updatedAt)
-            ?? BaseDisplayTextFormatter.iso8601Date(from: review.createdAt)
+        reviews = replacingCurrentReviews
+            ? page.items
+            : reviews.appending(uniqueReviewsFrom: page.items)
     }
 }
