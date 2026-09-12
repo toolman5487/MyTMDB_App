@@ -1,5 +1,5 @@
 //
-//  MovieDetailModels.swift
+//  MovieDetailDTO.swift
 //  MyTMDB_App
 //
 //  Created by Willy Hsu on 2026/6/30.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-// MARK: - MovieDetail
+// MARK: - MovieDetailDTO
 
-nonisolated struct MovieDetail: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieDetailDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let originalTitle: String
@@ -19,20 +19,20 @@ nonisolated struct MovieDetail: Decodable, Sendable, Equatable, Identifiable {
     let video: Bool
     let backdropPath: String?
     let posterPath: String?
-    let belongsToCollection: MovieDetailCollection?
+    let belongsToCollection: MovieCollectionRefDTO?
     let budget: Int
-    let genres: [MovieDetailGenre]
+    let genres: [GenreDTO]
     let homepage: String?
     let imdbID: String?
     let originalLanguage: String
     let originCountry: [String]
     let popularity: Double
-    let productionCompanies: [MovieDetailProductionCompany]
-    let productionCountries: [MovieDetailProductionCountry]
+    let productionCompanies: [ProductionCompanyDTO]
+    let productionCountries: [ProductionCountryDTO]
     let releaseDate: String
     let revenue: Int
     let runtime: Int?
-    let spokenLanguages: [MovieDetailSpokenLanguage]
+    let spokenLanguages: [SpokenLanguageDTO]
     let status: String
     let voteAverage: Double
     let voteCount: Int
@@ -78,35 +78,35 @@ nonisolated struct MovieDetail: Decodable, Sendable, Equatable, Identifiable {
         self.video = try container.decodeIfPresent(Bool.self, forKey: .video) ?? false
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
-        self.belongsToCollection = try container.decodeIfPresent(MovieDetailCollection.self, forKey: .belongsToCollection)
+        self.belongsToCollection = try container.decodeIfPresent(MovieCollectionRefDTO.self, forKey: .belongsToCollection)
         self.budget = try container.decodeIfPresent(Int.self, forKey: .budget) ?? 0
-        self.genres = try container.decodeIfPresent([MovieDetailGenre].self, forKey: .genres) ?? []
+        self.genres = try container.decodeIfPresent([GenreDTO].self, forKey: .genres) ?? []
         self.homepage = try container.decodeIfPresent(String.self, forKey: .homepage)
         self.imdbID = try container.decodeIfPresent(String.self, forKey: .imdbID)
         self.originalLanguage = try container.decodeIfPresent(String.self, forKey: .originalLanguage) ?? ""
         self.originCountry = try container.decodeIfPresent([String].self, forKey: .originCountry) ?? []
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
         self.productionCompanies = try container.decodeIfPresent(
-            [MovieDetailProductionCompany].self,
+            [ProductionCompanyDTO].self,
             forKey: .productionCompanies
         ) ?? []
         self.productionCountries = try container.decodeIfPresent(
-            [MovieDetailProductionCountry].self,
+            [ProductionCountryDTO].self,
             forKey: .productionCountries
         ) ?? []
         self.releaseDate = try container.decodeIfPresent(String.self, forKey: .releaseDate) ?? ""
         self.revenue = try container.decodeIfPresent(Int.self, forKey: .revenue) ?? 0
         self.runtime = try container.decodeIfPresent(Int.self, forKey: .runtime)
-        self.spokenLanguages = try container.decodeIfPresent([MovieDetailSpokenLanguage].self, forKey: .spokenLanguages) ?? []
+        self.spokenLanguages = try container.decodeIfPresent([SpokenLanguageDTO].self, forKey: .spokenLanguages) ?? []
         self.status = try container.decodeIfPresent(String.self, forKey: .status) ?? ""
         self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
         self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
     }
 }
 
-// MARK: - MovieDetailCollection
+// MARK: - MovieCollectionRefDTO
 
-nonisolated struct MovieDetailCollection: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieCollectionRefDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let name: String
     let posterPath: String?
@@ -120,16 +120,16 @@ nonisolated struct MovieDetailCollection: Decodable, Sendable, Equatable, Identi
     }
 }
 
-// MARK: - MovieDetailGenre
+// MARK: - GenreDTO
 
-nonisolated struct MovieDetailGenre: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct GenreDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let name: String
 }
 
-// MARK: - MovieDetailProductionCompany
+// MARK: - ProductionCompanyDTO
 
-nonisolated struct MovieDetailProductionCompany: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct ProductionCompanyDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let logoPath: String?
     let name: String
@@ -143,9 +143,9 @@ nonisolated struct MovieDetailProductionCompany: Decodable, Sendable, Equatable,
     }
 }
 
-// MARK: - MovieDetailProductionCountry
+// MARK: - ProductionCountryDTO
 
-nonisolated struct MovieDetailProductionCountry: Decodable, Sendable, Equatable {
+nonisolated struct ProductionCountryDTO: Decodable, Sendable, Equatable {
     let iso3166Code: String
     let name: String
 
@@ -155,9 +155,9 @@ nonisolated struct MovieDetailProductionCountry: Decodable, Sendable, Equatable 
     }
 }
 
-// MARK: - MovieDetailSpokenLanguage
+// MARK: - SpokenLanguageDTO
 
-nonisolated struct MovieDetailSpokenLanguage: Decodable, Sendable, Equatable {
+nonisolated struct SpokenLanguageDTO: Decodable, Sendable, Equatable {
     let englishName: String
     let iso639Code: String
     let name: String
@@ -169,28 +169,15 @@ nonisolated struct MovieDetailSpokenLanguage: Decodable, Sendable, Equatable {
     }
 }
 
-// MARK: - MovieDetailContent
+// MARK: - MovieCollectionDTO
 
-nonisolated struct MovieDetailContent: Sendable, Equatable {
-    let detail: MovieDetail
-    let credits: MovieCreditsResponse
-    let videos: MovieVideosResponse
-    let images: MovieImagesResponse
-    let collection: MovieCollectionDetail?
-    let recommendations: MovieRecommendationsPage
-    let similar: MovieSimilarPage
-    let watchProviders: MovieWatchProvidersResponse
-}
-
-// MARK: - MovieCollectionDetail
-
-nonisolated struct MovieCollectionDetail: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieCollectionDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let name: String
     let overview: String?
     let posterPath: String?
     let backdropPath: String?
-    let parts: [MovieCollectionPart]
+    let parts: [MovieCollectionPartDTO]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -209,13 +196,13 @@ nonisolated struct MovieCollectionDetail: Decodable, Sendable, Equatable, Identi
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview)
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
-        self.parts = try container.decodeIfPresent([MovieCollectionPart].self, forKey: .parts) ?? []
+        self.parts = try container.decodeIfPresent([MovieCollectionPartDTO].self, forKey: .parts) ?? []
     }
 }
 
-// MARK: - MovieCollectionPart
+// MARK: - MovieCollectionPartDTO
 
-nonisolated struct MovieCollectionPart: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieCollectionPartDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let overview: String
@@ -250,12 +237,12 @@ nonisolated struct MovieCollectionPart: Decodable, Sendable, Equatable, Identifi
     }
 }
 
-// MARK: - MovieCreditsResponse
+// MARK: - MovieCreditsDTO
 
-nonisolated struct MovieCreditsResponse: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieCreditsDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
-    let cast: [MovieCreditCast]
-    let crew: [MovieCreditCrew]
+    let cast: [CastMemberDTO]
+    let crew: [CrewMemberDTO]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -265,8 +252,8 @@ nonisolated struct MovieCreditsResponse: Decodable, Sendable, Equatable, Identif
 
     init(
         id: Int,
-        cast: [MovieCreditCast] = [],
-        crew: [MovieCreditCrew] = []
+        cast: [CastMemberDTO] = [],
+        crew: [CrewMemberDTO] = []
     ) {
         self.id = id
         self.cast = cast
@@ -277,14 +264,14 @@ nonisolated struct MovieCreditsResponse: Decodable, Sendable, Equatable, Identif
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.cast = try container.decodeIfPresent([MovieCreditCast].self, forKey: .cast) ?? []
-        self.crew = try container.decodeIfPresent([MovieCreditCrew].self, forKey: .crew) ?? []
+        self.cast = try container.decodeIfPresent([CastMemberDTO].self, forKey: .cast) ?? []
+        self.crew = try container.decodeIfPresent([CrewMemberDTO].self, forKey: .crew) ?? []
     }
 }
 
-// MARK: - MovieCreditCast
+// MARK: - CastMemberDTO
 
-nonisolated struct MovieCreditCast: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct CastMemberDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let castID: Int?
     let character: String
@@ -328,9 +315,9 @@ nonisolated struct MovieCreditCast: Decodable, Sendable, Equatable, Identifiable
     }
 }
 
-// MARK: - MovieCreditCrew
+// MARK: - CrewMemberDTO
 
-nonisolated struct MovieCreditCrew: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct CrewMemberDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let creditID: String
     let department: String
@@ -371,18 +358,18 @@ nonisolated struct MovieCreditCrew: Decodable, Sendable, Equatable, Identifiable
     }
 }
 
-// MARK: - MovieVideosResponse
+// MARK: - MovieVideosDTO
 
-nonisolated struct MovieVideosResponse: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieVideosDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
-    let results: [MovieVideo]
+    let results: [VideoDTO]
 
     enum CodingKeys: String, CodingKey {
         case id
         case results
     }
 
-    init(id: Int, results: [MovieVideo] = []) {
+    init(id: Int, results: [VideoDTO] = []) {
         self.id = id
         self.results = results
     }
@@ -391,13 +378,13 @@ nonisolated struct MovieVideosResponse: Decodable, Sendable, Equatable, Identifi
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.results = try container.decodeIfPresent([MovieVideo].self, forKey: .results) ?? []
+        self.results = try container.decodeIfPresent([VideoDTO].self, forKey: .results) ?? []
     }
 }
 
-// MARK: - MovieVideo
+// MARK: - VideoDTO
 
-nonisolated struct MovieVideo: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct VideoDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: String
     let iso639Code: String
     let iso3166Code: String
@@ -438,13 +425,13 @@ nonisolated struct MovieVideo: Decodable, Sendable, Equatable, Identifiable {
     }
 }
 
-// MARK: - MovieImagesResponse
+// MARK: - MediaImagesDTO
 
-nonisolated struct MovieImagesResponse: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MediaImagesDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
-    let backdrops: [MovieImage]
-    let logos: [MovieImage]
-    let posters: [MovieImage]
+    let backdrops: [MediaImageDTO]
+    let logos: [MediaImageDTO]
+    let posters: [MediaImageDTO]
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -455,9 +442,9 @@ nonisolated struct MovieImagesResponse: Decodable, Sendable, Equatable, Identifi
 
     init(
         id: Int,
-        backdrops: [MovieImage] = [],
-        logos: [MovieImage] = [],
-        posters: [MovieImage] = []
+        backdrops: [MediaImageDTO] = [],
+        logos: [MediaImageDTO] = [],
+        posters: [MediaImageDTO] = []
     ) {
         self.id = id
         self.backdrops = backdrops
@@ -469,15 +456,15 @@ nonisolated struct MovieImagesResponse: Decodable, Sendable, Equatable, Identifi
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.backdrops = try container.decodeIfPresent([MovieImage].self, forKey: .backdrops) ?? []
-        self.logos = try container.decodeIfPresent([MovieImage].self, forKey: .logos) ?? []
-        self.posters = try container.decodeIfPresent([MovieImage].self, forKey: .posters) ?? []
+        self.backdrops = try container.decodeIfPresent([MediaImageDTO].self, forKey: .backdrops) ?? []
+        self.logos = try container.decodeIfPresent([MediaImageDTO].self, forKey: .logos) ?? []
+        self.posters = try container.decodeIfPresent([MediaImageDTO].self, forKey: .posters) ?? []
     }
 }
 
-// MARK: - MovieImage
+// MARK: - MediaImageDTO
 
-nonisolated struct MovieImage: Decodable, Sendable, Equatable {
+nonisolated struct MediaImageDTO: Decodable, Sendable, Equatable {
     let aspectRatio: Double
     let filePath: String
     let height: Int
@@ -509,11 +496,11 @@ nonisolated struct MovieImage: Decodable, Sendable, Equatable {
     }
 }
 
-// MARK: - MovieRecommendationsPage
+// MARK: - MovieSummaryPageDTO
 
-nonisolated struct MovieRecommendationsPage: Decodable, Sendable, Equatable {
+nonisolated struct MovieSummaryPageDTO: Decodable, Sendable, Equatable {
     let page: Int
-    let results: [MovieRecommendation]
+    let results: [MovieSummaryDTO]
     let totalPages: Int
     let totalResults: Int
 
@@ -526,7 +513,7 @@ nonisolated struct MovieRecommendationsPage: Decodable, Sendable, Equatable {
 
     init(
         page: Int = 1,
-        results: [MovieRecommendation] = [],
+        results: [MovieSummaryDTO] = [],
         totalPages: Int = 1,
         totalResults: Int = 0
     ) {
@@ -540,15 +527,15 @@ nonisolated struct MovieRecommendationsPage: Decodable, Sendable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.page = try container.decodeIfPresent(Int.self, forKey: .page) ?? 1
-        self.results = try container.decodeIfPresent([MovieRecommendation].self, forKey: .results) ?? []
+        self.results = try container.decodeIfPresent([MovieSummaryDTO].self, forKey: .results) ?? []
         self.totalPages = try container.decodeIfPresent(Int.self, forKey: .totalPages) ?? 1
         self.totalResults = try container.decodeIfPresent(Int.self, forKey: .totalResults) ?? results.count
     }
 }
 
-// MARK: - MovieRecommendation
+// MARK: - MovieSummaryDTO
 
-nonisolated struct MovieRecommendation: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MovieSummaryDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let adult: Bool
     let backdropPath: String?
@@ -601,22 +588,18 @@ nonisolated struct MovieRecommendation: Decodable, Sendable, Equatable, Identifi
     }
 }
 
-// MARK: - MovieSimilarPage
+// MARK: - WatchProvidersDTO
 
-typealias MovieSimilarPage = MovieRecommendationsPage
-
-// MARK: - MovieWatchProvidersResponse
-
-nonisolated struct MovieWatchProvidersResponse: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct WatchProvidersDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
-    let results: [String: MovieWatchProviderCountry]
+    let results: [String: WatchProviderCountryDTO]
 
     enum CodingKeys: String, CodingKey {
         case id
         case results
     }
 
-    init(id: Int, results: [String: MovieWatchProviderCountry] = [:]) {
+    init(id: Int, results: [String: WatchProviderCountryDTO] = [:]) {
         self.id = id
         self.results = results
     }
@@ -625,19 +608,19 @@ nonisolated struct MovieWatchProvidersResponse: Decodable, Sendable, Equatable, 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.results = try container.decodeIfPresent([String: MovieWatchProviderCountry].self, forKey: .results) ?? [:]
+        self.results = try container.decodeIfPresent([String: WatchProviderCountryDTO].self, forKey: .results) ?? [:]
     }
 }
 
-// MARK: - MovieWatchProviderCountry
+// MARK: - WatchProviderCountryDTO
 
-nonisolated struct MovieWatchProviderCountry: Decodable, Sendable, Equatable {
+nonisolated struct WatchProviderCountryDTO: Decodable, Sendable, Equatable {
     let link: String
-    let flatrate: [MovieWatchProvider]
-    let buy: [MovieWatchProvider]
-    let rent: [MovieWatchProvider]
-    let ads: [MovieWatchProvider]
-    let free: [MovieWatchProvider]
+    let flatrate: [WatchProviderDTO]
+    let buy: [WatchProviderDTO]
+    let rent: [WatchProviderDTO]
+    let ads: [WatchProviderDTO]
+    let free: [WatchProviderDTO]
 
     enum CodingKeys: String, CodingKey {
         case link
@@ -652,17 +635,17 @@ nonisolated struct MovieWatchProviderCountry: Decodable, Sendable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.link = try container.decodeIfPresent(String.self, forKey: .link) ?? ""
-        self.flatrate = try container.decodeIfPresent([MovieWatchProvider].self, forKey: .flatrate) ?? []
-        self.buy = try container.decodeIfPresent([MovieWatchProvider].self, forKey: .buy) ?? []
-        self.rent = try container.decodeIfPresent([MovieWatchProvider].self, forKey: .rent) ?? []
-        self.ads = try container.decodeIfPresent([MovieWatchProvider].self, forKey: .ads) ?? []
-        self.free = try container.decodeIfPresent([MovieWatchProvider].self, forKey: .free) ?? []
+        self.flatrate = try container.decodeIfPresent([WatchProviderDTO].self, forKey: .flatrate) ?? []
+        self.buy = try container.decodeIfPresent([WatchProviderDTO].self, forKey: .buy) ?? []
+        self.rent = try container.decodeIfPresent([WatchProviderDTO].self, forKey: .rent) ?? []
+        self.ads = try container.decodeIfPresent([WatchProviderDTO].self, forKey: .ads) ?? []
+        self.free = try container.decodeIfPresent([WatchProviderDTO].self, forKey: .free) ?? []
     }
 }
 
-// MARK: - MovieWatchProvider
+// MARK: - WatchProviderDTO
 
-nonisolated struct MovieWatchProvider: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct WatchProviderDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let displayPriority: Int
     let logoPath: String?

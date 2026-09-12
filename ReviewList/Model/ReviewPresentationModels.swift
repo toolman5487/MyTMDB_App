@@ -31,22 +31,6 @@ extension ReviewFilter {
     }
 }
 
-// MARK: - DomainError Presentation
-
-extension DomainError: ErrorMessageConvertible {
-
-    var errorMessage: ErrorMessage {
-        switch self {
-        case .invalidIdentifier(let kind):
-            return ErrorMessage(
-                title: "找不到評論",
-                message: "\(kind.displayName) ID 不正確，請返回上一頁後再試。",
-                actionTitle: nil
-            )
-        }
-    }
-}
-
 // MARK: - ReviewListPresentation
 
 nonisolated struct ReviewListPresentation: Sendable, Equatable {

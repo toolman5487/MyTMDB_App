@@ -208,32 +208,27 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     let homepageURL: URL?
     let imdbURL: URL?
 
-    init(detail: MovieDetail) {
-        self.id = detail.id
-        self.title = detail.title
-        self.originalTitle = detail.originalTitle
-        self.tagline = BaseDisplayTextFormatter.nonEmptyText(detail.tagline)
-        self.overview = BaseDisplayTextFormatter.nonEmptyText(detail.overview)
-        self.posterURL = detail.posterPath.flatMap {
+    init(movie: Movie) {
+        self.id = movie.id
+        self.title = movie.title
+        self.originalTitle = movie.originalTitle
+        self.tagline = BaseDisplayTextFormatter.nonEmptyText(movie.tagline)
+        self.overview = BaseDisplayTextFormatter.nonEmptyText(movie.overview)
+        self.posterURL = movie.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.backdropURL = detail.backdropPath.flatMap {
+        self.backdropURL = movie.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.releaseDateText = BaseDisplayTextFormatter.nonEmptyText(detail.releaseDate)
-        self.runtimeText = BaseDisplayTextFormatter.runtime(minutes: detail.runtime)
-        self.scoreText = BaseDisplayTextFormatter.score(detail.voteAverage, voteCount: detail.voteCount)
-        self.voteCountText = BaseDisplayTextFormatter.voteCount(detail.voteCount)
-        self.statusText = BaseDisplayTextFormatter.nonEmptyText(detail.status)
-        self.budgetText = BaseDisplayTextFormatter.currencyUSD(detail.budget)
-        self.revenueText = BaseDisplayTextFormatter.currencyUSD(detail.revenue)
-        self.homepageURL = Self.makeURL(from: detail.homepage)
-        self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
-    }
-
-    private static func makeURL(from string: String?) -> URL? {
-        guard let string, !string.isEmpty else { return nil }
-        return URL(string: string)
+        self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: movie.releaseDate)
+        self.runtimeText = BaseDisplayTextFormatter.runtime(movie.runtime)
+        self.scoreText = BaseDisplayTextFormatter.score(movie.voteAverage, voteCount: movie.voteCount)
+        self.voteCountText = BaseDisplayTextFormatter.voteCount(movie.voteCount)
+        self.statusText = BaseDisplayTextFormatter.nonEmptyText(movie.status.rawText)
+        self.budgetText = BaseDisplayTextFormatter.currencyUSD(movie.budget)
+        self.revenueText = BaseDisplayTextFormatter.currencyUSD(movie.revenue)
+        self.homepageURL = movie.homepage
+        self.imdbURL = Self.makeIMDbURL(from: movie.imdbID)
     }
 
     private static func makeIMDbURL(from imdbID: String?) -> URL? {
@@ -310,14 +305,14 @@ nonisolated struct MovieDetailAttributeItem: Sendable, Equatable, Identifiable {
     let title: String
     let kind: Kind
 
-    init(genre: MovieDetailGenre) {
+    init(genre: Genre) {
         self.id = "genre-\(genre.id)"
         self.sourceID = genre.id
         self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: genre.name)
         self.kind = .genre
     }
 
-    init(productionCompany: MovieDetailProductionCompany) {
+    init(productionCompany: ProductionCompany) {
         self.id = "production-company-\(productionCompany.id)"
         self.sourceID = productionCompany.id
         self.title = productionCompany.name
@@ -333,7 +328,7 @@ nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
     let characterText: String
     let profileURL: URL?
 
-    init(cast: MovieCreditCast) {
+    init(cast: CastMember) {
         self.id = cast.id
         self.name = cast.name
         self.characterText = BaseDisplayTextFormatter.nonEmptyText(cast.character) ?? ""
@@ -352,7 +347,7 @@ nonisolated struct MovieDetailCrewItem: Sendable, Equatable, Identifiable {
     let jobText: String
     let profileURL: URL?
 
-    init(crew: MovieCreditCrew) {
+    init(crew: CrewMember) {
         self.id = crew.creditID.isEmpty ? "\(crew.id)-\(crew.department)-\(crew.job)" : crew.creditID
         self.personID = crew.id
         self.name = crew.name
@@ -362,7 +357,7 @@ nonisolated struct MovieDetailCrewItem: Sendable, Equatable, Identifiable {
         }
     }
 
-    private static func makeJobText(crew: MovieCreditCrew) -> String {
+    private static func makeJobText(crew: CrewMember) -> String {
         BaseFormatter.CrewJobDisplayMapper.displayText(
             job: crew.job,
             department: crew.department
@@ -380,7 +375,7 @@ nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
     let youtubeVideoKey: String?
     let videoURL: URL?
 
-    init(video: MovieVideo) {
+    init(video: Video) {
         self.id = video.id
         self.title = video.name
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
@@ -405,7 +400,7 @@ nonisolated struct MovieDetailImageItem: Sendable, Equatable, Identifiable {
     let resolutionText: String?
     let imageURL: URL
 
-    init?(image: MovieImage, index: Int) {
+    init?(image: MediaImage, index: Int) {
         guard let imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500) else {
             return nil
         }
@@ -436,7 +431,7 @@ nonisolated struct MovieWatchProviderItem: Sendable, Equatable, Identifiable {
 
     init(
         countryCode: String,
-        provider: MovieWatchProvider,
+        provider: WatchProvider,
         category: String,
         link: String
     ) {
@@ -463,24 +458,12 @@ nonisolated struct MovieDetailCollectionSectionItem: Sendable, Equatable, Identi
         parts.isEmpty
     }
 
-    init(collection: MovieCollectionDetail, currentMovieID: Int) {
+    init(collection: MovieCollection, currentMovieID: Int) {
         self.id = collection.id
         self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: collection.name)
         self.overview = BaseDisplayTextFormatter.nonEmptyText(collection.overview)
-        self.parts = collection.parts
-            .filter { $0.id != currentMovieID }
-            .sorted { lhs, rhs in
-                switch (lhs.releaseDate.isEmpty, rhs.releaseDate.isEmpty) {
-                case (false, false):
-                    return lhs.releaseDate < rhs.releaseDate
-
-                case (false, true):
-                    return true
-
-                case (true, false), (true, true):
-                    return false
-                }
-            }
+        self.parts = collection
+            .partsExcluding(movieID: currentMovieID)
             .map(MovieDetailCollectionPartItem.init(part:))
     }
 }
@@ -498,7 +481,7 @@ nonisolated struct MovieDetailCollectionPartItem: Sendable, Equatable, Identifia
     init(part: MovieCollectionPart) {
         self.id = part.id
         self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: part.title)
-        self.releaseDateText = BaseDisplayTextFormatter.nonEmptyText(part.releaseDate)
+        self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: part.releaseDate)
         self.scoreText = BaseDisplayTextFormatter.score(
             part.voteAverage,
             voteCount: part.voteCount
@@ -519,10 +502,10 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
     let scoreText: String?
     let posterURL: URL?
 
-    init(recommendation: MovieRecommendation) {
+    init(recommendation: MovieSummary) {
         self.id = recommendation.id
         self.title = recommendation.title
-        self.releaseDateText = recommendation.releaseDate
+        self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: recommendation.releaseDate) ?? ""
         self.scoreText = BaseDisplayTextFormatter.score(
             recommendation.voteAverage,
             voteCount: recommendation.voteCount

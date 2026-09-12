@@ -61,6 +61,8 @@ final class ReviewListViewModel {
             let page = try await loadReviewsUseCase(kind: mediaKind, mediaID: mediaID)
             apply(page: page, replacingCurrentReviews: true)
             renderCurrentPresentation()
+        } catch let error as DomainError {
+            state = .failed(Self.errorMessage(for: error))
         } catch {
             state = .failed(error.errorMessage)
         }
@@ -105,6 +107,17 @@ final class ReviewListViewModel {
     }
 
     // MARK: - Private Methods
+
+    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier(let kind):
+            return ErrorMessage(
+                title: "找不到評論",
+                message: "\(kind.displayName) ID 不正確，請返回上一頁後再試。",
+                actionTitle: nil
+            )
+        }
+    }
 
     private func renderCurrentPresentation() {
         guard currentPage > 0 else {

@@ -35,18 +35,21 @@ final class MovieDetailViewModel {
 
     private var onStateChange: (@MainActor (MovieDetailViewState) -> Void)?
     private var onAccountStateChange: (@MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void)?
-    private let service: MovieDetailServicing
+    private let loadMovieDetailUseCase: LoadMovieDetailUseCase
+    private let accountStateService: MovieAccountStateServicing
     private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
     init(
-        service: MovieDetailServicing,
+        loadMovieDetailUseCase: LoadMovieDetailUseCase,
+        accountStateService: MovieAccountStateServicing,
         sessionStore: SessionStoring,
         accountService: AccountServiceProtocol,
         accountMediaService: MemberCenterServicing
     ) {
-        self.service = service
+        self.loadMovieDetailUseCase = loadMovieDetailUseCase
+        self.accountStateService = accountStateService
         self.accountMediaController = DetailAccountMediaStateController(
             sessionStore: sessionStore,
             accountService: accountService,
@@ -59,7 +62,15 @@ final class MovieDetailViewModel {
 
     convenience init() {
         self.init(
-            service: MovieDetailService(),
+            loadMovieDetailUseCase: DefaultLoadMovieDetailUseCase(
+                repository: MovieDetailRepository(),
+                auxiliaryFailureHandler: { name, movieID, error in
+                    AppLogger.network.warning(
+                        "Failed to load \(name, privacy: .public) for movie \(movieID, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                    )
+                }
+            ),
+            accountStateService: MovieAccountStateService(),
             sessionStore: SessionStore(),
             accountService: AccountService(),
             accountMediaService: MemberCenterService()
@@ -81,36 +92,29 @@ final class MovieDetailViewModel {
     // MARK: - Data Loading
 
     func loadMovieDetail(id: Int) async {
-        guard id > 0 else {
-            state = .failed(
-                ErrorMessage(
-                    title: "找不到電影",
-                    message: "電影 ID 不正確，請返回上一頁後再試。",
-                    actionTitle: nil
-                )
-            )
-            return
-        }
-
         state = .loading
         accountMediaController.prepareForLoading()
 
         do {
-            async let content = service.fetchMovieDetailContent(id: id)
+            async let content = loadMovieDetailUseCase(movieID: id)
             await accountMediaController.loadAccountMediaState(
                 sourceDescription: "movie \(id)"
-            ) { [service] sessionID in
-                try await service.fetchMovieAccountStates(id: id, sessionId: sessionID)
+            ) { [accountStateService] sessionID in
+                try await accountStateService.fetchMovieAccountStates(id: id, sessionId: sessionID)
             }
             let loadedContent = try await content
             guard !Task.isCancelled else { return }
 
             accountMediaController.updateDefaultRating(
-                fromPublicRating: loadedContent.detail.voteCount > 0
-                    ? loadedContent.detail.voteAverage
+                fromPublicRating: loadedContent.movie.voteCount > 0
+                    ? loadedContent.movie.voteAverage
                     : nil
             )
             state = .loaded(MovieDetailSectionBuilder.makeSections(content: loadedContent))
+        } catch let error as DomainError {
+            guard !Task.isCancelled else { return }
+            state = .failed(Self.errorMessage(for: error))
+            accountMediaController.markUnavailable()
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -155,6 +159,17 @@ final class MovieDetailViewModel {
     }
 
     // MARK: - Private Helpers
+
+    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier(let kind):
+            return ErrorMessage(
+                title: "找不到\(kind.displayName)",
+                message: "\(kind.displayName) ID 不正確，請返回上一頁後再試。",
+                actionTitle: nil
+            )
+        }
+    }
 
     private func notifyAccountStateChange() {
         onAccountStateChange?(favoriteState, ratingState)

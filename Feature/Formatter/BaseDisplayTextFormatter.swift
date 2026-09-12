@@ -253,6 +253,16 @@ nonisolated enum BaseDisplayTextFormatter {
 
     // MARK: - Date
 
+    static func isoDayText(from day: CalendarDay?) -> String? {
+        guard let day else { return nil }
+        return String(format: "%04d-%02d-%02d", day.year, day.month, day.day)
+    }
+
+    static func runtime(_ duration: Duration?) -> String? {
+        guard let duration else { return nil }
+        return runtime(minutes: Int(duration.components.seconds / 60))
+    }
+
     static func displayDate(from date: Date?) -> String? {
         guard let date else { return nil }
 

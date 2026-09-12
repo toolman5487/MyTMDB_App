@@ -15,7 +15,7 @@ nonisolated enum MovieDetailSectionBuilder {
         content: MovieDetailContent,
         localization: AppLocalization = .current
     ) -> [MovieDetailSectionItem] {
-        let detailItem = MovieDetailItem(detail: content.detail)
+        let detailItem = MovieDetailItem(movie: content.movie)
         var sections: [MovieDetailSectionItem] = [
             .overview(
                 MovieDetailOverviewSectionItem(
@@ -30,8 +30,8 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.append(.facts(facts))
         }
 
-        let videoItems = content.videos.results
-            .filter { !$0.key.isEmpty }
+        let videoItems = content.videos
+            .filter(\.isPlayable)
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
@@ -40,7 +40,7 @@ nonisolated enum MovieDetailSectionBuilder {
             sections.append(.videos(Array(videoItems)))
         }
 
-        if let attributes = makeAttributes(detail: content.detail) {
+        if let attributes = makeAttributes(movie: content.movie) {
             sections.append(.attributes(attributes))
         }
 
@@ -78,27 +78,27 @@ nonisolated enum MovieDetailSectionBuilder {
         if let collection = content.collection {
             let collectionItem = MovieDetailCollectionSectionItem(
                 collection: collection,
-                currentMovieID: content.detail.id
+                currentMovieID: content.movie.id
             )
             if !collectionItem.isEmpty {
                 sections.append(.collection(collectionItem))
             }
         }
 
-        let recommendationItems = content.recommendations.results
+        let recommendationItems = content.recommendations.items
             .map(MovieDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
         }
 
-        let similarItems = content.similar.results
+        let similarItems = content.similar.items
             .map(MovieDetailSimilarItem.init(recommendation:))
         if !similarItems.isEmpty {
             sections.append(.similar(Array(similarItems)))
         }
 
         let watchProviders = makeWatchProviderItems(
-            response: content.watchProviders,
+            providers: content.watchProviders,
             localization: localization
         )
         if !watchProviders.isEmpty {
@@ -123,9 +123,9 @@ nonisolated enum MovieDetailSectionBuilder {
         return MovieDetailFactItem(title: title, value: value)
     }
 
-    private static func makeAttributes(detail: MovieDetail) -> MovieDetailAttributeSectionItem? {
-        let genres = detail.genres.map(MovieDetailAttributeItem.init(genre:))
-        let productionCompanies = detail.productionCompanies
+    private static func makeAttributes(movie: Movie) -> MovieDetailAttributeSectionItem? {
+        let genres = movie.genres.map(MovieDetailAttributeItem.init(genre:))
+        let productionCompanies = movie.productionCompanies
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map(MovieDetailAttributeItem.init(productionCompany:))
         let section = MovieDetailAttributeSectionItem(
@@ -137,17 +137,17 @@ nonisolated enum MovieDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        response: MovieWatchProvidersResponse,
+        providers: WatchProviders,
         localization: AppLocalization
     ) -> [MovieWatchProviderItem] {
         let preferredRegionCode = localization.regionCode.uppercased()
-        let preferredCountry = response.results[preferredRegionCode]
-        let countries: [(key: String, value: MovieWatchProviderCountry)]
+        let preferredCountry = providers.countries[preferredRegionCode]
+        let countries: [(key: String, value: WatchProviderCountry)]
 
         if let preferredCountry {
             countries = [(key: preferredRegionCode, value: preferredCountry)]
         } else {
-            countries = response.results.sorted { $0.key < $1.key }
+            countries = providers.countries.sorted { $0.key < $1.key }
         }
 
         return countries
@@ -160,7 +160,7 @@ nonisolated enum MovieDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         countryCode: String,
-        country: MovieWatchProviderCountry
+        country: WatchProviderCountry
     ) -> [MovieWatchProviderItem] {
         [
             makeWatchProviderItems(
@@ -197,7 +197,7 @@ nonisolated enum MovieDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        providers: [MovieWatchProvider],
+        providers: [WatchProvider],
         countryCode: String,
         category: String,
         link: String
@@ -220,7 +220,7 @@ nonisolated enum MovieDetailSectionBuilder {
             }
     }
 
-    private static func videoPriority(_ video: MovieVideo) -> Int {
+    private static func videoPriority(_ video: Video) -> Int {
         let typeRank: Int
         switch video.type.lowercased() {
         case "trailer":
@@ -234,7 +234,7 @@ nonisolated enum MovieDetailSectionBuilder {
         }
 
         let siteRank = video.site.lowercased() == "youtube" ? 0 : 1
-        let officialRank = video.official ? 0 : 1
+        let officialRank = video.isOfficial ? 0 : 1
 
         return (typeRank * 100) + (siteRank * 10) + officialRank
     }
