@@ -634,9 +634,6 @@
 		152BE71F2FF4F9C2006681A5 /* ReviewList */ = {
 			isa = PBXGroup;
 			children = (
-				152BE7462FF4FD13006681A5 /* Movie */,
-				152BE7472FF4FD1F006681A5 /* TV */,
-				DC8545DF5F40746EA46106F4 /* Service */,
 				47A21141B50F6ABB65C65BDF /* ViewModel */,
 				F00073CD6B122146646E642F /* Controller */,
 				27DDBD121C7A32862425E642 /* Router */,
@@ -655,90 +652,6 @@
 				152BE73E2FF4FC78006681A5 /* GlassScrollTrackingBaseViewController.swift */,
 			);
 			path = GlassBase;
-			sourceTree = "<group>";
-		};
-		152BE7462FF4FD13006681A5 /* Movie */ = {
-			isa = PBXGroup;
-			children = (
-				152BE7482FF4FD28006681A5 /* Controller */,
-				152BE7702FF56000006681A5 /* Model */,
-				152BE7B42FF5900006681A5 /* Router */,
-				152BE7712FF56000006681A5 /* Service */,
-				152BE7862FF50121006681A5 /* View */,
-				152BE7722FF56000006681A5 /* ViewModel */,
-			);
-			path = Movie;
-			sourceTree = "<group>";
-		};
-		152BE7472FF4FD1F006681A5 /* TV */ = {
-			isa = PBXGroup;
-			children = (
-				15BAEAE12FF64D22006B0E15 /* Controller */,
-				15BAEAE72FF64E5B006B0E15 /* Model */,
-				15BAEAF22FF64EBA006B0E15 /* Router */,
-				15BAEAE92FF64E85006B0E15 /* Service */,
-				15BAEAE62FF64E54006B0E15 /* View */,
-				15BAEAE82FF64E7B006B0E15 /* ViewModel */,
-			);
-			path = TV;
-			sourceTree = "<group>";
-		};
-		152BE7482FF4FD28006681A5 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Controller;
-			sourceTree = "<group>";
-		};
-		152BE7702FF56000006681A5 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		152BE7712FF56000006681A5 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Service;
-			sourceTree = "<group>";
-		};
-		152BE7722FF56000006681A5 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		152BE7862FF50121006681A5 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				152BE7A42FF57020006681A5 /* Header */,
-				152BE7A52FF57020006681A5 /* Cell */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		152BE7A42FF57020006681A5 /* Header */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Header;
-			sourceTree = "<group>";
-		};
-		152BE7A52FF57020006681A5 /* Cell */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Cell;
-			sourceTree = "<group>";
-		};
-		152BE7B42FF5900006681A5 /* Router */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Router;
 			sourceTree = "<group>";
 		};
 		1535F9902DD743E70090E25A /* Model */ = {
@@ -764,7 +677,6 @@
 			isa = PBXGroup;
 			children = (
 				15606C852FF4DF940036898B /* Controller */,
-				15606CA32FF4E1370036898B /* Model */,
 				15F1200A300E200000F12001 /* Presentation */,
 				15606CCA2FF530000036898B /* Router */,
 				15606CA42FF4E13C0036898B /* Service */,
@@ -799,13 +711,6 @@
 				15606CB02FF4F0000036898B /* TVDetailViewModel.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		15606CA32FF4E1370036898B /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		15606CA42FF4E13C0036898B /* Service */ = {
@@ -1698,50 +1603,6 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
-		15BAEAE12FF64D22006B0E15 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Controller;
-			sourceTree = "<group>";
-		};
-		15BAEAE62FF64E54006B0E15 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				15BAEBE32FF7D100006B0E15 /* Header */,
-				15BAEBE42FF7D100006B0E15 /* Cell */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		15BAEAE72FF64E5B006B0E15 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		15BAEAE82FF64E7B006B0E15 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		15BAEAE92FF64E85006B0E15 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Service;
-			sourceTree = "<group>";
-		};
-		15BAEAF22FF64EBA006B0E15 /* Router */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Router;
-			sourceTree = "<group>";
-		};
 		15BAEB602FF65395006B0E15 /* PageSheet */ = {
 			isa = PBXGroup;
 			children = (
@@ -1819,20 +1680,6 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
-		15BAEBE32FF7D100006B0E15 /* Header */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Header;
-			sourceTree = "<group>";
-		};
-		15BAEBE42FF7D100006B0E15 /* Cell */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Cell;
-			sourceTree = "<group>";
-		};
 		15BE02003016000000BE0200 /* SearchHistory */ = {
 			isa = PBXGroup;
 			children = (
@@ -1862,7 +1709,6 @@
 			isa = PBXGroup;
 			children = (
 				15CF99C82FF3701B0041F4CC /* Controller */,
-				15CF99D82FF371A00041F4CC /* Model */,
 				15F12009300E200000F12001 /* Presentation */,
 				15AB10043005000000AB1001 /* Router */,
 				15CF99D72FF371920041F4CC /* Service */,
@@ -1910,13 +1756,6 @@
 				B99DFC39029B4415D4346901 /* MovieAccountStateService.swift */,
 			);
 			path = Service;
-			sourceTree = "<group>";
-		};
-		15CF99D82FF371A00041F4CC /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		15CF99D92FF371A60041F4CC /* ViewModel */ = {
@@ -2881,14 +2720,6 @@
 			);
 			name = Presentation;
 			path = Presentation;
-			sourceTree = "<group>";
-		};
-		DC8545DF5F40746EA46106F4 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Service;
-			path = Service;
 			sourceTree = "<group>";
 		};
 		E09CAB08AB8EE198DD7E686F /* Domain */ = {
