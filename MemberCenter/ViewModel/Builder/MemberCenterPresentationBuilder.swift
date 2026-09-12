@@ -46,28 +46,28 @@ nonisolated enum MemberCenterPresentationBuilder {
             return makeListPage(
                 response: page,
                 destination: destination,
-                items: makeItems(from: page.results, destination: destination)
+                items: makeItems(from: page.results, kind: .movie, destination: destination)
             )
 
         case .favoriteTV(let page):
             return makeListPage(
                 response: page,
                 destination: destination,
-                items: makeItems(from: page.results, destination: destination)
+                items: makeItems(from: page.results, kind: .tv, destination: destination)
             )
 
         case .watchlistMovies(let page):
             return makeListPage(
                 response: page,
                 destination: destination,
-                items: makeItems(from: page.results, destination: destination)
+                items: makeItems(from: page.results, kind: .movie, destination: destination)
             )
 
         case .watchlistTV(let page):
             return makeListPage(
                 response: page,
                 destination: destination,
-                items: makeItems(from: page.results, destination: destination)
+                items: makeItems(from: page.results, kind: .tv, destination: destination)
             )
 
         case .ratedMovies(let page):
@@ -101,20 +101,18 @@ nonisolated enum MemberCenterPresentationBuilder {
     }
 
     static func makeItems(
-        from movies: [MovieGridMovie],
+        from entries: [MediaGridEntry],
+        kind: MediaKind,
         destination: MemberCenterDestination
     ) -> [MemberCenterListItem] {
-        movies.map {
-            MemberCenterListItem(movie: $0, destination: destination)
-        }
-    }
+        entries.map { entry in
+            switch kind {
+            case .movie:
+                return MemberCenterListItem(movie: entry, destination: destination)
 
-    static func makeItems(
-        from series: [TVGridSeries],
-        destination: MemberCenterDestination
-    ) -> [MemberCenterListItem] {
-        series.map {
-            MemberCenterListItem(series: $0, destination: destination)
+            case .tv:
+                return MemberCenterListItem(series: entry, destination: destination)
+            }
         }
     }
 
@@ -176,24 +174,28 @@ nonisolated enum MemberCenterPresentationBuilder {
         case .favoriteMovies(let page):
             items = makeItems(
                 from: Array(page.results.prefix(Configuration.previewItemLimit)),
+                kind: .movie,
                 destination: destination
             )
 
         case .favoriteTV(let page):
             items = makeItems(
                 from: Array(page.results.prefix(Configuration.previewItemLimit)),
+                kind: .tv,
                 destination: destination
             )
 
         case .watchlistMovies(let page):
             items = makeItems(
                 from: Array(page.results.prefix(Configuration.previewItemLimit)),
+                kind: .movie,
                 destination: destination
             )
 
         case .watchlistTV(let page):
             items = makeItems(
                 from: Array(page.results.prefix(Configuration.previewItemLimit)),
+                kind: .tv,
                 destination: destination
             )
 

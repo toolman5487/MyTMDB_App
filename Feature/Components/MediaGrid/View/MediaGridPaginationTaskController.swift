@@ -1,5 +1,5 @@
 //
-//  MovieGridPaginationTaskController.swift
+//  MediaGridPaginationTaskController.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-// MARK: - MovieGridPaginationTaskController
+// MARK: - MediaGridPaginationTaskController
 
 @MainActor
-final class MovieGridPaginationTaskController {
+final class MediaGridPaginationTaskController {
 
     // MARK: - Properties
 

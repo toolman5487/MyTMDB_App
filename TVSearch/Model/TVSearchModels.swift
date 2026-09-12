@@ -14,19 +14,19 @@ nonisolated struct TVSearchResultPage: Sendable, Equatable {
     let page: Int
     let totalPages: Int
     let totalResults: Int
-    let series: [TVGridSeries]
+    let series: [MediaGridEntry]
 }
 
 // MARK: - TVSearchContent
 
 nonisolated struct TVSearchContent: Sendable, Equatable {
     let keyword: String
-    let series: [TVGridSeriesItem]
+    let series: [MediaGridItem]
     let currentPage: Int
     let totalPages: Int
     let totalResults: Int
     let isLoadingNextPage: Bool
-    let selectedSortOption: TVSortOption?
+    let selectedSortOption: MediaSortOption?
 
     var canLoadNextPage: Bool {
         currentPage < totalPages
@@ -45,7 +45,7 @@ nonisolated struct TVSearchContent: Sendable, Equatable {
     }
 
     func appending(page: TVSearchResultPage) -> TVSearchContent {
-        let nextSeries = series + page.series.map(TVGridSeriesItem.init(series:))
+        let nextSeries = series + page.series.map(MediaGridItem.init(entry:))
 
         return TVSearchContent(
             keyword: keyword,
@@ -58,7 +58,7 @@ nonisolated struct TVSearchContent: Sendable, Equatable {
         )
     }
 
-    func sorting(by option: TVSortOption) -> TVSearchContent {
+    func sorting(by option: MediaSortOption) -> TVSearchContent {
         TVSearchContent(
             keyword: keyword,
             series: option.sorted(series),

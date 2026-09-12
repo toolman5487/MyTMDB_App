@@ -14,19 +14,19 @@ nonisolated struct MovieSearchResultPage: Sendable, Equatable {
     let page: Int
     let totalPages: Int
     let totalResults: Int
-    let movies: [MovieGridMovie]
+    let movies: [MediaGridEntry]
 }
 
 // MARK: - MovieSearchContent
 
 nonisolated struct MovieSearchContent: Sendable, Equatable {
     let keyword: String
-    let movies: [MovieGridMovieItem]
+    let movies: [MediaGridItem]
     let currentPage: Int
     let totalPages: Int
     let totalResults: Int
     let isLoadingNextPage: Bool
-    let selectedSortOption: MovieSortOption?
+    let selectedSortOption: MediaSortOption?
 
     var canLoadNextPage: Bool {
         currentPage < totalPages
@@ -45,7 +45,7 @@ nonisolated struct MovieSearchContent: Sendable, Equatable {
     }
 
     func appending(page: MovieSearchResultPage) -> MovieSearchContent {
-        let nextMovies = movies + page.movies.map(MovieGridMovieItem.init(movie:))
+        let nextMovies = movies + page.movies.map(MediaGridItem.init(entry:))
 
         return MovieSearchContent(
             keyword: keyword,
@@ -58,7 +58,7 @@ nonisolated struct MovieSearchContent: Sendable, Equatable {
         )
     }
 
-    func sorting(by option: MovieSortOption) -> MovieSearchContent {
+    func sorting(by option: MediaSortOption) -> MovieSearchContent {
         MovieSearchContent(
             keyword: keyword,
             movies: option.sorted(movies),

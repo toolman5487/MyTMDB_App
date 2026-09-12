@@ -48,13 +48,13 @@ nonisolated struct MovieEntity: AppEntity, Sendable, Equatable {
         self.releaseYear = releaseYear
     }
 
-    init(movie: MovieGridMovie) {
+    init(movie: MediaGridEntry) {
         self.init(
             id: movie.id,
             title: movie.title,
             overview: movie.overview.isEmpty ? nil : movie.overview,
             posterPath: movie.posterPath,
-            releaseYear: Self.releaseYear(from: movie.releaseDate)
+            releaseYear: Self.releaseYear(from: movie.date)
         )
     }
 

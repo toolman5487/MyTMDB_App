@@ -48,13 +48,13 @@ nonisolated struct TVSeriesEntity: AppEntity, Sendable, Equatable {
         self.firstAirYear = firstAirYear
     }
 
-    init(series: TVGridSeries) {
+    init(series: MediaGridEntry) {
         self.init(
             id: series.id,
-            name: series.name,
+            name: series.title,
             overview: series.overview.isEmpty ? nil : series.overview,
             posterPath: series.posterPath,
-            firstAirYear: Self.firstAirYear(from: series.firstAirDate)
+            firstAirYear: Self.firstAirYear(from: series.date)
         )
     }
 

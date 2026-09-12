@@ -43,7 +43,7 @@ nonisolated final class TVSearchService: TVSearchServicing {
     ) async throws -> TVSearchResultPage {
         let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let response: TMDBPageResponse<TVGridSeries> = try await network.get(
+        let response: TMDBPageResponse<MediaGridEntry> = try await network.get(
             path: APIConfig.Search.tv,
             queryItems: searchQueryItems(keyword: trimmedKeyword, page: page)
         )

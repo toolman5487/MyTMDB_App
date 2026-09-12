@@ -28,7 +28,7 @@ final class MainMovieSearchResultsViewModel {
     // MARK: - Properties
 
     private(set) var state: MainMovieSearchResultsViewState = .idle
-    private(set) var selectedSortOption: MovieSortOption?
+    private(set) var selectedSortOption: MediaSortOption?
 
     private let service: MovieSearchServicing
 
@@ -69,7 +69,7 @@ final class MainMovieSearchResultsViewModel {
 
             let content = makeSearchContent(
                 keyword: page.keyword,
-                movies: page.movies.map(MovieGridMovieItem.init(movie:)),
+                movies: page.movies.map(MediaGridItem.init(entry:)),
                 currentPage: page.page,
                 totalPages: page.totalPages,
                 totalResults: page.totalResults,
@@ -120,7 +120,7 @@ final class MainMovieSearchResultsViewModel {
         }
     }
 
-    func selectSortOption(_ option: MovieSortOption) {
+    func selectSortOption(_ option: MediaSortOption) {
         selectedSortOption = option
 
         guard case .results(let content) = state else { return }
@@ -131,7 +131,7 @@ final class MainMovieSearchResultsViewModel {
 
     private func makeSearchContent(
         keyword: String,
-        movies: [MovieGridMovieItem],
+        movies: [MediaGridItem],
         currentPage: Int,
         totalPages: Int,
         totalResults: Int,
@@ -150,13 +150,13 @@ final class MainMovieSearchResultsViewModel {
 
     private func shouldLoadNextPage(
         currentMovieID: Int,
-        movies: [MovieGridMovieItem]
+        movies: [MediaGridItem]
     ) -> Bool {
         guard let currentIndex = movies.firstIndex(where: { $0.id == currentMovieID }) else {
             return false
         }
 
-        return MovieGridLayoutMetrics.shouldLoadNextPage(
+        return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
             itemCount: movies.count
         )

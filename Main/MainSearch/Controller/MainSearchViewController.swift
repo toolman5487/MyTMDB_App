@@ -68,7 +68,7 @@ final class MainSearchViewController: MainBaseViewController {
     private var searchTask: Task<Void, Never>?
     private var dailyTrendingTask: Task<Void, Never>?
 
-    private let paginationTaskController = MovieGridPaginationTaskController()
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - UI Components
 
@@ -402,7 +402,7 @@ extension MainSearchViewController: UICollectionViewDataSource {
                dailyTrendingItems.indices.contains(indexPath.item) {
                 cell.configure(
                     with: dailyTrendingItems[indexPath.item],
-                    imageHeight: MovieGridLayoutMetrics.posterHeight(
+                    imageHeight: MediaGridLayoutMetrics.posterHeight(
                         for: collectionView.bounds.width
                     )
                 )
@@ -549,7 +549,7 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
             )
 
         case .dailyTrending:
-            return MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+            return MediaGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
         }
     }
 
@@ -578,9 +578,9 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
         case .dailyTrending:
             return UIEdgeInsets(
                 top: popularPeopleItems.isEmpty ? Layout.trendingTopInset : 0,
-                left: MovieGridLayoutMetrics.horizontalInset,
+                left: MediaGridLayoutMetrics.horizontalInset,
                 bottom: Layout.trendingBottomInset,
-                right: MovieGridLayoutMetrics.horizontalInset
+                right: MediaGridLayoutMetrics.horizontalInset
             )
         }
     }
@@ -595,7 +595,7 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
             return 0
         }
 
-        return MovieGridLayoutMetrics.itemSpacing
+        return MediaGridLayoutMetrics.itemSpacing
     }
 
     func collectionView(
@@ -608,7 +608,7 @@ extension MainSearchViewController: UICollectionViewDelegateFlowLayout {
             return 0
         }
 
-        return MovieGridLayoutMetrics.itemSpacing
+        return MediaGridLayoutMetrics.itemSpacing
     }
 }
 
@@ -696,7 +696,7 @@ private extension MainSearchViewController {
         guard canLoadNextPage, !isLoadingNextPage else { return }
         guard !paginationTaskController.isRunning else { return }
 
-        guard MovieGridLayoutMetrics.shouldLoadNextPage(
+        guard MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
             itemCount: items.count
         ) else { return }

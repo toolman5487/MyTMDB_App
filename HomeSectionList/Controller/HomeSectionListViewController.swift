@@ -32,7 +32,7 @@ final class HomeSectionListViewController: BaseListViewController {
 
     private var loadTask: Task<Void, Never>?
 
-    private let paginationTaskController = MovieGridPaginationTaskController()
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - Initialization
 
@@ -92,8 +92,8 @@ final class HomeSectionListViewController: BaseListViewController {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true
-        collectionViewFlowLayout.minimumLineSpacing = MovieGridLayoutMetrics.itemSpacing
-        collectionViewFlowLayout.minimumInteritemSpacing = MovieGridLayoutMetrics.itemSpacing
+        collectionViewFlowLayout.minimumLineSpacing = MediaGridLayoutMetrics.itemSpacing
+        collectionViewFlowLayout.minimumInteritemSpacing = MediaGridLayoutMetrics.itemSpacing
         collectionView.register(
             HomeSectionListFilterHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -163,7 +163,7 @@ final class HomeSectionListViewController: BaseListViewController {
         guard items.indices.contains(indexPath.item) else { return }
         guard !paginationTaskController.isRunning else { return }
 
-        guard MovieGridLayoutMetrics.shouldLoadNextPage(
+        guard MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
             itemCount: items.count
         ) else {
@@ -264,7 +264,7 @@ extension HomeSectionListViewController: UICollectionViewDataSource {
            items.indices.contains(indexPath.item) {
             cell.configure(
                 with: items[indexPath.item],
-                imageHeight: MovieGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
+                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
             )
         }
 
@@ -325,7 +325,7 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+        MediaGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
     }
 
     func collectionView(
@@ -337,9 +337,9 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
 
         return UIEdgeInsets(
             top: 12,
-            left: MovieGridLayoutMetrics.horizontalInset,
+            left: MediaGridLayoutMetrics.horizontalInset,
             bottom: 24,
-            right: MovieGridLayoutMetrics.horizontalInset
+            right: MediaGridLayoutMetrics.horizontalInset
         )
     }
 
@@ -348,7 +348,7 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        MovieGridLayoutMetrics.itemSpacing
+        MediaGridLayoutMetrics.itemSpacing
     }
 
     func collectionView(
@@ -356,7 +356,7 @@ extension HomeSectionListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
-        MovieGridLayoutMetrics.itemSpacing
+        MediaGridLayoutMetrics.itemSpacing
     }
 }
 

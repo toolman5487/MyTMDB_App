@@ -28,7 +28,7 @@ final class MainTVSearchResultsViewModel {
     // MARK: - Properties
 
     private(set) var state: MainTVSearchResultsViewState = .idle
-    private(set) var selectedSortOption: TVSortOption?
+    private(set) var selectedSortOption: MediaSortOption?
 
     private let service: TVSearchServicing
 
@@ -69,7 +69,7 @@ final class MainTVSearchResultsViewModel {
 
             let content = makeSearchContent(
                 keyword: page.keyword,
-                series: page.series.map(TVGridSeriesItem.init(series:)),
+                series: page.series.map(MediaGridItem.init(entry:)),
                 currentPage: page.page,
                 totalPages: page.totalPages,
                 totalResults: page.totalResults,
@@ -120,7 +120,7 @@ final class MainTVSearchResultsViewModel {
         }
     }
 
-    func selectSortOption(_ option: TVSortOption) {
+    func selectSortOption(_ option: MediaSortOption) {
         selectedSortOption = option
 
         guard case .results(let content) = state else { return }
@@ -131,7 +131,7 @@ final class MainTVSearchResultsViewModel {
 
     private func makeSearchContent(
         keyword: String,
-        series: [TVGridSeriesItem],
+        series: [MediaGridItem],
         currentPage: Int,
         totalPages: Int,
         totalResults: Int,
@@ -150,13 +150,13 @@ final class MainTVSearchResultsViewModel {
 
     private func shouldLoadNextPage(
         currentSeriesID: Int,
-        series: [TVGridSeriesItem]
+        series: [MediaGridItem]
     ) -> Bool {
         guard let currentIndex = series.firstIndex(where: { $0.id == currentSeriesID }) else {
             return false
         }
 
-        return MovieGridLayoutMetrics.shouldLoadNextPage(
+        return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
             itemCount: series.count
         )

@@ -43,7 +43,7 @@ nonisolated final class MovieSearchService: MovieSearchServicing {
     ) async throws -> MovieSearchResultPage {
         let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let response: TMDBPageResponse<MovieGridMovie> = try await network.get(
+        let response: TMDBPageResponse<MediaGridEntry> = try await network.get(
             path: APIConfig.Search.movie,
             queryItems: searchQueryItems(keyword: trimmedKeyword, page: page)
         )

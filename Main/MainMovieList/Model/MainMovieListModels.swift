@@ -27,7 +27,7 @@ nonisolated struct MainMovieListMoviePage: Sendable, Equatable {
     let page: Int
     let totalPages: Int
     let totalResults: Int
-    let movies: [MovieGridMovie]
+    let movies: [MediaGridEntry]
 }
 
 // MARK: - MainMovieGenreItem
@@ -52,12 +52,12 @@ nonisolated struct MainMovieGenreItem: Sendable, Equatable, Identifiable {
 nonisolated struct MainMovieListContent: Sendable, Equatable {
     let genres: [MainMovieGenreItem]
     let selectedGenre: MainMovieGenreItem
-    let movies: [MovieGridMovieItem]
+    let movies: [MediaGridItem]
     let currentPage: Int
     let totalPages: Int
     let totalResults: Int
     let isLoadingNextPage: Bool
-    let selectedSortOption: MovieSortOption?
+    let selectedSortOption: MediaSortOption?
 
     var canLoadNextPage: Bool {
         currentPage < totalPages
@@ -77,7 +77,7 @@ nonisolated struct MainMovieListContent: Sendable, Equatable {
     }
 
     func appending(page: MainMovieListMoviePage) -> MainMovieListContent {
-        let nextMovies = movies + page.movies.map(MovieGridMovieItem.init(movie:))
+        let nextMovies = movies + page.movies.map(MediaGridItem.init(entry:))
 
         return MainMovieListContent(
             genres: genres,
@@ -91,7 +91,7 @@ nonisolated struct MainMovieListContent: Sendable, Equatable {
         )
     }
 
-    func updatingSortOption(_ option: MovieSortOption) -> MainMovieListContent {
+    func updatingSortOption(_ option: MediaSortOption) -> MainMovieListContent {
         MainMovieListContent(
             genres: genres,
             selectedGenre: selectedGenre,

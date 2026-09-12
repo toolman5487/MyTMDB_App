@@ -1,5 +1,5 @@
 //
-//  MovieGridModels.swift
+//  MediaGridModels.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -7,15 +7,15 @@
 
 import Foundation
 
-// MARK: - MovieGridMovie
+// MARK: - MediaGridEntry
 
-nonisolated struct MovieGridMovie: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MediaGridEntry: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let overview: String
     let posterPath: String?
     let backdropPath: String?
-    let releaseDate: String?
+    let date: String?
     let voteAverage: Double
     let voteCount: Int
     let popularity: Double
@@ -23,10 +23,12 @@ nonisolated struct MovieGridMovie: Decodable, Sendable, Equatable, Identifiable 
     enum CodingKeys: String, CodingKey {
         case id
         case title
+        case name
         case overview
         case posterPath = "poster_path"
         case backdropPath = "backdrop_path"
         case releaseDate = "release_date"
+        case firstAirDate = "first_air_date"
         case voteAverage = "vote_average"
         case voteCount = "vote_count"
         case popularity
@@ -35,62 +37,67 @@ nonisolated struct MovieGridMovie: Decodable, Sendable, Equatable, Identifiable 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
+        let decodedTitle = try container.decodeIfPresent(String.self, forKey: .title)
+        let decodedName = try container.decodeIfPresent(String.self, forKey: .name)
+        let decodedReleaseDate = try container.decodeIfPresent(String.self, forKey: .releaseDate)
+        let decodedFirstAirDate = try container.decodeIfPresent(String.self, forKey: .firstAirDate)
+
         self.id = try container.decode(Int.self, forKey: .id)
-        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? "未命名"
+        self.title = decodedTitle ?? decodedName ?? "未命名"
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
-        self.releaseDate = try container.decodeIfPresent(String.self, forKey: .releaseDate)
+        self.date = decodedReleaseDate ?? decodedFirstAirDate
         self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
         self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
     }
 }
 
-// MARK: - MovieGridMovieItem
+// MARK: - MediaGridItem
 
-nonisolated struct MovieGridMovieItem: Sendable, Equatable, Identifiable {
+nonisolated struct MediaGridItem: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let overview: String
     let posterURL: URL?
-    let releaseDate: String?
+    let date: String?
     let voteAverage: Double
     let voteCount: Int
     let popularity: Double
-    let releaseDateText: String
+    let dateText: String
     let scoreText: String
 
-    init(movie: MovieGridMovie) {
-        let releaseDate = movie.releaseDate?.isEmpty == false ? movie.releaseDate : nil
+    init(entry: MediaGridEntry) {
+        let date = entry.date?.isEmpty == false ? entry.date : nil
 
-        self.id = movie.id
-        self.title = movie.title
-        self.overview = BaseDisplayTextFormatter.overview(movie.overview)
-        self.posterURL = movie.posterPath.flatMap {
+        self.id = entry.id
+        self.title = entry.title
+        self.overview = BaseDisplayTextFormatter.overview(entry.overview)
+        self.posterURL = entry.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
-        self.releaseDate = releaseDate
-        self.voteAverage = movie.voteAverage
-        self.voteCount = movie.voteCount
-        self.popularity = movie.popularity
-        self.releaseDateText = BaseDisplayTextFormatter.announcedText(releaseDate)
-        self.scoreText = BaseDisplayTextFormatter.decimal(movie.voteAverage)
+        self.date = date
+        self.voteAverage = entry.voteAverage
+        self.voteCount = entry.voteCount
+        self.popularity = entry.popularity
+        self.dateText = BaseDisplayTextFormatter.announcedText(date)
+        self.scoreText = BaseDisplayTextFormatter.decimal(entry.voteAverage)
     }
 }
 
-// MARK: - MovieSortOption
+// MARK: - MediaSortOption
 
-nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable, AppSortMenuOption {
+nonisolated enum MediaSortOption: CaseIterable, Sendable, Hashable, Identifiable, AppSortMenuOption {
     case popularity
     case ratingHighToLow
     case ratingLowToHigh
-    case newestRelease
-    case oldestRelease
+    case newestDate
+    case oldestDate
     case titleAscending
     case titleDescending
 
-    var id: MovieSortOption {
+    var id: MediaSortOption {
         self
     }
 
@@ -105,10 +112,10 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
         case .ratingLowToHigh:
             return "評分最低"
 
-        case .newestRelease:
+        case .newestDate:
             return "最新發布"
 
-        case .oldestRelease:
+        case .oldestDate:
             return "最早發布"
 
         case .titleAscending:
@@ -119,10 +126,10 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
         }
     }
 
-    func sorted(_ movies: [MovieGridMovieItem]) -> [MovieGridMovieItem] {
+    func sorted(_ items: [MediaGridItem]) -> [MediaGridItem] {
         switch self {
         case .popularity:
-            return movies.sorted { lhs, rhs in
+            return items.sorted { lhs, rhs in
                 if lhs.popularity != rhs.popularity {
                     return lhs.popularity > rhs.popularity
                 }
@@ -131,7 +138,7 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
             }
 
         case .ratingHighToLow:
-            return movies.sorted { lhs, rhs in
+            return items.sorted { lhs, rhs in
                 if lhs.voteAverage != rhs.voteAverage {
                     return lhs.voteAverage > rhs.voteAverage
                 }
@@ -144,7 +151,7 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
             }
 
         case .ratingLowToHigh:
-            return movies.sorted { lhs, rhs in
+            return items.sorted { lhs, rhs in
                 if lhs.voteAverage != rhs.voteAverage {
                     return lhs.voteAverage < rhs.voteAverage
                 }
@@ -156,18 +163,18 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
                 return Self.isTitleAscending(lhs, rhs)
             }
 
-        case .newestRelease:
-            return movies.sorted { lhs, rhs in
-                if let result = Self.compareReleaseDate(lhs, rhs, ascending: false) {
+        case .newestDate:
+            return items.sorted { lhs, rhs in
+                if let result = Self.compareDate(lhs, rhs, ascending: false) {
                     return result
                 }
 
                 return Self.isTitleAscending(lhs, rhs)
             }
 
-        case .oldestRelease:
-            return movies.sorted { lhs, rhs in
-                if let result = Self.compareReleaseDate(lhs, rhs, ascending: true) {
+        case .oldestDate:
+            return items.sorted { lhs, rhs in
+                if let result = Self.compareDate(lhs, rhs, ascending: true) {
                     return result
                 }
 
@@ -175,10 +182,10 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
             }
 
         case .titleAscending:
-            return movies.sorted(by: Self.isTitleAscending)
+            return items.sorted(by: Self.isTitleAscending)
 
         case .titleDescending:
-            return movies.sorted { lhs, rhs in
+            return items.sorted { lhs, rhs in
                 let comparison = lhs.title.localizedStandardCompare(rhs.title)
                 if comparison != .orderedSame {
                     return comparison == .orderedDescending
@@ -189,12 +196,12 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
         }
     }
 
-    private static func compareReleaseDate(
-        _ lhs: MovieGridMovieItem,
-        _ rhs: MovieGridMovieItem,
+    private static func compareDate(
+        _ lhs: MediaGridItem,
+        _ rhs: MediaGridItem,
         ascending: Bool
     ) -> Bool? {
-        switch (lhs.releaseDate, rhs.releaseDate) {
+        switch (lhs.date, rhs.date) {
         case let (lhsDate?, rhsDate?) where lhsDate != rhsDate:
             return ascending ? lhsDate < rhsDate : lhsDate > rhsDate
 
@@ -210,8 +217,8 @@ nonisolated enum MovieSortOption: CaseIterable, Sendable, Hashable, Identifiable
     }
 
     private static func isTitleAscending(
-        _ lhs: MovieGridMovieItem,
-        _ rhs: MovieGridMovieItem
+        _ lhs: MediaGridItem,
+        _ rhs: MediaGridItem
     ) -> Bool {
         let comparison = lhs.title.localizedStandardCompare(rhs.title)
         if comparison != .orderedSame {

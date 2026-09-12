@@ -14,7 +14,7 @@ nonisolated protocol MainTVListServicing: Sendable {
 
     func fetchSeries(
         genreID: Int,
-        sortOption: TVSortOption,
+        sortOption: MediaSortOption,
         page: Int
     ) async throws -> MainTVListSeriesPage
 }
@@ -53,10 +53,10 @@ nonisolated final class MainTVListService: MainTVListServicing {
 
     func fetchSeries(
         genreID: Int,
-        sortOption: TVSortOption,
+        sortOption: MediaSortOption,
         page: Int = 1
     ) async throws -> MainTVListSeriesPage {
-        let response: TMDBPageResponse<TVGridSeries> = try await network.get(
+        let response: TMDBPageResponse<MediaGridEntry> = try await network.get(
             path: APIConfig.Discover.tv,
             queryItems: seriesQueryItems(
                 genreID: genreID,
@@ -78,7 +78,7 @@ nonisolated final class MainTVListService: MainTVListServicing {
 
     private func seriesQueryItems(
         genreID: Int,
-        sortOption: TVSortOption,
+        sortOption: MediaSortOption,
         page: Int
     ) -> [URLQueryItem] {
         [
@@ -92,9 +92,9 @@ nonisolated final class MainTVListService: MainTVListServicing {
     }
 }
 
-// MARK: - TVSortOption
+// MARK: - MediaSortOption
 
-private extension TVSortOption {
+private extension MediaSortOption {
     var discoverSortValue: String {
         switch self {
         case .popularity:
@@ -106,10 +106,10 @@ private extension TVSortOption {
         case .ratingLowToHigh:
             return "vote_average.asc"
 
-        case .newestFirstAirDate:
+        case .newestDate:
             return "first_air_date.desc"
 
-        case .oldestFirstAirDate:
+        case .oldestDate:
             return "first_air_date.asc"
 
         case .titleAscending:

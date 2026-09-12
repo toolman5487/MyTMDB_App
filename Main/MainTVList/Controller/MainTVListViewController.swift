@@ -25,7 +25,7 @@ final class MainTVListViewController: MainBaseViewController {
     private lazy var router: MainTVListRouting = MainTVListRouter(sourceViewController: self)
 
     private var filters: [MainTVGenreItem] = []
-    private var series: [TVGridSeriesItem] = []
+    private var series: [MediaGridItem] = []
 
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
@@ -34,7 +34,7 @@ final class MainTVListViewController: MainBaseViewController {
     private var filterSelectionTask: Task<Void, Never>?
     private var sortSelectionTask: Task<Void, Never>?
 
-    private let paginationTaskController = MovieGridPaginationTaskController()
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - UI Components
 
@@ -63,7 +63,7 @@ final class MainTVListViewController: MainBaseViewController {
 
     private lazy var sortBarButtonItem: UIBarButtonItem = {
         let item = AppFactory.SortMenu.makeBarButtonItem(
-            selectedOption: nil as TVSortOption?,
+            selectedOption: nil as MediaSortOption?,
             onSelect: { [weak self] option in
                 self?.selectSortOption(option)
             }
@@ -144,8 +144,8 @@ final class MainTVListViewController: MainBaseViewController {
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true
         collectionViewFlowLayout.sectionInset = .zero
-        collectionViewFlowLayout.minimumLineSpacing = MovieGridLayoutMetrics.itemSpacing
-        collectionViewFlowLayout.minimumInteritemSpacing = MovieGridLayoutMetrics.itemSpacing
+        collectionViewFlowLayout.minimumLineSpacing = MediaGridLayoutMetrics.itemSpacing
+        collectionViewFlowLayout.minimumInteritemSpacing = MediaGridLayoutMetrics.itemSpacing
         collectionView.register(
             MainTVListFilterHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -254,7 +254,7 @@ final class MainTVListViewController: MainBaseViewController {
     }
 
     private func showSortBarButtonItem(
-        selectedSortOption: TVSortOption?,
+        selectedSortOption: MediaSortOption?,
         isSearchMode: Bool = false
     ) {
         sortBarButtonItem.menu = AppFactory.SortMenu.makeMenu(
@@ -284,7 +284,7 @@ final class MainTVListViewController: MainBaseViewController {
 
     private func applySortBarButtonAccessibility(
         to item: UIBarButtonItem,
-        selectedOption: TVSortOption?
+        selectedOption: MediaSortOption?
     ) {
         item.accessibilityLabel = "排序劇集"
         item.accessibilityValue = selectedOption?.title ?? "尚未選擇"
@@ -292,7 +292,7 @@ final class MainTVListViewController: MainBaseViewController {
     }
 
     private func selectSortOption(
-        _ option: TVSortOption,
+        _ option: MediaSortOption,
         isSearchMode: Bool = false
     ) {
         if isSearchMode {
@@ -334,7 +334,7 @@ extension MainTVListViewController: UICollectionViewDataSource {
            series.indices.contains(indexPath.item) {
             cell.configure(
                 with: series[indexPath.item],
-                imageHeight: MovieGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
+                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
             )
         }
 
@@ -418,7 +418,7 @@ extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+        MediaGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
     }
 
     func collectionView(
@@ -430,9 +430,9 @@ extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
 
         return UIEdgeInsets(
             top: 12,
-            left: MovieGridLayoutMetrics.horizontalInset,
+            left: MediaGridLayoutMetrics.horizontalInset,
             bottom: 24,
-            right: MovieGridLayoutMetrics.horizontalInset
+            right: MediaGridLayoutMetrics.horizontalInset
         )
     }
 
@@ -441,7 +441,7 @@ extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        MovieGridLayoutMetrics.itemSpacing
+        MediaGridLayoutMetrics.itemSpacing
     }
 
     func collectionView(
@@ -449,7 +449,7 @@ extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
-        MovieGridLayoutMetrics.itemSpacing
+        MediaGridLayoutMetrics.itemSpacing
     }
 }
 
@@ -503,7 +503,7 @@ private extension MainTVListViewController {
         guard series.indices.contains(indexPath.item) else { return }
         guard !paginationTaskController.isRunning else { return }
 
-        guard MovieGridLayoutMetrics.shouldLoadNextPage(
+        guard MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
             itemCount: series.count
         ) else { return }
@@ -563,7 +563,7 @@ private extension MainTVListViewController {
 
     func updateSearchSortBarButtonVisibility(
         isVisible: Bool,
-        selectedSortOption: TVSortOption?
+        selectedSortOption: MediaSortOption?
     ) {
         guard searchController.isActive else { return }
 

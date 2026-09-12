@@ -1,5 +1,5 @@
 //
-//  MovieGridLayoutMetrics.swift
+//  MediaGridLayoutMetrics.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-// MARK: - MovieGridLayoutMetrics
+// MARK: - MediaGridLayoutMetrics
 
-nonisolated enum MovieGridLayoutMetrics {
+nonisolated enum MediaGridLayoutMetrics {
     static let horizontalInset: CGFloat = 16
     static let itemSpacing: CGFloat = 12
     static let paginationThreshold = 4

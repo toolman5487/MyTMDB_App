@@ -18,24 +18,24 @@ final class MainMovieSearchResultsViewController: BaseViewController {
     private let viewModel: MainMovieSearchResultsViewModel
 
     var onMovieSelected: ((Int) -> Void)?
-    var onSortBarButtonVisibilityChanged: ((Bool, MovieSortOption?) -> Void)?
+    var onSortBarButtonVisibilityChanged: ((Bool, MediaSortOption?) -> Void)?
 
-    private var movies: [MovieGridMovieItem] = []
+    private var movies: [MediaGridItem] = []
 
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
 
     private var searchTask: Task<Void, Never>?
 
-    private let paginationTaskController = MovieGridPaginationTaskController()
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - UI Components
 
     private lazy var collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = .zero
-        layout.minimumLineSpacing = MovieGridLayoutMetrics.itemSpacing
-        layout.minimumInteritemSpacing = MovieGridLayoutMetrics.itemSpacing
+        layout.minimumLineSpacing = MediaGridLayoutMetrics.itemSpacing
+        layout.minimumInteritemSpacing = MediaGridLayoutMetrics.itemSpacing
         return layout
     }()
 
@@ -121,7 +121,7 @@ final class MainMovieSearchResultsViewController: BaseViewController {
         }
     }
 
-    func selectSortOption(_ option: MovieSortOption) {
+    func selectSortOption(_ option: MediaSortOption) {
         viewModel.selectSortOption(option)
         renderCurrentState()
     }
@@ -212,7 +212,7 @@ extension MainMovieSearchResultsViewController: UICollectionViewDataSource {
            movies.indices.contains(indexPath.item) {
             cell.configure(
                 with: movies[indexPath.item],
-                imageHeight: MovieGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
+                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
             )
         }
 
@@ -245,7 +245,7 @@ extension MainMovieSearchResultsViewController: UICollectionViewDelegateFlowLayo
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        MovieGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
+        MediaGridLayoutMetrics.itemSize(for: collectionView.bounds.width)
     }
 
     func collectionView(
@@ -255,9 +255,9 @@ extension MainMovieSearchResultsViewController: UICollectionViewDelegateFlowLayo
     ) -> UIEdgeInsets {
         UIEdgeInsets(
             top: 16,
-            left: MovieGridLayoutMetrics.horizontalInset,
+            left: MediaGridLayoutMetrics.horizontalInset,
             bottom: 24,
-            right: MovieGridLayoutMetrics.horizontalInset
+            right: MediaGridLayoutMetrics.horizontalInset
         )
     }
 
@@ -266,7 +266,7 @@ extension MainMovieSearchResultsViewController: UICollectionViewDelegateFlowLayo
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        MovieGridLayoutMetrics.itemSpacing
+        MediaGridLayoutMetrics.itemSpacing
     }
 
     func collectionView(
@@ -274,7 +274,7 @@ extension MainMovieSearchResultsViewController: UICollectionViewDelegateFlowLayo
         layout collectionViewLayout: UICollectionViewLayout,
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
-        MovieGridLayoutMetrics.itemSpacing
+        MediaGridLayoutMetrics.itemSpacing
     }
 }
 
@@ -287,7 +287,7 @@ private extension MainMovieSearchResultsViewController {
         guard canLoadNextPage, !isLoadingNextPage else { return }
         guard !paginationTaskController.isRunning else { return }
 
-        guard MovieGridLayoutMetrics.shouldLoadNextPage(
+        guard MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
             itemCount: movies.count
         ) else { return }

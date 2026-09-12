@@ -15,7 +15,7 @@ final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionVie
     static let reuseIdentifier = String(describing: MainMovieSearchResultCollectionViewCell.self)
 
     func configure(
-        with item: MovieGridMovieItem,
+        with item: MediaGridItem,
         imageHeight: CGFloat
     ) {
         configure(with: ImageTitleCellContent(
@@ -30,7 +30,7 @@ final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionVie
 
 // MARK: - Accessibility
 
-private extension MovieGridMovieItem {
+private extension MediaGridItem {
 
     var movieSearchAccessibilityText: AccessibilityText {
         AccessibilityText(
@@ -38,7 +38,7 @@ private extension MovieGridMovieItem {
             value: BaseDisplayTextFormatter.metadata([
                 "電影",
                 BaseDisplayTextFormatter.ratingText(scoreText),
-                "上映日期 \(releaseDateText)"
+                "上映日期 \(dateText)"
             ]),
             hint: "點兩下開啟電影詳細資料"
         )

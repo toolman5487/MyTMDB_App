@@ -23,12 +23,10 @@
 		15606CB12FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
 		15606CBE2FF520000036898B /* TVDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC42FF520000036898B /* TVDetailCells.swift */; };
 		15606CC62FF530000036898B /* TVDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC52FF530000036898B /* TVDetailRouter.swift */; };
-		157C4E622FFB639E0044BD8E /* MovieGridModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C4E612FFB639E0044BD8E /* MovieGridModels.swift */; };
 		157C4E6A2FFB639E0044BD8E /* MovieSearchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C4E692FFB639E0044BD8E /* MovieSearchModels.swift */; };
 		157C4E6E2FFB639E0044BD8E /* MovieSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C4E6D2FFB639E0044BD8E /* MovieSearchService.swift */; };
 		157C4E722FFB639E0044BD8E /* MainMovieSearchSubmittedLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C4E712FFB639E0044BD8E /* MainMovieSearchSubmittedLoadingView.swift */; };
 		157C4E762FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C4E752FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift */; };
-		157C4E812FFB70000044BD8E /* MovieGridPaginationTaskController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C4E802FFB70000044BD8E /* MovieGridPaginationTaskController.swift */; };
 		157C52202FFB92000044BD8E /* MainTVListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C52002FFB92000044BD8E /* MainTVListViewController.swift */; };
 		157C52302FFB92000044BD8E /* MainTVListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C52012FFB92000044BD8E /* MainTVListModels.swift */; };
 		157C52402FFB92000044BD8E /* MainTVListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C52022FFB92000044BD8E /* MainTVListRouter.swift */; };
@@ -152,7 +150,6 @@
 		15BAEBAA2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */; };
 		15BAEBAD2FF79000006B0E15 /* MainMovieSearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */; };
 		15BAEBB12FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */; };
-		15BAEBB52FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */; };
 		15BE10013016000000BE1001 /* SearchHistoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BE01013016000000BE0101 /* SearchHistoryModels.swift */; };
 		15BE10023016000000BE1002 /* SearchHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BE01023016000000BE0102 /* SearchHistoryStore.swift */; };
 		15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */; };
@@ -245,12 +242,17 @@
 		72AD4FEA74FCB18214EB069D /* ReviewListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D323A9433D278249E7D98F /* ReviewListService.swift */; };
 		7639C29CF03E159DE1C4357F /* ReviewLoadingFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5205B5CE8EE9C79E4BCC4184 /* ReviewLoadingFooterView.swift */; };
 		9040EAD727532C0A15D841EE /* ReviewFilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7CDC643FE28049712DE4C6 /* ReviewFilterCollectionViewCell.swift */; };
+		AA79F62550562DADE8963C47 /* MediaGridModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B1F99E8FF365C7BBAA3C1F /* MediaGridModels.swift */; };
+		B3FB571D6DC18D78FFDCC103 /* MediaGridPaginationTaskController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EDB56160E4034C0C7A8FB70 /* MediaGridPaginationTaskController.swift */; };
 		CB706AC8031A3D81282CD667 /* MediaKind+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EB411BD98372D8648F92B0 /* MediaKind+Presentation.swift */; };
 		DD5F7B087B4B1A4777877E1C /* ReviewFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8FA062565448424A7CD870 /* ReviewFilterHeaderView.swift */; };
+		E74A13F878D77EB873AAFFB1 /* MediaGridLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E39E1399C8F432FEDD7AFE5 /* MediaGridLayoutMetrics.swift */; };
 		F0411C8422575257398F3263 /* ReviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9A092ED27ABF604EE179B /* ReviewCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0EDB56160E4034C0C7A8FB70 /* MediaGridPaginationTaskController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediaGridPaginationTaskController.swift; sourceTree = "<group>"; };
+		13B1F99E8FF365C7BBAA3C1F /* MediaGridModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediaGridModels.swift; sourceTree = "<group>"; };
 		150336A22FF35D4C003125EC /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
 		150336B32FF35E00003125EC /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		150336C32FF35F00003125EC /* NetworkError+ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError+ErrorMessage.swift"; sourceTree = "<group>"; };
@@ -264,12 +266,10 @@
 		15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15606CC42FF520000036898B /* TVDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailCells.swift; sourceTree = "<group>"; };
 		15606CC52FF530000036898B /* TVDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailRouter.swift; sourceTree = "<group>"; };
-		157C4E612FFB639E0044BD8E /* MovieGridModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGridModels.swift; sourceTree = "<group>"; };
 		157C4E692FFB639E0044BD8E /* MovieSearchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSearchModels.swift; sourceTree = "<group>"; };
 		157C4E6D2FFB639E0044BD8E /* MovieSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSearchService.swift; sourceTree = "<group>"; };
 		157C4E712FFB639E0044BD8E /* MainMovieSearchSubmittedLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchSubmittedLoadingView.swift; sourceTree = "<group>"; };
 		157C4E752FFB639E0044BD8E /* MainMovieSearchResultCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchResultCollectionViewCell.swift; sourceTree = "<group>"; };
-		157C4E802FFB70000044BD8E /* MovieGridPaginationTaskController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGridPaginationTaskController.swift; sourceTree = "<group>"; };
 		157C52002FFB92000044BD8E /* MainTVListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTVListViewController.swift; sourceTree = "<group>"; };
 		157C52012FFB92000044BD8E /* MainTVListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTVListModels.swift; sourceTree = "<group>"; };
 		157C52022FFB92000044BD8E /* MainTVListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTVListRouter.swift; sourceTree = "<group>"; };
@@ -391,7 +391,6 @@
 		15BAEBA92FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchTypingLoadingView.swift; sourceTree = "<group>"; };
 		15BAEBB02FF79000006B0E15 /* MainMovieSearchResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchResultsViewController.swift; sourceTree = "<group>"; };
 		15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMovieSearchResultsViewModel.swift; sourceTree = "<group>"; };
-		15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGridLayoutMetrics.swift; sourceTree = "<group>"; };
 		15BE01013016000000BE0101 /* SearchHistoryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryModels.swift; sourceTree = "<group>"; };
 		15BE01023016000000BE0102 /* SearchHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryStore.swift; sourceTree = "<group>"; };
 		15CF99CA2FF370410041F4CC /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
@@ -480,6 +479,7 @@
 		1BA9A092ED27ABF604EE179B /* ReviewCollectionViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCollectionViewCell.swift; sourceTree = "<group>"; };
 		4B2D11472702B2A2FE7FB83D /* ReviewDetailViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewDetailViewController.swift; sourceTree = "<group>"; };
 		5205B5CE8EE9C79E4BCC4184 /* ReviewLoadingFooterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewLoadingFooterView.swift; sourceTree = "<group>"; };
+		6E39E1399C8F432FEDD7AFE5 /* MediaGridLayoutMetrics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediaGridLayoutMetrics.swift; sourceTree = "<group>"; };
 		6F7CDC643FE28049712DE4C6 /* ReviewFilterCollectionViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewFilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		6FC48D80C7B3E18951B11A9D /* ReviewListRouter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewListRouter.swift; sourceTree = "<group>"; };
 		9978FF1D58F8A0C6A6508B63 /* ReviewListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewListViewController.swift; sourceTree = "<group>"; };
@@ -531,8 +531,8 @@
 			isa = PBXGroup;
 			children = (
 				1503369F2FF35D19003125EC /* ErrorMessage */,
-				157C4E792FFB639E0044BD8E /* MovieGrid */,
 				15E002102FF430000000001 /* UI */,
+				E9F74C5B04A5EB28D96884FF /* MediaGrid */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -789,23 +789,6 @@
 				15BAEBB42FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		157C4E792FFB639E0044BD8E /* MovieGrid */ = {
-			isa = PBXGroup;
-			children = (
-				157C4E7A2FFB639E0044BD8E /* Model */,
-				15BAEBC02FF7C000006B0E15 /* View */,
-			);
-			path = MovieGrid;
-			sourceTree = "<group>";
-		};
-		157C4E7A2FFB639E0044BD8E /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				157C4E612FFB639E0044BD8E /* MovieGridModels.swift */,
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		157C4E7B2FFB639E0044BD8E /* Model */ = {
@@ -1982,15 +1965,6 @@
 			path = Router;
 			sourceTree = "<group>";
 		};
-		15BAEBC02FF7C000006B0E15 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				15BAEBB82FF7B000006B0E15 /* MovieGridLayoutMetrics.swift */,
-				157C4E802FFB70000044BD8E /* MovieGridPaginationTaskController.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		15BAEBC12FF7C100006B0E15 /* Header */ = {
 			isa = PBXGroup;
 			children = (
@@ -2672,6 +2646,16 @@
 			path = Router;
 			sourceTree = "<group>";
 		};
+		3D89BC64B9632A8FC7FCBF5F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				6E39E1399C8F432FEDD7AFE5 /* MediaGridLayoutMetrics.swift */,
+				0EDB56160E4034C0C7A8FB70 /* MediaGridPaginationTaskController.swift */,
+			);
+			name = View;
+			path = View;
+			sourceTree = "<group>";
+		};
 		47A21141B50F6ABB65C65BDF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -2730,6 +2714,15 @@
 			path = Header;
 			sourceTree = "<group>";
 		};
+		A719C1FEA2649AA3BE16D05D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				13B1F99E8FF365C7BBAA3C1F /* MediaGridModels.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
 		DC8545DF5F40746EA46106F4 /* Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -2737,6 +2730,16 @@
 			);
 			name = Service;
 			path = Service;
+			sourceTree = "<group>";
+		};
+		E9F74C5B04A5EB28D96884FF /* MediaGrid */ = {
+			isa = PBXGroup;
+			children = (
+				A719C1FEA2649AA3BE16D05D /* Model */,
+				3D89BC64B9632A8FC7FCBF5F /* View */,
+			);
+			name = MediaGrid;
+			path = MediaGrid;
 			sourceTree = "<group>";
 		};
 		F00073CD6B122146646E642F /* Controller */ = {
@@ -2980,7 +2983,6 @@
 				15BAEB872FF72000006B0E15 /* MainMovieListService.swift in Sources */,
 				15BAEB8A2FF72000006B0E15 /* MainMovieListViewModel.swift in Sources */,
 				15BAEBB12FF7A000006B0E15 /* MainMovieSearchResultsViewModel.swift in Sources */,
-				157C4E622FFB639E0044BD8E /* MovieGridModels.swift in Sources */,
 				157C4E6A2FFB639E0044BD8E /* MovieSearchModels.swift in Sources */,
 				157C4E6E2FFB639E0044BD8E /* MovieSearchService.swift in Sources */,
 				157C4E722FFB639E0044BD8E /* MainMovieSearchSubmittedLoadingView.swift in Sources */,
@@ -3004,8 +3006,6 @@
 				157C52702FFB92000044BD8E /* MainTVListSeriesCollectionViewCell.swift in Sources */,
 				157C52802FFB92000044BD8E /* MainTVListViewModel.swift in Sources */,
 				15BAEBAA2FF78000006B0E15 /* MainMovieSearchTypingLoadingView.swift in Sources */,
-				15BAEBB52FF7B000006B0E15 /* MovieGridLayoutMetrics.swift in Sources */,
-				157C4E812FFB70000044BD8E /* MovieGridPaginationTaskController.swift in Sources */,
 				15D1969B2FF1238E00545A85 /* APIConfig.swift in Sources */,
 				1598AA932DC4BBA2005E972C /* TMDBAuthService.swift in Sources */,
 				1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */,
@@ -3070,6 +3070,9 @@
 				DD5F7B087B4B1A4777877E1C /* ReviewFilterHeaderView.swift in Sources */,
 				7639C29CF03E159DE1C4357F /* ReviewLoadingFooterView.swift in Sources */,
 				5790025EF6AAE8A2B3436EBC /* ReviewDetailViewController.swift in Sources */,
+				AA79F62550562DADE8963C47 /* MediaGridModels.swift in Sources */,
+				E74A13F878D77EB873AAFFB1 /* MediaGridLayoutMetrics.swift in Sources */,
+				B3FB571D6DC18D78FFDCC103 /* MediaGridPaginationTaskController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

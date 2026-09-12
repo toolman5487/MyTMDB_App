@@ -303,7 +303,7 @@ final class MainSearchViewModel {
             return false
         }
 
-        return MovieGridLayoutMetrics.shouldLoadNextPage(
+        return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
             itemCount: results.count
         )

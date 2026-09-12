@@ -14,7 +14,7 @@ nonisolated protocol MainMovieListServicing: Sendable {
 
     func fetchMovies(
         genreID: Int,
-        sortOption: MovieSortOption,
+        sortOption: MediaSortOption,
         page: Int
     ) async throws -> MainMovieListMoviePage
 }
@@ -53,10 +53,10 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
 
     func fetchMovies(
         genreID: Int,
-        sortOption: MovieSortOption,
+        sortOption: MediaSortOption,
         page: Int = 1
     ) async throws -> MainMovieListMoviePage {
-        let response: TMDBPageResponse<MovieGridMovie> = try await network.get(
+        let response: TMDBPageResponse<MediaGridEntry> = try await network.get(
             path: APIConfig.Discover.movie,
             queryItems: movieQueryItems(
                 genreID: genreID,
@@ -78,7 +78,7 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
 
     private func movieQueryItems(
         genreID: Int,
-        sortOption: MovieSortOption,
+        sortOption: MediaSortOption,
         page: Int
     ) -> [URLQueryItem] {
         [
@@ -93,9 +93,9 @@ nonisolated final class MainMovieListService: MainMovieListServicing {
     }
 }
 
-// MARK: - MovieSortOption
+// MARK: - MediaSortOption
 
-private extension MovieSortOption {
+private extension MediaSortOption {
     var discoverSortValue: String {
         switch self {
         case .popularity:
@@ -107,10 +107,10 @@ private extension MovieSortOption {
         case .ratingLowToHigh:
             return "vote_average.asc"
 
-        case .newestRelease:
+        case .newestDate:
             return "release_date.desc"
 
-        case .oldestRelease:
+        case .oldestDate:
             return "release_date.asc"
 
         case .titleAscending:

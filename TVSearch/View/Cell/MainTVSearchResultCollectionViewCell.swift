@@ -15,7 +15,7 @@ final class MainTVSearchResultCollectionViewCell: ImageTitleBaseCollectionViewCe
     static let reuseIdentifier = String(describing: MainTVSearchResultCollectionViewCell.self)
 
     func configure(
-        with item: TVGridSeriesItem,
+        with item: MediaGridItem,
         imageHeight: CGFloat
     ) {
         configure(with: ImageTitleCellContent(
@@ -30,17 +30,17 @@ final class MainTVSearchResultCollectionViewCell: ImageTitleBaseCollectionViewCe
 
 // MARK: - Accessibility
 
-private extension TVGridSeriesItem {
+private extension MediaGridItem {
 
     var tvSearchAccessibilityText: AccessibilityText {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.metadata([
-                "劇集",
+                "影集",
                 BaseDisplayTextFormatter.ratingText(scoreText),
-                "首播日期 \(firstAirDateText)"
+                "上映日期 \(dateText)"
             ]),
-            hint: "點兩下開啟劇集詳細資料"
+            hint: "點兩下開啟影集詳細資料"
         )
     }
 }

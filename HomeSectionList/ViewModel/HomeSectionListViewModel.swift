@@ -174,7 +174,7 @@ final class HomeSectionListViewModel {
             return false
         }
 
-        return MovieGridLayoutMetrics.shouldLoadNextPage(
+        return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
             itemCount: items.count
         )

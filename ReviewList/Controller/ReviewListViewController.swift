@@ -26,7 +26,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     private var loadTask: Task<Void, Never>?
 
-    private let paginationTaskController = MovieGridPaginationTaskController()
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - Initialization
 

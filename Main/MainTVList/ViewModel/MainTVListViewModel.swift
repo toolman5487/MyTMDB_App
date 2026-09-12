@@ -36,7 +36,7 @@ final class MainTVListViewModel {
     private let service: MainTVListServicing
     private var preferredGenreID: Int?
     private var genres: [MainTVGenre] = []
-    private var selectedSortOption: TVSortOption = .popularity
+    private var selectedSortOption: MediaSortOption = .popularity
 
     // MARK: - Initialization
 
@@ -146,7 +146,7 @@ final class MainTVListViewModel {
         }
     }
 
-    func selectSortOption(_ option: TVSortOption) async {
+    func selectSortOption(_ option: MediaSortOption) async {
         guard selectedSortOption != option else { return }
 
         selectedSortOption = option
@@ -223,7 +223,7 @@ final class MainTVListViewModel {
         selectedGenre: MainTVGenre,
         page: MainTVListSeriesPage
     ) -> MainTVListContent {
-        let series = page.series.map(TVGridSeriesItem.init(series:))
+        let series = page.series.map(MediaGridItem.init(entry:))
 
         return MainTVListContent(
             genres: genres.map { genre in
@@ -247,13 +247,13 @@ final class MainTVListViewModel {
 
     private func shouldLoadNextPage(
         currentSeriesID: Int,
-        series: [TVGridSeriesItem]
+        series: [MediaGridItem]
     ) -> Bool {
         guard let currentIndex = series.firstIndex(where: { $0.id == currentSeriesID }) else {
             return false
         }
 
-        return MovieGridLayoutMetrics.shouldLoadNextPage(
+        return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
             itemCount: series.count
         )

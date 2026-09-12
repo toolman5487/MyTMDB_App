@@ -108,19 +108,19 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
     let imageURL: URL?
     let detailTarget: MemberCenterListItemDetailTarget
 
-    init(movie: MovieGridMovie, destination: MemberCenterDestination) {
+    init(movie: MediaGridEntry, destination: MemberCenterDestination) {
         self.id = "\(destination.rawValue)-movie-\(movie.id)"
         self.title = movie.title
-        self.subtitle = BaseDisplayTextFormatter.announcedText(movie.releaseDate)
+        self.subtitle = BaseDisplayTextFormatter.announcedText(movie.date)
         self.metadataText = BaseDisplayTextFormatter.ratingText(movie.voteAverage)
         self.imageURL = Self.posterURL(path: movie.posterPath)
         self.detailTarget = .movie(id: movie.id)
     }
 
-    init(series: TVGridSeries, destination: MemberCenterDestination) {
+    init(series: MediaGridEntry, destination: MemberCenterDestination) {
         self.id = "\(destination.rawValue)-tv-\(series.id)"
-        self.title = series.name
-        self.subtitle = BaseDisplayTextFormatter.announcedText(series.firstAirDate)
+        self.title = series.title
+        self.subtitle = BaseDisplayTextFormatter.announcedText(series.date)
         self.metadataText = BaseDisplayTextFormatter.ratingText(series.voteAverage)
         self.imageURL = Self.posterURL(path: series.posterPath)
         self.detailTarget = .tv(id: series.id)
