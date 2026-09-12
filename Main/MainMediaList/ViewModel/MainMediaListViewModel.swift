@@ -1,56 +1,59 @@
 //
-//  MainTVListViewModel.swift
+//  MainMediaListViewModel.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/6.
+//  Created by Codex on 2026/7/3.
 //
 
 import Foundation
 
-// MARK: - MainTVListViewState
+// MARK: - MainMediaListViewState
 
-nonisolated enum MainTVListViewState: Equatable {
+nonisolated enum MainMediaListViewState: Equatable {
     case idle
     case loading
-    case refreshing(MainTVListContent)
-    case loaded(MainTVListContent)
+    case refreshing(MainMediaListContent)
+    case loaded(MainMediaListContent)
     case empty
     case failed(ErrorMessage)
 }
 
-// MARK: - MainTVListViewModel
+// MARK: - MainMediaListViewModel
 
 @MainActor
-final class MainTVListViewModel {
+final class MainMediaListViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MainTVListViewState = .idle {
+    private(set) var state: MainMediaListViewState = .idle {
         didSet {
             guard oldValue != state else { return }
             onStateChange?(state)
         }
     }
 
-    private var onStateChange: (@MainActor (MainTVListViewState) -> Void)?
-    private let service: MainTVListServicing
+    private var onStateChange: (@MainActor (MainMediaListViewState) -> Void)?
+    private let mediaKind: MediaKind
+    private let service: MainMediaListServicing
     private var preferredGenreID: Int?
-    private var genres: [MainTVGenre] = []
+    private var genres: [MainMediaGenre] = []
     private var selectedSortOption: MediaSortOption = .popularity
 
     // MARK: - Initialization
 
     init(
-        service: MainTVListServicing = MainTVListService(),
+        mediaKind: MediaKind,
+        service: MainMediaListServicing = MainMediaListService(),
         initialGenreID: Int? = nil
     ) {
+        self.mediaKind = mediaKind
         self.service = service
         self.preferredGenreID = initialGenreID
     }
 
     // MARK: - Output Binding
 
-    func bind(onStateChange: @escaping @MainActor (MainTVListViewState) -> Void) {
+    func bind(onStateChange: @escaping @MainActor (MainMediaListViewState) -> Void) {
         self.onStateChange = onStateChange
         onStateChange(state)
     }
@@ -61,7 +64,7 @@ final class MainTVListViewModel {
         state = .loading
 
         do {
-            let genres = try await service.fetchGenres()
+            let genres = try await service.fetchGenres(kind: mediaKind)
             guard !Task.isCancelled else { return }
 
             guard let selectedGenre = initialSelectedGenre(from: genres) else {
@@ -69,7 +72,8 @@ final class MainTVListViewModel {
                 return
             }
 
-            let page = try await service.fetchSeries(
+            let page = try await service.fetchItems(
+                kind: mediaKind,
                 genreID: selectedGenre.id,
                 sortOption: selectedSortOption,
                 page: 1
@@ -91,7 +95,8 @@ final class MainTVListViewModel {
         state = .refreshing(previewContent(for: selectedGenre))
 
         do {
-            let page = try await service.fetchSeries(
+            let page = try await service.fetchItems(
+                kind: mediaKind,
                 genreID: selectedGenre.id,
                 sortOption: selectedSortOption,
                 page: 1
@@ -105,18 +110,19 @@ final class MainTVListViewModel {
         }
     }
 
-    func loadNextPageIfNeeded(currentSeriesID: Int) async {
+    func loadNextPageIfNeeded(currentMovieID: Int) async {
         guard case .loaded(let content) = state,
               content.canLoadNextPage,
               !content.isLoadingNextPage,
-              shouldLoadNextPage(currentSeriesID: currentSeriesID, series: content.series) else {
+              shouldLoadNextPage(currentMovieID: currentMovieID, items: content.items) else {
             return
         }
 
         state = .loaded(content.updatingLoadingNextPage(true))
 
         do {
-            let nextPage = try await service.fetchSeries(
+            let nextPage = try await service.fetchItems(
+                kind: mediaKind,
                 genreID: content.selectedGenre.id,
                 sortOption: content.selectedSortOption ?? selectedSortOption,
                 page: content.currentPage + 1
@@ -156,7 +162,8 @@ final class MainTVListViewModel {
             state = .refreshing(content.updatingSortOption(option))
 
             do {
-                let page = try await service.fetchSeries(
+                let page = try await service.fetchItems(
+                    kind: mediaKind,
                     genreID: content.selectedGenre.id,
                     sortOption: option,
                     page: 1
@@ -189,7 +196,7 @@ final class MainTVListViewModel {
 
     // MARK: - Private Methods
 
-    private func initialSelectedGenre(from genres: [MainTVGenre]) -> MainTVGenre? {
+    private func initialSelectedGenre(from genres: [MainMediaGenre]) -> MainMediaGenre? {
         if let preferredGenreID,
            let genre = genres.first(where: { $0.id == preferredGenreID }) {
             return genre
@@ -198,19 +205,19 @@ final class MainTVListViewModel {
         return genres.first
     }
 
-    private func previewContent(for selectedGenre: MainTVGenre) -> MainTVListContent {
-        MainTVListContent(
+    private func previewContent(for selectedGenre: MainMediaGenre) -> MainMediaListContent {
+        MainMediaListContent(
             genres: genres.map { genre in
-                MainTVGenreItem(
+                MainMediaGenreItem(
                     genre: genre,
                     isSelected: genre.id == selectedGenre.id
                 )
             },
-            selectedGenre: MainTVGenreItem(
+            selectedGenre: MainMediaGenreItem(
                 genre: selectedGenre,
                 isSelected: true
             ),
-            series: [],
+            items: [],
             currentPage: 0,
             totalPages: 0,
             totalResults: 0,
@@ -220,23 +227,23 @@ final class MainTVListViewModel {
     }
 
     private func makeContent(
-        selectedGenre: MainTVGenre,
-        page: MainTVListSeriesPage
-    ) -> MainTVListContent {
-        let series = page.series.map(MediaGridItem.init(entry:))
+        selectedGenre: MainMediaGenre,
+        page: MainMediaListPage
+    ) -> MainMediaListContent {
+        let items = page.items.map(MediaGridItem.init(entry:))
 
-        return MainTVListContent(
+        return MainMediaListContent(
             genres: genres.map { genre in
-                MainTVGenreItem(
+                MainMediaGenreItem(
                     genre: genre,
                     isSelected: genre.id == selectedGenre.id
                 )
             },
-            selectedGenre: MainTVGenreItem(
+            selectedGenre: MainMediaGenreItem(
                 genre: selectedGenre,
                 isSelected: true
             ),
-            series: series,
+            items: items,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
@@ -246,16 +253,16 @@ final class MainTVListViewModel {
     }
 
     private func shouldLoadNextPage(
-        currentSeriesID: Int,
-        series: [MediaGridItem]
+        currentMovieID: Int,
+        items: [MediaGridItem]
     ) -> Bool {
-        guard let currentIndex = series.firstIndex(where: { $0.id == currentSeriesID }) else {
+        guard let currentIndex = items.firstIndex(where: { $0.id == currentMovieID }) else {
             return false
         }
 
         return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
-            itemCount: series.count
+            itemCount: items.count
         )
     }
 }

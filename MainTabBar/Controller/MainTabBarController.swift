@@ -126,7 +126,7 @@ final class MainTabBarController: UITabBarController {
 
     func showMovieGenreList(genreID: Int) {
         guard genreID > 0,
-              let viewController = rootViewController(for: .movie) as? MainMovieListViewController else {
+              let viewController = rootViewController(for: .movie) as? MainMediaListViewController else {
             return
         }
 
@@ -135,7 +135,7 @@ final class MainTabBarController: UITabBarController {
 
     func showTVGenreList(genreID: Int) {
         guard genreID > 0,
-              let viewController = rootViewController(for: .series) as? MainTVListViewController else {
+              let viewController = rootViewController(for: .series) as? MainMediaListViewController else {
             return
         }
 
@@ -218,12 +218,12 @@ final class MainTabBarController: UITabBarController {
             return MainSearchViewController()
 
         case .movie:
-            let viewController = MainMovieListViewController()
+            let viewController = MainMediaListViewController(mediaKind: .movie)
             viewController.title = item.title
             return viewController
 
         case .series:
-            let viewController = MainTVListViewController()
+            let viewController = MainMediaListViewController(mediaKind: .tv)
             viewController.title = item.title
             return viewController
 

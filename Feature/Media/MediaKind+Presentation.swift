@@ -20,4 +20,14 @@ extension MediaKind {
             return "影集"
         }
     }
+
+    var systemImageName: String {
+        switch self {
+        case .movie:
+            return "film"
+
+        case .tv:
+            return "tv"
+        }
+    }
 }

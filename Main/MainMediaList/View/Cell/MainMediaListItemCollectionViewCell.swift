@@ -1,5 +1,5 @@
 //
-//  MainMovieListMovieCollectionViewCell.swift
+//  MainMediaListItemCollectionViewCell.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/3.
@@ -7,12 +7,12 @@
 
 import UIKit
 
-// MARK: - MainMovieListMovieCollectionViewCell
+// MARK: - MainMediaListItemCollectionViewCell
 
 @MainActor
-final class MainMovieListMovieCollectionViewCell: ImageTitleBaseCollectionViewCell {
+final class MainMediaListItemCollectionViewCell: ImageTitleBaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MainMovieListMovieCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: MainMediaListItemCollectionViewCell.self)
 
     func configure(
         with item: MediaGridItem,

@@ -13,6 +13,7 @@ import UIKit
 protocol HomeSectionListRouting: AnyObject {
     func showDetail(for item: MainHomeContentItem)
     func showGenrePageSheet(
+        kind: MediaKind,
         filters: [HomeSectionListGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
@@ -39,14 +40,16 @@ final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
     }
 
     func showGenrePageSheet(
+        kind: MediaKind,
         filters: [HomeSectionListGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
         guard !filters.isEmpty else { return }
 
-        let viewController = MainMovieGenrePageSheetViewController(
-            filters: filters.map(MainMovieGenreItem.init(filterItem:)),
+        let viewController = MainMediaGenrePageSheetViewController(
+            kind: kind,
+            filters: filters.map(MainMediaGenreItem.init(filterItem:)),
             onFilterSelected: onFilterSelected,
             onDismiss: onDismiss
         )
@@ -56,11 +59,11 @@ final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
 
 // MARK: - Mapping
 
-private extension MainMovieGenreItem {
+private extension MainMediaGenreItem {
 
     init(filterItem: HomeSectionListGenreItem) {
         self.init(
-            genre: MainMovieGenre(id: filterItem.id, name: filterItem.name),
+            genre: MainMediaGenre(id: filterItem.id, name: filterItem.name),
             isSelected: filterItem.isSelected
         )
     }

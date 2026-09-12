@@ -37,7 +37,7 @@ nonisolated final class HomeSectionListService: HomeSectionListServicing {
     func fetchGenres(for mediaType: MediaKind) async throws -> [HomeSectionListGenre] {
         switch mediaType {
         case .movie:
-            let response: MainMovieGenreResponse = try await network.get(
+            let response: MainMediaGenreResponse = try await network.get(
                 path: APIConfig.Genre.movieList,
                 queryItems: [
                     URLQueryItem(name: "language", value: localization.languageParameter)
@@ -46,7 +46,7 @@ nonisolated final class HomeSectionListService: HomeSectionListServicing {
             return response.genres.map(HomeSectionListGenre.init(movieGenre:))
 
         case .tv:
-            let response: MainTVGenreResponse = try await network.get(
+            let response: MainMediaGenreResponse = try await network.get(
                 path: APIConfig.Genre.tvList,
                 queryItems: [
                     URLQueryItem(name: "language", value: localization.languageParameter)

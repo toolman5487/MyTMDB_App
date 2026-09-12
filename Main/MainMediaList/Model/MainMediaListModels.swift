@@ -1,44 +1,44 @@
 //
-//  MainTVListModels.swift
+//  MainMediaListModels.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/6.
+//  Created by Codex on 2026/7/3.
 //
 
 import Foundation
 
-// MARK: - MainTVGenreResponse
+// MARK: - MainMediaGenreResponse
 
-nonisolated struct MainTVGenreResponse: Decodable, Sendable, Equatable {
-    let genres: [MainTVGenre]
+nonisolated struct MainMediaGenreResponse: Decodable, Sendable, Equatable {
+    let genres: [MainMediaGenre]
 }
 
-// MARK: - MainTVGenre
+// MARK: - MainMediaGenre
 
-nonisolated struct MainTVGenre: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MainMediaGenre: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let name: String
 }
 
-// MARK: - MainTVListSeriesPage
+// MARK: - MainMediaListPage
 
-nonisolated struct MainTVListSeriesPage: Sendable, Equatable {
+nonisolated struct MainMediaListPage: Sendable, Equatable {
     let genreID: Int
     let page: Int
     let totalPages: Int
     let totalResults: Int
-    let series: [MediaGridEntry]
+    let items: [MediaGridEntry]
 }
 
-// MARK: - MainTVGenreItem
+// MARK: - MainMediaGenreItem
 
-nonisolated struct MainTVGenreItem: Sendable, Equatable, Identifiable {
+nonisolated struct MainMediaGenreItem: Sendable, Equatable, Identifiable {
     let id: Int
     let name: String
     let isSelected: Bool
 
     init(
-        genre: MainTVGenre,
+        genre: MainMediaGenre,
         isSelected: Bool
     ) {
         self.id = genre.id
@@ -47,12 +47,12 @@ nonisolated struct MainTVGenreItem: Sendable, Equatable, Identifiable {
     }
 }
 
-// MARK: - MainTVListContent
+// MARK: - MainMediaListContent
 
-nonisolated struct MainTVListContent: Sendable, Equatable {
-    let genres: [MainTVGenreItem]
-    let selectedGenre: MainTVGenreItem
-    let series: [MediaGridItem]
+nonisolated struct MainMediaListContent: Sendable, Equatable {
+    let genres: [MainMediaGenreItem]
+    let selectedGenre: MainMediaGenreItem
+    let items: [MediaGridItem]
     let currentPage: Int
     let totalPages: Int
     let totalResults: Int
@@ -63,11 +63,11 @@ nonisolated struct MainTVListContent: Sendable, Equatable {
         currentPage < totalPages
     }
 
-    func updatingLoadingNextPage(_ isLoading: Bool) -> MainTVListContent {
-        MainTVListContent(
+    func updatingLoadingNextPage(_ isLoading: Bool) -> MainMediaListContent {
+        MainMediaListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            series: series,
+            items: items,
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,
@@ -76,13 +76,13 @@ nonisolated struct MainTVListContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: MainTVListSeriesPage) -> MainTVListContent {
-        let nextSeries = series + page.series.map(MediaGridItem.init(entry:))
+    func appending(page: MainMediaListPage) -> MainMediaListContent {
+        let nextMovies = items + page.items.map(MediaGridItem.init(entry:))
 
-        return MainTVListContent(
+        return MainMediaListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            series: nextSeries,
+            items: nextMovies,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
@@ -91,11 +91,11 @@ nonisolated struct MainTVListContent: Sendable, Equatable {
         )
     }
 
-    func updatingSortOption(_ option: MediaSortOption) -> MainTVListContent {
-        MainTVListContent(
+    func updatingSortOption(_ option: MediaSortOption) -> MainMediaListContent {
+        MainMediaListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            series: series,
+            items: items,
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,

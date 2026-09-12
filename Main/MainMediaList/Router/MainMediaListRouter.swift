@@ -1,5 +1,5 @@
 //
-//  MainMovieListRouter.swift
+//  MainMediaListRouter.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/3.
@@ -7,33 +7,42 @@
 
 import UIKit
 
-// MARK: - MainMovieListRouting
+// MARK: - MainMediaListRouting
 
 @MainActor
-protocol MainMovieListRouting: AnyObject {
+protocol MainMediaListRouting: AnyObject {
     var shouldIgnoreSearchCancellation: Bool { get }
 
-    func showMovieDetail(movieID: Int)
-    func showMovieDetailFromSearch(
-        movieID: Int,
+    func showDetail(itemID: Int)
+    func showDetailFromSearch(
+        itemID: Int,
         searchController: UISearchController,
         onSearchDismissed: @escaping () -> Void
     )
     func showGenrePageSheet(
-        filters: [MainMovieGenreItem],
+        kind: MediaKind,
+        filters: [MainMediaGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     )
 }
 
-// MARK: - MainMovieListRouter
+// MARK: - MainMediaListRouter
 
 @MainActor
-final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
+final class MainMediaListRouter: BaseRouter, MainMediaListRouting {
 
     // MARK: - Properties
 
+    private let mediaKind: MediaKind
     private(set) var isDismissingSearchForNavigation = false
+
+    // MARK: - Initialization
+
+    init(sourceViewController: UIViewController, mediaKind: MediaKind) {
+        self.mediaKind = mediaKind
+        super.init(sourceViewController: sourceViewController)
+    }
 
     var shouldIgnoreSearchCancellation: Bool {
         isDismissingSearchForNavigation
@@ -41,17 +50,17 @@ final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
 
     // MARK: - Push
 
-    func showMovieDetail(movieID: Int) {
-        guard movieID > 0 else { return }
-        show(MovieDetailViewController(movieID: movieID), using: .push)
+    func showDetail(itemID: Int) {
+        guard itemID > 0 else { return }
+        show(makeDetailViewController(itemID: itemID), using: .push)
     }
 
-    func showMovieDetailFromSearch(
-        movieID: Int,
+    func showDetailFromSearch(
+        itemID: Int,
         searchController: UISearchController,
         onSearchDismissed: @escaping () -> Void
     ) {
-        guard movieID > 0,
+        guard itemID > 0,
               let sourceViewController,
               let navigationController = sourceViewController.navigationController else {
             return
@@ -71,7 +80,7 @@ final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
             onSearchDismissed()
         }
 
-        show(MovieDetailViewController(movieID: movieID), using: .push)
+        show(makeDetailViewController(itemID: itemID), using: .push)
 
         if let transitionCoordinator = navigationController.transitionCoordinator {
             transitionCoordinator.animate(alongsideTransition: nil) { [weak self] context in
@@ -92,17 +101,31 @@ final class MainMovieListRouter: BaseRouter, MainMovieListRouting {
     // MARK: - Page Sheet
 
     func showGenrePageSheet(
-        filters: [MainMovieGenreItem],
+        kind: MediaKind,
+        filters: [MainMediaGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
         guard !filters.isEmpty else { return }
 
-        let viewController = MainMovieGenrePageSheetViewController(
+        let viewController = MainMediaGenrePageSheetViewController(
+            kind: kind,
             filters: filters,
             onFilterSelected: onFilterSelected,
             onDismiss: onDismiss
         )
         show(viewController, using: .pageSheet(.medium))
+    }
+
+    // MARK: - Private Helpers
+
+    private func makeDetailViewController(itemID: Int) -> UIViewController {
+        switch mediaKind {
+        case .movie:
+            return MovieDetailViewController(movieID: itemID)
+
+        case .tv:
+            return TVDetailViewController(seriesID: itemID)
+        }
     }
 }

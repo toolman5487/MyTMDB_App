@@ -1,17 +1,16 @@
 //
-//  MainTVListViewController.swift
+//  MainMediaListViewController.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/6.
+//  Created by Willy Hsu on 2026/7/2.
 //
 
-import SnapKit
 import UIKit
 
-// MARK: - MainTVListViewController
+// MARK: - MainMediaListViewController
 
 @MainActor
-final class MainTVListViewController: MainBaseViewController {
+final class MainMediaListViewController: MainBaseViewController {
 
     // MARK: - Layout
 
@@ -21,11 +20,15 @@ final class MainTVListViewController: MainBaseViewController {
 
     // MARK: - Properties
 
-    private let viewModel: MainTVListViewModel
-    private lazy var router: MainTVListRouting = MainTVListRouter(sourceViewController: self)
+    private let mediaKind: MediaKind
+    private let viewModel: MainMediaListViewModel
+    private lazy var router: MainMediaListRouting = MainMediaListRouter(
+        sourceViewController: self,
+        mediaKind: mediaKind
+    )
 
-    private var filters: [MainTVGenreItem] = []
-    private var series: [MediaGridItem] = []
+    private var filters: [MainMediaGenreItem] = []
+    private var items: [MediaGridItem] = []
 
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
@@ -39,9 +42,9 @@ final class MainTVListViewController: MainBaseViewController {
     // MARK: - UI Components
 
     private lazy var searchResultsViewController: SearchResultsViewController = {
-        let viewController = SearchResultsViewController(mediaKind: .tv)
+        let viewController = SearchResultsViewController(mediaKind: .movie)
         viewController.onItemSelected = { [weak self] itemID in
-            self?.showSearchResultTVDetail(seriesID: itemID)
+            self?.showSearchResultMovieDetail(itemID: itemID)
         }
         viewController.onSortBarButtonVisibilityChanged = { [weak self] isVisible, selectedOption in
             self?.updateSearchSortBarButtonVisibility(
@@ -56,7 +59,7 @@ final class MainTVListViewController: MainBaseViewController {
         let searchController = UISearchController(searchResultsController: searchResultsViewController)
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "搜尋劇集"
+        searchController.searchBar.placeholder = "搜尋\(mediaKind.displayName)"
         searchController.obscuresBackgroundDuringPresentation = true
         return searchController
     }()
@@ -74,19 +77,29 @@ final class MainTVListViewController: MainBaseViewController {
 
     // MARK: - Initialization
 
-    convenience init(initialGenreID: Int) {
+    convenience init(mediaKind: MediaKind, initialGenreID: Int) {
         self.init(
-            viewModel: MainTVListViewModel(initialGenreID: initialGenreID)
+            mediaKind: mediaKind,
+            viewModel: MainMediaListViewModel(mediaKind: mediaKind, initialGenreID: initialGenreID)
         )
     }
 
-    init(viewModel: MainTVListViewModel = MainTVListViewModel()) {
+    convenience init(mediaKind: MediaKind) {
+        self.init(
+            mediaKind: mediaKind,
+            viewModel: MainMediaListViewModel(mediaKind: mediaKind)
+        )
+    }
+
+    init(mediaKind: MediaKind, viewModel: MainMediaListViewModel) {
+        self.mediaKind = mediaKind
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        self.viewModel = MainTVListViewModel()
+        self.mediaKind = .movie
+        self.viewModel = MainMediaListViewModel(mediaKind: .movie)
         super.init(coder: coder)
     }
 
@@ -147,13 +160,13 @@ final class MainTVListViewController: MainBaseViewController {
         collectionViewFlowLayout.minimumLineSpacing = MediaGridLayoutMetrics.itemSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = MediaGridLayoutMetrics.itemSpacing
         collectionView.register(
-            MainTVListFilterHeaderView.self,
+            MainMediaListFilterHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: MainTVListFilterHeaderView.reuseIdentifier
+            withReuseIdentifier: MainMediaListFilterHeaderView.reuseIdentifier
         )
         collectionView.register(
-            MainTVListSeriesCollectionViewCell.self,
-            forCellWithReuseIdentifier: MainTVListSeriesCollectionViewCell.reuseIdentifier
+            MainMediaListItemCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainMediaListItemCollectionViewCell.reuseIdentifier
         )
     }
 
@@ -161,8 +174,8 @@ final class MainTVListViewController: MainBaseViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
-        searchController.searchBar.searchTextField.accessibilityLabel = "搜尋劇集"
-        searchController.searchBar.searchTextField.accessibilityHint = "輸入劇集名稱後搜尋"
+        searchController.searchBar.searchTextField.accessibilityLabel = "搜尋\(mediaKind.displayName)"
+        searchController.searchBar.searchTextField.accessibilityHint = "輸入\(mediaKind.displayName)名稱後搜尋"
     }
 
     // MARK: - Data Loading
@@ -187,28 +200,28 @@ final class MainTVListViewController: MainBaseViewController {
         }
     }
 
-    private func render(state: MainTVListViewState) {
+    private func render(state: MainMediaListViewState) {
         switch state {
         case .idle, .loading:
             filters = []
-            series = []
+            items = []
             isFilterSkeletonVisible = true
             collectionView.backgroundView = nil
             hideSortBarButtonItem()
 
         case .refreshing(let content):
             filters = content.genres
-            series = []
+            items = []
             isFilterSkeletonVisible = false
-            navigationItem.title = "\(content.selectedGenre.name)劇集"
+            navigationItem.title = "\(content.selectedGenre.name)\(mediaKind.displayName)"
             collectionView.backgroundView = nil
             hideSortBarButtonItem()
 
         case .empty:
             renderUnavailableListState(
-                title: "沒有劇集資料",
-                message: "目前沒有可顯示的劇集。",
-                systemImageName: "tv"
+                title: "沒有\(mediaKind.displayName)資料",
+                message: "目前沒有可顯示的\(mediaKind.displayName)。",
+                systemImageName: mediaKind.systemImageName
             )
             hideSortBarButtonItem()
 
@@ -222,9 +235,9 @@ final class MainTVListViewController: MainBaseViewController {
 
         case .loaded(let content):
             filters = content.genres
-            series = content.series
+            items = content.items
             isFilterSkeletonVisible = false
-            navigationItem.title = "\(content.selectedGenre.name)劇集"
+            navigationItem.title = "\(content.selectedGenre.name)\(mediaKind.displayName)"
             collectionView.backgroundView = nil
             showSortBarButtonItem(selectedSortOption: content.selectedSortOption)
         }
@@ -286,9 +299,9 @@ final class MainTVListViewController: MainBaseViewController {
         to item: UIBarButtonItem,
         selectedOption: MediaSortOption?
     ) {
-        item.accessibilityLabel = "排序劇集"
+        item.accessibilityLabel = "排序\(mediaKind.displayName)"
         item.accessibilityValue = selectedOption?.title ?? "尚未選擇"
-        item.accessibilityHint = "點兩下選擇劇集排序方式"
+        item.accessibilityHint = "點兩下選擇\(mediaKind.displayName)排序方式"
     }
 
     private func selectSortOption(
@@ -311,14 +324,14 @@ final class MainTVListViewController: MainBaseViewController {
 
 // MARK: - UICollectionViewDataSource
 
-extension MainTVListViewController: UICollectionViewDataSource {
+extension MainMediaListViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         shouldShowContentSection ? 1 : 0
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        isFilterSkeletonVisible ? 0 : series.count
+        isFilterSkeletonVisible ? 0 : items.count
     }
 
     func collectionView(
@@ -326,14 +339,14 @@ extension MainTVListViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MainTVListSeriesCollectionViewCell.reuseIdentifier,
+            withReuseIdentifier: MainMediaListItemCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MainTVListSeriesCollectionViewCell,
-           series.indices.contains(indexPath.item) {
+        if let cell = cell as? MainMediaListItemCollectionViewCell,
+           items.indices.contains(indexPath.item) {
             cell.configure(
-                with: series[indexPath.item],
+                with: items[indexPath.item],
                 imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
             )
         }
@@ -352,11 +365,11 @@ extension MainTVListViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: MainTVListFilterHeaderView.reuseIdentifier,
+            withReuseIdentifier: MainMediaListFilterHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if let headerView = reusableView as? MainTVListFilterHeaderView {
+        if let headerView = reusableView as? MainMediaListFilterHeaderView {
             headerView.configure(
                 filters: filters,
                 isExpanded: isFilterPageSheetPresented,
@@ -376,7 +389,7 @@ extension MainTVListViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
-extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
+extension MainMediaListViewController: UICollectionViewDelegateFlowLayout {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         beginTabBarVisibilityTracking(for: scrollView)
@@ -387,11 +400,11 @@ extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard series.indices.contains(indexPath.item) else { return }
-        let seriesID = series[indexPath.item].id
+        guard items.indices.contains(indexPath.item) else { return }
+        let itemID = items[indexPath.item].id
 
         collectionView.deselectItem(at: indexPath, animated: true)
-        router.showTVDetail(seriesID: seriesID)
+        router.showDetail(itemID: itemID)
     }
 
     func collectionView(
@@ -455,7 +468,7 @@ extension MainTVListViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UISearchResultsUpdating
 
-extension MainTVListViewController: UISearchResultsUpdating {
+extension MainMediaListViewController: UISearchResultsUpdating {
 
     func updateSearchResults(for searchController: UISearchController) {
         guard !router.shouldIgnoreSearchCancellation else { return }
@@ -474,7 +487,7 @@ extension MainTVListViewController: UISearchResultsUpdating {
 
 // MARK: - UISearchBarDelegate
 
-extension MainTVListViewController: UISearchBarDelegate {
+extension MainMediaListViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         submitSearch(keyword: searchBar.text)
@@ -489,10 +502,10 @@ extension MainTVListViewController: UISearchBarDelegate {
 
 // MARK: - Private Methods
 
-private extension MainTVListViewController {
+private extension MainMediaListViewController {
 
     var shouldShowContentSection: Bool {
-        shouldShowFilterHeader || !series.isEmpty
+        shouldShowFilterHeader || !items.isEmpty
     }
 
     var shouldShowFilterHeader: Bool {
@@ -500,22 +513,22 @@ private extension MainTVListViewController {
     }
 
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
-        guard series.indices.contains(indexPath.item) else { return }
+        guard items.indices.contains(indexPath.item) else { return }
         guard !paginationTaskController.isRunning else { return }
 
         guard MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
-            itemCount: series.count
+            itemCount: items.count
         ) else { return }
 
-        let currentSeriesID = series[indexPath.item].id
+        let currentMovieID = items[indexPath.item].id
 
         paginationTaskController.run { [weak self] in
             guard let self else { return }
 
             switch viewModel.state {
             case .loaded:
-                await viewModel.loadNextPageIfNeeded(currentSeriesID: currentSeriesID)
+                await viewModel.loadNextPageIfNeeded(currentMovieID: currentMovieID)
 
             case .idle, .loading, .refreshing, .empty, .failed:
                 break
@@ -533,7 +546,7 @@ private extension MainTVListViewController {
         systemImageName: String
     ) {
         filters = []
-        series = []
+        items = []
         isFilterSkeletonVisible = false
         collectionView.backgroundView = ErrorMessageView(
             message: ErrorMessage(
@@ -544,9 +557,9 @@ private extension MainTVListViewController {
         )
     }
 
-    func showSearchResultTVDetail(seriesID: Int) {
-        router.showTVDetailFromSearch(
-            seriesID: seriesID,
+    func showSearchResultMovieDetail(itemID: Int) {
+        router.showDetailFromSearch(
+            itemID: itemID,
             searchController: searchController,
             onSearchDismissed: { [weak self] in
                 guard let self else { return }
@@ -582,6 +595,7 @@ private extension MainTVListViewController {
         setFilterPageSheetPresented(true)
 
         router.showGenrePageSheet(
+            kind: mediaKind,
             filters: filters,
             onFilterSelected: { [weak self] id in
                 self?.selectFilter(id: id)
@@ -602,7 +616,7 @@ private extension MainTVListViewController {
                 forElementKind: UICollectionView.elementKindSectionHeader,
                 at: indexPath
             )
-            (reusableView as? MainTVListFilterHeaderView)?.setShowAllButtonExpanded(
+            (reusableView as? MainMediaListFilterHeaderView)?.setShowAllButtonExpanded(
                 isPresented,
                 animated: true
             )

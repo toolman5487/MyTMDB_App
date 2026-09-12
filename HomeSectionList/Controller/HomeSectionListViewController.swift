@@ -210,6 +210,7 @@ final class HomeSectionListViewController: BaseListViewController {
         setFilterPageSheetPresented(true)
 
         router.showGenrePageSheet(
+            kind: category.mediaType,
             filters: filters,
             onFilterSelected: { [weak self] id in
                 self?.selectFilter(id: id)

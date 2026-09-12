@@ -68,6 +68,26 @@ nonisolated enum APIConfig {
         }
     }
 
+    static func genreList(kind: MediaKind) -> String {
+        switch kind {
+        case .movie:
+            return Genre.movieList
+
+        case .tv:
+            return Genre.tvList
+        }
+    }
+
+    static func discover(kind: MediaKind) -> String {
+        switch kind {
+        case .movie:
+            return Discover.movie
+
+        case .tv:
+            return Discover.tv
+        }
+    }
+
     // MARK: - Account
 
     enum Account {

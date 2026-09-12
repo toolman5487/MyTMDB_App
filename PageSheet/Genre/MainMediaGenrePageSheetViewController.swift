@@ -1,5 +1,5 @@
 //
-//  MainMovieGenrePageSheetViewController.swift
+//  MainMediaGenrePageSheetViewController.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/3.
@@ -7,24 +7,25 @@
 
 import UIKit
 
-// MARK: - MainMovieGenreItem
+// MARK: - MainMediaGenreItem
 
-extension MainMovieGenreItem: GenrePageSheetItemRepresentable {}
+extension MainMediaGenreItem: GenrePageSheetItemRepresentable {}
 
-// MARK: - MainMovieGenrePageSheetViewController
+// MARK: - MainMediaGenrePageSheetViewController
 
 @MainActor
-final class MainMovieGenrePageSheetViewController: BaseGenrePageSheetViewController<MainMovieGenreItem> {
+final class MainMediaGenrePageSheetViewController: BaseGenrePageSheetViewController<MainMediaGenreItem> {
 
     // MARK: - Initialization
 
     init(
-        filters: [MainMovieGenreItem],
+        kind: MediaKind,
+        filters: [MainMediaGenreItem],
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
         super.init(
-            title: "電影種類",
+            title: "\(kind.displayName)種類",
             filters: filters,
             onFilterSelected: onFilterSelected,
             onDismiss: onDismiss

@@ -1,18 +1,18 @@
 //
-//  MainTVListFilterHeaderView.swift
+//  MainMediaListFilterHeaderView.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/6.
+//  Created by Codex on 2026/7/3.
 //
 
 import UIKit
 
-// MARK: - MainTVListFilterHeaderView
+// MARK: - MainMediaListFilterHeaderView
 
 @MainActor
-final class MainTVListFilterHeaderView: BaseShowAllFilterHeaderView {
+final class MainMediaListFilterHeaderView: BaseShowAllFilterHeaderView {
 
-    static let reuseIdentifier = String(describing: MainTVListFilterHeaderView.self)
+    static let reuseIdentifier = String(describing: MainMediaListFilterHeaderView.self)
 
     var onFilterSelected: ((Int) -> Void)?
 
@@ -22,7 +22,7 @@ final class MainTVListFilterHeaderView: BaseShowAllFilterHeaderView {
     }
 
     func configure(
-        filters: [MainTVGenreItem],
+        filters: [MainMediaGenreItem],
         isExpanded: Bool,
         isShowingSkeleton: Bool = false
     ) {
@@ -32,7 +32,7 @@ final class MainTVListFilterHeaderView: BaseShowAllFilterHeaderView {
         }
 
         configure(
-            filters: filters.map(BaseFilterHeaderItem.init(tvGenre:)),
+            filters: filters.map(BaseFilterHeaderItem.init(movieGenre:)),
             isExpanded: isExpanded,
             isShowingSkeleton: isShowingSkeleton
         )
@@ -43,11 +43,11 @@ final class MainTVListFilterHeaderView: BaseShowAllFilterHeaderView {
 
 private extension BaseFilterHeaderItem {
 
-    init(tvGenre: MainTVGenreItem) {
+    init(movieGenre: MainMediaGenreItem) {
         self.init(
-            id: String(tvGenre.id),
-            title: tvGenre.name,
-            isSelected: tvGenre.isSelected
+            id: String(movieGenre.id),
+            title: movieGenre.name,
+            isSelected: movieGenre.isSelected
         )
     }
 }
