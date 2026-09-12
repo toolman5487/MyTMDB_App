@@ -38,10 +38,10 @@ final class MainTVListViewController: MainBaseViewController {
 
     // MARK: - UI Components
 
-    private lazy var searchResultsViewController: MainTVSearchResultsViewController = {
-        let viewController = MainTVSearchResultsViewController()
-        viewController.onSeriesSelected = { [weak self] seriesID in
-            self?.showSearchResultTVDetail(seriesID: seriesID)
+    private lazy var searchResultsViewController: SearchResultsViewController = {
+        let viewController = SearchResultsViewController(mediaKind: .tv)
+        viewController.onItemSelected = { [weak self] itemID in
+            self?.showSearchResultTVDetail(seriesID: itemID)
         }
         viewController.onSortBarButtonVisibilityChanged = { [weak self] isVisible, selectedOption in
             self?.updateSearchSortBarButtonVisibility(

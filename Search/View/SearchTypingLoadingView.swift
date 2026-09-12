@@ -1,5 +1,5 @@
 //
-//  MainMovieSearchTypingLoadingView.swift
+//  SearchTypingLoadingView.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -8,10 +8,10 @@
 import SnapKit
 import UIKit
 
-// MARK: - MainMovieSearchTypingLoadingView
+// MARK: - SearchTypingLoadingView
 
 @MainActor
-final class MainMovieSearchTypingLoadingView: UIView {
+final class SearchTypingLoadingView: UIView {
 
     private enum Layout {
         static let animationSize: CGFloat = 200

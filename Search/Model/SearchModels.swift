@@ -1,5 +1,5 @@
 //
-//  MovieSearchModels.swift
+//  SearchModels.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -7,21 +7,21 @@
 
 import Foundation
 
-// MARK: - MovieSearchResultPage
+// MARK: - SearchResultPage
 
-nonisolated struct MovieSearchResultPage: Sendable, Equatable {
+nonisolated struct SearchResultPage: Sendable, Equatable {
     let keyword: String
     let page: Int
     let totalPages: Int
     let totalResults: Int
-    let movies: [MediaGridEntry]
+    let entries: [MediaGridEntry]
 }
 
-// MARK: - MovieSearchContent
+// MARK: - SearchContent
 
-nonisolated struct MovieSearchContent: Sendable, Equatable {
+nonisolated struct SearchContent: Sendable, Equatable {
     let keyword: String
-    let movies: [MediaGridItem]
+    let items: [MediaGridItem]
     let currentPage: Int
     let totalPages: Int
     let totalResults: Int
@@ -32,10 +32,10 @@ nonisolated struct MovieSearchContent: Sendable, Equatable {
         currentPage < totalPages
     }
 
-    func updatingLoadingNextPage(_ isLoading: Bool) -> MovieSearchContent {
-        MovieSearchContent(
+    func updatingLoadingNextPage(_ isLoading: Bool) -> SearchContent {
+        SearchContent(
             keyword: keyword,
-            movies: movies,
+            items: items,
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,
@@ -44,12 +44,12 @@ nonisolated struct MovieSearchContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: MovieSearchResultPage) -> MovieSearchContent {
-        let nextMovies = movies + page.movies.map(MediaGridItem.init(entry:))
+    func appending(page: SearchResultPage) -> SearchContent {
+        let nextItems = items + page.entries.map(MediaGridItem.init(entry:))
 
-        return MovieSearchContent(
+        return SearchContent(
             keyword: keyword,
-            movies: selectedSortOption?.sorted(nextMovies) ?? nextMovies,
+            items: selectedSortOption?.sorted(nextItems) ?? nextItems,
             currentPage: page.page,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
@@ -58,10 +58,10 @@ nonisolated struct MovieSearchContent: Sendable, Equatable {
         )
     }
 
-    func sorting(by option: MediaSortOption) -> MovieSearchContent {
-        MovieSearchContent(
+    func sorting(by option: MediaSortOption) -> SearchContent {
+        SearchContent(
             keyword: keyword,
-            movies: option.sorted(movies),
+            items: option.sorted(items),
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,

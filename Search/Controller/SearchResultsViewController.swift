@@ -1,5 +1,5 @@
 //
-//  MainTVSearchResultsViewController.swift
+//  SearchResultsViewController.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -8,19 +8,20 @@
 import SnapKit
 import UIKit
 
-// MARK: - MainTVSearchResultsViewController
+// MARK: - SearchResultsViewController
 
 @MainActor
-final class MainTVSearchResultsViewController: BaseViewController {
+final class SearchResultsViewController: BaseViewController {
 
     // MARK: - Properties
 
-    private let viewModel: MainTVSearchResultsViewModel
+    private let mediaKind: MediaKind
+    private let viewModel: SearchResultsViewModel
 
-    var onSeriesSelected: ((Int) -> Void)?
+    var onItemSelected: ((Int) -> Void)?
     var onSortBarButtonVisibilityChanged: ((Bool, MediaSortOption?) -> Void)?
 
-    private var series: [MediaGridItem] = []
+    private var items: [MediaGridItem] = []
 
     private var canLoadNextPage = false
     private var isLoadingNextPage = false
@@ -49,21 +50,29 @@ final class MainTVSearchResultsViewController: BaseViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
-            MainTVSearchResultCollectionViewCell.self,
-            forCellWithReuseIdentifier: MainTVSearchResultCollectionViewCell.reuseIdentifier
+            SearchResultCollectionViewCell.self,
+            forCellWithReuseIdentifier: SearchResultCollectionViewCell.reuseIdentifier
         )
         return collectionView
     }()
 
     // MARK: - Initialization
 
-    init(viewModel: MainTVSearchResultsViewModel = MainTVSearchResultsViewModel()) {
+    init(mediaKind: MediaKind) {
+        self.mediaKind = mediaKind
+        self.viewModel = SearchResultsViewModel(mediaKind: mediaKind)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    init(mediaKind: MediaKind, viewModel: SearchResultsViewModel) {
+        self.mediaKind = mediaKind
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        self.viewModel = MainTVSearchResultsViewModel()
+        self.mediaKind = .movie
+        self.viewModel = SearchResultsViewModel(mediaKind: .movie)
         super.init(coder: coder)
     }
 
@@ -114,7 +123,7 @@ final class MainTVSearchResultsViewController: BaseViewController {
         searchTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
-            await viewModel.searchSeries(keyword: trimmedKeyword)
+            await viewModel.search(keyword: trimmedKeyword)
 
             guard !Task.isCancelled else { return }
             renderCurrentState()
@@ -138,46 +147,46 @@ final class MainTVSearchResultsViewController: BaseViewController {
         updateSortBarButtonVisibility(for: viewModel.state)
     }
 
-    private func render(state: MainTVSearchResultsViewState) {
+    private func render(state: SearchResultsViewState) {
         switch state {
         case .idle:
-            series = []
+            items = []
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = nil
 
         case .typing:
-            series = []
+            items = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = MainMovieSearchTypingLoadingView()
+            collectionView.backgroundView = SearchTypingLoadingView()
 
         case .searching(let keyword):
-            series = []
+            items = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = MainMovieSearchSubmittedLoadingView(keyword: keyword)
+            collectionView.backgroundView = SearchSubmittedLoadingView(keyword: keyword)
 
         case .results(let content):
-            series = content.series
+            items = content.items
             canLoadNextPage = content.canLoadNextPage
             isLoadingNextPage = content.isLoadingNextPage
             collectionView.backgroundView = nil
 
         case .empty(let keyword):
-            series = []
+            items = []
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "找不到劇集",
+                    title: "找不到\(mediaKind.displayName)",
                     message: "沒有符合「\(keyword)」的搜尋結果",
                     systemImageName: "magnifyingglass"
                 )
             )
 
         case .failed(let errorMessage):
-            series = []
+            items = []
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(message: errorMessage)
@@ -189,14 +198,14 @@ final class MainTVSearchResultsViewController: BaseViewController {
 
 // MARK: - UICollectionViewDataSource
 
-extension MainTVSearchResultsViewController: UICollectionViewDataSource {
+extension SearchResultsViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        series.isEmpty ? 0 : 1
+        items.isEmpty ? 0 : 1
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        series.count
+        items.count
     }
 
     func collectionView(
@@ -204,14 +213,15 @@ extension MainTVSearchResultsViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MainTVSearchResultCollectionViewCell.reuseIdentifier,
+            withReuseIdentifier: SearchResultCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
 
-        if let cell = cell as? MainTVSearchResultCollectionViewCell,
-           series.indices.contains(indexPath.item) {
+        if let cell = cell as? SearchResultCollectionViewCell,
+           items.indices.contains(indexPath.item) {
             cell.configure(
-                with: series[indexPath.item],
+                with: items[indexPath.item],
+                kind: mediaKind,
                 imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
             )
         }
@@ -222,14 +232,14 @@ extension MainTVSearchResultsViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
-extension MainTVSearchResultsViewController: UICollectionViewDelegateFlowLayout {
+extension SearchResultsViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard series.indices.contains(indexPath.item) else { return }
-        let seriesID = series[indexPath.item].id
+        guard items.indices.contains(indexPath.item) else { return }
+        let itemID = items[indexPath.item].id
 
         collectionView.deselectItem(at: indexPath, animated: true)
-        onSeriesSelected?(seriesID)
+        onItemSelected?(itemID)
     }
 
     func collectionView(
@@ -280,24 +290,24 @@ extension MainTVSearchResultsViewController: UICollectionViewDelegateFlowLayout 
 
 // MARK: - Private Methods
 
-private extension MainTVSearchResultsViewController {
+private extension SearchResultsViewController {
 
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
-        guard series.indices.contains(indexPath.item) else { return }
+        guard items.indices.contains(indexPath.item) else { return }
         guard canLoadNextPage, !isLoadingNextPage else { return }
         guard !paginationTaskController.isRunning else { return }
 
         guard MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: indexPath.item,
-            itemCount: series.count
+            itemCount: items.count
         ) else { return }
 
-        let currentSeriesID = series[indexPath.item].id
+        let currentItemID = items[indexPath.item].id
 
         paginationTaskController.run { [weak self] in
             guard let self else { return }
 
-            await viewModel.loadNextPageIfNeeded(currentSeriesID: currentSeriesID)
+            await viewModel.loadNextPageIfNeeded(currentItemID: currentItemID)
             renderCurrentState()
         }
     }
@@ -306,7 +316,7 @@ private extension MainTVSearchResultsViewController {
         paginationTaskController.cancel()
     }
 
-    func updateSortBarButtonVisibility(for state: MainTVSearchResultsViewState) {
+    func updateSortBarButtonVisibility(for state: SearchResultsViewState) {
         switch state {
         case .results(let content):
             onSortBarButtonVisibilityChanged?(true, content.selectedSortOption)

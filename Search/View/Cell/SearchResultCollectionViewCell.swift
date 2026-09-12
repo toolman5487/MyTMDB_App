@@ -1,5 +1,5 @@
 //
-//  MainMovieSearchResultCollectionViewCell.swift
+//  SearchResultCollectionViewCell.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -7,15 +7,16 @@
 
 import UIKit
 
-// MARK: - MainMovieSearchResultCollectionViewCell
+// MARK: - SearchResultCollectionViewCell
 
 @MainActor
-final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionViewCell {
+final class SearchResultCollectionViewCell: ImageTitleBaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MainMovieSearchResultCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: SearchResultCollectionViewCell.self)
 
     func configure(
         with item: MediaGridItem,
+        kind: MediaKind,
         imageHeight: CGFloat
     ) {
         configure(with: ImageTitleCellContent(
@@ -23,7 +24,7 @@ final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionVie
             title: item.title,
             subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
             imageHeight: imageHeight,
-            accessibilityText: item.movieSearchAccessibilityText
+            accessibilityText: item.searchAccessibilityText(kind: kind)
         ))
     }
 }
@@ -32,15 +33,15 @@ final class MainMovieSearchResultCollectionViewCell: ImageTitleBaseCollectionVie
 
 private extension MediaGridItem {
 
-    var movieSearchAccessibilityText: AccessibilityText {
+    func searchAccessibilityText(kind: MediaKind) -> AccessibilityText {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.metadata([
-                "電影",
+                kind.displayName,
                 BaseDisplayTextFormatter.ratingText(scoreText),
                 "上映日期 \(dateText)"
             ]),
-            hint: "點兩下開啟電影詳細資料"
+            hint: "點兩下開啟\(kind.displayName)詳細資料"
         )
     }
 }

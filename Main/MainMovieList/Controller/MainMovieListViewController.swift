@@ -37,10 +37,10 @@ final class MainMovieListViewController: MainBaseViewController {
 
     // MARK: - UI Components
 
-    private lazy var searchResultsViewController: MainMovieSearchResultsViewController = {
-        let viewController = MainMovieSearchResultsViewController()
-        viewController.onMovieSelected = { [weak self] movieID in
-            self?.showSearchResultMovieDetail(movieID: movieID)
+    private lazy var searchResultsViewController: SearchResultsViewController = {
+        let viewController = SearchResultsViewController(mediaKind: .movie)
+        viewController.onItemSelected = { [weak self] itemID in
+            self?.showSearchResultMovieDetail(movieID: itemID)
         }
         viewController.onSortBarButtonVisibilityChanged = { [weak self] isVisible, selectedOption in
             self?.updateSearchSortBarButtonVisibility(

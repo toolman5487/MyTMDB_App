@@ -230,7 +230,7 @@ final class MainSearchViewController: MainBaseViewController {
             isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = MainMovieSearchTypingLoadingView()
+            collectionView.backgroundView = SearchTypingLoadingView()
 
         case .searching(let keyword):
             filters = []
@@ -241,7 +241,7 @@ final class MainSearchViewController: MainBaseViewController {
             isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = MainMovieSearchSubmittedLoadingView(keyword: keyword)
+            collectionView.backgroundView = SearchSubmittedLoadingView(keyword: keyword)
 
         case .results(let content):
             filters = content.filters

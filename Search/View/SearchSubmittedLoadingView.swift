@@ -1,5 +1,5 @@
 //
-//  MainMovieSearchSubmittedLoadingView.swift
+//  SearchSubmittedLoadingView.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -8,10 +8,10 @@
 import SnapKit
 import UIKit
 
-// MARK: - MainMovieSearchSubmittedLoadingView
+// MARK: - SearchSubmittedLoadingView
 
 @MainActor
-final class MainMovieSearchSubmittedLoadingView: UIView {
+final class SearchSubmittedLoadingView: UIView {
 
     private let animationView = AppFactory.Animation.searchLoading(size: AppAnimationView.Metrics.searchSize)
 

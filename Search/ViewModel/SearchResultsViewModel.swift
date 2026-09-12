@@ -1,5 +1,5 @@
 //
-//  MainMovieSearchResultsViewModel.swift
+//  SearchResultsViewModel.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/6.
@@ -8,33 +8,38 @@
 import Foundation
 import Observation
 
-// MARK: - MainMovieSearchResultsViewState
+// MARK: - SearchResultsViewState
 
-nonisolated enum MainMovieSearchResultsViewState: Equatable {
+nonisolated enum SearchResultsViewState: Equatable {
     case idle
     case typing
     case searching(String)
-    case results(MovieSearchContent)
+    case results(SearchContent)
     case empty(String)
     case failed(ErrorMessage)
 }
 
-// MARK: - MainMovieSearchResultsViewModel
+// MARK: - SearchResultsViewModel
 
 @MainActor
 @Observable
-final class MainMovieSearchResultsViewModel {
+final class SearchResultsViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MainMovieSearchResultsViewState = .idle
+    private(set) var state: SearchResultsViewState = .idle
     private(set) var selectedSortOption: MediaSortOption?
 
-    private let service: MovieSearchServicing
+    private let mediaKind: MediaKind
+    private let service: SearchServicing
 
     // MARK: - Initialization
 
-    init(service: MovieSearchServicing = MovieSearchService()) {
+    init(
+        mediaKind: MediaKind,
+        service: SearchServicing = SearchService()
+    ) {
+        self.mediaKind = mediaKind
         self.service = service
     }
 
@@ -53,7 +58,7 @@ final class MainMovieSearchResultsViewModel {
         state = .idle
     }
 
-    func searchMovies(keyword: String) async {
+    func search(keyword: String) async {
         let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmedKeyword.isEmpty else {
@@ -64,36 +69,37 @@ final class MainMovieSearchResultsViewModel {
         state = .searching(trimmedKeyword)
 
         do {
-            let page = try await service.searchMovies(keyword: trimmedKeyword, page: 1)
+            let page = try await service.search(kind: mediaKind, keyword: trimmedKeyword, page: 1)
             guard !Task.isCancelled else { return }
 
             let content = makeSearchContent(
                 keyword: page.keyword,
-                movies: page.movies.map(MediaGridItem.init(entry:)),
+                items: page.entries.map(MediaGridItem.init(entry:)),
                 currentPage: page.page,
                 totalPages: page.totalPages,
                 totalResults: page.totalResults,
                 isLoadingNextPage: false
             )
-            state = content.movies.isEmpty ? .empty(trimmedKeyword) : .results(content)
+            state = content.items.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
         }
     }
 
-    func loadNextPageIfNeeded(currentMovieID: Int) async {
+    func loadNextPageIfNeeded(currentItemID: Int) async {
         guard case .results(let content) = state,
               content.canLoadNextPage,
               !content.isLoadingNextPage,
-              shouldLoadNextPage(currentMovieID: currentMovieID, movies: content.movies) else {
+              shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
         state = .results(content.updatingLoadingNextPage(true))
 
         do {
-            let nextPage = try await service.searchMovies(
+            let nextPage = try await service.search(
+                kind: mediaKind,
                 keyword: content.keyword,
                 page: content.currentPage + 1
             )
@@ -131,15 +137,15 @@ final class MainMovieSearchResultsViewModel {
 
     private func makeSearchContent(
         keyword: String,
-        movies: [MediaGridItem],
+        items: [MediaGridItem],
         currentPage: Int,
         totalPages: Int,
         totalResults: Int,
         isLoadingNextPage: Bool
-    ) -> MovieSearchContent {
-        MovieSearchContent(
+    ) -> SearchContent {
+        SearchContent(
             keyword: keyword,
-            movies: selectedSortOption?.sorted(movies) ?? movies,
+            items: selectedSortOption?.sorted(items) ?? items,
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,
@@ -149,16 +155,16 @@ final class MainMovieSearchResultsViewModel {
     }
 
     private func shouldLoadNextPage(
-        currentMovieID: Int,
-        movies: [MediaGridItem]
+        currentItemID: Int,
+        items: [MediaGridItem]
     ) -> Bool {
-        guard let currentIndex = movies.firstIndex(where: { $0.id == currentMovieID }) else {
+        guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
             return false
         }
 
         return MediaGridLayoutMetrics.shouldLoadNextPage(
             currentIndex: currentIndex,
-            itemCount: movies.count
+            itemCount: items.count
         )
     }
 }

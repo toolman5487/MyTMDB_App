@@ -58,6 +58,16 @@ nonisolated enum APIConfig {
         }
     }
 
+    static func search(kind: MediaKind) -> String {
+        switch kind {
+        case .movie:
+            return Search.movie
+
+        case .tv:
+            return Search.tv
+        }
+    }
+
     // MARK: - Account
 
     enum Account {

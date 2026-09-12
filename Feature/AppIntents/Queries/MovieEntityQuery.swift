@@ -11,16 +11,16 @@ import Foundation
 // MARK: - MovieEntityQuery
 
 nonisolated struct MovieEntityQuery: EntityStringQuery {
-    private let searchService: any MovieSearchServicing
+    private let searchService: any SearchServicing
     private let lookupService: any AppIntentEntityLookupServicing
 
     init() {
-        self.searchService = MovieSearchService()
+        self.searchService = SearchService()
         self.lookupService = AppIntentEntityLookupService()
     }
 
     init(
-        searchService: any MovieSearchServicing,
+        searchService: any SearchServicing,
         lookupService: any AppIntentEntityLookupServicing
     ) {
         self.searchService = searchService
@@ -44,8 +44,8 @@ nonisolated struct MovieEntityQuery: EntityStringQuery {
         let keyword = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !keyword.isEmpty else { return [] }
 
-        let page = try await searchService.searchMovies(keyword: keyword, page: 1)
-        return page.movies.prefix(10).map(MovieEntity.init(movie:))
+        let page = try await searchService.search(kind: .movie, keyword: keyword, page: 1)
+        return page.entries.prefix(10).map(MovieEntity.init(movie:))
     }
 
     func suggestedEntities() async throws -> [MovieEntity] {
