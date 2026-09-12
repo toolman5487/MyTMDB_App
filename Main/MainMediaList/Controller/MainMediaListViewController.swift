@@ -42,9 +42,9 @@ final class MainMediaListViewController: MainBaseViewController {
     // MARK: - UI Components
 
     private lazy var searchResultsViewController: SearchResultsViewController = {
-        let viewController = SearchResultsViewController(mediaKind: .movie)
+        let viewController = SearchResultsViewController(mediaKind: mediaKind)
         viewController.onItemSelected = { [weak self] itemID in
-            self?.showSearchResultMovieDetail(itemID: itemID)
+            self?.showSearchResultDetail(itemID: itemID)
         }
         viewController.onSortBarButtonVisibilityChanged = { [weak self] isVisible, selectedOption in
             self?.updateSearchSortBarButtonVisibility(
@@ -557,7 +557,7 @@ private extension MainMediaListViewController {
         )
     }
 
-    func showSearchResultMovieDetail(itemID: Int) {
+    func showSearchResultDetail(itemID: Int) {
         router.showDetailFromSearch(
             itemID: itemID,
             searchController: searchController,
