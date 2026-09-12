@@ -502,7 +502,7 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
     let scoreText: String?
     let posterURL: URL?
 
-    init(recommendation: MovieSummary) {
+    init(recommendation: MediaSummary) {
         self.id = recommendation.id
         self.title = recommendation.title
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: recommendation.releaseDate) ?? ""

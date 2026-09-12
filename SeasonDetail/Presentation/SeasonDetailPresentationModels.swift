@@ -94,7 +94,7 @@ nonisolated struct SeasonVideoItem: Sendable, Equatable, Identifiable {
     let youtubeVideoKey: String?
     let videoURL: URL?
 
-    init(video: TVVideo) {
+    init(video: VideoDTO) {
         self.id = video.id
         self.title = video.name
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
@@ -117,7 +117,7 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let profileURL: URL?
 
-    init(aggregateCast: TVAggregateCreditCast) {
+    init(aggregateCast: AggregateCastMemberDTO) {
         self.id = aggregateCast.id
         self.title = aggregateCast.name
         self.subtitle = aggregateCast.roles.first?.character
@@ -143,7 +143,7 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let profileURL: URL?
 
-    init(aggregateCrew: TVAggregateCreditCrew) {
+    init(aggregateCrew: AggregateCrewMemberDTO) {
         self.id = "\(aggregateCrew.id)-\(aggregateCrew.department)"
         self.personID = aggregateCrew.id
         self.title = aggregateCrew.name
@@ -189,7 +189,7 @@ nonisolated struct SeasonImageItem: Sendable, Equatable, Identifiable {
     let imageURL: URL?
     let aspectRatio: Double
 
-    init(image: TVImage) {
+    init(image: MediaImageDTO) {
         self.filePath = image.filePath
         self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
         self.aspectRatio = image.aspectRatio
@@ -210,7 +210,7 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
 
     init(
         countryCode: String,
-        provider: TVWatchProvider,
+        provider: WatchProviderDTO,
         category: String,
         link: String
     ) {

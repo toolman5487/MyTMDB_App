@@ -1,5 +1,5 @@
 //
-//  MovieSummary.swift
+//  MediaSummary.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/9/12.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-// MARK: - MovieSummary
+// MARK: - MediaSummary
 
-nonisolated struct MovieSummary: Sendable, Equatable, Identifiable {
+nonisolated struct MediaSummary: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let posterPath: String?

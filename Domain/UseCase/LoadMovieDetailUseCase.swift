@@ -59,14 +59,14 @@ nonisolated struct DefaultLoadMovieDetailUseCase: LoadMovieDetailUseCase {
         async let recommendations = optional(
             name: "movie recommendations",
             movieID: movieID,
-            fallback: Page<MovieSummary>.empty(number: recommendationPage)
+            fallback: Page<MediaSummary>.empty(number: recommendationPage)
         ) {
             try await repository.recommendations(movieID: movieID, page: recommendationPage)
         }
         async let similar = optional(
             name: "movie similar",
             movieID: movieID,
-            fallback: Page<MovieSummary>.empty(number: recommendationPage)
+            fallback: Page<MediaSummary>.empty(number: recommendationPage)
         ) {
             try await repository.similar(movieID: movieID, page: recommendationPage)
         }

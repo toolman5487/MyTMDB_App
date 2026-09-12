@@ -38,7 +38,7 @@ nonisolated protocol EpisodeDetailServicing: Sendable {
         seriesID: Int,
         seasonNumber: Int,
         episodeNumber: Int
-    ) async throws -> TVVideosResponse
+    ) async throws -> VideosDTO
 
     func fetchEpisodeExternalIDs(
         seriesID: Int,
@@ -124,7 +124,7 @@ nonisolated final class EpisodeDetailService: EpisodeDetailServicing {
             seriesID: seriesID,
             seasonNumber: seasonNumber,
             episodeNumber: episodeNumber,
-            fallback: TVVideosResponse(id: episodeNumber)
+            fallback: VideosDTO(id: episodeNumber)
         ) {
             try await fetchEpisodeVideos(
                 seriesID: seriesID,
@@ -225,7 +225,7 @@ nonisolated final class EpisodeDetailService: EpisodeDetailServicing {
         seriesID: Int,
         seasonNumber: Int,
         episodeNumber: Int
-    ) async throws -> TVVideosResponse {
+    ) async throws -> VideosDTO {
         try await network.get(
             path: APIConfig.TV.episodeVideos(
                 seriesId: seriesID,

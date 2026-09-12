@@ -1,5 +1,5 @@
 //
-//  MovieDetailRepository.swift
+//  TVDetailRepository.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/9/12.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-// MARK: - MovieDetailRepository
+// MARK: - TVDetailRepository
 
-nonisolated final class MovieDetailRepository: MovieDetailProviding {
+nonisolated final class TVDetailRepository: TVDetailProviding {
 
     // MARK: - Properties
 
@@ -26,67 +26,59 @@ nonisolated final class MovieDetailRepository: MovieDetailProviding {
         self.localization = localization
     }
 
-    // MARK: - MovieDetailProviding
+    // MARK: - TVDetailProviding
 
-    func movie(id: Int) async throws -> Movie {
-        let dto: MovieDetailDTO = try await network.get(
-            path: APIConfig.Movie.detail(id: id),
+    func series(id: Int) async throws -> TVSeries {
+        let dto: TVSeriesDTO = try await network.get(
+            path: APIConfig.TV.detail(seriesId: id),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
     }
 
-    func credits(movieID: Int) async throws -> MovieCredits {
-        let dto: MovieCreditsDTO = try await network.get(
-            path: APIConfig.Movie.credits(id: movieID),
-            queryItems: []
+    func aggregateCredits(seriesID: Int) async throws -> AggregateCredits {
+        let dto: AggregateCreditsDTO = try await network.get(
+            path: APIConfig.TV.aggregateCredits(seriesId: seriesID),
+            queryItems: localizedQueryItems
         )
         return dto.mapped()
     }
 
-    func videos(movieID: Int) async throws -> [Video] {
+    func videos(seriesID: Int) async throws -> [Video] {
         let dto: VideosDTO = try await network.get(
-            path: APIConfig.Movie.videos(id: movieID),
+            path: APIConfig.TV.videos(seriesId: seriesID),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
     }
 
-    func images(movieID: Int) async throws -> MediaImages {
+    func images(seriesID: Int) async throws -> MediaImages {
         let dto: MediaImagesDTO = try await network.get(
-            path: APIConfig.Movie.images(id: movieID),
+            path: APIConfig.TV.images(seriesId: seriesID),
             queryItems: imageQueryItems
         )
         return dto.mapped()
     }
 
-    func collection(id: Int) async throws -> MovieCollection {
-        let dto: MovieCollectionDTO = try await network.get(
-            path: APIConfig.Collection.detail(id: id),
-            queryItems: localizedQueryItems
-        )
-        return dto.mapped()
-    }
-
-    func recommendations(movieID: Int, page: Int) async throws -> Page<MediaSummary> {
+    func recommendations(seriesID: Int, page: Int) async throws -> Page<MediaSummary> {
         let dto: MediaSummaryPageDTO = try await network.get(
-            path: APIConfig.Movie.recommendations(id: movieID),
+            path: APIConfig.TV.recommendations(seriesId: seriesID),
             queryItems: pagedQueryItems(page: page)
         )
         return dto.mapped()
     }
 
-    func similar(movieID: Int, page: Int) async throws -> Page<MediaSummary> {
+    func similar(seriesID: Int, page: Int) async throws -> Page<MediaSummary> {
         let dto: MediaSummaryPageDTO = try await network.get(
-            path: APIConfig.Movie.similar(id: movieID),
+            path: APIConfig.TV.similar(seriesId: seriesID),
             queryItems: pagedQueryItems(page: page)
         )
         return dto.mapped()
     }
 
-    func watchProviders(movieID: Int) async throws -> WatchProviders {
+    func watchProviders(seriesID: Int) async throws -> WatchProviders {
         let dto: WatchProvidersDTO = try await network.get(
-            path: APIConfig.Movie.watchProviders(id: movieID),
+            path: APIConfig.TV.watchProviders(seriesId: seriesID),
             queryItems: []
         )
         return dto.mapped()

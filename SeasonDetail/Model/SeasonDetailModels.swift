@@ -11,11 +11,11 @@ import Foundation
 
 nonisolated struct SeasonDetailContent: Sendable, Equatable {
     let detail: SeasonDetail
-    let aggregateCredits: TVAggregateCreditsResponse
+    let aggregateCredits: AggregateCreditsDTO
     let credits: SeasonCreditsResponse
-    let images: TVImagesResponse
-    let videos: TVVideosResponse
-    let watchProviders: TVWatchProvidersResponse
+    let images: MediaImagesDTO
+    let videos: VideosDTO
+    let watchProviders: WatchProvidersDTO
     let externalIDs: SeasonExternalIDsResponse
     let translations: SeasonTranslationsResponse
     let accountStates: SeasonAccountStatesResponse

@@ -358,9 +358,9 @@ nonisolated struct CrewMemberDTO: Decodable, Sendable, Equatable, Identifiable {
     }
 }
 
-// MARK: - MovieVideosDTO
+// MARK: - VideosDTO
 
-nonisolated struct MovieVideosDTO: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct VideosDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let results: [VideoDTO]
 
@@ -496,11 +496,11 @@ nonisolated struct MediaImageDTO: Decodable, Sendable, Equatable {
     }
 }
 
-// MARK: - MovieSummaryPageDTO
+// MARK: - MediaSummaryPageDTO
 
-nonisolated struct MovieSummaryPageDTO: Decodable, Sendable, Equatable {
+nonisolated struct MediaSummaryPageDTO: Decodable, Sendable, Equatable {
     let page: Int
-    let results: [MovieSummaryDTO]
+    let results: [MediaSummaryDTO]
     let totalPages: Int
     let totalResults: Int
 
@@ -513,7 +513,7 @@ nonisolated struct MovieSummaryPageDTO: Decodable, Sendable, Equatable {
 
     init(
         page: Int = 1,
-        results: [MovieSummaryDTO] = [],
+        results: [MediaSummaryDTO] = [],
         totalPages: Int = 1,
         totalResults: Int = 0
     ) {
@@ -527,15 +527,15 @@ nonisolated struct MovieSummaryPageDTO: Decodable, Sendable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.page = try container.decodeIfPresent(Int.self, forKey: .page) ?? 1
-        self.results = try container.decodeIfPresent([MovieSummaryDTO].self, forKey: .results) ?? []
+        self.results = try container.decodeIfPresent([MediaSummaryDTO].self, forKey: .results) ?? []
         self.totalPages = try container.decodeIfPresent(Int.self, forKey: .totalPages) ?? 1
         self.totalResults = try container.decodeIfPresent(Int.self, forKey: .totalResults) ?? results.count
     }
 }
 
-// MARK: - MovieSummaryDTO
+// MARK: - MediaSummaryDTO
 
-nonisolated struct MovieSummaryDTO: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct MediaSummaryDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let adult: Bool
     let backdropPath: String?
@@ -562,7 +562,9 @@ nonisolated struct MovieSummaryDTO: Decodable, Sendable, Equatable, Identifiable
         case popularity
         case posterPath = "poster_path"
         case releaseDate = "release_date"
+        case firstAirDate = "first_air_date"
         case title
+        case name
         case video
         case voteAverage = "vote_average"
         case voteCount = "vote_count"
@@ -580,8 +582,12 @@ nonisolated struct MovieSummaryDTO: Decodable, Sendable, Equatable, Identifiable
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
-        self.releaseDate = try container.decodeIfPresent(String.self, forKey: .releaseDate) ?? ""
-        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? "未命名"
+        self.releaseDate = try container.decodeIfPresent(String.self, forKey: .releaseDate)
+            ?? container.decodeIfPresent(String.self, forKey: .firstAirDate)
+            ?? ""
+        self.title = try container.decodeIfPresent(String.self, forKey: .title)
+            ?? container.decodeIfPresent(String.self, forKey: .name)
+            ?? "未命名"
         self.video = try container.decodeIfPresent(Bool.self, forKey: .video) ?? false
         self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
         self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0

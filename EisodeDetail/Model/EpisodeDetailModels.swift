@@ -13,7 +13,7 @@ nonisolated struct EpisodeDetailContent: Sendable, Equatable {
     let detail: EpisodeDetail
     let credits: EpisodeCreditsResponse
     let images: EpisodeImagesResponse
-    let videos: TVVideosResponse
+    let videos: VideosDTO
     let externalIDs: EpisodeExternalIDsResponse
     let translations: EpisodeTranslationsResponse
     let accountStates: EpisodeAccountStatesResponse
@@ -173,14 +173,14 @@ typealias EpisodeGuestStar = EpisodeCastMember
 
 nonisolated struct EpisodeImagesResponse: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
-    let stills: [TVImage]
+    let stills: [MediaImageDTO]
 
     enum CodingKeys: String, CodingKey {
         case id
         case stills
     }
 
-    init(id: Int, stills: [TVImage] = []) {
+    init(id: Int, stills: [MediaImageDTO] = []) {
         self.id = id
         self.stills = stills
     }
@@ -189,7 +189,7 @@ nonisolated struct EpisodeImagesResponse: Decodable, Sendable, Equatable, Identi
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.stills = try container.decodeIfPresent([TVImage].self, forKey: .stills) ?? []
+        self.stills = try container.decodeIfPresent([MediaImageDTO].self, forKey: .stills) ?? []
     }
 }
 
@@ -417,7 +417,7 @@ nonisolated struct EpisodeVideoItem: Sendable, Equatable, Identifiable {
     let youtubeVideoKey: String?
     let videoURL: URL?
 
-    init(video: TVVideo) {
+    init(video: VideoDTO) {
         self.id = video.id
         self.title = video.name
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
@@ -443,7 +443,7 @@ nonisolated struct EpisodeImageItem: Sendable, Equatable, Identifiable {
     let imageURL: URL?
     let aspectRatio: Double
 
-    init(image: TVImage) {
+    init(image: MediaImageDTO) {
         self.filePath = image.filePath
         self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
         self.aspectRatio = image.aspectRatio

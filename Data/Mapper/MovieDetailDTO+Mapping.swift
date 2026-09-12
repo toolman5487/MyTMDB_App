@@ -102,9 +102,9 @@ extension CrewMemberDTO {
     }
 }
 
-// MARK: - MovieVideosDTO Mapping
+// MARK: - VideosDTO Mapping
 
-extension MovieVideosDTO {
+extension VideosDTO {
 
     func mapped() -> [Video] {
         results.map { $0.mapped() }
@@ -182,11 +182,11 @@ extension MovieCollectionPartDTO {
     }
 }
 
-// MARK: - MovieSummaryPageDTO Mapping
+// MARK: - MediaSummaryPageDTO Mapping
 
-extension MovieSummaryPageDTO {
+extension MediaSummaryPageDTO {
 
-    func mapped() -> Page<MovieSummary> {
+    func mapped() -> Page<MediaSummary> {
         Page(
             number: page,
             totalPages: totalPages,
@@ -196,12 +196,12 @@ extension MovieSummaryPageDTO {
     }
 }
 
-// MARK: - MovieSummaryDTO Mapping
+// MARK: - MediaSummaryDTO Mapping
 
-extension MovieSummaryDTO {
+extension MediaSummaryDTO {
 
-    func mapped() -> MovieSummary {
-        MovieSummary(
+    func mapped() -> MediaSummary {
+        MediaSummary(
             id: id,
             title: title,
             posterPath: posterPath,

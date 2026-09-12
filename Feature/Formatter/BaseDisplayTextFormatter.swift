@@ -131,6 +131,10 @@ nonisolated enum BaseDisplayTextFormatter {
         minutes(values.first { $0 > 0 })
     }
 
+    static func firstRuntime(_ durations: [Duration]) -> String? {
+        firstMinutes(values: durations.map { Int($0.components.seconds / 60) })
+    }
+
     // MARK: - Count
 
     static func count(_ value: Int, unit: String) -> String? {

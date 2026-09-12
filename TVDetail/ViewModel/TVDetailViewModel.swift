@@ -35,18 +35,21 @@ final class TVDetailViewModel {
 
     private var onStateChange: (@MainActor (TVDetailViewState) -> Void)?
     private var onAccountStateChange: (@MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void)?
-    private let service: TVDetailServicing
+    private let loadTVDetailUseCase: LoadTVDetailUseCase
+    private let accountStateService: TVAccountStateServicing
     private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
     init(
-        service: TVDetailServicing,
+        loadTVDetailUseCase: LoadTVDetailUseCase,
+        accountStateService: TVAccountStateServicing,
         sessionStore: SessionStoring,
         accountService: AccountServiceProtocol,
         accountMediaService: MemberCenterServicing
     ) {
-        self.service = service
+        self.loadTVDetailUseCase = loadTVDetailUseCase
+        self.accountStateService = accountStateService
         self.accountMediaController = DetailAccountMediaStateController(
             sessionStore: sessionStore,
             accountService: accountService,
@@ -59,7 +62,15 @@ final class TVDetailViewModel {
 
     convenience init() {
         self.init(
-            service: TVDetailService(),
+            loadTVDetailUseCase: DefaultLoadTVDetailUseCase(
+                repository: TVDetailRepository(),
+                auxiliaryFailureHandler: { name, seriesID, error in
+                    AppLogger.network.warning(
+                        "Failed to load \(name, privacy: .public) for TV \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                    )
+                }
+            ),
+            accountStateService: TVAccountStateService(),
             sessionStore: SessionStore(),
             accountService: AccountService(),
             accountMediaService: MemberCenterService()
@@ -81,36 +92,29 @@ final class TVDetailViewModel {
     // MARK: - Data Loading
 
     func loadTVDetail(seriesID: Int) async {
-        guard seriesID > 0 else {
-            state = .failed(
-                ErrorMessage(
-                    title: "找不到影集",
-                    message: "影集 ID 不正確，請返回上一頁後再試。",
-                    actionTitle: nil
-                )
-            )
-            return
-        }
-
         state = .loading
         accountMediaController.prepareForLoading()
 
         do {
-            async let content = service.fetchTVDetailContent(seriesID: seriesID)
+            async let content = loadTVDetailUseCase(seriesID: seriesID)
             await accountMediaController.loadAccountMediaState(
                 sourceDescription: "TV series \(seriesID)"
-            ) { [service] sessionID in
-                try await service.fetchTVAccountStates(seriesID: seriesID, sessionId: sessionID)
+            ) { [accountStateService] sessionID in
+                try await accountStateService.fetchTVAccountStates(seriesID: seriesID, sessionId: sessionID)
             }
             let loadedContent = try await content
             guard !Task.isCancelled else { return }
 
             accountMediaController.updateDefaultRating(
-                fromPublicRating: loadedContent.detail.voteCount > 0
-                    ? loadedContent.detail.voteAverage
+                fromPublicRating: loadedContent.series.voteCount > 0
+                    ? loadedContent.series.voteAverage
                     : nil
             )
             state = .loaded(TVDetailSectionBuilder.makeSections(content: loadedContent))
+        } catch let error as DomainError {
+            guard !Task.isCancelled else { return }
+            state = .failed(Self.errorMessage(for: error))
+            accountMediaController.markUnavailable()
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -155,6 +159,17 @@ final class TVDetailViewModel {
     }
 
     // MARK: - Private Helpers
+
+    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier(let kind):
+            return ErrorMessage(
+                title: "找不到\(kind.displayName)",
+                message: "\(kind.displayName) ID 不正確，請返回上一頁後再試。",
+                actionTitle: nil
+            )
+        }
+    }
 
     private func notifyAccountStateChange() {
         onAccountStateChange?(favoriteState, ratingState)

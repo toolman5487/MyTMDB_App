@@ -23,7 +23,7 @@ nonisolated protocol SeasonDetailServicing: Sendable {
     func fetchSeasonAggregateCredits(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVAggregateCreditsResponse
+    ) async throws -> AggregateCreditsDTO
 
     func fetchSeasonCredits(
         seriesID: Int,
@@ -33,17 +33,17 @@ nonisolated protocol SeasonDetailServicing: Sendable {
     func fetchSeasonImages(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVImagesResponse
+    ) async throws -> MediaImagesDTO
 
     func fetchSeasonVideos(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVVideosResponse
+    ) async throws -> VideosDTO
 
     func fetchSeasonWatchProviders(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVWatchProvidersResponse
+    ) async throws -> WatchProvidersDTO
 
     func fetchSeasonExternalIDs(
         seriesID: Int,
@@ -94,7 +94,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
             name: "season aggregate credits",
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            fallback: TVAggregateCreditsResponse(id: seasonNumber)
+            fallback: AggregateCreditsDTO(id: seasonNumber)
         ) {
             try await fetchSeasonAggregateCredits(seriesID: seriesID, seasonNumber: seasonNumber)
         }
@@ -110,7 +110,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
             name: "season images",
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            fallback: TVImagesResponse(id: seasonNumber)
+            fallback: MediaImagesDTO(id: seasonNumber)
         ) {
             try await fetchSeasonImages(seriesID: seriesID, seasonNumber: seasonNumber)
         }
@@ -118,7 +118,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
             name: "season videos",
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            fallback: TVVideosResponse(id: seasonNumber)
+            fallback: VideosDTO(id: seasonNumber)
         ) {
             try await fetchSeasonVideos(seriesID: seriesID, seasonNumber: seasonNumber)
         }
@@ -126,7 +126,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
             name: "season watch providers",
             seriesID: seriesID,
             seasonNumber: seasonNumber,
-            fallback: TVWatchProvidersResponse(id: seasonNumber)
+            fallback: WatchProvidersDTO(id: seasonNumber)
         ) {
             try await fetchSeasonWatchProviders(seriesID: seriesID, seasonNumber: seasonNumber)
         }
@@ -181,7 +181,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
     func fetchSeasonAggregateCredits(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVAggregateCreditsResponse {
+    ) async throws -> AggregateCreditsDTO {
         try await network.get(
             path: APIConfig.TV.seasonAggregateCredits(seriesId: seriesID, seasonNumber: seasonNumber),
             queryItems: localizedQueryItems
@@ -201,7 +201,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
     func fetchSeasonImages(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVImagesResponse {
+    ) async throws -> MediaImagesDTO {
         try await network.get(
             path: APIConfig.TV.seasonImages(seriesId: seriesID, seasonNumber: seasonNumber),
             queryItems: imageQueryItems
@@ -211,7 +211,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
     func fetchSeasonVideos(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVVideosResponse {
+    ) async throws -> VideosDTO {
         try await network.get(
             path: APIConfig.TV.seasonVideos(seriesId: seriesID, seasonNumber: seasonNumber),
             queryItems: videoQueryItems
@@ -221,7 +221,7 @@ nonisolated final class SeasonDetailService: SeasonDetailServicing {
     func fetchSeasonWatchProviders(
         seriesID: Int,
         seasonNumber: Int
-    ) async throws -> TVWatchProvidersResponse {
+    ) async throws -> WatchProvidersDTO {
         try await network.get(
             path: APIConfig.TV.seasonWatchProviders(seriesId: seriesID, seasonNumber: seasonNumber),
             queryItems: []

@@ -15,7 +15,7 @@ nonisolated protocol MovieDetailProviding: Sendable {
     func videos(movieID: Int) async throws -> [Video]
     func images(movieID: Int) async throws -> MediaImages
     func collection(id: Int) async throws -> MovieCollection
-    func recommendations(movieID: Int, page: Int) async throws -> Page<MovieSummary>
-    func similar(movieID: Int, page: Int) async throws -> Page<MovieSummary>
+    func recommendations(movieID: Int, page: Int) async throws -> Page<MediaSummary>
+    func similar(movieID: Int, page: Int) async throws -> Page<MediaSummary>
     func watchProviders(movieID: Int) async throws -> WatchProviders
 }

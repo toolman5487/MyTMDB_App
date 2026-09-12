@@ -261,7 +261,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         return EpisodeExternalLinkItem(id: "wikidata", title: "Wikidata", url: url)
     }
 
-    private static func videoPriority(_ video: TVVideo) -> Int {
+    private static func videoPriority(_ video: VideoDTO) -> Int {
         let typeRank: Int
         switch video.type.lowercased() {
         case "trailer":

@@ -145,7 +145,7 @@ nonisolated enum SeasonDetailSectionBuilder {
         )
     }
 
-    private static func makeImageGalleryItem(images: TVImagesResponse) -> SeasonImageGalleryItem? {
+    private static func makeImageGalleryItem(images: MediaImagesDTO) -> SeasonImageGalleryItem? {
         let posters = images.posters
             .filter { !$0.filePath.isEmpty }
             .prefix(DetailSectionPreviewLimit.itemCount)
@@ -169,12 +169,12 @@ nonisolated enum SeasonDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        response: TVWatchProvidersResponse,
+        response: WatchProvidersDTO,
         localization: AppLocalization = .current
     ) -> [SeasonWatchProviderItem] {
         let preferredRegionCode = localization.regionCode.uppercased()
         let preferredCountry = response.results[preferredRegionCode]
-        let countries: [(key: String, value: TVWatchProviderCountry)]
+        let countries: [(key: String, value: WatchProviderCountryDTO)]
 
         if let preferredCountry {
             countries = [(key: preferredRegionCode, value: preferredCountry)]
@@ -192,7 +192,7 @@ nonisolated enum SeasonDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         countryCode: String,
-        country: TVWatchProviderCountry
+        country: WatchProviderCountryDTO
     ) -> [SeasonWatchProviderItem] {
         [
             makeWatchProviderItems(
@@ -229,7 +229,7 @@ nonisolated enum SeasonDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        providers: [TVWatchProvider],
+        providers: [WatchProviderDTO],
         countryCode: String,
         category: String,
         link: String
@@ -252,7 +252,7 @@ nonisolated enum SeasonDetailSectionBuilder {
             }
     }
 
-    private static func videoPriority(_ video: TVVideo) -> Int {
+    private static func videoPriority(_ video: VideoDTO) -> Int {
         switch video.type.lowercased() {
         case "trailer":
             return 0

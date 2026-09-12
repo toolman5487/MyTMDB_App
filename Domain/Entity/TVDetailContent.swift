@@ -1,5 +1,5 @@
 //
-//  MovieDetailContent.swift
+//  TVDetailContent.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/9/12.
@@ -7,14 +7,13 @@
 
 import Foundation
 
-// MARK: - MovieDetailContent
+// MARK: - TVDetailContent
 
-nonisolated struct MovieDetailContent: Sendable, Equatable {
-    let movie: Movie
-    let credits: MovieCredits
+nonisolated struct TVDetailContent: Sendable, Equatable {
+    let series: TVSeries
+    let aggregateCredits: AggregateCredits
     let videos: [Video]
     let images: MediaImages
-    let collection: MovieCollection?
     let recommendations: Page<MediaSummary>
     let similar: Page<MediaSummary>
     let watchProviders: WatchProviders

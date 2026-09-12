@@ -15,7 +15,7 @@ nonisolated enum TVDetailSectionBuilder {
         content: TVDetailContent,
         localization: AppLocalization = .current
     ) -> [TVDetailSectionItem] {
-        let detailItem = TVDetailItem(detail: content.detail)
+        let detailItem = TVDetailItem(series: content.series)
         var sections: [TVDetailSectionItem] = [
             .overview(
                 TVDetailOverviewSectionItem(
@@ -30,8 +30,8 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.facts(facts))
         }
 
-        let videoItems = content.videos.results
-            .filter { !$0.key.isEmpty }
+        let videoItems = content.videos
+            .filter(\.isPlayable)
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
@@ -40,7 +40,7 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.videos(Array(videoItems)))
         }
 
-        if let attributes = makeAttributes(detail: content.detail) {
+        if let attributes = makeAttributes(series: content.series) {
             sections.append(.attributes(attributes))
         }
 
@@ -57,8 +57,8 @@ nonisolated enum TVDetailSectionBuilder {
                     return lhs.department < rhs.department
                 }
 
-                let lhsJob = lhs.jobs.first?.job ?? ""
-                let rhsJob = rhs.jobs.first?.job ?? ""
+                let lhsJob = lhs.jobs.first ?? ""
+                let rhsJob = rhs.jobs.first ?? ""
                 if lhsJob != rhsJob {
                     return lhsJob < rhsJob
                 }
@@ -70,7 +70,7 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.crew(Array(crewItems)))
         }
 
-        let seasonItems = content.detail.seasons
+        let seasonItems = content.series.seasons
             .sorted { $0.seasonNumber < $1.seasonNumber }
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailSeasonItem.init(season:))
@@ -85,20 +85,20 @@ nonisolated enum TVDetailSectionBuilder {
             sections.append(.images(imageItems))
         }
 
-        let recommendationItems = content.recommendations.results
+        let recommendationItems = content.recommendations.items
             .map(TVDetailRecommendationItem.init(recommendation:))
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
         }
 
-        let similarItems = content.similar.results
+        let similarItems = content.similar.items
             .map(TVDetailSimilarItem.init(recommendation:))
         if !similarItems.isEmpty {
             sections.append(.similar(Array(similarItems)))
         }
 
         let watchProviders = makeWatchProviderItems(
-            response: content.watchProviders,
+            providers: content.watchProviders,
             localization: localization
         )
         if !watchProviders.isEmpty {
@@ -125,12 +125,12 @@ nonisolated enum TVDetailSectionBuilder {
         return TVDetailFactItem(title: title, value: value)
     }
 
-    private static func makeAttributes(detail: TVDetail) -> TVDetailAttributeSectionItem? {
-        let genres = detail.genres.map(TVDetailAttributeItem.init(genre:))
-        let productionCompanies = detail.productionCompanies
+    private static func makeAttributes(series: TVSeries) -> TVDetailAttributeSectionItem? {
+        let genres = series.genres.map(TVDetailAttributeItem.init(genre:))
+        let productionCompanies = series.productionCompanies
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailAttributeItem.init(productionCompany:))
-        let networks = detail.networks
+        let networks = series.networks
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map(TVDetailAttributeItem.init(network:))
         let section = TVDetailAttributeSectionItem(
@@ -143,17 +143,17 @@ nonisolated enum TVDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        response: TVWatchProvidersResponse,
+        providers: WatchProviders,
         localization: AppLocalization = .current
     ) -> [TVWatchProviderItem] {
         let preferredRegionCode = localization.regionCode.uppercased()
-        let preferredCountry = response.results[preferredRegionCode]
-        let countries: [(key: String, value: TVWatchProviderCountry)]
+        let preferredCountry = providers.countries[preferredRegionCode]
+        let countries: [(key: String, value: WatchProviderCountry)]
 
         if let preferredCountry {
             countries = [(key: preferredRegionCode, value: preferredCountry)]
         } else {
-            countries = response.results.sorted { $0.key < $1.key }
+            countries = providers.countries.sorted { $0.key < $1.key }
         }
 
         return countries
@@ -166,7 +166,7 @@ nonisolated enum TVDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         countryCode: String,
-        country: TVWatchProviderCountry
+        country: WatchProviderCountry
     ) -> [TVWatchProviderItem] {
         [
             makeWatchProviderItems(
@@ -203,7 +203,7 @@ nonisolated enum TVDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        providers: [TVWatchProvider],
+        providers: [WatchProvider],
         countryCode: String,
         category: String,
         link: String
@@ -226,7 +226,7 @@ nonisolated enum TVDetailSectionBuilder {
             }
     }
 
-    private static func videoPriority(_ video: TVVideo) -> Int {
+    private static func videoPriority(_ video: Video) -> Int {
         let typeRank: Int
         switch video.type.lowercased() {
         case "trailer":
@@ -240,7 +240,7 @@ nonisolated enum TVDetailSectionBuilder {
         }
 
         let siteRank = video.site.lowercased() == "youtube" ? 0 : 1
-        let officialRank = video.official ? 0 : 1
+        let officialRank = video.isOfficial ? 0 : 1
 
         return (typeRank * 100) + (siteRank * 10) + officialRank
     }
