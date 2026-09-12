@@ -7,13 +7,6 @@
 
 import Foundation
 
-// MARK: - MemberCenterAccountMediaType
-
-nonisolated enum MemberCenterAccountMediaType: String, Sendable, Encodable {
-    case movie
-    case tv
-}
-
 // MARK: - Account Media States
 
 nonisolated struct AccountMediaStatesResponse: Decodable, Sendable, Equatable, Identifiable {
@@ -425,7 +418,7 @@ nonisolated struct MemberCenterListDetailItem: Decodable, Sendable, Equatable {
 // MARK: - MemberCenterFavoriteStatusRequest
 
 nonisolated struct MemberCenterFavoriteStatusRequest: Encodable, Sendable {
-    let mediaType: MemberCenterAccountMediaType
+    let mediaType: MediaKind
     let mediaID: Int
     let favorite: Bool
 
@@ -439,7 +432,7 @@ nonisolated struct MemberCenterFavoriteStatusRequest: Encodable, Sendable {
 // MARK: - MemberCenterWatchlistStatusRequest
 
 nonisolated struct MemberCenterWatchlistStatusRequest: Encodable, Sendable {
-    let mediaType: MemberCenterAccountMediaType
+    let mediaType: MediaKind
     let mediaID: Int
     let watchlist: Bool
 

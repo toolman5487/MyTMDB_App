@@ -47,7 +47,7 @@ nonisolated struct MainHomeSectionItem: Sendable, Equatable, Identifiable {
 nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
-    let mediaType: MainHomeMediaType
+    let mediaType: MediaKind
     let overview: String
     let posterURL: URL?
     let backdropURL: URL?
@@ -57,7 +57,7 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
     let accessibilityText: AccessibilityText
     let featuredAccessibilityText: AccessibilityText
 
-    init(content: MainHomeContent, mediaType: MainHomeMediaType) {
+    init(content: MainHomeContent, mediaType: MediaKind) {
         let dateText = BaseDisplayTextFormatter.announcedText(content.primaryDate)
         let scoreText = BaseDisplayTextFormatter.decimal(content.voteAverage)
         let accessibilityValue = BaseDisplayTextFormatter.metadata([
@@ -131,7 +131,7 @@ extension MainHomeContentCategory {
     }
 }
 
-private extension MainHomeMediaType {
+private extension MediaKind {
 
     var accessibilityName: String {
         switch self {

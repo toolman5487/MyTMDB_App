@@ -10,7 +10,7 @@ import Foundation
 // MARK: - HomeSectionListServicing
 
 nonisolated protocol HomeSectionListServicing: Sendable {
-    func fetchGenres(for mediaType: MainHomeMediaType) async throws -> [HomeSectionListGenre]
+    func fetchGenres(for mediaType: MediaKind) async throws -> [HomeSectionListGenre]
 }
 
 // MARK: - HomeSectionListService
@@ -34,7 +34,7 @@ nonisolated final class HomeSectionListService: HomeSectionListServicing {
 
     // MARK: - Public Methods
 
-    func fetchGenres(for mediaType: MainHomeMediaType) async throws -> [HomeSectionListGenre] {
+    func fetchGenres(for mediaType: MediaKind) async throws -> [HomeSectionListGenre] {
         switch mediaType {
         case .movie:
             let response: MainMovieGenreResponse = try await network.get(

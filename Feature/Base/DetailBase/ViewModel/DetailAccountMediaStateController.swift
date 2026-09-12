@@ -135,7 +135,7 @@ final class DetailAccountMediaStateController {
 
     func toggleFavorite(
         mediaID: Int,
-        mediaType: MemberCenterAccountMediaType,
+        mediaType: MediaKind,
         invalidMessage: ErrorMessage
     ) async -> ErrorMessage? {
         guard mediaID > 0 else { return invalidMessage }

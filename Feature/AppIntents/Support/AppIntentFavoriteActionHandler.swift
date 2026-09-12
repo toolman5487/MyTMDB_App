@@ -46,7 +46,7 @@ nonisolated struct AppIntentFavoriteActionHandler: Sendable {
     }
 
     func updateFavorite(
-        mediaType: MemberCenterAccountMediaType,
+        mediaType: MediaKind,
         mediaID: Int,
         favorite: Bool,
         displayTitle: String
@@ -87,7 +87,7 @@ nonisolated struct AppIntentFavoriteActionHandler: Sendable {
     }
 
     private func successMessage(
-        mediaType: MemberCenterAccountMediaType,
+        mediaType: MediaKind,
         displayTitle: String,
         favorite: Bool
     ) -> String {

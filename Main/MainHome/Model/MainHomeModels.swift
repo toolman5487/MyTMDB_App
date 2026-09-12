@@ -7,13 +7,6 @@
 
 import Foundation
 
-// MARK: - MainHomeMediaType
-
-nonisolated enum MainHomeMediaType: String, Codable, Sendable, Equatable {
-    case movie
-    case tv
-}
-
 // MARK: - MainHomeContentCategory
 
 nonisolated enum MainHomeContentCategory: CaseIterable, Codable, Sendable, Equatable, Identifiable {
@@ -30,7 +23,7 @@ nonisolated enum MainHomeContentCategory: CaseIterable, Codable, Sendable, Equat
 
     var id: Self { self }
 
-    var mediaType: MainHomeMediaType {
+    var mediaType: MediaKind {
         switch self {
         case .trendingMovies, .popularMovies, .nowPlayingMovies, .upcomingMovies, .topRatedMovies:
             return .movie
