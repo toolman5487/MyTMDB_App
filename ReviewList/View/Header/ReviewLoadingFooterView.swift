@@ -1,19 +1,19 @@
 //
-//  TVDetailReviewLoadingFooterView.swift
+//  ReviewLoadingFooterView.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/7/2.
+//  Created by Willy Hsu on 2026/7/1.
 //
 
 import SnapKit
 import UIKit
 
-// MARK: - TVDetailReviewLoadingFooterView
+// MARK: - ReviewLoadingFooterView
 
 @MainActor
-final class TVDetailReviewLoadingFooterView: UICollectionReusableView {
+final class ReviewLoadingFooterView: UICollectionReusableView {
 
-    static let reuseIdentifier = String(describing: TVDetailReviewLoadingFooterView.self)
+    static let reuseIdentifier = String(describing: ReviewLoadingFooterView.self)
 
     // MARK: - UI Components
 

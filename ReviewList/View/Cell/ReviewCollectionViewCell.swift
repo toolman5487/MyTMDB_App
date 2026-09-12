@@ -1,5 +1,5 @@
 //
-//  MovieDetailReviewCollectionViewCell.swift
+//  ReviewCollectionViewCell.swift
 //  MyTMDB_App
 //
 //  Created by Willy Hsu on 2026/7/1.
@@ -8,12 +8,12 @@
 import SnapKit
 import UIKit
 
-// MARK: - MovieDetailReviewCollectionViewCell
+// MARK: - ReviewCollectionViewCell
 
 @MainActor
-final class MovieDetailReviewCollectionViewCell: BaseCollectionViewCell {
+final class ReviewCollectionViewCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: MovieDetailReviewCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: ReviewCollectionViewCell.self)
 
     // MARK: - Layout
 
@@ -100,7 +100,7 @@ final class MovieDetailReviewCollectionViewCell: BaseCollectionViewCell {
 
     // MARK: - Configuration
 
-    func configure(with item: MovieDetailReviewItem) {
+    func configure(with item: ReviewItem) {
         let authorText = item.authorText.isEmpty ? "匿名使用者" : item.authorText
         authorLabel.text = authorText
         ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
@@ -123,7 +123,7 @@ final class MovieDetailReviewCollectionViewCell: BaseCollectionViewCell {
         accessibilityTraits = .button
     }
 
-    static func fittingHeight(for item: MovieDetailReviewItem, width: CGFloat) -> CGFloat {
+    static func fittingHeight(for item: ReviewItem, width: CGFloat) -> CGFloat {
         let contentWidth = max(width - Layout.horizontalInset * 2, 0)
         let authorHeight = UIFont.preferredFont(forTextStyle: .headline).lineHeight
         let metadataHeight = metadataHeight(for: item)
@@ -138,7 +138,7 @@ final class MovieDetailReviewCollectionViewCell: BaseCollectionViewCell {
             + contentHeight
     }
 
-    private static func metadataHeight(for item: MovieDetailReviewItem) -> CGFloat {
+    private static func metadataHeight(for item: ReviewItem) -> CGFloat {
         guard item.ratingText != nil || item.updatedDateText != nil else { return 0 }
         return UIFont.preferredFont(forTextStyle: .subheadline).lineHeight
     }

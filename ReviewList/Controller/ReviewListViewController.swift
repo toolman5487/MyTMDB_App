@@ -1,5 +1,5 @@
 //
-//  MovieDetailReviewViewController.swift
+//  ReviewListViewController.swift
 //  MyTMDB_App
 //
 //  Created by Willy Hsu on 2026/7/1.
@@ -10,16 +10,16 @@ import SnapKit
 import UIKit
 
 @MainActor
-final class MovieReviewListViewController: ScrollTrackingBaseViewController {
+final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     // MARK: - Properties
 
-    private let movieID: Int
-    private let viewModel: MovieDetailReviewViewModel
-    private lazy var router: MovieReviewListRouting = MovieReviewListRouter(sourceViewController: self)
+    private let mediaID: Int
+    private let viewModel: ReviewListViewModel
+    private lazy var router: ReviewListRouting = ReviewListRouter(sourceViewController: self)
 
-    private var filters: [MovieDetailReviewFilterItem] = []
-    private var reviews: [MovieDetailReviewItem] = []
+    private var filters: [ReviewFilterItem] = []
+    private var reviews: [ReviewItem] = []
 
     private var hasNextPage = false
     private var isLoadingNextPage = false
@@ -30,25 +30,25 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
 
     // MARK: - Initialization
 
-    convenience init(movieID: Int) {
+    convenience init(mediaKind: MediaKind, mediaID: Int) {
         self.init(
-            movieID: movieID,
-            viewModel: MovieDetailReviewViewModel()
+            mediaID: mediaID,
+            viewModel: ReviewListViewModel(mediaKind: mediaKind)
         )
     }
 
     init(
-        movieID: Int,
-        viewModel: MovieDetailReviewViewModel
+        mediaID: Int,
+        viewModel: ReviewListViewModel
     ) {
-        self.movieID = movieID
+        self.mediaID = mediaID
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
-        self.movieID = 0
-        self.viewModel = MovieDetailReviewViewModel()
+        self.mediaID = 0
+        self.viewModel = ReviewListViewModel(mediaKind: .movie)
         super.init(coder: coder)
     }
 
@@ -97,18 +97,18 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
         collectionViewFlowLayout.sectionInset = .zero
 
         collectionView.register(
-            MovieDetailReviewCollectionViewCell.self,
-            forCellWithReuseIdentifier: MovieDetailReviewCollectionViewCell.reuseIdentifier
+            ReviewCollectionViewCell.self,
+            forCellWithReuseIdentifier: ReviewCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailReviewFilterHeaderView.self,
+            ReviewFilterHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: MovieDetailReviewFilterHeaderView.reuseIdentifier
+            withReuseIdentifier: ReviewFilterHeaderView.reuseIdentifier
         )
         collectionView.register(
-            MovieDetailReviewLoadingFooterView.self,
+            ReviewLoadingFooterView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-            withReuseIdentifier: MovieDetailReviewLoadingFooterView.reuseIdentifier
+            withReuseIdentifier: ReviewLoadingFooterView.reuseIdentifier
         )
     }
 
@@ -121,14 +121,14 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
             guard let self else { return }
 
             render(state: .loading)
-            await viewModel.loadReviews(movieID: movieID)
+            await viewModel.loadReviews(mediaID: mediaID)
 
             guard !Task.isCancelled else { return }
             render(state: viewModel.state)
         }
     }
 
-    private func render(state: MovieDetailReviewViewState) {
+    private func render(state: ReviewListViewState) {
         switch state {
         case .idle:
             filters = []
@@ -182,9 +182,9 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
         collectionView.reloadData()
     }
 
-    private func makeFilterItems() -> [MovieDetailReviewFilterItem] {
-        MovieDetailReviewFilter.allCases.map {
-            MovieDetailReviewFilterItem(
+    private func makeFilterItems() -> [ReviewFilterItem] {
+        ReviewFilter.allCases.map {
+            ReviewFilterItem(
                 filter: $0,
                 selectedFilter: viewModel.selectedFilter
             )
@@ -205,7 +205,7 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
         paginationTaskController.run { [weak self] in
             guard let self else { return }
 
-            await viewModel.loadNextPage(movieID: movieID)
+            await viewModel.loadNextPage(mediaID: mediaID)
             render(state: viewModel.state)
         }
     }
@@ -214,7 +214,7 @@ final class MovieReviewListViewController: ScrollTrackingBaseViewController {
 
 // MARK: - UICollectionViewDataSource
 
-extension MovieReviewListViewController: UICollectionViewDataSource {
+extension ReviewListViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         filters.isEmpty ? 0 : 1
@@ -229,10 +229,10 @@ extension MovieReviewListViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieDetailReviewCollectionViewCell.reuseIdentifier,
+            withReuseIdentifier: ReviewCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
-        (cell as? MovieDetailReviewCollectionViewCell)?.configure(with: reviews[indexPath.item])
+        (cell as? ReviewCollectionViewCell)?.configure(with: reviews[indexPath.item])
         return cell
     }
 
@@ -244,11 +244,11 @@ extension MovieReviewListViewController: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionFooter {
             let reusableView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
-                withReuseIdentifier: MovieDetailReviewLoadingFooterView.reuseIdentifier,
+                withReuseIdentifier: ReviewLoadingFooterView.reuseIdentifier,
                 for: indexPath
             )
 
-            if let footerView = reusableView as? MovieDetailReviewLoadingFooterView {
+            if let footerView = reusableView as? ReviewLoadingFooterView {
                 footerView.configure(isAnimating: isLoadingNextPage)
             }
 
@@ -261,11 +261,11 @@ extension MovieReviewListViewController: UICollectionViewDataSource {
 
         let reusableView = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: MovieDetailReviewFilterHeaderView.reuseIdentifier,
+            withReuseIdentifier: ReviewFilterHeaderView.reuseIdentifier,
             for: indexPath
         )
 
-        if let headerView = reusableView as? MovieDetailReviewFilterHeaderView {
+        if let headerView = reusableView as? ReviewFilterHeaderView {
             headerView.configure(filters: filters)
             headerView.onFilterSelected = { [weak self] filter in
                 self?.viewModel.selectFilter(filter)
@@ -279,7 +279,7 @@ extension MovieReviewListViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout
 
-extension MovieReviewListViewController: UICollectionViewDelegateFlowLayout {
+extension ReviewListViewController: UICollectionViewDelegateFlowLayout {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         beginTabBarVisibilityTracking(for: scrollView)
@@ -344,7 +344,7 @@ extension MovieReviewListViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         let width = collectionView.bounds.width
             - Layout.horizontalInset * 2
-        let height = MovieDetailReviewCollectionViewCell.fittingHeight(
+        let height = ReviewCollectionViewCell.fittingHeight(
             for: reviews[indexPath.item],
             width: max(width, 0)
         )

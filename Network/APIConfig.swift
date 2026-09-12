@@ -46,6 +46,18 @@ nonisolated enum APIConfig {
         URL(string: "\(tmdbWebsiteBaseURL)/signup")
     }
 
+    // MARK: - Media Kind Paths
+
+    static func reviews(kind: MediaKind, id: Int) -> String {
+        switch kind {
+        case .movie:
+            return Movie.reviews(id: id)
+
+        case .tv:
+            return TV.reviews(seriesId: id)
+        }
+    }
+
     // MARK: - Account
 
     enum Account {

@@ -1,5 +1,5 @@
 //
-//  MovieReviewDetailViewController.swift
+//  ReviewDetailViewController.swift
 //  MyTMDB_App
 //
 //  Created by Willy Hsu on 2026/7/1.
@@ -10,11 +10,11 @@ import SnapKit
 import UIKit
 
 @MainActor
-final class MovieReviewDetailViewController: GlassBaseViewController {
+final class ReviewDetailViewController: GlassBaseViewController {
 
     // MARK: - Properties
 
-    private let review: MovieDetailReviewItem
+    private let review: ReviewItem
     private let navigationTitle: String
 
     private var isShowingCompactTitle = false
@@ -38,17 +38,17 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(
-            MovieReviewDetailContainerTableViewCell.self,
-            forCellReuseIdentifier: MovieReviewDetailContainerTableViewCell.reuseIdentifier
+            ReviewDetailContainerTableViewCell.self,
+            forCellReuseIdentifier: ReviewDetailContainerTableViewCell.reuseIdentifier
         )
         return tableView
     }()
 
-    private lazy var compactTitleView = MovieReviewDetailNavigationTitleView()
+    private lazy var compactTitleView = ReviewDetailNavigationTitleView()
 
     // MARK: - Initialization
 
-    init(review: MovieDetailReviewItem, title: String = "評論") {
+    init(review: ReviewItem, title: String = "評論") {
         self.review = review
         self.navigationTitle = title
         super.init(nibName: nil, bundle: nil)
@@ -123,7 +123,7 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
 
     private func updateNavigationTitleForScroll() {
         guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0))
-            as? MovieReviewDetailContainerTableViewCell else {
+            as? ReviewDetailContainerTableViewCell else {
             return
         }
 
@@ -142,7 +142,7 @@ final class MovieReviewDetailViewController: GlassBaseViewController {
 
 // MARK: - UITableViewDataSource
 
-extension MovieReviewDetailViewController: UITableViewDataSource {
+extension ReviewDetailViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
@@ -150,17 +150,17 @@ extension MovieReviewDetailViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: MovieReviewDetailContainerTableViewCell.reuseIdentifier,
+            withIdentifier: ReviewDetailContainerTableViewCell.reuseIdentifier,
             for: indexPath
         )
-        (cell as? MovieReviewDetailContainerTableViewCell)?.configure(with: review)
+        (cell as? ReviewDetailContainerTableViewCell)?.configure(with: review)
         return cell
     }
 }
 
 // MARK: - UITableViewDelegate
 
-extension MovieReviewDetailViewController: UITableViewDelegate {
+extension ReviewDetailViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         Layout.estimatedContainerHeight
@@ -172,12 +172,12 @@ extension MovieReviewDetailViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - MovieReviewDetailContainerTableViewCell
+// MARK: - ReviewDetailContainerTableViewCell
 
 @MainActor
-private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
+private final class ReviewDetailContainerTableViewCell: UITableViewCell {
 
-    static let reuseIdentifier = String(describing: MovieReviewDetailContainerTableViewCell.self)
+    static let reuseIdentifier = String(describing: ReviewDetailContainerTableViewCell.self)
 
     // MARK: - Layout
 
@@ -194,8 +194,8 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
         return view
     }()
 
-    private let authorView = MovieReviewDetailAuthorView()
-    private let reviewContentView = MovieReviewDetailContentView()
+    private let authorView = ReviewDetailAuthorView()
+    private let reviewContentView = ReviewDetailContentView()
 
     private lazy var contentStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
@@ -232,7 +232,7 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
 
     // MARK: - Configuration
 
-    func configure(with review: MovieDetailReviewItem) {
+    func configure(with review: ReviewItem) {
         authorView.configure(with: review)
         reviewContentView.configure(content: review.content)
     }
@@ -268,10 +268,10 @@ private final class MovieReviewDetailContainerTableViewCell: UITableViewCell {
     }
 }
 
-// MARK: - MovieReviewDetailAuthorView
+// MARK: - ReviewDetailAuthorView
 
 @MainActor
-private final class MovieReviewDetailAuthorView: UIView {
+private final class ReviewDetailAuthorView: UIView {
 
     // MARK: - Layout
 
@@ -362,7 +362,7 @@ private final class MovieReviewDetailAuthorView: UIView {
 
     // MARK: - Configuration
 
-    func configure(with item: MovieDetailReviewItem) {
+    func configure(with item: ReviewItem) {
         authorLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
         dateLabel.text = item.updatedDateText
         dateLabel.isHidden = item.updatedDateText == nil
@@ -377,10 +377,10 @@ private final class MovieReviewDetailAuthorView: UIView {
     }
 }
 
-// MARK: - MovieReviewDetailContentView
+// MARK: - ReviewDetailContentView
 
 @MainActor
-private final class MovieReviewDetailContentView: UIView {
+private final class ReviewDetailContentView: UIView {
 
     // MARK: - Layout
 
@@ -443,10 +443,10 @@ private final class MovieReviewDetailContentView: UIView {
     }
 }
 
-// MARK: - MovieReviewDetailNavigationTitleView
+// MARK: - ReviewDetailNavigationTitleView
 
 @MainActor
-private final class MovieReviewDetailNavigationTitleView: UIView {
+private final class ReviewDetailNavigationTitleView: UIView {
 
     // MARK: - Layout
 
@@ -519,7 +519,7 @@ private final class MovieReviewDetailNavigationTitleView: UIView {
 
     // MARK: - Configuration
 
-    func configure(with item: MovieDetailReviewItem) {
+    func configure(with item: ReviewItem) {
         nameLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
         ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
         ratingLabel.isHidden = item.ratingText == nil

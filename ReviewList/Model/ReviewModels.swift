@@ -1,18 +1,18 @@
 //
-//  TVDetailReviewModels.swift
+//  ReviewModels.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/7/2.
+//  Created by Willy Hsu on 2026/7/1.
 //
 
 import Foundation
 
-// MARK: - TVDetailReviewsPage
+// MARK: - ReviewsPage
 
-nonisolated struct TVDetailReviewsPage: Decodable, Sendable, Equatable {
+nonisolated struct ReviewsPage: Decodable, Sendable, Equatable {
     let id: Int
     let page: Int
-    let results: [TVDetailReview]
+    let results: [Review]
     let totalPages: Int
     let totalResults: Int
 
@@ -29,18 +29,18 @@ nonisolated struct TVDetailReviewsPage: Decodable, Sendable, Equatable {
 
         self.id = try container.decodeIfPresent(Int.self, forKey: .id) ?? 0
         self.page = try container.decodeIfPresent(Int.self, forKey: .page) ?? 1
-        self.results = try container.decodeIfPresent([TVDetailReview].self, forKey: .results) ?? []
+        self.results = try container.decodeIfPresent([Review].self, forKey: .results) ?? []
         self.totalPages = try container.decodeIfPresent(Int.self, forKey: .totalPages) ?? 1
         self.totalResults = try container.decodeIfPresent(Int.self, forKey: .totalResults) ?? results.count
     }
 }
 
-// MARK: - TVDetailReview
+// MARK: - Review
 
-nonisolated struct TVDetailReview: Decodable, Sendable, Equatable, Identifiable {
+nonisolated struct Review: Decodable, Sendable, Equatable, Identifiable {
     let id: String
     let author: String
-    let authorDetails: TVDetailReviewAuthorDetails
+    let authorDetails: ReviewAuthorDetails
     let content: String
     let createdAt: String
     let updatedAt: String
@@ -62,9 +62,9 @@ nonisolated struct TVDetailReview: Decodable, Sendable, Equatable, Identifiable 
         self.id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
         self.author = try container.decodeIfPresent(String.self, forKey: .author) ?? ""
         self.authorDetails = try container.decodeIfPresent(
-            TVDetailReviewAuthorDetails.self,
+            ReviewAuthorDetails.self,
             forKey: .authorDetails
-        ) ?? TVDetailReviewAuthorDetails()
+        ) ?? ReviewAuthorDetails()
         self.content = try container.decodeIfPresent(String.self, forKey: .content) ?? ""
         self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt) ?? ""
         self.updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt) ?? ""
@@ -72,9 +72,9 @@ nonisolated struct TVDetailReview: Decodable, Sendable, Equatable, Identifiable 
     }
 }
 
-// MARK: - TVDetailReviewAuthorDetails
+// MARK: - ReviewAuthorDetails
 
-nonisolated struct TVDetailReviewAuthorDetails: Decodable, Sendable, Equatable {
+nonisolated struct ReviewAuthorDetails: Decodable, Sendable, Equatable {
     let name: String
     let username: String
     let avatarPath: String?
@@ -100,9 +100,9 @@ nonisolated struct TVDetailReviewAuthorDetails: Decodable, Sendable, Equatable {
     }
 }
 
-// MARK: - TVDetailReviewFilter
+// MARK: - ReviewFilter
 
-nonisolated enum TVDetailReviewFilter: CaseIterable, Sendable, Equatable {
+nonisolated enum ReviewFilter: CaseIterable, Sendable, Equatable {
     case all
     case rated
     case unrated
@@ -129,11 +129,11 @@ nonisolated enum TVDetailReviewFilter: CaseIterable, Sendable, Equatable {
     }
 }
 
-// MARK: - TVDetailReviewPresentation
+// MARK: - ReviewListPresentation
 
-nonisolated struct TVDetailReviewPresentation: Sendable, Equatable {
-    let filters: [TVDetailReviewFilterItem]
-    let reviews: [TVReviewDetailItem]
+nonisolated struct ReviewListPresentation: Sendable, Equatable {
+    let filters: [ReviewFilterItem]
+    let reviews: [ReviewItem]
     let page: Int
     let totalPages: Int
     let totalResults: Int
@@ -144,19 +144,23 @@ nonisolated struct TVDetailReviewPresentation: Sendable, Equatable {
     }
 }
 
-nonisolated struct TVDetailReviewFilterItem: Sendable, Equatable, Identifiable {
-    let id: TVDetailReviewFilter
+// MARK: - ReviewFilterItem
+
+nonisolated struct ReviewFilterItem: Sendable, Equatable, Identifiable {
+    let id: ReviewFilter
     let title: String
     let isSelected: Bool
 
-    init(filter: TVDetailReviewFilter, selectedFilter: TVDetailReviewFilter) {
+    init(filter: ReviewFilter, selectedFilter: ReviewFilter) {
         self.id = filter
         self.title = filter.title
         self.isSelected = filter == selectedFilter
     }
 }
 
-nonisolated struct TVReviewDetailItem: Sendable, Equatable, Identifiable {
+// MARK: - ReviewItem
+
+nonisolated struct ReviewItem: Sendable, Equatable, Identifiable {
     let id: String
     let authorText: String
     let ratingText: String?
@@ -164,7 +168,7 @@ nonisolated struct TVReviewDetailItem: Sendable, Equatable, Identifiable {
     let content: String
     let avatarURL: URL?
 
-    init(review: TVDetailReview) {
+    init(review: Review) {
         self.id = review.id
         self.authorText = Self.makeAuthorText(review: review)
         self.ratingText = Self.makeRatingText(rating: review.authorDetails.rating)
@@ -173,7 +177,7 @@ nonisolated struct TVReviewDetailItem: Sendable, Equatable, Identifiable {
         self.avatarURL = Self.makeAvatarURL(from: review.authorDetails.avatarPath)
     }
 
-    private static func makeAuthorText(review: TVDetailReview) -> String {
+    private static func makeAuthorText(review: Review) -> String {
         let displayName = review.authorDetails.name.trimmingCharacters(in: .whitespacesAndNewlines)
         if !displayName.isEmpty {
             return displayName

@@ -55,7 +55,7 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showReviewList() {
         guard movieID > 0 else { return }
-        show(MovieReviewListViewController(movieID: movieID), using: .push)
+        show(ReviewListViewController(mediaKind: .movie, mediaID: movieID), using: .push)
     }
 
     func showYouTubeVideo(videoKey: String, title: String?) {

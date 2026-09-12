@@ -1,5 +1,5 @@
 //
-//  MovieDetailReviewViewModel.swift
+//  ReviewListViewModel.swift
 //  MyTMDB_App
 //
 //  Created by Willy Hsu on 2026/7/1.
@@ -8,29 +8,30 @@
 import Foundation
 import Observation
 
-// MARK: - MovieDetailReviewViewState
+// MARK: - ReviewListViewState
 
-nonisolated enum MovieDetailReviewViewState: Equatable {
+nonisolated enum ReviewListViewState: Equatable {
     case idle
     case loading
-    case loaded(MovieDetailReviewPresentation)
+    case loaded(ReviewListPresentation)
     case empty
     case failed(ErrorMessage)
 }
 
-// MARK: - MovieDetailReviewViewModel
+// MARK: - ReviewListViewModel
 
 @MainActor
 @Observable
-final class MovieDetailReviewViewModel {
+final class ReviewListViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MovieDetailReviewViewState = .idle
-    private(set) var selectedFilter: MovieDetailReviewFilter = .all
+    private(set) var state: ReviewListViewState = .idle
+    private(set) var selectedFilter: ReviewFilter = .all
 
-    private let service: MovieDetailReviewServicing
-    private var reviews: [MovieDetailReview] = []
+    private let mediaKind: MediaKind
+    private let service: ReviewListServicing
+    private var reviews: [Review] = []
     private var currentPage: Int = 0
     private var totalPages: Int = 1
     private var totalResults: Int = 0
@@ -38,18 +39,22 @@ final class MovieDetailReviewViewModel {
 
     // MARK: - Initialization
 
-    init(service: MovieDetailReviewServicing = MovieDetailReviewService()) {
+    init(
+        mediaKind: MediaKind,
+        service: ReviewListServicing = ReviewListService()
+    ) {
+        self.mediaKind = mediaKind
         self.service = service
     }
 
     // MARK: - Public Methods
 
-    func loadReviews(movieID: Int) async {
-        guard movieID > 0 else {
+    func loadReviews(mediaID: Int) async {
+        guard mediaID > 0 else {
             state = .failed(
                 ErrorMessage(
                     title: "找不到評論",
-                    message: "電影 ID 不正確，請返回上一頁後再試。",
+                    message: "\(mediaKind.displayName) ID 不正確，請返回上一頁後再試。",
                     actionTitle: nil
                 )
             )
@@ -60,7 +65,7 @@ final class MovieDetailReviewViewModel {
         resetPagination()
 
         do {
-            let page = try await service.fetchMovieReviews(movieID: movieID)
+            let page = try await service.fetchReviews(kind: mediaKind, mediaID: mediaID)
             apply(page: page, replacingCurrentReviews: true)
             renderCurrentPresentation()
         } catch {
@@ -77,8 +82,8 @@ final class MovieDetailReviewViewModel {
         return true
     }
 
-    func loadNextPage(movieID: Int) async {
-        guard movieID > 0 else {
+    func loadNextPage(mediaID: Int) async {
+        guard mediaID > 0 else {
             isLoadingNextPage = false
             renderCurrentPresentation()
             return
@@ -89,14 +94,15 @@ final class MovieDetailReviewViewModel {
         let nextPage = currentPage + 1
 
         do {
-            let page = try await service.fetchMovieReviews(
-                movieID: movieID,
+            let page = try await service.fetchReviews(
+                kind: mediaKind,
+                mediaID: mediaID,
                 page: nextPage
             )
             apply(page: page, replacingCurrentReviews: false)
         } catch {
             AppLogger.network.warning(
-                "Failed to load next movie review page. movieID: \(movieID), page: \(nextPage), error: \(error.localizedDescription)"
+                "Failed to load next \(self.mediaKind.rawValue) review page. mediaID: \(mediaID), page: \(nextPage), error: \(error.localizedDescription)"
             )
         }
 
@@ -104,7 +110,7 @@ final class MovieDetailReviewViewModel {
         renderCurrentPresentation()
     }
 
-    func selectFilter(_ filter: MovieDetailReviewFilter) {
+    func selectFilter(_ filter: ReviewFilter) {
         guard selectedFilter != filter else { return }
 
         selectedFilter = filter
@@ -123,7 +129,7 @@ final class MovieDetailReviewViewModel {
             reviews,
             applying: selectedFilter
         )
-            .map(MovieDetailReviewItem.init(review:))
+            .map(ReviewItem.init(review:))
             .filter { !$0.content.isEmpty }
 
         guard !reviewItems.isEmpty else {
@@ -132,9 +138,9 @@ final class MovieDetailReviewViewModel {
         }
 
         state = .loaded(
-            MovieDetailReviewPresentation(
-                filters: MovieDetailReviewFilter.allCases.map {
-                    MovieDetailReviewFilterItem(
+            ReviewListPresentation(
+                filters: ReviewFilter.allCases.map {
+                    ReviewFilterItem(
                         filter: $0,
                         selectedFilter: selectedFilter
                     )
@@ -157,7 +163,7 @@ final class MovieDetailReviewViewModel {
     }
 
     private func apply(
-        page: MovieDetailReviewsPage,
+        page: ReviewsPage,
         replacingCurrentReviews: Bool
     ) {
         currentPage = page.page
@@ -180,9 +186,9 @@ final class MovieDetailReviewViewModel {
     }
 
     private func reviews(
-        _ reviews: [MovieDetailReview],
-        applying filter: MovieDetailReviewFilter
-    ) -> [MovieDetailReview] {
+        _ reviews: [Review],
+        applying filter: ReviewFilter
+    ) -> [Review] {
         switch filter {
         case .all:
             return reviews
@@ -208,8 +214,8 @@ final class MovieDetailReviewViewModel {
     }
 
     private func isReview(
-        _ lhs: MovieDetailReview,
-        orderedBefore rhs: MovieDetailReview,
+        _ lhs: Review,
+        orderedBefore rhs: Review,
         ascending: Bool
     ) -> Bool {
         let lhsDate = reviewDate(for: lhs)
@@ -230,7 +236,7 @@ final class MovieDetailReviewViewModel {
         }
     }
 
-    private func reviewDate(for review: MovieDetailReview) -> Date? {
+    private func reviewDate(for review: Review) -> Date? {
         BaseDisplayTextFormatter.iso8601Date(from: review.updatedAt)
             ?? BaseDisplayTextFormatter.iso8601Date(from: review.createdAt)
     }

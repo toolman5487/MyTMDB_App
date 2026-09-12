@@ -1,19 +1,19 @@
 //
-//  TVDetailReviewFilterHeaderView.swift
+//  ReviewFilterHeaderView.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/7/2.
+//  Created by Willy Hsu on 2026/7/1.
 //
 
-// MARK: - TVDetailReviewFilterHeaderView
+// MARK: - ReviewFilterHeaderView
 
 @MainActor
-final class TVDetailReviewFilterHeaderView: BaseFilterHeaderView {
+final class ReviewFilterHeaderView: BaseFilterHeaderView {
 
-    static let reuseIdentifier = String(describing: TVDetailReviewFilterHeaderView.self)
+    static let reuseIdentifier = String(describing: ReviewFilterHeaderView.self)
 
-    private var filtersByBaseID: [String: TVDetailReviewFilter] = [:]
-    var onFilterSelected: ((TVDetailReviewFilter) -> Void)?
+    private var filtersByBaseID: [String: ReviewFilter] = [:]
+    var onFilterSelected: ((ReviewFilter) -> Void)?
 
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -21,7 +21,7 @@ final class TVDetailReviewFilterHeaderView: BaseFilterHeaderView {
         onFilterSelected = nil
     }
 
-    func configure(filters: [TVDetailReviewFilterItem]) {
+    func configure(filters: [ReviewFilterItem]) {
         filtersByBaseID = Dictionary(
             uniqueKeysWithValues: filters.map { ($0.id.baseFilterID, $0.id) }
         )
@@ -30,7 +30,7 @@ final class TVDetailReviewFilterHeaderView: BaseFilterHeaderView {
             self?.onFilterSelected?(filter)
         }
 
-        configure(filters: filters.map(BaseFilterHeaderItem.init(tvReviewFilter:)))
+        configure(filters: filters.map(BaseFilterHeaderItem.init(movieReviewFilter:)))
     }
 }
 
@@ -38,7 +38,7 @@ final class TVDetailReviewFilterHeaderView: BaseFilterHeaderView {
 
 private extension BaseFilterHeaderItem {
 
-    init(tvReviewFilter item: TVDetailReviewFilterItem) {
+    init(movieReviewFilter item: ReviewFilterItem) {
         self.init(
             id: item.id.baseFilterID,
             title: item.title,
@@ -47,7 +47,7 @@ private extension BaseFilterHeaderItem {
     }
 }
 
-private extension TVDetailReviewFilter {
+private extension ReviewFilter {
 
     var baseFilterID: String {
         String(describing: self)
