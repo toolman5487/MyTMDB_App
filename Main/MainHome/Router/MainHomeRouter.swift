@@ -11,8 +11,8 @@ import UIKit
 
 @MainActor
 protocol MainHomeRouting: AnyObject {
-    func showDetail(for item: MainHomeContentItem)
-    func showSectionList(for category: MainHomeContentCategory)
+    func showDetail(for item: HomeContentItem)
+    func showSectionList(for category: HomeCategory)
 }
 
 // MARK: - MainHomeRouter
@@ -22,7 +22,7 @@ final class MainHomeRouter: BaseRouter, MainHomeRouting {
 
     // MARK: - MainHomeRouting
 
-    func showDetail(for item: MainHomeContentItem) {
+    func showDetail(for item: HomeContentItem) {
         let detailViewController: UIViewController
 
         switch item.mediaType {
@@ -36,7 +36,7 @@ final class MainHomeRouter: BaseRouter, MainHomeRouting {
         show(detailViewController, using: .push)
     }
 
-    func showSectionList(for category: MainHomeContentCategory) {
+    func showSectionList(for category: HomeCategory) {
         let viewController = HomeSectionListViewController(category: category)
         show(viewController, using: .push)
     }

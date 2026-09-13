@@ -70,9 +70,9 @@ final class MainHomeTopRatedTVSectionCollectionViewCell: MainHomeContentStripCol
     static let reuseIdentifier = String(describing: MainHomeTopRatedTVSectionCollectionViewCell.self)
 }
 
-// MARK: - MainHomeContentCategory + Section Cell
+// MARK: - HomeCategory + Section Cell
 
-extension MainHomeContentCategory {
+extension HomeCategory {
 
     @MainActor
     var sectionCellReuseIdentifier: String {

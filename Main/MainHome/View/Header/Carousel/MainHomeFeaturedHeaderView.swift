@@ -74,7 +74,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     // MARK: - Properties
 
-    var onCarouselSelected: ((MainHomeContentItem) -> Void)?
+    var onCarouselSelected: ((HomeContentItem) -> Void)?
     var onTitleTapped: (() -> Void)?
 
     // MARK: - UI Components
@@ -180,7 +180,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     // MARK: - Configuration
 
-    func configure(title: String?, carouselItems: [MainHomeContentItem] = []) {
+    func configure(title: String?, carouselItems: [HomeContentItem] = []) {
         let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
         let trailingImage = UIImage(
             systemName: Layout.titleTrailingSymbolName,

@@ -99,7 +99,7 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
 
     // MARK: - Configuration
 
-    func configure(with item: MainHomeContentItem) {
+    func configure(with item: HomeContentItem) {
         backdropImageView.image = nil
 
         if let backdropURL = item.backdropURL {

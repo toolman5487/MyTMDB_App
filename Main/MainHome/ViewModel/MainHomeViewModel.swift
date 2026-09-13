@@ -28,13 +28,17 @@ final class MainHomeViewModel {
 
     private(set) var state: MainHomeViewState = .idle
 
-    private let service: MainHomeServicing
+    private let loadHomeSections: LoadHomeSectionsUseCase
     private var loadGeneration = 0
 
     // MARK: - Initialization
 
-    init(service: MainHomeServicing = MainHomeService()) {
-        self.service = service
+    init(
+        loadHomeSections: LoadHomeSectionsUseCase = DefaultLoadHomeSectionsUseCase(
+            repository: HomeContentRepository()
+        )
+    ) {
+        self.loadHomeSections = loadHomeSections
     }
 
     // MARK: - Public Methods
@@ -45,7 +49,7 @@ final class MainHomeViewModel {
         state = .loading
 
         do {
-            let sections = try await service.fetchHomeSections()
+            let sections = try await loadHomeSections()
             guard isCurrentLoad(generation: currentGeneration) else { return }
 
             let visibleSections = MainHomePresentationBuilder.makeSections(from: sections)

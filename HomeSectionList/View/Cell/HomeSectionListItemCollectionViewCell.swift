@@ -15,7 +15,7 @@ final class HomeSectionListItemCollectionViewCell: ImageTitleBaseCollectionViewC
     static let reuseIdentifier = String(describing: HomeSectionListItemCollectionViewCell.self)
 
     func configure(
-        with item: MainHomeContentItem,
+        with item: HomeContentItem,
         imageHeight: CGFloat
     ) {
         configure(with: ImageTitleCellContent(

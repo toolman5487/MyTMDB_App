@@ -19,4 +19,5 @@ nonisolated struct MediaSummary: Sendable, Equatable, Identifiable {
     let voteAverage: Double
     let voteCount: Int
     let popularity: Double
+    let genreIDs: [Int]
 }

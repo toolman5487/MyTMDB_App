@@ -34,12 +34,7 @@ nonisolated final class MediaSearchRepository: MediaSearchProviding {
             queryItems: searchQueryItems(kind: kind, keyword: keyword, page: page)
         )
 
-        return Page(
-            number: dto.page,
-            totalPages: dto.totalPages,
-            totalResults: dto.totalResults,
-            items: dto.results.map { $0.mapped() }
-        )
+        return dto.mapped()
     }
 
     // MARK: - Private Methods

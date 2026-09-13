@@ -110,7 +110,8 @@ extension MediaSummaryDTO {
             releaseDate: CalendarDayParsing.calendarDay(from: releaseDate),
             voteAverage: voteAverage,
             voteCount: voteCount,
-            popularity: popularity
+            popularity: popularity,
+            genreIDs: genreIDs
         )
     }
 }

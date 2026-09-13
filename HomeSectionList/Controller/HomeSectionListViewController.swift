@@ -20,12 +20,12 @@ final class HomeSectionListViewController: BaseListViewController {
 
     // MARK: - Properties
 
-    private let category: MainHomeContentCategory
+    private let category: HomeCategory
     private let viewModel: HomeSectionListViewModel
     private lazy var router: HomeSectionListRouting = HomeSectionListRouter(sourceViewController: self)
 
     private var filters: [HomeSectionListGenreItem] = []
-    private var items: [MainHomeContentItem] = []
+    private var items: [HomeContentItem] = []
 
     private var isFilterSkeletonVisible = true
     private var isFilterPageSheetPresented = false
@@ -36,14 +36,14 @@ final class HomeSectionListViewController: BaseListViewController {
 
     // MARK: - Initialization
 
-    init(category: MainHomeContentCategory) {
+    init(category: HomeCategory) {
         self.category = category
         self.viewModel = HomeSectionListViewModel(category: category)
         super.init(nibName: nil, bundle: nil)
     }
 
     init(
-        category: MainHomeContentCategory,
+        category: HomeCategory,
         viewModel: HomeSectionListViewModel
     ) {
         self.category = category
@@ -148,10 +148,10 @@ final class HomeSectionListViewController: BaseListViewController {
 
         case .loaded(let content):
             filters = content.genres
-            items = content.displayedItems
+            items = content.items
             isFilterSkeletonVisible = false
             setLoadingVisible(false)
-            collectionView.backgroundView = content.displayedItems.isEmpty
+            collectionView.backgroundView = content.items.isEmpty
                 ? ErrorMessageView(message: .emptyContent)
                 : nil
         }

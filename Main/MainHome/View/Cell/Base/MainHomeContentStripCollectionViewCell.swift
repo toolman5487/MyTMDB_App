@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 class MainHomeContentStripCollectionViewCell: BaseHorizontalStripCollectionViewCell<
-    MainHomeContentItem,
+    HomeContentItem,
     MainHomePosterCollectionViewCell
 > {
 
@@ -46,8 +46,8 @@ class MainHomeContentStripCollectionViewCell: BaseHorizontalStripCollectionViewC
     }
 
     func configure(
-        contents: [MainHomeContentItem],
-        onContentSelected: @escaping (MainHomeContentItem) -> Void
+        contents: [HomeContentItem],
+        onContentSelected: @escaping (HomeContentItem) -> Void
     ) {
         updateItemSize(
             CGSize(

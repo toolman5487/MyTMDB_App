@@ -36,7 +36,7 @@ final class MainHomeViewController: MainBaseViewController {
     private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
 
     private var sections: [MainHomeSectionItem] = []
-    private var carouselItems: [MainHomeContentItem] = []
+    private var carouselItems: [HomeContentItem] = []
 
     private var loadTask: Task<Void, Never>?
 
@@ -189,11 +189,11 @@ final class MainHomeViewController: MainBaseViewController {
 
     // MARK: - Navigation
 
-    private func showDetail(for item: MainHomeContentItem) {
+    private func showDetail(for item: HomeContentItem) {
         router.showDetail(for: item)
     }
 
-    private func showSectionList(for category: MainHomeContentCategory) {
+    private func showSectionList(for category: HomeCategory) {
         router.showSectionList(for: category)
     }
 }

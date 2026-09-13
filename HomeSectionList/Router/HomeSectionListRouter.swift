@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 protocol HomeSectionListRouting: AnyObject {
-    func showDetail(for item: MainHomeContentItem)
+    func showDetail(for item: HomeContentItem)
     func showGenrePageSheet(
         kind: MediaKind,
         filters: [HomeSectionListGenreItem],
@@ -25,7 +25,7 @@ protocol HomeSectionListRouting: AnyObject {
 @MainActor
 final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
 
-    func showDetail(for item: MainHomeContentItem) {
+    func showDetail(for item: HomeContentItem) {
         let detailViewController: UIViewController
 
         switch item.mediaType {

@@ -9,9 +9,7 @@ import Foundation
 
 // MARK: - MediaListProviding
 
-nonisolated protocol MediaListProviding: Sendable {
-    func genres(kind: MediaKind) async throws -> [MediaGenre]
-
+nonisolated protocol MediaListProviding: MediaGenreProviding {
     func discover(
         kind: MediaKind,
         genreID: Int,

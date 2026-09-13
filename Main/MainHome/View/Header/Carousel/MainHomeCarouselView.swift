@@ -25,9 +25,9 @@ final class MainHomeCarouselView: UIView {
 
     // MARK: - Properties
 
-    private var items: [MainHomeContentItem] = []
+    private var items: [HomeContentItem] = []
     private var autoScrollTimer: Timer?
-    var onItemSelected: ((MainHomeContentItem) -> Void)?
+    var onItemSelected: ((HomeContentItem) -> Void)?
 
     // MARK: - UI Components
 
@@ -120,7 +120,7 @@ final class MainHomeCarouselView: UIView {
 
     // MARK: - Configuration
 
-    func configure(items: [MainHomeContentItem]) {
+    func configure(items: [HomeContentItem]) {
         self.items = Array(items.prefix(8))
         isHidden = self.items.isEmpty
         collectionView.setContentOffset(.zero, animated: false)

@@ -15,28 +15,25 @@ nonisolated final class MediaListRepository: MediaListProviding {
 
     private let network: NetworkServicing
     private let localization: AppLocalization
+    private let genreRepository: MediaGenreProviding
 
     // MARK: - Initialization
 
     init(
         network: NetworkServicing = NetworkService(),
-        localization: AppLocalization = .current
+        localization: AppLocalization = .current,
+        genreRepository: MediaGenreProviding? = nil
     ) {
         self.network = network
         self.localization = localization
+        self.genreRepository = genreRepository
+            ?? MediaGenreRepository(network: network, localization: localization)
     }
 
-    // MARK: - MediaListProviding
+    // MARK: - MediaGenreProviding
 
     func genres(kind: MediaKind) async throws -> [MediaGenre] {
-        let dto: MediaGenreListDTO = try await network.get(
-            path: APIConfig.genreList(kind: kind),
-            queryItems: [
-                URLQueryItem(name: "language", value: localization.languageParameter)
-            ]
-        )
-
-        return dto.mapped()
+        try await genreRepository.genres(kind: kind)
     }
 
     func discover(
@@ -55,12 +52,7 @@ nonisolated final class MediaListRepository: MediaListProviding {
             )
         )
 
-        return Page(
-            number: dto.page,
-            totalPages: dto.totalPages,
-            totalResults: dto.totalResults,
-            items: dto.results.map { $0.mapped() }
-        )
+        return dto.mapped()
     }
 
     // MARK: - Private Methods

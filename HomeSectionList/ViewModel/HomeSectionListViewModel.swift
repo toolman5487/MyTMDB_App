@@ -22,22 +22,34 @@ final class HomeSectionListViewModel {
     }
 
     private var onStateChange: (@MainActor (HomeSectionListViewState) -> Void)?
-    private let category: MainHomeContentCategory
-    private let homeService: MainHomeServicing
-    private let genreService: HomeSectionListServicing
-    private var genres: [HomeSectionListGenre] = []
-    private var selectedGenreID = HomeSectionListGenreFilterID.all
+
+    private let category: HomeCategory
+    private let loadSectionList: LoadHomeSectionListUseCase
+    private let filterByGenre: FilterMediaByGenreUseCase
+    private let contentRepository: HomeContentProviding
+
+    private var genres: [MediaGenre] = []
+    private var summaries: [MediaSummary] = []
+    private var selectedGenreID = HomeGenreFilterID.all
+    private var currentPage = 1
+    private var totalPages = 1
 
     // MARK: - Initialization
 
     init(
-        category: MainHomeContentCategory,
-        homeService: MainHomeServicing = MainHomeService(),
-        genreService: HomeSectionListServicing = HomeSectionListService()
+        category: HomeCategory,
+        loadSectionList: LoadHomeSectionListUseCase? = nil,
+        filterByGenre: FilterMediaByGenreUseCase = DefaultFilterMediaByGenreUseCase(),
+        contentRepository: HomeContentProviding = HomeContentRepository()
     ) {
         self.category = category
-        self.homeService = homeService
-        self.genreService = genreService
+        self.contentRepository = contentRepository
+        self.filterByGenre = filterByGenre
+        self.loadSectionList = loadSectionList
+            ?? DefaultLoadHomeSectionListUseCase(
+                contentRepository: contentRepository,
+                genreRepository: MediaGenreRepository()
+            )
     }
 
     // MARK: - Output Binding
@@ -53,35 +65,21 @@ final class HomeSectionListViewModel {
         state = .loading
 
         do {
-            async let genresTask = genreService.fetchGenres(for: category.mediaType)
-            async let pageTask = homeService.fetchContent(for: category, page: 1)
-
-            let (fetchedGenres, page) = try await (genresTask, pageTask)
+            let selection = try await loadSectionList(category: category)
             guard !Task.isCancelled else { return }
 
-            genres = [.all] + fetchedGenres
-            selectedGenreID = HomeSectionListGenreFilterID.all
+            genres = selection.genres
+            selectedGenreID = HomeGenreFilterID.all
+            summaries = selection.page.items
+            currentPage = selection.page.number
+            totalPages = selection.page.totalPages
 
-            let allItems = page.contents.map { content in
-                MainHomeContentItem(
-                    content: content,
-                    mediaType: category.mediaType
-                )
-            }
-
-            guard !allItems.isEmpty else {
+            guard !summaries.isEmpty else {
                 state = .empty
                 return
             }
 
-            state = .loaded(
-                makeContent(
-                    selectedGenreID: selectedGenreID,
-                    allItems: allItems,
-                    currentPage: page.page,
-                    totalPages: page.totalPages
-                )
-            )
+            state = .loaded(makeContent(isLoadingNextPage: false))
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -90,86 +88,90 @@ final class HomeSectionListViewModel {
 
     func selectGenre(id: Int) {
         guard selectedGenreID != id else { return }
-        guard genres.contains(where: { $0.id == id }) else { return }
+        guard id == HomeGenreFilterID.all || genres.contains(where: { $0.id == id }) else { return }
 
         selectedGenreID = id
 
-        guard case .loaded(let content) = state else { return }
+        guard case .loaded = state else { return }
 
-        state = .loaded(content.updatingSelectedGenreID(id))
+        state = .loaded(makeContent(isLoadingNextPage: false))
     }
 
     func loadNextPageIfNeeded(currentItemID: Int) async {
         guard case .loaded(let content) = state,
               content.canLoadNextPage,
               !content.isLoadingNextPage,
-              shouldLoadNextPage(
-                currentItemID: currentItemID,
-                items: content.displayedItems
-              ) else {
+              shouldLoadNextPage(currentItemID: currentItemID) else {
             return
         }
 
-        state = .loaded(content.updatingLoadingNextPage(true))
+        let requestedGenreID = selectedGenreID
+        let requestedPage = currentPage
+
+        state = .loaded(makeContent(isLoadingNextPage: true))
 
         do {
-            let nextPage = try await homeService.fetchContent(
-                for: category,
-                page: content.currentPage + 1
+            let nextPage = try await contentRepository.content(
+                category: category,
+                page: requestedPage + 1
             )
 
-            guard !Task.isCancelled else { return }
-
-            guard case .loaded(let currentContent) = state,
-                  currentContent.category == content.category,
-                  currentContent.selectedGenreID == content.selectedGenreID,
-                  currentContent.currentPage == content.currentPage else {
+            guard !Task.isCancelled,
+                  isCurrentRequest(genreID: requestedGenreID, page: requestedPage) else {
                 return
             }
 
-            state = .loaded(currentContent.appending(page: nextPage))
+            summaries += nextPage.items
+            currentPage = nextPage.number
+            totalPages = nextPage.totalPages
+
+            state = .loaded(makeContent(isLoadingNextPage: false))
         } catch {
-            guard !Task.isCancelled else { return }
-
-            guard case .loaded(let currentContent) = state,
-                  currentContent.category == content.category,
-                  currentContent.selectedGenreID == content.selectedGenreID,
-                  currentContent.currentPage == content.currentPage else {
+            guard !Task.isCancelled,
+                  isCurrentRequest(genreID: requestedGenreID, page: requestedPage) else {
                 return
             }
 
-            state = .loaded(currentContent.updatingLoadingNextPage(false))
+            state = .loaded(makeContent(isLoadingNextPage: false))
         }
     }
 
     // MARK: - Private Methods
 
-    private func makeContent(
-        selectedGenreID: Int,
-        allItems: [MainHomeContentItem],
-        currentPage: Int,
-        totalPages: Int
-    ) -> HomeSectionListContent {
-        HomeSectionListContent(
-            category: category,
-            genres: genres.map { genre in
-                HomeSectionListGenreItem(
-                    genre: genre,
-                    isSelected: genre.id == selectedGenreID
-                )
-            },
+    private var displayedSummaries: [MediaSummary] {
+        filterByGenre(summaries, genreID: selectedGenreID)
+    }
+
+    private func isCurrentRequest(genreID: Int, page: Int) -> Bool {
+        guard case .loaded = state else { return false }
+        return selectedGenreID == genreID && currentPage == page
+    }
+
+    private func makeContent(isLoadingNextPage: Bool) -> HomeSectionListContent {
+        let genreItems = [HomeSectionListGenreItem.all(
+            isSelected: selectedGenreID == HomeGenreFilterID.all
+        )] + genres.map { genre in
+            HomeSectionListGenreItem(
+                genre: genre,
+                isSelected: genre.id == selectedGenreID
+            )
+        }
+
+        return HomeSectionListContent(
+            genres: genreItems,
             selectedGenreID: selectedGenreID,
-            allItems: allItems,
+            items: displayedSummaries.map { summary in
+                HomeContentItem(summary: summary, mediaType: category.mediaType)
+            },
             currentPage: currentPage,
             totalPages: totalPages,
-            isLoadingNextPage: false
+            isLoadingNextPage: isLoadingNextPage
         )
     }
 
-    private func shouldLoadNextPage(
-        currentItemID: Int,
-        items: [MainHomeContentItem]
-    ) -> Bool {
+    private func shouldLoadNextPage(currentItemID: Int) -> Bool {
+        let items = displayedSummaries
+
         guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
             return false
         }

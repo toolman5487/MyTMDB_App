@@ -1,5 +1,5 @@
 //
-//  MainHomePresentationBuilder.swift
+//  MainHomePresentationModels.swift
 //  MyTMDB_App
 //
 //  Created by Willy Hsu on 2026/7/1.
@@ -11,9 +11,9 @@ import Foundation
 
 nonisolated enum MainHomePresentationBuilder {
 
-    static func makeSections(from sections: [MainHomeContentSection]) -> [MainHomeSectionItem] {
+    static func makeSections(from sections: [HomeSection]) -> [MainHomeSectionItem] {
         sections
-            .filter { !$0.contents.isEmpty }
+            .filter { !$0.items.isEmpty }
             .sorted { lhs, rhs in
                 lhs.category.displayPriority < rhs.category.displayPriority
             }
@@ -24,27 +24,27 @@ nonisolated enum MainHomePresentationBuilder {
 // MARK: - MainHomeSectionItem
 
 nonisolated struct MainHomeSectionItem: Sendable, Equatable, Identifiable {
-    let id: MainHomeContentCategory
-    let category: MainHomeContentCategory
+    let id: HomeCategory
+    let category: HomeCategory
     let title: String
-    let contents: [MainHomeContentItem]
+    let contents: [HomeContentItem]
 
-    init(section: MainHomeContentSection) {
+    init(section: HomeSection) {
         self.id = section.category
         self.category = section.category
         self.title = section.category.title
-        self.contents = section.contents.map { content in
-            MainHomeContentItem(
-                content: content,
+        self.contents = section.items.map { summary in
+            HomeContentItem(
+                summary: summary,
                 mediaType: section.category.mediaType
             )
         }
     }
 }
 
-// MARK: - MainHomeContentItem
+// MARK: - HomeContentItem
 
-nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
+nonisolated struct HomeContentItem: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
     let mediaType: MediaKind
@@ -53,48 +53,48 @@ nonisolated struct MainHomeContentItem: Sendable, Equatable, Identifiable {
     let backdropURL: URL?
     let dateText: String
     let scoreText: String
-    let genreIDs: [Int]
     let accessibilityText: AccessibilityText
     let featuredAccessibilityText: AccessibilityText
 
-    init(content: MainHomeContent, mediaType: MediaKind) {
-        let dateText = BaseDisplayTextFormatter.announcedText(content.primaryDate)
-        let scoreText = BaseDisplayTextFormatter.decimal(content.voteAverage)
+    init(summary: MediaSummary, mediaType: MediaKind) {
+        let dateText = BaseDisplayTextFormatter.announcedText(
+            BaseDisplayTextFormatter.isoDayText(from: summary.releaseDate)
+        )
+        let scoreText = BaseDisplayTextFormatter.decimal(summary.voteAverage)
         let accessibilityValue = BaseDisplayTextFormatter.metadata([
             mediaType.accessibilityName,
             dateText,
             BaseDisplayTextFormatter.ratingText(scoreText)
         ])
 
-        self.id = content.id
-        self.title = content.title
+        self.id = summary.id
+        self.title = summary.title
         self.mediaType = mediaType
-        self.overview = content.overview
-        self.posterURL = content.posterPath.flatMap {
+        self.overview = summary.overview
+        self.posterURL = summary.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
-        self.backdropURL = content.backdropPath.flatMap {
+        self.backdropURL = summary.backdropPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
         self.dateText = dateText
         self.scoreText = scoreText
-        self.genreIDs = content.genreIDs
         self.accessibilityText = AccessibilityText(
-            label: content.title,
+            label: summary.title,
             value: accessibilityValue,
             hint: mediaType.accessibilityDetailHint
         )
         self.featuredAccessibilityText = AccessibilityText(
-            label: "現正熱映，\(content.title)",
+            label: "現正熱映，\(summary.title)",
             value: accessibilityValue,
             hint: mediaType.accessibilityDetailHint
         )
     }
 }
 
-// MARK: - MainHomeContentCategory Presentation
+// MARK: - HomeCategory Presentation
 
-extension MainHomeContentCategory {
+extension HomeCategory {
 
     var title: String {
         switch self {
@@ -154,7 +154,7 @@ private extension MediaKind {
     }
 }
 
-private extension MainHomeContentCategory {
+private extension HomeCategory {
 
     var displayPriority: Int {
         switch self {

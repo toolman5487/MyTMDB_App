@@ -89,7 +89,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(with item: MainHomeContentItem) {
+    func configure(with item: HomeContentItem) {
         posterImageView.image = nil
         showPosterSkeletonIfNeeded()
 
