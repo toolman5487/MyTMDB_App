@@ -118,8 +118,6 @@
 		15AF10113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */; };
 		15AF10123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */; };
 		15AF10133015000000AF0013 /* CineBaseAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */; };
-		15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */; };
-		15BAE9632FF60B00006B0E15 /* PersonDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9602FF60B00006B0E15 /* PersonDetailService.swift */; };
 		15BAE9732FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9702FF60B10006B0E15 /* PersonDetailViewModel.swift */; };
 		15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE9762FF60C50006B0E15 /* PersonDetailViewController.swift */; };
 		15BAE97F2FF60C80006B0E15 /* PersonDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BAE97E2FF60C80006B0E15 /* PersonDetailCells.swift */; };
@@ -266,6 +264,17 @@
 		C50500083017000000505008 /* EpisodeDetailDTO+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50400083017000000504008 /* EpisodeDetailDTO+Mapping.swift */; };
 		C50500093017000000505009 /* EpisodeDetailRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50400093017000000504009 /* EpisodeDetailRepository.swift */; };
 		C505000A301700000050500A /* EpisodeDetailPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C504000A301700000050400A /* EpisodeDetailPresentationModels.swift */; };
+		C50800013018000000508001 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700013018000000507001 /* Person.swift */; };
+		C50800023018000000508002 /* PersonCredits.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700023018000000507002 /* PersonCredits.swift */; };
+		C50800033018000000508003 /* PersonMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700033018000000507003 /* PersonMetadata.swift */; };
+		C50800043018000000508004 /* PersonDetailContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700043018000000507004 /* PersonDetailContent.swift */; };
+		C50800053018000000508005 /* PersonDetailError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700053018000000507005 /* PersonDetailError.swift */; };
+		C50800063018000000508006 /* PersonDetailProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700063018000000507006 /* PersonDetailProviding.swift */; };
+		C50800073018000000508007 /* LoadPersonDetailUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700073018000000507007 /* LoadPersonDetailUseCase.swift */; };
+		C50800083018000000508008 /* LoadPersonCreditsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700083018000000507008 /* LoadPersonCreditsUseCase.swift */; };
+		C50800093018000000508009 /* PersonDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50700093018000000507009 /* PersonDetailDTO.swift */; };
+		C508000A301800000050800A /* PersonDetailDTO+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507000A301800000050700A /* PersonDetailDTO+Mapping.swift */; };
+		C508000B301800000050800B /* PersonDetailRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507000B301800000050700B /* PersonDetailRepository.swift */; };
 		CB706AC8031A3D81282CD667 /* MediaKind+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EB411BD98372D8648F92B0 /* MediaKind+Presentation.swift */; };
 		D3A8CF31095484C3ADAD1351 /* TVDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C55B4149C4284303539940 /* TVDetailDTO.swift */; };
 		D57D7493C176C42744D359F3 /* TVDetailContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6FFFF19609167D7B5958CE /* TVDetailContent.swift */; };
@@ -393,8 +402,6 @@
 		15AF00113015000000AF0011 /* AddTVSeriesToFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTVSeriesToFavoritesIntent.swift; sourceTree = "<group>"; };
 		15AF00123015000000AF0012 /* RemoveTVSeriesFromFavoritesIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveTVSeriesFromFavoritesIntent.swift; sourceTree = "<group>"; };
 		15AF00133015000000AF0013 /* CineBaseAppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CineBaseAppShortcuts.swift; sourceTree = "<group>"; };
-		15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailModels.swift; sourceTree = "<group>"; };
-		15BAE9602FF60B00006B0E15 /* PersonDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailService.swift; sourceTree = "<group>"; };
 		15BAE9702FF60B10006B0E15 /* PersonDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailViewModel.swift; sourceTree = "<group>"; };
 		15BAE9762FF60C50006B0E15 /* PersonDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailViewController.swift; sourceTree = "<group>"; };
 		15BAE97E2FF60C80006B0E15 /* PersonDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCells.swift; sourceTree = "<group>"; };
@@ -548,6 +555,17 @@
 		C50400083017000000504008 /* EpisodeDetailDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "EpisodeDetailDTO+Mapping.swift"; sourceTree = "<group>"; };
 		C50400093017000000504009 /* EpisodeDetailRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EpisodeDetailRepository.swift; sourceTree = "<group>"; };
 		C504000A301700000050400A /* EpisodeDetailPresentationModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EpisodeDetailPresentationModels.swift; sourceTree = "<group>"; };
+		C50700013018000000507001 /* Person.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		C50700023018000000507002 /* PersonCredits.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonCredits.swift; sourceTree = "<group>"; };
+		C50700033018000000507003 /* PersonMetadata.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonMetadata.swift; sourceTree = "<group>"; };
+		C50700043018000000507004 /* PersonDetailContent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonDetailContent.swift; sourceTree = "<group>"; };
+		C50700053018000000507005 /* PersonDetailError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonDetailError.swift; sourceTree = "<group>"; };
+		C50700063018000000507006 /* PersonDetailProviding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonDetailProviding.swift; sourceTree = "<group>"; };
+		C50700073018000000507007 /* LoadPersonDetailUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoadPersonDetailUseCase.swift; sourceTree = "<group>"; };
+		C50700083018000000507008 /* LoadPersonCreditsUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoadPersonCreditsUseCase.swift; sourceTree = "<group>"; };
+		C50700093018000000507009 /* PersonDetailDTO.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonDetailDTO.swift; sourceTree = "<group>"; };
+		C507000A301800000050700A /* PersonDetailDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PersonDetailDTO+Mapping.swift"; sourceTree = "<group>"; };
+		C507000B301800000050700B /* PersonDetailRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersonDetailRepository.swift; sourceTree = "<group>"; };
 		CEFEB4271D411F5845169B2B /* SearchService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		D34B7B9651ADE732A66FB1A2 /* MediaDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "MediaDTO+Mapping.swift"; sourceTree = "<group>"; };
 		D37B5DD4487F0A403C6B5D51 /* MovieDetailDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "MovieDetailDTO+Mapping.swift"; sourceTree = "<group>"; };
@@ -1617,9 +1635,9 @@
 			isa = PBXGroup;
 			children = (
 				15BAE94B2FF60968006B0E15 /* Controller */,
-				15BAE94C2FF6096E006B0E15 /* Model */,
+				C50900063018000000509006 /* Data */,
+				C50900013018000000509001 /* Domain */,
 				15F1200C300E200000F12001 /* Presentation */,
-				15BAE94D2FF60973006B0E15 /* Service */,
 				15BAE94F2FF6097E006B0E15 /* View */,
 				15BAE94E2FF60977006B0E15 /* ViewModel */,
 			);
@@ -1634,20 +1652,85 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
-		15BAE94C2FF6096E006B0E15 /* Model */ = {
+		C50900013018000000509001 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
-				15BAE9502FF60A00006B0E15 /* PersonDetailModels.swift */,
+				C50900023018000000509002 /* Entity */,
+				C50900033018000000509003 /* Error */,
+				C50900043018000000509004 /* Repository */,
+				C50900053018000000509005 /* UseCase */,
 			);
-			path = Model;
+			path = Domain;
 			sourceTree = "<group>";
 		};
-		15BAE94D2FF60973006B0E15 /* Service */ = {
+		C50900023018000000509002 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
-				15BAE9602FF60B00006B0E15 /* PersonDetailService.swift */,
+				C50700013018000000507001 /* Person.swift */,
+				C50700023018000000507002 /* PersonCredits.swift */,
+				C50700043018000000507004 /* PersonDetailContent.swift */,
+				C50700033018000000507003 /* PersonMetadata.swift */,
 			);
-			path = Service;
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		C50900033018000000509003 /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				C50700053018000000507005 /* PersonDetailError.swift */,
+			);
+			path = Error;
+			sourceTree = "<group>";
+		};
+		C50900043018000000509004 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				C50700063018000000507006 /* PersonDetailProviding.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		C50900053018000000509005 /* UseCase */ = {
+			isa = PBXGroup;
+			children = (
+				C50700073018000000507007 /* LoadPersonDetailUseCase.swift */,
+				C50700083018000000507008 /* LoadPersonCreditsUseCase.swift */,
+			);
+			path = UseCase;
+			sourceTree = "<group>";
+		};
+		C50900063018000000509006 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				C50900073018000000509007 /* DTO */,
+				C50900083018000000509008 /* Mapper */,
+				C50900093018000000509009 /* Repository */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		C50900073018000000509007 /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				C50700093018000000507009 /* PersonDetailDTO.swift */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		C50900083018000000509008 /* Mapper */ = {
+			isa = PBXGroup;
+			children = (
+				C507000A301800000050700A /* PersonDetailDTO+Mapping.swift */,
+			);
+			path = Mapper;
+			sourceTree = "<group>";
+		};
+		C50900093018000000509009 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				C507000B301800000050700B /* PersonDetailRepository.swift */,
+			);
+			path = Repository;
 			sourceTree = "<group>";
 		};
 		15BAE94E2FF60977006B0E15 /* ViewModel */ = {
@@ -3060,8 +3143,17 @@
 				15D197462FF1693000545A85 /* LoginPageView.swift in Sources */,
 				15CF99CB2FF370410041F4CC /* MovieDetailViewController.swift in Sources */,
 				15AB10013005000000AB1001 /* MovieDetailRouter.swift in Sources */,
-				15BAE9532FF60A00006B0E15 /* PersonDetailModels.swift in Sources */,
-				15BAE9632FF60B00006B0E15 /* PersonDetailService.swift in Sources */,
+				C50800013018000000508001 /* Person.swift in Sources */,
+				C50800023018000000508002 /* PersonCredits.swift in Sources */,
+				C50800033018000000508003 /* PersonMetadata.swift in Sources */,
+				C50800043018000000508004 /* PersonDetailContent.swift in Sources */,
+				C50800053018000000508005 /* PersonDetailError.swift in Sources */,
+				C50800063018000000508006 /* PersonDetailProviding.swift in Sources */,
+				C50800073018000000508007 /* LoadPersonDetailUseCase.swift in Sources */,
+				C50800083018000000508008 /* LoadPersonCreditsUseCase.swift in Sources */,
+				C50800093018000000508009 /* PersonDetailDTO.swift in Sources */,
+				C508000A301800000050800A /* PersonDetailDTO+Mapping.swift in Sources */,
+				C508000B301800000050800B /* PersonDetailRepository.swift in Sources */,
 				15BAE9732FF60B10006B0E15 /* PersonDetailViewModel.swift in Sources */,
 				15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */,
 				15F12113300E200000F12101 /* PersonDetailSectionBuilder.swift in Sources */,

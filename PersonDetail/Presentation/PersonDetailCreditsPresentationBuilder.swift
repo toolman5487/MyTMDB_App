@@ -12,7 +12,7 @@ import Foundation
 nonisolated enum PersonDetailCreditsPresentationBuilder {
 
     static func makePreviewItems(
-        credits: PersonCombinedCreditsResponse,
+        credits: PersonCredits,
         mediaType: PersonCreditMediaType
     ) -> [PersonDetailCreditItem] {
         Array(
@@ -26,7 +26,7 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
     }
 
     static func makeContentListConfiguration(
-        credits: PersonCombinedCreditsResponse,
+        credits: PersonCredits,
         mediaType: PersonCreditMediaType
     ) -> DetailContentListConfiguration {
         let title = mediaType.listTitle
@@ -56,7 +56,7 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
     }
 
     private static func makeItems(
-        credits: PersonCombinedCreditsResponse,
+        credits: PersonCredits,
         mediaType: PersonCreditMediaType,
         allowsUnknownMediaType: Bool
     ) -> [PersonDetailCreditItem] {
@@ -116,11 +116,11 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
         }
     }
 
-    private static func creditPriority(_ credit: PersonCombinedCreditCast) -> Double {
+    private static func creditPriority(_ credit: PersonCreditCast) -> Double {
         credit.popularity + credit.voteAverage + Double(credit.voteCount) / 1_000
     }
 
-    private static func creditPriority(_ credit: PersonCombinedCreditCrew) -> Double {
+    private static func creditPriority(_ credit: PersonCreditCrew) -> Double {
         credit.popularity + credit.voteAverage + Double(credit.voteCount) / 1_000
     }
 

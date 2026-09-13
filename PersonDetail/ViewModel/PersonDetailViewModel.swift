@@ -38,16 +38,33 @@ final class PersonDetailViewModel {
     }
 
     private var onStateChange: (@MainActor (PersonDetailViewState) -> Void)?
-    private let service: PersonDetailServicing
+    private let loadPersonDetailUseCase: LoadPersonDetailUseCase
+    private let loadPersonCreditsUseCase: LoadPersonCreditsUseCase
 
     // MARK: - Initialization
 
-    init(service: PersonDetailServicing) {
-        self.service = service
+    init(
+        loadPersonDetailUseCase: LoadPersonDetailUseCase,
+        loadPersonCreditsUseCase: LoadPersonCreditsUseCase
+    ) {
+        self.loadPersonDetailUseCase = loadPersonDetailUseCase
+        self.loadPersonCreditsUseCase = loadPersonCreditsUseCase
     }
 
     convenience init() {
-        self.init(service: PersonDetailService())
+        let repository = PersonDetailRepository()
+
+        self.init(
+            loadPersonDetailUseCase: DefaultLoadPersonDetailUseCase(
+                repository: repository,
+                auxiliaryFailureHandler: { name, personID, error in
+                    AppLogger.network.warning(
+                        "Failed to load \(name, privacy: .public) for person \(personID, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                    )
+                }
+            ),
+            loadPersonCreditsUseCase: DefaultLoadPersonCreditsUseCase(repository: repository)
+        )
     }
 
     // MARK: - Output Binding
@@ -60,23 +77,15 @@ final class PersonDetailViewModel {
     // MARK: - Public Methods
 
     func loadPersonDetail(id: Int) async {
-        guard id > 0 else {
-            state = .failed(
-                ErrorMessage(
-                    title: "找不到人物",
-                    message: "人物 ID 不正確，請返回上一頁後再試。",
-                    actionTitle: nil
-                )
-            )
-            return
-        }
-
         state = .loading
 
         do {
-            let content = try await service.fetchPersonDetailContent(id: id)
+            let content = try await loadPersonDetailUseCase(personID: id)
             guard !Task.isCancelled else { return }
             state = .loaded(PersonDetailSectionBuilder.makeSections(content: content))
+        } catch let error as PersonDetailError {
+            guard !Task.isCancelled else { return }
+            state = .failed(Self.detailErrorMessage(for: error))
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -87,35 +96,11 @@ final class PersonDetailViewModel {
         id: Int,
         mediaType: PersonCreditMediaType
     ) async -> PersonDetailCreditsListResult {
-        guard id > 0 else {
-            return .failed(
-                ErrorMessage(
-                    title: "無法載入作品",
-                    message: "人物 ID 不正確，請返回上一頁後再試。",
-                    actionTitle: nil
-                )
-            )
-        }
-
         do {
-            let credits: PersonCombinedCreditsResponse
-
-            switch mediaType {
-            case .movie:
-                credits = try await service.fetchPersonMovieCredits(id: id)
-
-            case .tv:
-                credits = try await service.fetchPersonTVCredits(id: id)
-
-            case .unknown:
-                return .failed(
-                    ErrorMessage(
-                        title: "無法載入作品",
-                        message: "不支援這個作品類型。",
-                        actionTitle: nil
-                    )
-                )
-            }
+            let credits = try await loadPersonCreditsUseCase(
+                personID: id,
+                mediaType: mediaType
+            )
 
             let configuration = PersonDetailCreditsPresentationBuilder.makeContentListConfiguration(
                 credits: credits,
@@ -133,8 +118,41 @@ final class PersonDetailViewModel {
             }
 
             return .loaded(configuration)
+        } catch let error as PersonDetailError {
+            return .failed(Self.creditsErrorMessage(for: error))
         } catch {
             return .failed(error.errorMessage)
+        }
+    }
+
+    // MARK: - Private Helpers
+
+    private static func detailErrorMessage(for error: PersonDetailError) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier, .unsupportedCreditMediaType:
+            return ErrorMessage(
+                title: "找不到人物",
+                message: "人物 ID 不正確，請返回上一頁後再試。",
+                actionTitle: nil
+            )
+        }
+    }
+
+    private static func creditsErrorMessage(for error: PersonDetailError) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier:
+            return ErrorMessage(
+                title: "無法載入作品",
+                message: "人物 ID 不正確，請返回上一頁後再試。",
+                actionTitle: nil
+            )
+
+        case .unsupportedCreditMediaType:
+            return ErrorMessage(
+                title: "無法載入作品",
+                message: "不支援這個作品類型。",
+                actionTitle: nil
+            )
         }
     }
 }

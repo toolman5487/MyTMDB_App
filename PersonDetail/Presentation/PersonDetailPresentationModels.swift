@@ -80,20 +80,20 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
     let homepageURL: URL?
     let imdbURL: URL?
 
-    init(detail: PersonDetail) {
+    init(detail: Person) {
         self.id = detail.id
-        self.name = detail.name
+        self.name = BaseDisplayTextFormatter.nonEmptyText(detail.name) ?? "未命名"
         self.biography = BaseDisplayTextFormatter.nonEmptyText(detail.biography)
         self.profileURL = detail.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w500)
         }
-        self.birthdayText = BaseDisplayTextFormatter.nonEmptyText(detail.birthday)
-        self.deathdayText = BaseDisplayTextFormatter.nonEmptyText(detail.deathday)
+        self.birthdayText = BaseDisplayTextFormatter.isoDayText(from: detail.birthday)
+        self.deathdayText = BaseDisplayTextFormatter.isoDayText(from: detail.deathday)
         self.placeOfBirthText = BaseDisplayTextFormatter.nonEmptyText(detail.placeOfBirth)
         self.knownForDepartmentText = BaseFormatter.CrewJobDisplayMapper.departmentText(detail.knownForDepartment)
         self.genderText = Self.makeGenderText(detail.gender)
         self.popularityText = BaseDisplayTextFormatter.positiveDecimal(detail.popularity)
-        self.homepageURL = Self.makeURL(from: detail.homepage)
+        self.homepageURL = detail.homepage
         self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
     }
 
@@ -114,11 +114,6 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
         case .unknown:
             return nil
         }
-    }
-
-    private static func makeURL(from string: String?) -> URL? {
-        guard let string, !string.isEmpty else { return nil }
-        return URL(string: string)
     }
 
     private static func makeIMDbURL(from imdbID: String?) -> URL? {
@@ -173,16 +168,16 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
     let posterURL: URL?
 
     init(
-        cast: PersonCombinedCreditCast,
+        cast: PersonCreditCast,
         mediaType: PersonCreditMediaType? = nil
     ) {
         let resolvedMediaType = mediaType ?? cast.mediaType
         self.id = "cast-\(resolvedMediaType.idValue)-\(cast.creditID)-\(cast.id)"
         self.sourceID = cast.id
         self.mediaType = resolvedMediaType
-        self.title = cast.title
+        self.title = BaseDisplayTextFormatter.nonEmptyText(cast.title) ?? "未命名"
         self.subtitle = Self.makeSubtitle(primary: cast.character, fallback: resolvedMediaType.displayText)
-        self.dateText = BaseDisplayTextFormatter.nonEmptyText(cast.primaryDate)
+        self.dateText = BaseDisplayTextFormatter.isoDayText(from: cast.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(cast.voteAverage, voteCount: cast.voteCount)
         self.posterURL = cast.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
@@ -190,19 +185,19 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
     }
 
     init(
-        crew: PersonCombinedCreditCrew,
+        crew: PersonCreditCrew,
         mediaType: PersonCreditMediaType? = nil
     ) {
         let resolvedMediaType = mediaType ?? crew.mediaType
         self.id = "crew-\(resolvedMediaType.idValue)-\(crew.creditID)-\(crew.id)"
         self.sourceID = crew.id
         self.mediaType = resolvedMediaType
-        self.title = crew.title
+        self.title = BaseDisplayTextFormatter.nonEmptyText(crew.title) ?? "未命名"
         self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
             job: crew.job,
             department: crew.department
         ) ?? ""
-        self.dateText = BaseDisplayTextFormatter.nonEmptyText(crew.primaryDate)
+        self.dateText = BaseDisplayTextFormatter.isoDayText(from: crew.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(crew.voteAverage, voteCount: crew.voteCount)
         self.posterURL = crew.posterPath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
