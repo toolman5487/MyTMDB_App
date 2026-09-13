@@ -36,31 +36,30 @@ final class MovieDetailViewModel {
     private var onStateChange: (@MainActor (MovieDetailViewState) -> Void)?
     private var onAccountStateChange: (@MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void)?
     private let loadMovieDetailUseCase: LoadMovieDetailUseCase
-    private let accountStateService: MovieAccountStateServicing
     private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
     init(
         loadMovieDetailUseCase: LoadMovieDetailUseCase,
-        accountStateService: MovieAccountStateServicing,
-        sessionStore: SessionStoring,
-        accountService: AccountServiceProtocol,
-        accountMediaService: MemberCenterServicing
+        accountMediaController: DetailAccountMediaStateController
     ) {
         self.loadMovieDetailUseCase = loadMovieDetailUseCase
-        self.accountStateService = accountStateService
-        self.accountMediaController = DetailAccountMediaStateController(
-            sessionStore: sessionStore,
-            accountService: accountService,
-            accountMediaService: accountMediaService
-        )
+        self.accountMediaController = accountMediaController
         self.accountMediaController.stateDidChange = { [weak self] in
             self?.notifyAccountStateChange()
         }
     }
 
     convenience init() {
+        let sessionStore = SessionStore()
+        let accountService = AccountService()
+        let sessionRepository = AccountSessionRepository(
+            sessionStore: sessionStore,
+            accountService: accountService
+        )
+        let mediaRepository = AccountMediaStateRepository()
+
         self.init(
             loadMovieDetailUseCase: DefaultLoadMovieDetailUseCase(
                 repository: MovieDetailRepository(),
@@ -70,10 +69,25 @@ final class MovieDetailViewModel {
                     )
                 }
             ),
-            accountStateService: MovieAccountStateService(),
-            sessionStore: SessionStore(),
-            accountService: AccountService(),
-            accountMediaService: MemberCenterService()
+            accountMediaController: DetailAccountMediaStateController(
+                isUserAuthenticated: Self.isUserAuthenticated(sessionStore.load()),
+                loadAccountMediaStateUseCase: DefaultLoadAccountMediaStateUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                ),
+                toggleFavoriteUseCase: DefaultToggleFavoriteUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                ),
+                submitRatingUseCase: DefaultSubmitRatingUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                ),
+                deleteRatingUseCase: DefaultDeleteRatingUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                )
+            )
         )
     }
 
@@ -98,10 +112,10 @@ final class MovieDetailViewModel {
         do {
             async let content = loadMovieDetailUseCase(movieID: id)
             await accountMediaController.loadAccountMediaState(
+                kind: .movie,
+                mediaID: id,
                 sourceDescription: "movie \(id)"
-            ) { [accountStateService] sessionID in
-                try await accountStateService.fetchMovieAccountStates(id: id, sessionId: sessionID)
-            }
+            )
             let loadedContent = try await content
             guard !Task.isCancelled else { return }
 
@@ -173,5 +187,10 @@ final class MovieDetailViewModel {
 
     private func notifyAccountStateChange() {
         onAccountStateChange?(favoriteState, ratingState)
+    }
+
+    private static func isUserAuthenticated(_ session: AuthSession) -> Bool {
+        if case .user = session { return true }
+        return false
     }
 }

@@ -12,10 +12,6 @@ import Foundation
 @MainActor
 final class DetailAccountMediaStateController {
 
-    // MARK: - Types
-
-    typealias AccountStatesProvider = (String) async throws -> AccountMediaStatesResponse
-
     // MARK: - Properties
 
     private(set) var favoriteState: AccountMediaFavoriteState = .unavailable {
@@ -41,22 +37,26 @@ final class DetailAccountMediaStateController {
 
     var stateDidChange: (@MainActor () -> Void)?
 
-    private let sessionStore: SessionStoring
-    private let accountService: AccountServiceProtocol
-    private let accountMediaService: MemberCenterServicing
-    private var favoriteSession: DetailAccountMediaFavoriteSession?
-    private var ratingSession: DetailAccountMediaRatingSession?
+    private let isUserAuthenticated: Bool
+    private let loadAccountMediaStateUseCase: LoadAccountMediaStateUseCase
+    private let toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private let submitRatingUseCase: SubmitRatingUseCase
+    private let deleteRatingUseCase: DeleteRatingUseCase
 
     // MARK: - Initialization
 
     init(
-        sessionStore: SessionStoring,
-        accountService: AccountServiceProtocol,
-        accountMediaService: MemberCenterServicing
+        isUserAuthenticated: Bool,
+        loadAccountMediaStateUseCase: LoadAccountMediaStateUseCase,
+        toggleFavoriteUseCase: ToggleFavoriteUseCase,
+        submitRatingUseCase: SubmitRatingUseCase,
+        deleteRatingUseCase: DeleteRatingUseCase
     ) {
-        self.sessionStore = sessionStore
-        self.accountService = accountService
-        self.accountMediaService = accountMediaService
+        self.isUserAuthenticated = isUserAuthenticated
+        self.loadAccountMediaStateUseCase = loadAccountMediaStateUseCase
+        self.toggleFavoriteUseCase = toggleFavoriteUseCase
+        self.submitRatingUseCase = submitRatingUseCase
+        self.deleteRatingUseCase = deleteRatingUseCase
     }
 
     // MARK: - State Lifecycle
@@ -65,8 +65,6 @@ final class DetailAccountMediaStateController {
         favoriteState = .unavailable
         ratingState = .unavailable
         ratingDefaultValue = AccountMediaRatingValue.fallback
-        favoriteSession = nil
-        ratingSession = nil
     }
 
     func updateDefaultRating(fromPublicRating publicRating: Double?) {
@@ -74,39 +72,37 @@ final class DetailAccountMediaStateController {
     }
 
     func applyLoadedRating(value: Double?) {
-        guard case .user(let sessionID) = sessionStore.load() else {
-            ratingSession = nil
+        guard isUserAuthenticated else {
             ratingState = .requiresUserLogin
             return
         }
 
-        ratingSession = DetailAccountMediaRatingSession(sessionID: sessionID)
         ratingState = .ready(value: value)
     }
 
     func loadAccountMediaState(
-        sourceDescription: String,
-        accountStatesProvider: AccountStatesProvider
+        kind: MediaKind,
+        mediaID: Int,
+        sourceDescription: String
     ) async {
-        guard case .user(let sessionID) = sessionStore.load() else {
-            favoriteSession = nil
-            ratingSession = nil
+        guard isUserAuthenticated else {
             favoriteState = .requiresUserLogin
             ratingState = .requiresUserLogin
             return
         }
 
         do {
-            let loadedAccount = try await accountService.fetchAccount(sessionId: sessionID)
-            let loadedAccountStates = try await accountStatesProvider(sessionID)
-            favoriteSession = DetailAccountMediaFavoriteSession(accountID: loadedAccount.id, sessionID: sessionID)
-            ratingSession = DetailAccountMediaRatingSession(sessionID: sessionID)
-            favoriteState = .ready(isFavorite: loadedAccountStates.favorite)
-            ratingState = .ready(value: loadedAccountStates.rated.value)
+            let loadedAccountStates = try await loadAccountMediaStateUseCase(
+                kind: kind,
+                mediaID: mediaID
+            )
+            favoriteState = .ready(isFavorite: loadedAccountStates.isFavorite)
+            ratingState = .ready(value: loadedAccountStates.rating)
+        } catch AccountMediaError.requiresUserLogin {
+            favoriteState = .requiresUserLogin
+            ratingState = .requiresUserLogin
         } catch {
             guard !Task.isCancelled else { return }
-            favoriteSession = nil
-            ratingSession = nil
             AppLogger.network.warning(
                 """
                 Failed to load \(sourceDescription, privacy: .public) account media state: \
@@ -122,13 +118,10 @@ final class DetailAccountMediaStateController {
         favoriteState = .unavailable
         ratingState = .unavailable
         ratingDefaultValue = AccountMediaRatingValue.fallback
-        favoriteSession = nil
-        ratingSession = nil
     }
 
     func markRatingUnavailable() {
         ratingState = .unavailable
-        ratingSession = nil
     }
 
     // MARK: - Favorite Mutation
@@ -154,32 +147,26 @@ final class DetailAccountMediaStateController {
             return nil
 
         case .ready(let currentFavoriteStatus):
-            guard let favoriteSession else {
-                favoriteState = .requiresUserLogin
-                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
-            }
-
             let updatedFavoriteStatus = !currentFavoriteStatus
             favoriteState = .updating(isFavorite: updatedFavoriteStatus)
 
             do {
-                let response = try await accountMediaService.updateFavorite(
-                    accountId: favoriteSession.accountID,
-                    sessionId: favoriteSession.sessionID,
-                    request: MemberCenterFavoriteStatusRequest(
-                        mediaType: mediaType,
-                        mediaID: mediaID,
-                        favorite: updatedFavoriteStatus
-                    )
+                let result = try await toggleFavoriteUseCase(
+                    kind: mediaType,
+                    mediaID: mediaID,
+                    isFavorite: updatedFavoriteStatus
                 )
 
-                guard response.success else {
+                guard result.isSuccess else {
                     favoriteState = .ready(isFavorite: currentFavoriteStatus)
-                    return ErrorMessage(title: "收藏失敗", message: response.statusMessage)
+                    return ErrorMessage(title: "收藏失敗", message: result.message)
                 }
 
                 favoriteState = .ready(isFavorite: updatedFavoriteStatus)
                 return nil
+            } catch let error as AccountMediaError {
+                favoriteState = .ready(isFavorite: currentFavoriteStatus)
+                return favoriteErrorMessage(for: error, invalidMessage: invalidMessage)
             } catch {
                 favoriteState = .ready(isFavorite: currentFavoriteStatus)
                 return error.errorMessage
@@ -215,27 +202,24 @@ final class DetailAccountMediaStateController {
             return nil
 
         case .ready(let currentValue):
-            guard let ratingSession else {
-                ratingState = .requiresUserLogin
-                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
-            }
-
             ratingState = .updating(value: normalizedValue)
 
             do {
-                let response = try await accountMediaService.submitRating(
-                    sessionId: ratingSession.sessionID,
+                let result = try await submitRatingUseCase(
                     target: target,
                     value: normalizedValue
                 )
 
-                guard response.success else {
+                guard result.isSuccess else {
                     ratingState = .ready(value: currentValue)
-                    return ErrorMessage(title: "評分失敗", message: response.statusMessage)
+                    return ErrorMessage(title: "評分失敗", message: result.message)
                 }
 
                 ratingState = .ready(value: normalizedValue)
                 return nil
+            } catch let error as AccountMediaError {
+                ratingState = .ready(value: currentValue)
+                return ratingErrorMessage(for: error, invalidMessage: invalidMessage)
             } catch {
                 ratingState = .ready(value: currentValue)
                 return error.errorMessage
@@ -265,26 +249,21 @@ final class DetailAccountMediaStateController {
         case .ready(let currentValue):
             guard currentValue != nil else { return nil }
 
-            guard let ratingSession else {
-                ratingState = .requiresUserLogin
-                return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
-            }
-
             ratingState = .updating(value: nil)
 
             do {
-                let response = try await accountMediaService.deleteRating(
-                    sessionId: ratingSession.sessionID,
-                    target: target
-                )
+                let result = try await deleteRatingUseCase(target: target)
 
-                guard response.success else {
+                guard result.isSuccess else {
                     ratingState = .ready(value: currentValue)
-                    return ErrorMessage(title: "刪除評分失敗", message: response.statusMessage)
+                    return ErrorMessage(title: "刪除評分失敗", message: result.message)
                 }
 
                 ratingState = .ready(value: nil)
                 return nil
+            } catch let error as AccountMediaError {
+                ratingState = .ready(value: currentValue)
+                return ratingErrorMessage(for: error, invalidMessage: invalidMessage)
             } catch {
                 ratingState = .ready(value: currentValue)
                 return error.errorMessage
@@ -292,33 +271,40 @@ final class DetailAccountMediaStateController {
         }
     }
 
-}
+    // MARK: - Error Mapping
 
-// MARK: - DetailAccountMediaFavoriteSession
+    private func favoriteErrorMessage(
+        for error: AccountMediaError,
+        invalidMessage: ErrorMessage
+    ) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier:
+            return invalidMessage
 
-private nonisolated struct DetailAccountMediaFavoriteSession: Sendable, Equatable {
-    let accountID: Int
-    let sessionID: String
-}
+        case .requiresUserLogin:
+            favoriteState = .requiresUserLogin
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
 
-private nonisolated struct DetailAccountMediaRatingSession: Sendable, Equatable {
-    let sessionID: String
-}
-
-// MARK: - AccountMediaRatingTarget
-
-private extension AccountMediaRatingTarget {
-
-    var isValid: Bool {
-        switch self {
-        case .movie(let id):
-            return id > 0
-
-        case .tv(let seriesID):
-            return seriesID > 0
-
-        case .episode(let seriesID, let seasonNumber, let episodeNumber):
-            return seriesID > 0 && seasonNumber >= 0 && episodeNumber > 0
+        case .invalidRatingValue:
+            return ErrorMessage(title: "收藏失敗", message: "收藏資料不正確，請稍後再試。")
         }
     }
+
+    private func ratingErrorMessage(
+        for error: AccountMediaError,
+        invalidMessage: ErrorMessage
+    ) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier:
+            return invalidMessage
+
+        case .invalidRatingValue:
+            return ErrorMessage(title: "無法評分", message: "評分需介於 0.5 到 10 分之間。")
+
+        case .requiresUserLogin:
+            ratingState = .requiresUserLogin
+            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+        }
+    }
+
 }

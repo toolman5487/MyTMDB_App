@@ -36,31 +36,30 @@ final class TVDetailViewModel {
     private var onStateChange: (@MainActor (TVDetailViewState) -> Void)?
     private var onAccountStateChange: (@MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void)?
     private let loadTVDetailUseCase: LoadTVDetailUseCase
-    private let accountStateService: TVAccountStateServicing
     private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
     init(
         loadTVDetailUseCase: LoadTVDetailUseCase,
-        accountStateService: TVAccountStateServicing,
-        sessionStore: SessionStoring,
-        accountService: AccountServiceProtocol,
-        accountMediaService: MemberCenterServicing
+        accountMediaController: DetailAccountMediaStateController
     ) {
         self.loadTVDetailUseCase = loadTVDetailUseCase
-        self.accountStateService = accountStateService
-        self.accountMediaController = DetailAccountMediaStateController(
-            sessionStore: sessionStore,
-            accountService: accountService,
-            accountMediaService: accountMediaService
-        )
+        self.accountMediaController = accountMediaController
         self.accountMediaController.stateDidChange = { [weak self] in
             self?.notifyAccountStateChange()
         }
     }
 
     convenience init() {
+        let sessionStore = SessionStore()
+        let accountService = AccountService()
+        let sessionRepository = AccountSessionRepository(
+            sessionStore: sessionStore,
+            accountService: accountService
+        )
+        let mediaRepository = AccountMediaStateRepository()
+
         self.init(
             loadTVDetailUseCase: DefaultLoadTVDetailUseCase(
                 repository: TVDetailRepository(),
@@ -70,10 +69,25 @@ final class TVDetailViewModel {
                     )
                 }
             ),
-            accountStateService: TVAccountStateService(),
-            sessionStore: SessionStore(),
-            accountService: AccountService(),
-            accountMediaService: MemberCenterService()
+            accountMediaController: DetailAccountMediaStateController(
+                isUserAuthenticated: Self.isUserAuthenticated(sessionStore.load()),
+                loadAccountMediaStateUseCase: DefaultLoadAccountMediaStateUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                ),
+                toggleFavoriteUseCase: DefaultToggleFavoriteUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                ),
+                submitRatingUseCase: DefaultSubmitRatingUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                ),
+                deleteRatingUseCase: DefaultDeleteRatingUseCase(
+                    sessionRepository: sessionRepository,
+                    mediaRepository: mediaRepository
+                )
+            )
         )
     }
 
@@ -98,10 +112,10 @@ final class TVDetailViewModel {
         do {
             async let content = loadTVDetailUseCase(seriesID: seriesID)
             await accountMediaController.loadAccountMediaState(
+                kind: .tv,
+                mediaID: seriesID,
                 sourceDescription: "TV series \(seriesID)"
-            ) { [accountStateService] sessionID in
-                try await accountStateService.fetchTVAccountStates(seriesID: seriesID, sessionId: sessionID)
-            }
+            )
             let loadedContent = try await content
             guard !Task.isCancelled else { return }
 
@@ -173,5 +187,10 @@ final class TVDetailViewModel {
 
     private func notifyAccountStateChange() {
         onAccountStateChange?(favoriteState, ratingState)
+    }
+
+    private static func isUserAuthenticated(_ session: AuthSession) -> Bool {
+        if case .user = session { return true }
+        return false
     }
 }

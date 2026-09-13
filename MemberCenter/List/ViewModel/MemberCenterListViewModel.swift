@@ -25,7 +25,7 @@ final class MemberCenterListViewModel {
     private var onStateChange: (@MainActor (MemberCenterListViewState) -> Void)?
     private let accountId: Int
     private let sessionId: String
-    private let contentRepository: any MemberCenterListContentProviding
+    private let loadCollectionPage: LoadAccountCollectionPageUseCase
 
     // MARK: - Initialization
 
@@ -33,12 +33,14 @@ final class MemberCenterListViewModel {
         destination: MemberCenterDestination,
         accountId: Int,
         sessionId: String,
-        contentRepository: any MemberCenterListContentProviding = MemberCenterListContentRepository()
+        loadCollectionPage: LoadAccountCollectionPageUseCase = DefaultLoadAccountCollectionPageUseCase(
+            repository: AccountContentRepository()
+        )
     ) {
         self.destination = destination
         self.accountId = accountId
         self.sessionId = sessionId
-        self.contentRepository = contentRepository
+        self.loadCollectionPage = loadCollectionPage
     }
 
     // MARK: - Output Binding
@@ -54,10 +56,10 @@ final class MemberCenterListViewModel {
         state = .loading
 
         do {
-            let page = try await fetchPage(page: 1)
+            let content = try await fetchContent(page: 1)
             guard !Task.isCancelled else { return }
 
-            state = page.items.isEmpty ? .empty(destination) : .loaded(MemberCenterListContent(page: page))
+            state = content.items.isEmpty ? .empty(destination) : .loaded(content)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -75,7 +77,7 @@ final class MemberCenterListViewModel {
         state = .loaded(content.updatingLoadingNextPage(true))
 
         do {
-            let nextPage = try await fetchPage(page: content.currentPage + 1)
+            let nextContent = try await fetchContent(page: content.currentPage + 1)
             guard !Task.isCancelled else { return }
 
             guard case .loaded(let currentContent) = state,
@@ -84,7 +86,7 @@ final class MemberCenterListViewModel {
                 return
             }
 
-            state = .loaded(currentContent.appending(page: nextPage))
+            state = .loaded(currentContent.appending(nextContent))
         } catch {
             guard !Task.isCancelled else { return }
 
@@ -100,14 +102,15 @@ final class MemberCenterListViewModel {
 
     // MARK: - Private Methods
 
-    private func fetchPage(page: Int) async throws -> MemberCenterListPageResult {
-        let previewPage = try await contentRepository.fetchPage(
-            for: destination,
+    private func fetchContent(page: Int) async throws -> MemberCenterListContent {
+        let collection = try await loadCollectionPage(
+            destination: destination,
             accountID: accountId,
             sessionID: sessionId,
             page: page
         )
-        return MemberCenterPresentationBuilder.makeListPage(from: previewPage)
+
+        return MemberCenterPresentationBuilder.makeListContent(from: collection)
     }
 
     private func shouldLoadNextPage(

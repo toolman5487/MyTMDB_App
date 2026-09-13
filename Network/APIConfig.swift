@@ -58,6 +58,16 @@ nonisolated enum APIConfig {
         }
     }
 
+    static func accountStates(kind: MediaKind, id: Int) -> String {
+        switch kind {
+        case .movie:
+            return Movie.accountStates(id: id)
+
+        case .tv:
+            return TV.accountStates(seriesId: id)
+        }
+    }
+
     static func search(kind: MediaKind) -> String {
         switch kind {
         case .movie:

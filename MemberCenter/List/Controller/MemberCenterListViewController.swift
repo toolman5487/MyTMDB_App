@@ -62,14 +62,12 @@ final class MemberCenterListViewController: BaseListViewController {
     init(
         destination: MemberCenterDestination,
         accountId: Int,
-        sessionId: String,
-        contentRepository: any MemberCenterListContentProviding = MemberCenterListContentRepository()
+        sessionId: String
     ) {
         self.viewModel = MemberCenterListViewModel(
             destination: destination,
             accountId: accountId,
-            sessionId: sessionId,
-            contentRepository: contentRepository
+            sessionId: sessionId
         )
         super.init(nibName: nil, bundle: nil)
     }

@@ -9,8 +9,8 @@
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router |
 | 目標架構 | Clean Architecture（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 298 個 Swift 檔 / 45,747 行 |
-| 狀態 | Phase 1 完成；Phase 2 已完成 10 / 11 個 feature，僅剩 MemberCenter |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 314 個 Swift 檔 / 45,799 行 |
+| 狀態 | Phase 1、Phase 2 完成；Phase 3 已完成 G5 的 4 個跨 feature UseCase，composition root 尚未開始 |
 | 日期 | 2026-09-13 |
 
 ---
@@ -59,19 +59,19 @@
 
 ### 3.1 量化現況
 
-數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1，以及 ReviewList、MovieDetail、TVDetail、SeasonDetail、EpisodeDetail、PersonDetail、MainMediaList、Search、HomeSectionList、MainHome 十個 Phase 2 feature 完成分層實作後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
+數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1、11 個 Phase 2 feature，以及 Phase 3 的 4 個跨 feature Account UseCase 完成實作後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
 
 | 項目 | 起點 | 現在 |
 |------|------|------|
-| Swift 檔案數 | 243 | 298 |
-| 程式碼行數 | 47,616 | 45,747 |
+| Swift 檔案數 | 243 | 314 |
+| 程式碼行數 | 47,616 | 45,799 |
 | Xcode target 數 | 1（`MyTMDB_App`，application） | 1 |
 | 檔案組織方式 | 240 檔為顯式 `PBXFileReference`，`MyTMDB_App/` 資料夾使用 `PBXFileSystemSynchronizedRootGroup` | 不變 |
-| ViewModel 資料夾內 Swift 檔案數 | 24 | 21 |
-| Service 資料夾內 Swift 檔案數 | 22 | 11 |
-| Repository 實作數 | 2（皆位於 `MemberCenter`） | 12 |
-| UseCase 檔案數 | 0 | 14 |
-| Domain Entity 型別數 | 0 | 78（分布於 34 檔） |
+| ViewModel 資料夾內 Swift 檔案數 | 24 | 20 |
+| Service 資料夾內 Swift 檔案數 | 22 | 8 |
+| Repository 實作數 | 2（皆位於 `MemberCenter`） | 13 |
+| UseCase 檔案數 | 0 | 20 |
+| Domain Entity 型別數 | 0 | 89（分布於 40 檔） |
 | `import UIKit` 出現在 ViewModel / Service / Model / Presentation | 2 檔 | 2 檔 |
 | `= NetworkService()` 預設參數 | 18 處 | 17 處 |
 | 其他 concrete dependency 預設參數 | 49 處 | 仍有多處，Phase 3 開始前依 10.1 重新盤點 |
@@ -95,25 +95,25 @@
 
 ### 3.3 落差清單
 
-#### G1 — Domain Entity 尚未覆蓋全部 feature（部分完成）
+#### G1 — Domain Entity 覆蓋 Phase 2 範圍（已完成）
 
-除 `MemberCenter` 外的 Phase 2 feature 均已完成 Entity / DTO 分離，Domain Entity 不具 `Decodable` / `Encodable` conformance。
+11 個 Phase 2 feature 均已完成 Entity / DTO 分離，Domain Entity 不具 `Decodable` / `Encodable` conformance。
 
-HomeSectionList 原本直接使用 `MediaGenreListDTO`、MainHome 的 `MainHomeContent` 兼任 DTO 與 Model 的過渡狀態皆已解除。唯一剩餘的 DTO 外洩是 `MemberCenter` 的 3 個檔案直接使用 `MediaSummaryDTO`，將於該 feature 分層時處理。
+HomeSectionList 原本直接使用 `MediaGenreListDTO`、MainHome 的 `MainHomeContent` 兼任 DTO 與 Model，以及 MemberCenter 直接使用 `MediaSummaryDTO` 的過渡狀態皆已解除。Phase 2 範圍執行 DTO 外洩檢查無輸出。
 
 影響：尚未分層的 feature 仍可能讓 TMDB 欄位變更直接衝擊 Presentation。4.3 已補上逐 feature 的 DTO 外洩檢查；該檢查只要求正在驗收的 feature 無輸出，不要求尚未分層的 feature 提前通過。
 
-#### G2 — UseCase 尚未覆蓋全部業務編排（部分完成）
+#### G2 — UseCase 覆蓋明確業務編排（已完成）
 
 `LoadReviewsUseCase`、`FilterReviewsUseCase`、`LoadMovieDetailUseCase`、`LoadTVDetailUseCase`、`LoadSeasonDetailUseCase`、`LoadEpisodeDetailUseCase`、`LoadPersonDetailUseCase`、`LoadPersonCreditsUseCase` 已建立。MovieDetail、TVDetail、SeasonDetail、EpisodeDetail 與 PersonDetail 的「主要資料失敗則整體失敗，輔助資料失敗則降級」已由 Service 移入 UseCase；PersonDetail 的作品類型路由與輸入驗證也已移入 UseCase。
 
 MainHome 的併發載入與部分失敗處理已由 `MainHomeService` 移入 `LoadHomeSectionsUseCase`；HomeSectionList 的類型篩選移入 `FilterMediaByGenreUseCase`。
 
-剩餘的明確案例是 MemberCenter 的帳號內容載入，以及跨 feature 的 `DetailAccountMediaStateController`（見 G5，屬 Phase 3）。
+MemberCenter 的帳號內容載入已由 `LoadMemberCenterOverviewUseCase` 與 `LoadAccountCollectionPageUseCase` 承接。跨 feature 的帳號媒體狀態則已抽為 `LoadAccountMediaStateUseCase`、`ToggleFavoriteUseCase`、`SubmitRatingUseCase`、`DeleteRatingUseCase`（見 G5）。
 
 #### G3 — Repository 抽象尚未覆蓋全部遠端資料（部分完成）
 
-目前有 8 個 Repository 實作：MemberCenter 既有 2 個，加上 `ReviewRepository`、`MovieDetailRepository`、`TVDetailRepository`、`SeasonDetailRepository`、`EpisodeDetailRepository`、`PersonDetailRepository`。其餘 feature 仍多為 `ViewModel → Service → NetworkService` 直通。
+目前有 13 個 Repository 實作，Phase 2 的 11 個 feature 與跨 feature 的帳號媒體狀態皆已有 Repository protocol 邊界。未列入 Phase 2 的既有功能仍有 `ViewModel → Service → NetworkService` 直通，因此全專案覆蓋仍屬部分完成。
 
 影響：無快取、離線、本地資料來源的插入點。
 
@@ -138,11 +138,11 @@ convenience init() {
 
 影響：無 composition root。抽換實作需逐處修改初始化呼叫端，變更成本與依賴數量成正比。
 
-#### G5 — Detail 系列 ViewModel 跨三個 feature 耦合
+#### G5 — Detail 系列帳號流程（UseCase 已完成，組裝待 G4 收斂）
 
-`MovieDetailViewModel`、`TVDetailViewModel`、`EpisodeDetailViewModel` 同時依賴 `MemberCenterServicing`、`SessionStoring`、`AccountServiceProtocol`。目前以 `Feature/Base/DetailBase/ViewModel/DetailAccountMediaStateController.swift`（324 行）收斂。
+`MovieDetailViewModel`、`TVDetailViewModel`、`EpisodeDetailViewModel` 已不再直接編排 `SessionStoring`、`AccountServiceProtocol` 與 `AccountMediaStateProviding`。登入檢查、帳號解析、收藏與評分寫入已移至 4 個 Domain UseCase；`DetailAccountMediaStateController` 縮減為畫面狀態協調與錯誤文案映射。
 
-影響：此控制器實際承擔的是「收藏」與「評分」兩個跨 feature 業務流程，但被實作為 ViewModel 的輔助物件，與 UI 生命週期綁定。
+剩餘工作：UseCase 與 Repository 的 concrete 組裝仍暫存在既有便利初始化，待 G4 的 `AppDependencies` 一次集中。
 
 #### G6 — Movie / TV 平行重複（已完成）
 
@@ -170,7 +170,7 @@ convenience init() {
 
 ### 3.4 判定
 
-**遷移可行，且 Phase 1 與前六個 Phase 2 feature 已證明可逐步交付。** G1–G3 正在逐 feature 收斂；G4、G5 留待 Phase 3 一次處理；G7 為已接受限制。
+**遷移可行，且 Phase 1、Phase 2 已完成。** G1、G2、G5 的業務分層已收斂；G3 在 Phase 2 範圍完成、全專案仍為部分覆蓋；下一步為 G4 的 composition root；G7 為已接受限制。
 
 實際遷移順序為 **G6 → G1/G2/G3 → G4/G5**，理由：
 
@@ -863,9 +863,9 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 | `Search` | **已完成**（`d103977`，與 MainMediaList 同一 commit，兩者透過 MediaGrid 型別耦合）；客戶端排序移入 SortMediaUseCase |
 | `HomeSectionList` | **已完成**（`d8c1940`）；`FilterMediaByGenreUseCase` 承接類型篩選，`HomeSectionListGenre` 因與 `MediaGenre` 完全重複而刪除 |
 | `MainHome` | **已完成**（`d8c1940`，與 HomeSectionList 同一 commit，兩者透過 5 個 `MainHomeContent*` 型別耦合）；`LoadHomeSectionsUseCase` 承接併發載入與部分失敗處理 |
-| `MemberCenter` | 未開始；目前直接使用 `MediaSummaryDTO`，屬過渡狀態。已有 2 個 Repository，可作為後續範本 |
+| `MemberCenter` | **已完成**；帳號 Entity、DTO / Mapper、Repository 與 2 個 UseCase 已分層，舊 Service 與重複 Model / Repository 已移除；靜態檢查與 build 通過，手動走查待完成 |
 
-以本表 11 個 feature 為計數口徑，目前完成分層實作 10 個（約 91%）。此比例只表示 feature 數量，不代表工作量比例；各 feature 規模不同。
+以本表 11 個 feature 為計數口徑，目前完成分層實作 11 個（100%）。此比例只表示 feature 數量，不代表 Phase 3 或全專案所有既有功能也已完成依賴反轉。
 
 **不必全部做完。** 每個 feature 分層後即獨立產生價值；未分層的 feature 維持現狀不受影響。
 
@@ -874,6 +874,8 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 ### Phase 3：依賴反轉（composition root）
 
 **目的**：處理 G4、G5。
+
+目前進度：G5 的 4 個跨 feature UseCase 已完成並通過 build；G4 的 `AppDependencies` 與全專案 concrete 預設值清理尚未開始。
 
 交付：
 
@@ -941,7 +943,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 - [ ] 全專案 `grep "convenience init()"` 結果為 0。
 - [ ] 全專案 `grep "= NetworkService()"` 結果為 1（僅 `AppDependencies`）。
 - [ ] 全專案無 `UseCase = Default...UseCase(...)` 形式的預設參數。
-- [ ] `DetailAccountMediaStateController` 已由 4 個 UseCase 取代或縮減為純狀態容器。
+- [x] `DetailAccountMediaStateController` 已由 4 個 UseCase 取代業務編排，縮減為畫面狀態協調器。
 - [ ] 未登入 / guest 路徑不會寫入收藏（以走查確認）。
 - [ ] 12.1 走查全數通過。
 
@@ -1028,6 +1030,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.2 | 2026-09-13 | 完成 MemberCenter 的 Domain / Data / UseCase 分層，Phase 2 達 11 / 11；刪除舊 Service、重複 Model 與 Repository。開始 Phase 3：新增 `AccountSessionProviding` / `AccountSessionRepository` 與 `LoadAccountMediaStateUseCase`、`ToggleFavoriteUseCase`、`SubmitRatingUseCase`、`DeleteRatingUseCase`，MovieDetail、TVDetail、EpisodeDetail 與 App Intent 收藏改走共用 UseCase，`DetailAccountMediaStateController` 僅保留畫面狀態協調。靜態邊界檢查與 simulator Debug build 通過；composition root 尚待實作 |
 | 2.1 | 2026-09-13 | 完成 HomeSectionList 與 MainHome 分層（同一 commit，兩者透過 5 個 `MainHomeContent*` 型別耦合）。去重：`MainHomeContent` 與 `MediaSummaryDTO` 欄位完全重疊而刪除；`HomeSectionListGenre` 與 `MediaGenre` 相同、且 `init(movieGenre:)` 與 `init(tvGenre:)` 實作一模一樣而刪除；取類型的網路呼叫抽成共用 `MediaGenreProviding` / `MediaGenreRepository`；`TMDBPageResponse` 由 `MainHome/Model` 移至 `Feature/Data/DTO`。命名統一為 `HomeCategory` / `HomeContentItem`。行為差異一處：全部分類載入失敗時改拋底層錯誤而非預先包成 `ErrorMessage`，以符合 4.3 的 Domain 邊界。Phase 2 進度 10 / 11，僅剩 MemberCenter |
 | 2.0 | 2026-09-13 | 完成 MainMediaList 與 Search 分層（同一 commit，兩者透過 MediaGrid 型別耦合）。共用型別下沉：刪除與 `MediaSummaryDTO` 重疊的 `MediaGridEntry`；`MediaSummary` 補 overview / backdropPath / popularity；`MediaSortOption` 依關注點拆為 Domain 的 `MediaSortOrder`、Presentation 的 title、Data 的 `discoverSortValue`，排序規則移入 Search 的 `SortMediaUseCase`；`MediaGenre` 升格至 `Feature/`。分層後才看清兩個排序是不同機制：MainMediaList 伺服器端、Search 客戶端 |
 | 1.9 | 2026-09-13 | EpisodeDetail 與 PersonDetail 的手動審查已由開發者完成，兩者狀態由「待 build 與手動走查」改為已完成。Phase 2 進度 6 / 11，下一批依序為 MainMediaList、Search、HomeSectionList、MainHome、MemberCenter |

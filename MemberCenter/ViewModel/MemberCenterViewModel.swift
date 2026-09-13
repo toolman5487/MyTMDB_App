@@ -25,7 +25,7 @@ final class MemberCenterViewModel {
 
     private var onStateChange: (@MainActor (MemberCenterViewState) -> Void)?
     private let session: AuthSession
-    private let contentRepository: MemberCenterContentProviding
+    private let loadOverview: LoadMemberCenterOverviewUseCase
     private var cachedHeaderContent: MemberCenterProfileHeaderContent?
     private var accountContext: MemberCenterAccountContext?
     private var lastSettledState: MemberCenterViewState = .idle
@@ -34,11 +34,18 @@ final class MemberCenterViewModel {
 
     init(
         session: AuthSession,
-        contentRepository: MemberCenterContentProviding = MemberCenterContentRepository()
+        loadOverview: LoadMemberCenterOverviewUseCase? = nil,
+        contentRepository: AccountContentProviding = AccountContentRepository()
     ) {
         self.session = session
-        self.contentRepository = contentRepository
-        self.cachedHeaderContent = contentRepository.cachedHeaderContent(for: session)
+        self.loadOverview = loadOverview
+            ?? DefaultLoadMemberCenterOverviewUseCase(repository: contentRepository)
+
+        if case .user = session {
+            self.cachedHeaderContent = contentRepository
+                .cachedProfile()
+                .map(MemberCenterProfileHeaderContent.init(profile:))
+        }
         self.headerContent = cachedHeaderContent
     }
 
@@ -96,14 +103,14 @@ final class MemberCenterViewModel {
         apply(state: .loading)
 
         do {
-            let snapshot = try await contentRepository.fetchContent(sessionId: sessionId)
+            let overview = try await loadOverview(sessionID: sessionId)
             guard !Task.isCancelled else {
                 apply(state: cancellationFallbackState)
                 return
             }
 
-            let content = MemberCenterPresentationBuilder.makeContent(from: snapshot)
-            cachedHeaderContent = content.profile.headerContent
+            let content = MemberCenterPresentationBuilder.makeContent(from: overview)
+            cachedHeaderContent = MemberCenterProfileHeaderContent(profile: content.profile)
             apply(state: content.contentSections.isEmpty ? .empty(content) : .loaded(content))
         } catch is CancellationError {
             apply(state: cancellationFallbackState)
@@ -153,25 +160,23 @@ final class MemberCenterViewModel {
 
         case .guest(let content):
             return (
-                content.profile.headerContent,
+                content.headerContent,
                 [.guestLogin(content.loginPrompt)],
                 nil
             )
 
         case .empty(let content):
-            let accountContext = makeAccountContext(profile: content.profile)
             return (
-                content.profile.headerContent,
+                MemberCenterProfileHeaderContent(profile: content.profile),
                 [],
-                accountContext
+                makeAccountContext(profile: content.profile)
             )
 
         case .loaded(let content):
-            let accountContext = makeAccountContext(profile: content.profile)
             return (
-                content.profile.headerContent,
+                MemberCenterProfileHeaderContent(profile: content.profile),
                 content.contentSections.map(MemberCenterDisplaySection.content),
-                accountContext
+                makeAccountContext(profile: content.profile)
             )
 
         case .failed:
@@ -179,7 +184,7 @@ final class MemberCenterViewModel {
         }
     }
 
-    private func makeAccountContext(profile: MemberCenterProfile) -> MemberCenterAccountContext? {
+    private func makeAccountContext(profile: AccountProfile) -> MemberCenterAccountContext? {
         guard case .user(let sessionId) = session else { return nil }
 
         return MemberCenterAccountContext(

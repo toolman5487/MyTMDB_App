@@ -34,15 +34,18 @@ nonisolated enum AppIntentFavoriteActionOutcome: Sendable, Equatable {
 // MARK: - AppIntentFavoriteActionHandler
 
 nonisolated struct AppIntentFavoriteActionHandler: Sendable {
-    private let sessionResolver: any AppIntentSessionResolving
-    private let memberCenterService: any MemberCenterServicing
+    private let toggleFavorite: ToggleFavoriteUseCase
 
     init(
-        sessionResolver: any AppIntentSessionResolving = AppIntentSessionResolver(),
-        memberCenterService: any MemberCenterServicing = MemberCenterService()
+        toggleFavorite: ToggleFavoriteUseCase = DefaultToggleFavoriteUseCase(
+            sessionRepository: AccountSessionRepository(
+                sessionStore: SessionStore(),
+                accountService: AccountService()
+            ),
+            mediaRepository: AccountMediaStateRepository()
+        )
     ) {
-        self.sessionResolver = sessionResolver
-        self.memberCenterService = memberCenterService
+        self.toggleFavorite = toggleFavorite
     }
 
     func updateFavorite(
@@ -56,20 +59,14 @@ nonisolated struct AppIntentFavoriteActionHandler: Sendable {
         }
 
         do {
-            let context = try await sessionResolver.resolveUserAccountContext()
-            let request = MemberCenterFavoriteStatusRequest(
-                mediaType: mediaType,
+            let result = try await toggleFavorite(
+                kind: mediaType,
                 mediaID: mediaID,
-                favorite: favorite
-            )
-            let response = try await memberCenterService.updateFavorite(
-                accountId: context.accountId,
-                sessionId: context.sessionId,
-                request: request
+                isFavorite: favorite
             )
 
-            guard response.success else {
-                return .failed(message: response.statusMessage)
+            guard result.isSuccess else {
+                return .failed(message: result.message)
             }
 
             return .succeeded(
@@ -79,7 +76,7 @@ nonisolated struct AppIntentFavoriteActionHandler: Sendable {
                     favorite: favorite
                 )
             )
-        } catch AppIntentSessionResolutionError.requiresUserLogin {
+        } catch AccountMediaError.requiresUserLogin {
             return .failed(message: "需要登入 TMDB 帳號後才能更新收藏。")
         } catch {
             return .failed(message: "更新收藏失敗：\(error.localizedDescription)")
