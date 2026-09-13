@@ -10,7 +10,7 @@
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router |
 | 目標架構 | Clean Architecture（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
 | 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 279 個 Swift 檔 / 45,637 行 |
-| 狀態 | Phase 1 完成；Phase 2 已完成 6 / 11 個 feature，MainMediaList 進行中 |
+| 狀態 | Phase 1 完成；Phase 2 已完成 8 / 11 個 feature，剩 HomeSectionList、MainHome、MemberCenter |
 | 日期 | 2026-09-13 |
 
 ---
@@ -857,11 +857,11 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 | `SeasonDetail` | **已完成**；DTO 外洩與舊 Service 已移除，靜態檢查、build 與手動走查通過 |
 | `EpisodeDetail` | **已完成**；DTO 外洩與舊 Service 已移除，靜態檢查通過，手動審查由開發者完成 |
 | `PersonDetail` | **已完成**；DTO 外洩與舊 Service 已移除，靜態檢查通過，手動審查由開發者完成 |
-| `MainMediaList` | **進行中**；列為下一個遷移項目 |
-| `Search` | 未開始 |
-| `HomeSectionList` | 未開始 |
+| `MainMediaList` | **已完成**（`d103977`）；LoadMediaListUseCase 承接「取類型清單→決定初始類型→取第一頁」的編排 |
+| `Search` | **已完成**（`d103977`，與 MainMediaList 同一 commit，兩者透過 MediaGrid 型別耦合）；客戶端排序移入 SortMediaUseCase |
+| `HomeSectionList` | 未開始；目前直接使用 `MediaGenreListDTO`，屬過渡狀態 |
 | `MainHome` | 未開始 |
-| `MemberCenter` | 未開始；已有 2 個 Repository，可作為後續範本 |
+| `MemberCenter` | 未開始；目前直接使用 `MediaSummaryDTO`，屬過渡狀態。已有 2 個 Repository，可作為後續範本 |
 
 以本表 11 個 feature 為計數口徑，目前完成分層實作 6 個（約 55%）。此比例只表示 feature 數量，不代表工作量比例；各 feature 規模不同。EpisodeDetail 與 PersonDetail 尚待 build 與手動走查完成完整驗收。
 
@@ -1025,6 +1025,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.0 | 2026-09-13 | 完成 MainMediaList 與 Search 分層（同一 commit，兩者透過 MediaGrid 型別耦合）。共用型別下沉：刪除與 `MediaSummaryDTO` 重疊的 `MediaGridEntry`；`MediaSummary` 補 overview / backdropPath / popularity；`MediaSortOption` 依關注點拆為 Domain 的 `MediaSortOrder`、Presentation 的 title、Data 的 `discoverSortValue`，排序規則移入 Search 的 `SortMediaUseCase`；`MediaGenre` 升格至 `Feature/`。分層後才看清兩個排序是不同機制：MainMediaList 伺服器端、Search 客戶端 |
 | 1.9 | 2026-09-13 | EpisodeDetail 與 PersonDetail 的手動審查已由開發者完成，兩者狀態由「待 build 與手動走查」改為已完成。Phase 2 進度 6 / 11，下一批依序為 MainMediaList、Search、HomeSectionList、MainHome、MemberCenter |
 | 1.8 | 2026-09-13 | 完成 PersonDetail 的 Domain / Data / UseCase 分層實作：將人物 ID 驗證、電影／劇集作品路由、主要與輔助資料載入降級移入兩個 UseCase；新增 Person Entity、Repository、DTO / Mapper 與領域錯誤，將日期與 URL wire format 解析移至 Mapper，移除舊 Model / Service。Phase 2 進度更新為 6 / 11；靜態檢查通過，build 與手動走查仍待執行 |
 | 1.7 | 2026-09-13 | 完成 EpisodeDetail 的 Domain / Data / UseCase 分層實作：將輸入驗證、第 0 季評分支援規則、主要與輔助資料載入降級移入 `LoadEpisodeDetailUseCase`；新增 Episode Entity、Repository、DTO / Mapper 與 Presentation Models，移除舊 Model / Service。SeasonDetail 更新為已驗收，Phase 2 進度更新為 5 / 11；EpisodeDetail 靜態檢查通過，build 與手動走查仍待執行 |
