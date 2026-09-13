@@ -66,7 +66,7 @@ final class MainMediaListViewController: MainBaseViewController {
 
     private lazy var sortBarButtonItem: UIBarButtonItem = {
         let item = AppFactory.SortMenu.makeBarButtonItem(
-            selectedOption: nil as MediaSortOption?,
+            selectedOption: nil as MediaSortOrder?,
             onSelect: { [weak self] option in
                 self?.selectSortOption(option)
             }
@@ -267,7 +267,7 @@ final class MainMediaListViewController: MainBaseViewController {
     }
 
     private func showSortBarButtonItem(
-        selectedSortOption: MediaSortOption?,
+        selectedSortOption: MediaSortOrder?,
         isSearchMode: Bool = false
     ) {
         sortBarButtonItem.menu = AppFactory.SortMenu.makeMenu(
@@ -297,7 +297,7 @@ final class MainMediaListViewController: MainBaseViewController {
 
     private func applySortBarButtonAccessibility(
         to item: UIBarButtonItem,
-        selectedOption: MediaSortOption?
+        selectedOption: MediaSortOrder?
     ) {
         item.accessibilityLabel = "排序\(mediaKind.displayName)"
         item.accessibilityValue = selectedOption?.title ?? "尚未選擇"
@@ -305,7 +305,7 @@ final class MainMediaListViewController: MainBaseViewController {
     }
 
     private func selectSortOption(
-        _ option: MediaSortOption,
+        _ option: MediaSortOrder,
         isSearchMode: Bool = false
     ) {
         if isSearchMode {
@@ -576,7 +576,7 @@ private extension MainMediaListViewController {
 
     func updateSearchSortBarButtonVisibility(
         isVisible: Bool,
-        selectedSortOption: MediaSortOption?
+        selectedSortOption: MediaSortOrder?
     ) {
         guard searchController.isActive else { return }
 

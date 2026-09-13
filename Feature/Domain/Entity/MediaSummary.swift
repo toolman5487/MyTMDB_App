@@ -12,8 +12,11 @@ import Foundation
 nonisolated struct MediaSummary: Sendable, Equatable, Identifiable {
     let id: Int
     let title: String
+    let overview: String
     let posterPath: String?
+    let backdropPath: String?
     let releaseDate: CalendarDay?
     let voteAverage: Double
     let voteCount: Int
+    let popularity: Double
 }

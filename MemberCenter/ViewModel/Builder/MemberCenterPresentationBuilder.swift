@@ -101,7 +101,7 @@ nonisolated enum MemberCenterPresentationBuilder {
     }
 
     static func makeItems(
-        from entries: [MediaGridEntry],
+        from entries: [MediaSummaryDTO],
         kind: MediaKind,
         destination: MemberCenterDestination
     ) -> [MemberCenterListItem] {

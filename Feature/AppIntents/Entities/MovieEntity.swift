@@ -48,13 +48,13 @@ nonisolated struct MovieEntity: AppEntity, Sendable, Equatable {
         self.releaseYear = releaseYear
     }
 
-    init(movie: MediaGridEntry) {
+    init(movie: MediaSummary) {
         self.init(
             id: movie.id,
             title: movie.title,
             overview: movie.overview.isEmpty ? nil : movie.overview,
             posterPath: movie.posterPath,
-            releaseYear: Self.releaseYear(from: movie.date)
+            releaseYear: Self.releaseYear(from: movie.releaseDate)
         )
     }
 
@@ -66,5 +66,10 @@ nonisolated struct MovieEntity: AppEntity, Sendable, Equatable {
     static func releaseYear(from date: String?) -> String? {
         guard let date, date.count >= 4 else { return nil }
         return String(date.prefix(4))
+    }
+
+    static func releaseYear(from day: CalendarDay?) -> String? {
+        guard let day else { return nil }
+        return String(day.year)
     }
 }

@@ -48,13 +48,13 @@ nonisolated struct TVSeriesEntity: AppEntity, Sendable, Equatable {
         self.firstAirYear = firstAirYear
     }
 
-    init(series: MediaGridEntry) {
+    init(series: MediaSummary) {
         self.init(
             id: series.id,
             name: series.title,
             overview: series.overview.isEmpty ? nil : series.overview,
             posterPath: series.posterPath,
-            firstAirYear: Self.firstAirYear(from: series.date)
+            firstAirYear: Self.firstAirYear(from: series.releaseDate)
         )
     }
 
@@ -66,5 +66,10 @@ nonisolated struct TVSeriesEntity: AppEntity, Sendable, Equatable {
     static func firstAirYear(from date: String?) -> String? {
         guard let date, date.count >= 4 else { return nil }
         return String(date.prefix(4))
+    }
+
+    static func firstAirYear(from day: CalendarDay?) -> String? {
+        guard let day else { return nil }
+        return String(day.year)
     }
 }

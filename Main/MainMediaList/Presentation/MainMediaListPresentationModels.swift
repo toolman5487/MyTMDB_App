@@ -1,34 +1,11 @@
 //
-//  MainMediaListModels.swift
+//  MainMediaListPresentationModels.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/3.
 //
 
 import Foundation
-
-// MARK: - MainMediaGenreResponse
-
-nonisolated struct MainMediaGenreResponse: Decodable, Sendable, Equatable {
-    let genres: [MainMediaGenre]
-}
-
-// MARK: - MainMediaGenre
-
-nonisolated struct MainMediaGenre: Decodable, Sendable, Equatable, Identifiable {
-    let id: Int
-    let name: String
-}
-
-// MARK: - MainMediaListPage
-
-nonisolated struct MainMediaListPage: Sendable, Equatable {
-    let genreID: Int
-    let page: Int
-    let totalPages: Int
-    let totalResults: Int
-    let items: [MediaGridEntry]
-}
 
 // MARK: - MainMediaGenreItem
 
@@ -38,7 +15,7 @@ nonisolated struct MainMediaGenreItem: Sendable, Equatable, Identifiable {
     let isSelected: Bool
 
     init(
-        genre: MainMediaGenre,
+        genre: MediaGenre,
         isSelected: Bool
     ) {
         self.id = genre.id
@@ -57,7 +34,7 @@ nonisolated struct MainMediaListContent: Sendable, Equatable {
     let totalPages: Int
     let totalResults: Int
     let isLoadingNextPage: Bool
-    let selectedSortOption: MediaSortOption?
+    let selectedSortOption: MediaSortOrder?
 
     var canLoadNextPage: Bool {
         currentPage < totalPages
@@ -76,14 +53,12 @@ nonisolated struct MainMediaListContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: MainMediaListPage) -> MainMediaListContent {
-        let nextMovies = items + page.items.map(MediaGridItem.init(entry:))
-
-        return MainMediaListContent(
+    func appending(page: Page<MediaSummary>) -> MainMediaListContent {
+        MainMediaListContent(
             genres: genres,
             selectedGenre: selectedGenre,
-            items: nextMovies,
-            currentPage: page.page,
+            items: items + page.items.map(MediaGridItem.init(summary:)),
+            currentPage: page.number,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
             isLoadingNextPage: false,
@@ -91,7 +66,7 @@ nonisolated struct MainMediaListContent: Sendable, Equatable {
         )
     }
 
-    func updatingSortOption(_ option: MediaSortOption) -> MainMediaListContent {
+    func updatingSortOption(_ option: MediaSortOrder) -> MainMediaListContent {
         MainMediaListContent(
             genres: genres,
             selectedGenre: selectedGenre,

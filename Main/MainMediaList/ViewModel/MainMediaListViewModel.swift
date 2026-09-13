@@ -34,20 +34,23 @@ final class MainMediaListViewModel {
 
     private var onStateChange: (@MainActor (MainMediaListViewState) -> Void)?
     private let mediaKind: MediaKind
-    private let service: MainMediaListServicing
+    private let loadMediaList: LoadMediaListUseCase
+    private let repository: MediaListProviding
     private var preferredGenreID: Int?
-    private var genres: [MainMediaGenre] = []
-    private var selectedSortOption: MediaSortOption = .popularity
+    private var genres: [MediaGenre] = []
+    private var selectedSortOption: MediaSortOrder = .popularity
 
     // MARK: - Initialization
 
     init(
         mediaKind: MediaKind,
-        service: MainMediaListServicing = MainMediaListService(),
+        loadMediaList: LoadMediaListUseCase = DefaultLoadMediaListUseCase(repository: MediaListRepository()),
+        repository: MediaListProviding = MediaListRepository(),
         initialGenreID: Int? = nil
     ) {
         self.mediaKind = mediaKind
-        self.service = service
+        self.loadMediaList = loadMediaList
+        self.repository = repository
         self.preferredGenreID = initialGenreID
     }
 
@@ -64,24 +67,22 @@ final class MainMediaListViewModel {
         state = .loading
 
         do {
-            let genres = try await service.fetchGenres(kind: mediaKind)
+            let selection = try await loadMediaList(
+                kind: mediaKind,
+                preferredGenreID: preferredGenreID,
+                sortOrder: selectedSortOption
+            )
             guard !Task.isCancelled else { return }
 
-            guard let selectedGenre = initialSelectedGenre(from: genres) else {
+            guard let selection else {
                 state = .empty
                 return
             }
 
-            let page = try await service.fetchItems(
-                kind: mediaKind,
-                genreID: selectedGenre.id,
-                sortOption: selectedSortOption,
-                page: 1
+            genres = selection.genres
+            state = .loaded(
+                makeContent(selectedGenre: selection.selectedGenre, page: selection.page)
             )
-            guard !Task.isCancelled else { return }
-
-            self.genres = genres
-            state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -95,10 +96,10 @@ final class MainMediaListViewModel {
         state = .refreshing(previewContent(for: selectedGenre))
 
         do {
-            let page = try await service.fetchItems(
+            let page = try await repository.discover(
                 kind: mediaKind,
                 genreID: selectedGenre.id,
-                sortOption: selectedSortOption,
+                sortOrder: selectedSortOption,
                 page: 1
             )
             guard !Task.isCancelled else { return }
@@ -121,10 +122,10 @@ final class MainMediaListViewModel {
         state = .loaded(content.updatingLoadingNextPage(true))
 
         do {
-            let nextPage = try await service.fetchItems(
+            let nextPage = try await repository.discover(
                 kind: mediaKind,
                 genreID: content.selectedGenre.id,
-                sortOption: content.selectedSortOption ?? selectedSortOption,
+                sortOrder: content.selectedSortOption ?? selectedSortOption,
                 page: content.currentPage + 1
             )
 
@@ -152,7 +153,7 @@ final class MainMediaListViewModel {
         }
     }
 
-    func selectSortOption(_ option: MediaSortOption) async {
+    func selectSortOption(_ option: MediaSortOrder) async {
         guard selectedSortOption != option else { return }
 
         selectedSortOption = option
@@ -162,10 +163,10 @@ final class MainMediaListViewModel {
             state = .refreshing(content.updatingSortOption(option))
 
             do {
-                let page = try await service.fetchItems(
+                let page = try await repository.discover(
                     kind: mediaKind,
                     genreID: content.selectedGenre.id,
-                    sortOption: option,
+                    sortOrder: option,
                     page: 1
                 )
 
@@ -196,16 +197,7 @@ final class MainMediaListViewModel {
 
     // MARK: - Private Methods
 
-    private func initialSelectedGenre(from genres: [MainMediaGenre]) -> MainMediaGenre? {
-        if let preferredGenreID,
-           let genre = genres.first(where: { $0.id == preferredGenreID }) {
-            return genre
-        }
-
-        return genres.first
-    }
-
-    private func previewContent(for selectedGenre: MainMediaGenre) -> MainMediaListContent {
+    private func previewContent(for selectedGenre: MediaGenre) -> MainMediaListContent {
         MainMediaListContent(
             genres: genres.map { genre in
                 MainMediaGenreItem(
@@ -227,10 +219,10 @@ final class MainMediaListViewModel {
     }
 
     private func makeContent(
-        selectedGenre: MainMediaGenre,
-        page: MainMediaListPage
+        selectedGenre: MediaGenre,
+        page: Page<MediaSummary>
     ) -> MainMediaListContent {
-        let items = page.items.map(MediaGridItem.init(entry:))
+        let items = page.items.map(MediaGridItem.init(summary:))
 
         return MainMediaListContent(
             genres: genres.map { genre in
@@ -244,7 +236,7 @@ final class MainMediaListViewModel {
                 isSelected: true
             ),
             items: items,
-            currentPage: page.page,
+            currentPage: page.number,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
             isLoadingNextPage: false,

@@ -63,7 +63,7 @@ private extension MainMediaGenreItem {
 
     init(filterItem: HomeSectionListGenreItem) {
         self.init(
-            genre: MainMediaGenre(id: filterItem.id, name: filterItem.name),
+            genre: MediaGenre(id: filterItem.id, name: filterItem.name),
             isSelected: filterItem.isSelected
         )
     }

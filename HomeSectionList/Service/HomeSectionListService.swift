@@ -37,22 +37,22 @@ nonisolated final class HomeSectionListService: HomeSectionListServicing {
     func fetchGenres(for mediaType: MediaKind) async throws -> [HomeSectionListGenre] {
         switch mediaType {
         case .movie:
-            let response: MainMediaGenreResponse = try await network.get(
+            let response: MediaGenreListDTO = try await network.get(
                 path: APIConfig.Genre.movieList,
                 queryItems: [
                     URLQueryItem(name: "language", value: localization.languageParameter)
                 ]
             )
-            return response.genres.map(HomeSectionListGenre.init(movieGenre:))
+            return response.mapped().map(HomeSectionListGenre.init(movieGenre:))
 
         case .tv:
-            let response: MainMediaGenreResponse = try await network.get(
+            let response: MediaGenreListDTO = try await network.get(
                 path: APIConfig.Genre.tvList,
                 queryItems: [
                     URLQueryItem(name: "language", value: localization.languageParameter)
                 ]
             )
-            return response.genres.map(HomeSectionListGenre.init(tvGenre:))
+            return response.mapped().map(HomeSectionListGenre.init(tvGenre:))
         }
     }
 }

@@ -1,25 +1,15 @@
 //
-//  SearchService.swift
+//  MediaSearchRepository.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/6.
+//  Created by Codex on 2026/9/13.
 //
 
 import Foundation
 
-// MARK: - SearchServicing
+// MARK: - MediaSearchRepository
 
-nonisolated protocol SearchServicing: Sendable {
-    func search(
-        kind: MediaKind,
-        keyword: String,
-        page: Int
-    ) async throws -> SearchResultPage
-}
-
-// MARK: - SearchService
-
-nonisolated final class SearchService: SearchServicing {
+nonisolated final class MediaSearchRepository: MediaSearchProviding {
 
     // MARK: - Properties
 
@@ -36,26 +26,19 @@ nonisolated final class SearchService: SearchServicing {
         self.localization = localization
     }
 
-    // MARK: - Public Methods
+    // MARK: - MediaSearchProviding
 
-    func search(
-        kind: MediaKind,
-        keyword: String,
-        page: Int = 1
-    ) async throws -> SearchResultPage {
-        let trimmedKeyword = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let response: TMDBPageResponse<MediaGridEntry> = try await network.get(
+    func search(kind: MediaKind, keyword: String, page: Int) async throws -> Page<MediaSummary> {
+        let dto: TMDBPageResponse<MediaSummaryDTO> = try await network.get(
             path: APIConfig.search(kind: kind),
-            queryItems: searchQueryItems(kind: kind, keyword: trimmedKeyword, page: page)
+            queryItems: searchQueryItems(kind: kind, keyword: keyword, page: page)
         )
 
-        return SearchResultPage(
-            keyword: trimmedKeyword,
-            page: response.page,
-            totalPages: response.totalPages,
-            totalResults: response.totalResults,
-            entries: response.results
+        return Page(
+            number: dto.page,
+            totalPages: dto.totalPages,
+            totalResults: dto.totalResults,
+            items: dto.results.map { $0.mapped() }
         )
     }
 

@@ -28,19 +28,28 @@ final class SearchResultsViewModel {
     // MARK: - Properties
 
     private(set) var state: SearchResultsViewState = .idle
-    private(set) var selectedSortOption: MediaSortOption?
+    private(set) var selectedSortOption: MediaSortOrder?
 
     private let mediaKind: MediaKind
-    private let service: SearchServicing
+    private let searchMedia: SearchMediaUseCase
+    private let sortMedia: SortMediaUseCase
+
+    private var keyword = ""
+    private var summaries: [MediaSummary] = []
+    private var currentPage = 0
+    private var totalPages = 1
+    private var totalResults = 0
 
     // MARK: - Initialization
 
     init(
         mediaKind: MediaKind,
-        service: SearchServicing = SearchService()
+        searchMedia: SearchMediaUseCase = DefaultSearchMediaUseCase(repository: MediaSearchRepository()),
+        sortMedia: SortMediaUseCase = DefaultSortMediaUseCase()
     ) {
         self.mediaKind = mediaKind
-        self.service = service
+        self.searchMedia = searchMedia
+        self.sortMedia = sortMedia
     }
 
     // MARK: - Public Methods
@@ -69,17 +78,16 @@ final class SearchResultsViewModel {
         state = .searching(trimmedKeyword)
 
         do {
-            let page = try await service.search(kind: mediaKind, keyword: trimmedKeyword, page: 1)
+            let page = try await searchMedia(kind: mediaKind, keyword: trimmedKeyword, page: 1)
             guard !Task.isCancelled else { return }
 
-            let content = makeSearchContent(
-                keyword: page.keyword,
-                items: page.entries.map(MediaGridItem.init(entry:)),
-                currentPage: page.page,
-                totalPages: page.totalPages,
-                totalResults: page.totalResults,
-                isLoadingNextPage: false
-            )
+            self.keyword = trimmedKeyword
+            summaries = page.items
+            currentPage = page.number
+            totalPages = page.totalPages
+            totalResults = page.totalResults
+
+            let content = makeContent(isLoadingNextPage: false)
             state = content.items.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
             guard !Task.isCancelled else { return }
@@ -97,55 +105,53 @@ final class SearchResultsViewModel {
 
         state = .results(content.updatingLoadingNextPage(true))
 
+        let requestedKeyword = keyword
+        let requestedPage = currentPage
+
         do {
-            let nextPage = try await service.search(
+            let nextPage = try await searchMedia(
                 kind: mediaKind,
-                keyword: content.keyword,
-                page: content.currentPage + 1
+                keyword: requestedKeyword,
+                page: requestedPage + 1
             )
 
-            guard !Task.isCancelled else { return }
-
-            guard case .results(let currentContent) = state,
-                  currentContent.keyword == content.keyword,
-                  currentContent.currentPage == content.currentPage else {
+            guard !Task.isCancelled,
+                  keyword == requestedKeyword,
+                  currentPage == requestedPage else {
                 return
             }
 
-            state = .results(currentContent.appending(page: nextPage))
+            summaries += nextPage.items
+            currentPage = nextPage.number
+            totalPages = nextPage.totalPages
+            totalResults = nextPage.totalResults
+            state = .results(makeContent(isLoadingNextPage: false))
         } catch {
-            guard !Task.isCancelled else { return }
-
-            guard case .results(let currentContent) = state,
-                  currentContent.keyword == content.keyword,
-                  currentContent.currentPage == content.currentPage else {
+            guard !Task.isCancelled,
+                  keyword == requestedKeyword,
+                  currentPage == requestedPage else {
                 return
             }
 
-            state = .results(currentContent.updatingLoadingNextPage(false))
+            state = .results(makeContent(isLoadingNextPage: false))
         }
     }
 
-    func selectSortOption(_ option: MediaSortOption) {
+    func selectSortOption(_ option: MediaSortOrder) {
         selectedSortOption = option
 
-        guard case .results(let content) = state else { return }
-        state = .results(content.sorting(by: option))
+        guard case .results = state else { return }
+        state = .results(makeContent(isLoadingNextPage: false))
     }
 
     // MARK: - Private Methods
 
-    private func makeSearchContent(
-        keyword: String,
-        items: [MediaGridItem],
-        currentPage: Int,
-        totalPages: Int,
-        totalResults: Int,
-        isLoadingNextPage: Bool
-    ) -> SearchContent {
-        SearchContent(
+    private func makeContent(isLoadingNextPage: Bool) -> SearchContent {
+        let ordered = selectedSortOption.map { sortMedia(summaries, order: $0) } ?? summaries
+
+        return SearchContent(
             keyword: keyword,
-            items: selectedSortOption?.sorted(items) ?? items,
+            items: ordered.map(MediaGridItem.init(summary:)),
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,

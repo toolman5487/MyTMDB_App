@@ -11,19 +11,19 @@ import Foundation
 // MARK: - MovieEntityQuery
 
 nonisolated struct MovieEntityQuery: EntityStringQuery {
-    private let searchService: any SearchServicing
+    private let searchMedia: any SearchMediaUseCase
     private let lookupService: any AppIntentEntityLookupServicing
 
     init() {
-        self.searchService = SearchService()
+        self.searchMedia = DefaultSearchMediaUseCase(repository: MediaSearchRepository())
         self.lookupService = AppIntentEntityLookupService()
     }
 
     init(
-        searchService: any SearchServicing,
+        searchMedia: any SearchMediaUseCase,
         lookupService: any AppIntentEntityLookupServicing
     ) {
-        self.searchService = searchService
+        self.searchMedia = searchMedia
         self.lookupService = lookupService
     }
 
@@ -44,8 +44,8 @@ nonisolated struct MovieEntityQuery: EntityStringQuery {
         let keyword = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !keyword.isEmpty else { return [] }
 
-        let page = try await searchService.search(kind: .movie, keyword: keyword, page: 1)
-        return page.entries.prefix(10).map(MovieEntity.init(movie:))
+        let page = try await searchMedia(kind: .movie, keyword: keyword, page: 1)
+        return page.items.prefix(10).map(MovieEntity.init(movie:))
     }
 
     func suggestedEntities() async throws -> [MovieEntity] {

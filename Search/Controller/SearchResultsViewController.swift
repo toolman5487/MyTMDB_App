@@ -19,7 +19,7 @@ final class SearchResultsViewController: BaseViewController {
     private let viewModel: SearchResultsViewModel
 
     var onItemSelected: ((Int) -> Void)?
-    var onSortBarButtonVisibilityChanged: ((Bool, MediaSortOption?) -> Void)?
+    var onSortBarButtonVisibilityChanged: ((Bool, MediaSortOrder?) -> Void)?
 
     private var items: [MediaGridItem] = []
 
@@ -130,7 +130,7 @@ final class SearchResultsViewController: BaseViewController {
         }
     }
 
-    func selectSortOption(_ option: MediaSortOption) {
+    func selectSortOption(_ option: MediaSortOrder) {
         viewModel.selectSortOption(option)
         renderCurrentState()
     }

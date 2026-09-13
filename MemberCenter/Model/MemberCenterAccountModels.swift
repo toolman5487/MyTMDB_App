@@ -180,10 +180,10 @@ nonisolated enum AccountMediaRatingValue {
 
 // MARK: - Account List Pages
 
-typealias MemberCenterFavoriteMoviePage = TMDBPageResponse<MediaGridEntry>
-typealias MemberCenterFavoriteTVPage = TMDBPageResponse<MediaGridEntry>
-typealias MemberCenterWatchlistMoviePage = TMDBPageResponse<MediaGridEntry>
-typealias MemberCenterWatchlistTVPage = TMDBPageResponse<MediaGridEntry>
+typealias MemberCenterFavoriteMoviePage = TMDBPageResponse<MediaSummaryDTO>
+typealias MemberCenterFavoriteTVPage = TMDBPageResponse<MediaSummaryDTO>
+typealias MemberCenterWatchlistMoviePage = TMDBPageResponse<MediaSummaryDTO>
+typealias MemberCenterWatchlistTVPage = TMDBPageResponse<MediaSummaryDTO>
 typealias MemberCenterRatedMoviePage = TMDBPageResponse<MemberCenterRatedMovie>
 typealias MemberCenterRatedTVPage = TMDBPageResponse<MemberCenterRatedTVSeries>
 typealias MemberCenterRatedEpisodePage = TMDBPageResponse<MemberCenterRatedEpisode>

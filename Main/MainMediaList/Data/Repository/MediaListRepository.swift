@@ -1,28 +1,15 @@
 //
-//  MainMediaListService.swift
+//  MediaListRepository.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/3.
+//  Created by Codex on 2026/9/13.
 //
 
 import Foundation
 
-// MARK: - MainMediaListServicing
+// MARK: - MediaListRepository
 
-nonisolated protocol MainMediaListServicing: Sendable {
-    func fetchGenres(kind: MediaKind) async throws -> [MainMediaGenre]
-
-    func fetchItems(
-        kind: MediaKind,
-        genreID: Int,
-        sortOption: MediaSortOption,
-        page: Int
-    ) async throws -> MainMediaListPage
-}
-
-// MARK: - MainMediaListService
-
-nonisolated final class MainMediaListService: MainMediaListServicing {
+nonisolated final class MediaListRepository: MediaListProviding {
 
     // MARK: - Properties
 
@@ -39,41 +26,40 @@ nonisolated final class MainMediaListService: MainMediaListServicing {
         self.localization = localization
     }
 
-    // MARK: - Public Methods
+    // MARK: - MediaListProviding
 
-    func fetchGenres(kind: MediaKind) async throws -> [MainMediaGenre] {
-        let response: MainMediaGenreResponse = try await network.get(
+    func genres(kind: MediaKind) async throws -> [MediaGenre] {
+        let dto: MediaGenreListDTO = try await network.get(
             path: APIConfig.genreList(kind: kind),
             queryItems: [
                 URLQueryItem(name: "language", value: localization.languageParameter)
             ]
         )
 
-        return response.genres
+        return dto.mapped()
     }
 
-    func fetchItems(
+    func discover(
         kind: MediaKind,
         genreID: Int,
-        sortOption: MediaSortOption,
-        page: Int = 1
-    ) async throws -> MainMediaListPage {
-        let response: TMDBPageResponse<MediaGridEntry> = try await network.get(
+        sortOrder: MediaSortOrder,
+        page: Int
+    ) async throws -> Page<MediaSummary> {
+        let dto: TMDBPageResponse<MediaSummaryDTO> = try await network.get(
             path: APIConfig.discover(kind: kind),
             queryItems: discoverQueryItems(
                 kind: kind,
                 genreID: genreID,
-                sortOption: sortOption,
+                sortOrder: sortOrder,
                 page: page
             )
         )
 
-        return MainMediaListPage(
-            genreID: genreID,
-            page: response.page,
-            totalPages: response.totalPages,
-            totalResults: response.totalResults,
-            items: response.results
+        return Page(
+            number: dto.page,
+            totalPages: dto.totalPages,
+            totalResults: dto.totalResults,
+            items: dto.results.map { $0.mapped() }
         )
     }
 
@@ -82,7 +68,7 @@ nonisolated final class MainMediaListService: MainMediaListServicing {
     private func discoverQueryItems(
         kind: MediaKind,
         genreID: Int,
-        sortOption: MediaSortOption,
+        sortOrder: MediaSortOrder,
         page: Int
     ) -> [URLQueryItem] {
         var queryItems = [
@@ -94,7 +80,7 @@ nonisolated final class MainMediaListService: MainMediaListServicing {
         }
 
         queryItems.append(contentsOf: [
-            URLQueryItem(name: "sort_by", value: sortOption.discoverSortValue(kind: kind)),
+            URLQueryItem(name: "sort_by", value: sortOrder.discoverSortValue(kind: kind)),
             URLQueryItem(name: "include_adult", value: "false")
         ])
 
@@ -115,9 +101,9 @@ nonisolated final class MainMediaListService: MainMediaListServicing {
     }
 }
 
-// MARK: - MediaSortOption
+// MARK: - MediaSortOrder Discover Parameter
 
-private extension MediaSortOption {
+private extension MediaSortOrder {
 
     func discoverSortValue(kind: MediaKind) -> String {
         let dateField = kind == .movie ? "release_date" : "first_air_date"

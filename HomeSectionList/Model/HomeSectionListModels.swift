@@ -34,12 +34,12 @@ nonisolated struct HomeSectionListGenre: Sendable, Equatable, Identifiable {
         self.name = name
     }
 
-    init(movieGenre: MainMediaGenre) {
+    init(movieGenre: MediaGenre) {
         self.id = movieGenre.id
         self.name = movieGenre.name
     }
 
-    init(tvGenre: MainMediaGenre) {
+    init(tvGenre: MediaGenre) {
         self.id = tvGenre.id
         self.name = tvGenre.name
     }

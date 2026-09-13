@@ -104,10 +104,13 @@ extension MediaSummaryDTO {
         MediaSummary(
             id: id,
             title: title,
+            overview: overview,
             posterPath: posterPath,
+            backdropPath: backdropPath,
             releaseDate: CalendarDayParsing.calendarDay(from: releaseDate),
             voteAverage: voteAverage,
-            voteCount: voteCount
+            voteCount: voteCount,
+            popularity: popularity
         )
     }
 }

@@ -11,19 +11,19 @@ import Foundation
 // MARK: - TVSeriesEntityQuery
 
 nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
-    private let searchService: any SearchServicing
+    private let searchMedia: any SearchMediaUseCase
     private let lookupService: any AppIntentEntityLookupServicing
 
     init() {
-        self.searchService = SearchService()
+        self.searchMedia = DefaultSearchMediaUseCase(repository: MediaSearchRepository())
         self.lookupService = AppIntentEntityLookupService()
     }
 
     init(
-        searchService: any SearchServicing,
+        searchMedia: any SearchMediaUseCase,
         lookupService: any AppIntentEntityLookupServicing
     ) {
-        self.searchService = searchService
+        self.searchMedia = searchMedia
         self.lookupService = lookupService
     }
 
@@ -44,8 +44,8 @@ nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
         let keyword = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !keyword.isEmpty else { return [] }
 
-        let page = try await searchService.search(kind: .tv, keyword: keyword, page: 1)
-        return page.entries.prefix(10).map(TVSeriesEntity.init(series:))
+        let page = try await searchMedia(kind: .tv, keyword: keyword, page: 1)
+        return page.items.prefix(10).map(TVSeriesEntity.init(series:))
     }
 
     func suggestedEntities() async throws -> [TVSeriesEntity] {
