@@ -45,7 +45,7 @@ nonisolated enum SeasonDetailSectionBuilder {
             sections.append(.episodes(episodes))
         }
 
-        let videos = content.videos.results
+        let videos = content.videos
             .filter { !$0.key.isEmpty }
             .sorted { videoPriority($0) < videoPriority($1) }
             .prefix(DetailSectionPreviewLimit.itemCount)
@@ -68,8 +68,8 @@ nonisolated enum SeasonDetailSectionBuilder {
             sections.append(.images(images))
         }
 
-        if case .rated = content.accountStates.rated {
-            sections.append(.accountState(SeasonAccountStateItem(accountStates: content.accountStates)))
+        if case .rated = content.accountState.rating {
+            sections.append(.accountState(SeasonAccountStateItem(accountState: content.accountState)))
         }
 
         let watchProviders = makeWatchProviderItems(response: content.watchProviders)
@@ -81,13 +81,16 @@ nonisolated enum SeasonDetailSectionBuilder {
     }
 
     private static func makeFacts(
-        detail: SeasonDetail,
+        detail: Season,
         detailItem: SeasonDetailItem
     ) -> [SeasonDetailFactItem] {
         [
             makeFact(title: "季數", value: detailItem.seasonNumberText),
             makeFact(title: "集數", value: detailItem.episodeCountText),
-            makeFact(title: "首播日期", value: BaseDisplayTextFormatter.nonEmptyText(detail.airDate)),
+            makeFact(
+                title: "首播日期",
+                value: BaseDisplayTextFormatter.isoDayText(from: detail.airDate)
+            ),
             makeFact(title: "評分", value: detail.voteAverage > 0 ? detailItem.scoreText : nil)
         ].compactMap { $0 }
     }
@@ -145,7 +148,7 @@ nonisolated enum SeasonDetailSectionBuilder {
         )
     }
 
-    private static func makeImageGalleryItem(images: MediaImagesDTO) -> SeasonImageGalleryItem? {
+    private static func makeImageGalleryItem(images: MediaImages) -> SeasonImageGalleryItem? {
         let posters = images.posters
             .filter { !$0.filePath.isEmpty }
             .prefix(DetailSectionPreviewLimit.itemCount)
@@ -169,17 +172,17 @@ nonisolated enum SeasonDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        response: WatchProvidersDTO,
+        response: WatchProviders,
         localization: AppLocalization = .current
     ) -> [SeasonWatchProviderItem] {
         let preferredRegionCode = localization.regionCode.uppercased()
-        let preferredCountry = response.results[preferredRegionCode]
-        let countries: [(key: String, value: WatchProviderCountryDTO)]
+        let preferredCountry = response.countries[preferredRegionCode]
+        let countries: [(key: String, value: WatchProviderCountry)]
 
         if let preferredCountry {
             countries = [(key: preferredRegionCode, value: preferredCountry)]
         } else {
-            countries = response.results.sorted { $0.key < $1.key }
+            countries = response.countries.sorted { $0.key < $1.key }
         }
 
         return countries
@@ -192,7 +195,7 @@ nonisolated enum SeasonDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         countryCode: String,
-        country: WatchProviderCountryDTO
+        country: WatchProviderCountry
     ) -> [SeasonWatchProviderItem] {
         [
             makeWatchProviderItems(
@@ -229,7 +232,7 @@ nonisolated enum SeasonDetailSectionBuilder {
     }
 
     private static func makeWatchProviderItems(
-        providers: [WatchProviderDTO],
+        providers: [WatchProvider],
         countryCode: String,
         category: String,
         link: String
@@ -252,7 +255,7 @@ nonisolated enum SeasonDetailSectionBuilder {
             }
     }
 
-    private static func videoPriority(_ video: VideoDTO) -> Int {
+    private static func videoPriority(_ video: Video) -> Int {
         switch video.type.lowercased() {
         case "trailer":
             return 0

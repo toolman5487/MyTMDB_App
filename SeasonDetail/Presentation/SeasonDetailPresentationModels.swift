@@ -86,6 +86,73 @@ nonisolated struct SeasonDetailOverviewSectionItem: Sendable, Equatable {
 
 // MARK: - Presentation Items
 
+nonisolated struct SeasonDetailItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let title: String
+    let overview: String
+    let airDateText: String
+    let episodeCountText: String
+    let seasonNumberText: String
+    let scoreText: String
+    let posterURL: URL?
+
+    init(detail: Season) {
+        self.id = detail.id
+        self.title = BaseDisplayTextFormatter.text(detail.name, fallback: "未命名季數")
+        self.overview = BaseDisplayTextFormatter.overview(detail.overview)
+        self.airDateText = BaseDisplayTextFormatter.announcedText(
+            BaseDisplayTextFormatter.isoDayText(from: detail.airDate)
+        )
+        self.episodeCountText = BaseDisplayTextFormatter.countText(detail.episodes.count, unit: "集")
+        self.seasonNumberText = BaseDisplayTextFormatter.seasonNumberText(detail.seasonNumber)
+        self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
+        self.posterURL = detail.posterPath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w500)
+        }
+    }
+}
+
+nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
+    let id: Int
+    let episodeNumber: Int
+    let title: String
+    let subtitle: String
+    let overview: String
+    let stillURL: URL?
+    let scoreText: String
+
+    init(episode: SeasonEpisode) {
+        self.id = episode.id
+        self.episodeNumber = episode.episodeNumber
+        self.title = BaseDisplayTextFormatter.episodeTitle(
+            BaseDisplayTextFormatter.text(episode.name, fallback: "未命名集數"),
+            episodeNumber: episode.episodeNumber
+        )
+        self.subtitle = Self.makeSubtitle(episode: episode)
+        self.overview = BaseDisplayTextFormatter.overview(episode.overview)
+        self.stillURL = episode.stillPath.flatMap {
+            APIConfig.tmdbImageURL(path: $0, size: .w500)
+        }
+        self.scoreText = BaseDisplayTextFormatter.decimal(episode.voteAverage)
+    }
+
+    private static func makeSubtitle(episode: SeasonEpisode) -> String {
+        BaseDisplayTextFormatter.metadata([
+            BaseDisplayTextFormatter.isoDayText(from: episode.airDate),
+            BaseDisplayTextFormatter.runtime(episode.runtime)
+        ]) ?? BaseDisplayTextFormatter.announcedText(nil)
+    }
+}
+
+nonisolated struct SeasonDetailFactItem: Sendable, Equatable, Identifiable {
+    var id: String {
+        title
+    }
+
+    let title: String
+    let value: String
+}
+
 nonisolated struct SeasonVideoItem: Sendable, Equatable, Identifiable {
     let id: String
     let title: String
@@ -94,7 +161,7 @@ nonisolated struct SeasonVideoItem: Sendable, Equatable, Identifiable {
     let youtubeVideoKey: String?
     let videoURL: URL?
 
-    init(video: VideoDTO) {
+    init(video: Video) {
         self.id = video.id
         self.title = video.name
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
@@ -117,10 +184,10 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let profileURL: URL?
 
-    init(aggregateCast: AggregateCastMemberDTO) {
+    init(aggregateCast: AggregateCastMember) {
         self.id = aggregateCast.id
-        self.title = aggregateCast.name
-        self.subtitle = aggregateCast.roles.first?.character
+        self.title = BaseDisplayTextFormatter.text(aggregateCast.name, fallback: "未命名")
+        self.subtitle = aggregateCast.characters.first
         self.profileURL = aggregateCast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
         }
@@ -128,7 +195,7 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
 
     init(creditCast: SeasonCreditCast) {
         self.id = creditCast.id
-        self.title = creditCast.name
+        self.title = BaseDisplayTextFormatter.text(creditCast.name, fallback: "未命名")
         self.subtitle = BaseDisplayTextFormatter.nonEmptyText(creditCast.character)
         self.profileURL = creditCast.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
@@ -143,12 +210,12 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let profileURL: URL?
 
-    init(aggregateCrew: AggregateCrewMemberDTO) {
+    init(aggregateCrew: AggregateCrewMember) {
         self.id = "\(aggregateCrew.id)-\(aggregateCrew.department)"
         self.personID = aggregateCrew.id
-        self.title = aggregateCrew.name
+        self.title = BaseDisplayTextFormatter.text(aggregateCrew.name, fallback: "未命名")
         self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
-            job: aggregateCrew.jobs.first?.job,
+            job: aggregateCrew.jobs.first,
             department: aggregateCrew.department
         )
         self.profileURL = aggregateCrew.profilePath.flatMap {
@@ -159,7 +226,7 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
     init(creditCrew: SeasonCreditCrew) {
         self.id = creditCrew.creditID
         self.personID = creditCrew.id
-        self.title = creditCrew.name
+        self.title = BaseDisplayTextFormatter.text(creditCrew.name, fallback: "未命名")
         self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
             job: creditCrew.job,
             department: creditCrew.department
@@ -189,7 +256,7 @@ nonisolated struct SeasonImageItem: Sendable, Equatable, Identifiable {
     let imageURL: URL?
     let aspectRatio: Double
 
-    init(image: MediaImageDTO) {
+    init(image: MediaImage) {
         self.filePath = image.filePath
         self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
         self.aspectRatio = image.aspectRatio
@@ -210,7 +277,7 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
 
     init(
         countryCode: String,
-        provider: WatchProviderDTO,
+        provider: WatchProvider,
         category: String,
         link: String
     ) {
@@ -228,8 +295,8 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
 nonisolated struct SeasonAccountStateItem: Sendable, Equatable {
     let ratingText: String
 
-    init(accountStates: SeasonAccountStatesResponse) {
-        switch accountStates.rated {
+    init(accountState: SeasonAccountState) {
+        switch accountState.rating {
         case .unrated:
             self.ratingText = BaseDisplayTextFormatter.unratedText
 

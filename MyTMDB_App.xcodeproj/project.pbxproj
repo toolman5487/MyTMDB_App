@@ -25,8 +25,6 @@
 		15606CB12FF4F1000036898B /* TVDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */; };
 		15606CBE2FF520000036898B /* TVDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC42FF520000036898B /* TVDetailCells.swift */; };
 		15606CC62FF530000036898B /* TVDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15606CC52FF530000036898B /* TVDetailRouter.swift */; };
-		157C54202FFB95000044BD8E /* SeasonDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C54002FFB95000044BD8E /* SeasonDetailModels.swift */; };
-		157C54302FFB95000044BD8E /* SeasonDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C54012FFB95000044BD8E /* SeasonDetailService.swift */; };
 		157C54402FFB95000044BD8E /* SeasonDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C54022FFB95000044BD8E /* SeasonDetailViewModel.swift */; };
 		157C56202FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C56002FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift */; };
 		157C57202FFB9F000044BD8E /* SeasonDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157C57002FFB9F000044BD8E /* SeasonDetailCells.swift */; };
@@ -251,6 +249,15 @@
 		C3243A678ED76DF85F684B70 /* ISO8601DateParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4431D00F7FA65247AE6C8134 /* ISO8601DateParsing.swift */; };
 		C84B8DF34B4F53E97747840F /* MovieDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2B9878226BC31E176AB6 /* MovieDetailDTO.swift */; };
 		C85A4A19CCAD833193F11E63 /* TVDetailProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2947A58DA8739F73FCC519F6 /* TVDetailProviding.swift */; };
+		C50200013016000000502001 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100013016000000501001 /* Season.swift */; };
+		C50200023016000000502002 /* SeasonCredits.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100023016000000501002 /* SeasonCredits.swift */; };
+		C50200033016000000502003 /* SeasonMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100033016000000501003 /* SeasonMetadata.swift */; };
+		C50200043016000000502004 /* SeasonDetailContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100043016000000501004 /* SeasonDetailContent.swift */; };
+		C50200053016000000502005 /* SeasonDetailProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100053016000000501005 /* SeasonDetailProviding.swift */; };
+		C50200063016000000502006 /* LoadSeasonDetailUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100063016000000501006 /* LoadSeasonDetailUseCase.swift */; };
+		C50200073016000000502007 /* SeasonDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100073016000000501007 /* SeasonDetailDTO.swift */; };
+		C50200083016000000502008 /* SeasonDetailDTO+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100083016000000501008 /* SeasonDetailDTO+Mapping.swift */; };
+		C50200093016000000502009 /* SeasonDetailRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50100093016000000501009 /* SeasonDetailRepository.swift */; };
 		CB706AC8031A3D81282CD667 /* MediaKind+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EB411BD98372D8648F92B0 /* MediaKind+Presentation.swift */; };
 		D3A8CF31095484C3ADAD1351 /* TVDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C55B4149C4284303539940 /* TVDetailDTO.swift */; };
 		D57D7493C176C42744D359F3 /* TVDetailContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6FFFF19609167D7B5958CE /* TVDetailContent.swift */; };
@@ -288,8 +295,6 @@
 		15606CB42FF4F1000036898B /* TVDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		15606CC42FF520000036898B /* TVDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailCells.swift; sourceTree = "<group>"; };
 		15606CC52FF530000036898B /* TVDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDetailRouter.swift; sourceTree = "<group>"; };
-		157C54002FFB95000044BD8E /* SeasonDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailModels.swift; sourceTree = "<group>"; };
-		157C54012FFB95000044BD8E /* SeasonDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailService.swift; sourceTree = "<group>"; };
 		157C54022FFB95000044BD8E /* SeasonDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailViewModel.swift; sourceTree = "<group>"; };
 		157C56002FFB9B000044BD8E /* SeasonDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailHeroHeaderView.swift; sourceTree = "<group>"; };
 		157C57002FFB9F000044BD8E /* SeasonDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDetailCells.swift; sourceTree = "<group>"; };
@@ -518,6 +523,15 @@
 		BA8FA062565448424A7CD870 /* ReviewFilterHeaderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewFilterHeaderView.swift; sourceTree = "<group>"; };
 		BEF381CFE663593316A05A00 /* ReviewFilter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewFilter.swift; sourceTree = "<group>"; };
 		C4CD77D443CEEF6C1EE8846D /* SearchResultCollectionViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SearchResultCollectionViewCell.swift; sourceTree = "<group>"; };
+		C50100013016000000501001 /* Season.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
+		C50100023016000000501002 /* SeasonCredits.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonCredits.swift; sourceTree = "<group>"; };
+		C50100033016000000501003 /* SeasonMetadata.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonMetadata.swift; sourceTree = "<group>"; };
+		C50100043016000000501004 /* SeasonDetailContent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonDetailContent.swift; sourceTree = "<group>"; };
+		C50100053016000000501005 /* SeasonDetailProviding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonDetailProviding.swift; sourceTree = "<group>"; };
+		C50100063016000000501006 /* LoadSeasonDetailUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoadSeasonDetailUseCase.swift; sourceTree = "<group>"; };
+		C50100073016000000501007 /* SeasonDetailDTO.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonDetailDTO.swift; sourceTree = "<group>"; };
+		C50100083016000000501008 /* SeasonDetailDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "SeasonDetailDTO+Mapping.swift"; sourceTree = "<group>"; };
+		C50100093016000000501009 /* SeasonDetailRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeasonDetailRepository.swift; sourceTree = "<group>"; };
 		CEFEB4271D411F5845169B2B /* SearchService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		D34B7B9651ADE732A66FB1A2 /* MediaDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "MediaDTO+Mapping.swift"; sourceTree = "<group>"; };
 		D37B5DD4487F0A403C6B5D51 /* MovieDetailDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "MovieDetailDTO+Mapping.swift"; sourceTree = "<group>"; };
@@ -729,20 +743,75 @@
 			path = Router;
 			sourceTree = "<group>";
 		};
-		157C54102FFB95000044BD8E /* Model */ = {
+		C50300013016000000503001 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
-				157C54002FFB95000044BD8E /* SeasonDetailModels.swift */,
+				C50300023016000000503002 /* Entity */,
+				C50300033016000000503003 /* Repository */,
+				C50300043016000000503004 /* UseCase */,
 			);
-			path = Model;
+			path = Domain;
 			sourceTree = "<group>";
 		};
-		157C54112FFB95000044BD8E /* Service */ = {
+		C50300023016000000503002 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
-				157C54012FFB95000044BD8E /* SeasonDetailService.swift */,
+				C50100013016000000501001 /* Season.swift */,
+				C50100023016000000501002 /* SeasonCredits.swift */,
+				C50100043016000000501004 /* SeasonDetailContent.swift */,
+				C50100033016000000501003 /* SeasonMetadata.swift */,
 			);
-			path = Service;
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		C50300033016000000503003 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				C50100053016000000501005 /* SeasonDetailProviding.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		C50300043016000000503004 /* UseCase */ = {
+			isa = PBXGroup;
+			children = (
+				C50100063016000000501006 /* LoadSeasonDetailUseCase.swift */,
+			);
+			path = UseCase;
+			sourceTree = "<group>";
+		};
+		C50300053016000000503005 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				C50300063016000000503006 /* DTO */,
+				C50300073016000000503007 /* Mapper */,
+				C50300083016000000503008 /* Repository */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		C50300063016000000503006 /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				C50100073016000000501007 /* SeasonDetailDTO.swift */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		C50300073016000000503007 /* Mapper */ = {
+			isa = PBXGroup;
+			children = (
+				C50100083016000000501008 /* SeasonDetailDTO+Mapping.swift */,
+			);
+			path = Mapper;
+			sourceTree = "<group>";
+		};
+		C50300083016000000503008 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				C50100093016000000501009 /* SeasonDetailRepository.swift */,
+			);
+			path = Repository;
 			sourceTree = "<group>";
 		};
 		157C54122FFB95000044BD8E /* ViewModel */ = {
@@ -1585,10 +1654,10 @@
 			isa = PBXGroup;
 			children = (
 				15BAE9F52FF61D5B006B0E15 /* Controller */,
-				157C54102FFB95000044BD8E /* Model */,
+				C50300053016000000503005 /* Data */,
+				C50300013016000000503001 /* Domain */,
 				15F1200B300E200000F12001 /* Presentation */,
 				157C58102FFBA000044BD8E /* Router */,
-				157C54112FFB95000044BD8E /* Service */,
 				157C55102FFB99000044BD8E /* View */,
 				157C54122FFB95000044BD8E /* ViewModel */,
 			);
@@ -2992,8 +3061,15 @@
 				158825552FFF7A9A0028B219 /* HomeSectionListRouter.swift in Sources */,
 				1588255C2FFF7A9F0028B219 /* HomeSectionListFilterHeaderView.swift in Sources */,
 				15BAE9FA2FF61D8B006B0E15 /* SeasonDetailViewController.swift in Sources */,
-				157C54202FFB95000044BD8E /* SeasonDetailModels.swift in Sources */,
-				157C54302FFB95000044BD8E /* SeasonDetailService.swift in Sources */,
+				C50200013016000000502001 /* Season.swift in Sources */,
+				C50200023016000000502002 /* SeasonCredits.swift in Sources */,
+				C50200033016000000502003 /* SeasonMetadata.swift in Sources */,
+				C50200043016000000502004 /* SeasonDetailContent.swift in Sources */,
+				C50200053016000000502005 /* SeasonDetailProviding.swift in Sources */,
+				C50200063016000000502006 /* LoadSeasonDetailUseCase.swift in Sources */,
+				C50200073016000000502007 /* SeasonDetailDTO.swift in Sources */,
+				C50200083016000000502008 /* SeasonDetailDTO+Mapping.swift in Sources */,
+				C50200093016000000502009 /* SeasonDetailRepository.swift in Sources */,
 				157C54402FFB95000044BD8E /* SeasonDetailViewModel.swift in Sources */,
 				15F1210D300E200000F12101 /* SeasonDetailSectionBuilder.swift in Sources */,
 				15F12110300E200000F12101 /* SeasonDetailPresentationModels.swift in Sources */,

@@ -73,7 +73,12 @@ extension MediaImagesDTO {
 extension MediaImageDTO {
 
     func mapped() -> MediaImage {
-        MediaImage(filePath: filePath, width: width, height: height)
+        MediaImage(
+            filePath: filePath,
+            aspectRatio: aspectRatio,
+            width: width,
+            height: height
+        )
     }
 }
 

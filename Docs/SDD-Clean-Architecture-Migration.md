@@ -9,9 +9,9 @@
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router |
 | 目標架構 | Clean Architecture（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 全專案 243 檔 / 47,616 行 |
-| 狀態 | Phase 1 完成；Phase 2 分層進行中（ReviewList 已完成） |
-| 日期 | 2026-09-12 |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 262 個 Swift 檔 / 45,111 行 |
+| 狀態 | Phase 1 完成；Phase 2 已完成 4 / 11 個 feature（ReviewList、MovieDetail、TVDetail、SeasonDetail） |
+| 日期 | 2026-09-13 |
 
 ---
 
@@ -19,7 +19,7 @@
 
 本文件定義 CineBase 由現行 MVVM 分層遷移至 Clean Architecture 的設計規格、分階段計畫與驗收標準。
 
-本文件同時要回答一個前置問題：**這個遷移在什麼條件下才划算**。因此 Phase 3（實體模組拆分）帶有明確的進入條件，不是無條件執行的項目。
+本文件同時要回答一個前置問題：**這個遷移在什麼條件下才划算**。因此 Phase 3（依賴反轉與 composition root）帶有明確的進入條件，不是無條件執行的項目。實體模組拆分已取消，見 11 節。
 
 本文件不涵蓋自動化測試規格。相關內容已於 v1.1 移除，見 16 節修訂紀錄與 13 節風險條目 R2。
 
@@ -33,12 +33,12 @@
 - 業務編排邏輯由 Service 移出，成為職責單一的 UseCase。
 - 所有遠端資料存取統一經過 Repository 抽象，保留快取與本地資料來源的插入點。
 - 建立 composition root，移除編譯期對 concrete type 的依賴。
-- 讓層與層的邊界由**編譯器**強制，而非資料夾命名慣例。
+- 讓層與層的依賴規則可透過固定的機械檢查與 code review 驗證，而非只依靠資料夾命名直覺。
 
 ### 2.2 品質目標
 
 - 消除 Movie / TV 平行重複程式碼，重複檔案組數由 31 降至 10 以下（Detail 依 9.2 評估結果可例外）。
-- 統一目前散落在 5 處的 `case movie / case tv` 列舉。
+- 以 `MediaKind` 取代 2 個純二元的 `case movie / case tv` 列舉；其餘 3 個含額外語意的型別保留（見 9.1）。
 - 遷移過程中每個 Phase 結束時 App 皆可編譯、可執行、功能不退化。
 - 每個 Phase 可獨立驗收，不產生跨 Phase 的長期分支。
 
@@ -49,7 +49,7 @@
 - 不引入 RxSwift、Combine 或第三方 DI 框架。
 - 不引入本地資料庫（Core Data / SwiftData / Realm）。Repository 只是**保留**插入點，本階段不實作快取。
 - 不建立自動化測試，不新增測試 target。
-- **不建立 SPM package**。層次以頂層資料夾表達，不設實體模組邊界（見 4.3）。
+- **不建立 SPM package**。層次收在各 feature 的 `Domain/`、`Data/` 資料夾，不設實體模組邊界（見 4.3）。
 - 不搬移 Presentation 與 App 檔案的資料夾位置。架構缺口是 G1/G2/G3，檔案位置不是。
 - 不為了分層而分層：只有真正含業務規則的程式碼才進 Domain（見 5.6）。
 
@@ -59,70 +59,74 @@
 
 ### 3.1 量化現況
 
-數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1 與 ReviewList 分層試點完成後。
+數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1，以及 ReviewList、MovieDetail、TVDetail、SeasonDetail 四個 Phase 2 feature 完成分層實作後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
 
 | 項目 | 起點 | 現在 |
 |------|------|------|
-| Swift 檔案數 | 243 | 229 |
-| 程式碼行數 | 47,616 | 43,846 |
+| Swift 檔案數 | 243 | 262 |
+| 程式碼行數 | 47,616 | 45,111 |
 | Xcode target 數 | 1（`MyTMDB_App`，application） | 1 |
 | 檔案組織方式 | 240 檔為顯式 `PBXFileReference`，`MyTMDB_App/` 資料夾使用 `PBXFileSystemSynchronizedRootGroup` | 不變 |
-| ViewModel 數 | 24 | 22 |
-| Service 數 | 22 | 20 |
-| Repository 數 | 2（皆位於 `MemberCenter`） | 3 |
-| UseCase 數 | 0 | 2 |
-| Domain Entity 數 | 0 | 4 |
+| ViewModel 資料夾內 Swift 檔案數 | 24 | 21 |
+| Service 資料夾內 Swift 檔案數 | 22 | 17 |
+| Repository 實作數 | 2（皆位於 `MemberCenter`） | 6 |
+| UseCase 檔案數 | 0 | 5 |
+| Domain Entity 型別數 | 0 | 47（分布於 20 檔） |
 | `import UIKit` 出現在 ViewModel / Service / Model / Presentation | 2 檔 | 2 檔 |
-| `= NetworkService()` 預設參數 | 18 處 | 18 處 |
-| service / store concrete 預設參數 | 49 處 | 49 處 |
+| `= NetworkService()` 預設參數 | 18 處 | 17 處 |
+| 其他 concrete dependency 預設參數 | 49 處 | 仍有多處，Phase 3 開始前依 10.1 重新盤點 |
 | `convenience init()` 硬接依賴 | 4 處 | 4 處 |
 | Movie / TV 平行檔案組 | 31 組 | 9 組（僅 MovieDetail↔TVDetail） |
 | 獨立的 `case movie / case tv` 列舉 | 5 個 | 3 個（皆非二元，見 9.1） |
 
 專案採用顯式檔案參照而非全資料夾同步，代表**新增 Swift 檔需手動加入 target**。既有 commit `711763f`（`fix: add member center list repository to target`）即為漏加所致。此為需持續注意的操作風險，見 13 節 R5。
 
-依賴注入相關的四列在 Phase 1 與分層試點後皆未變動，這是預期內的：composition root 屬於獨立步驟，不隨個別 feature 進行（見 10.4）。
+依賴注入仍未進入系統性處理：`AppDependencies` 尚不存在、4 個 `convenience init()` 仍保留，且仍有 17 處 `= NetworkService()`。這是預期內的過渡狀態；composition root 屬於獨立步驟，不隨個別 feature 進行（見 10.4）。
 
 ### 3.2 已符合 Clean Architecture 的部分
 
 這些是遷移中最難補的項目，專案已經具備，必須在遷移中**保留而非重寫**：
 
 - **UI 框架隔離已成立。** 243 檔中 130 檔 `import UIKit`，但 ViewModel / Service / Model / Presentation 層僅 2 個例外：`MainLogIn/Service/AppRootFactory.swift` 與 `MainTabBar/Service/MainTabBarAvatarService.swift`。兩者本質為 UI factory，屬於位置放錯而非設計錯誤。
-- **DTO 未外洩至 UI 層。** 針對 `MovieDetail/Controller`、`MovieDetail/View`、`TVDetail/Controller`、`TVDetail/View` 掃描，無任何直接使用 `MovieDetail` / `TVDetail` DTO 之處。`MovieDetailSectionBuilder` 已將其轉為 `MovieDetailItem`、`MovieDetailHeroItem` 等 presentation model。
+- **已分層 feature 的 DTO 未外洩至 UI 層。** `ReviewList`、`MovieDetail`、`TVDetail`、`SeasonDetail` 的 ViewModel、Presentation、Controller 與 View 均只使用 Domain Entity 或 presentation model。尚未分層的 `EpisodeDetail` 暫時直接使用 TVDetail 搬出的共用 DTO，屬 Phase 2 過渡債務，待該 feature 分層時解除。
 - **Presentation 層已存在。** `MovieDetail`、`TVDetail`、`SeasonDetail`、`PersonDetail`、`EpisodeDetail`、`MainHome`、`MemberCenter` 共有 8 個 `SectionBuilder` / `PresentationBuilder`，皆為輸入輸出俱為值型別的靜態純函數。這等同 Clean 的 Presenter。
-- **Protocol 邊界已建立。** `NetworkServicing`、`MovieDetailServicing`、`SessionStoring`、`MemberCenterContentProviding` 等，依賴皆以 protocol 宣告。
+- **Protocol 邊界已建立。** `NetworkServicing`、`MovieDetailProviding`、`TVDetailProviding`、`ReviewProviding`、`SessionStoring`、`MemberCenterContentProviding` 等，依賴皆以 protocol 宣告。
 - **Swift 6 嚴格並行已就緒。** Service 層一致標註 `nonisolated` + `Sendable`，ViewModel 標註 `@MainActor`，並行以 `async let` 與 `withThrowingTaskGroup` 實作。
 
 ### 3.3 落差清單
 
-#### G1 — 缺少 Domain Entity，DTO 直接充當領域模型
+#### G1 — Domain Entity 尚未覆蓋全部 feature（部分完成）
 
-`MovieDetail` 為 `Decodable`，內含 `CodingKeys` 與 decode fallback（`?? "未命名"`），並一路傳遞至 `MovieDetailSectionBuilder`。
+`ReviewList`、`MovieDetail`、`TVDetail`、`SeasonDetail` 已完成 Entity / DTO 分離，Domain Entity 不具 `Decodable` / `Encodable` conformance。其餘 Phase 2 feature 仍由 DTO 或既有 Model 直接承載資料與部分語意。
 
-全部 DTO 的 `init(from:)` 中僅 `id` 為必填欄位，其餘一律 `decodeIfPresent` 搭配預設值。這些預設值同時承擔了「資料缺失」與「顯示文案」兩種語意。
+目前最明顯的過渡狀態是 `EpisodeDetail` 仍直接使用 `AggregateCreditsDTO`、`MediaImagesDTO`、`VideosDTO` 等 Data 型別。SeasonDetail 的同類依賴已改由 Repository mapping 成共用 Domain Entity。
 
-影響：TMDB 變更欄位時，衝擊面直達 Presentation 層。業務規則與傳輸格式無法分離。
+影響：尚未分層的 feature 仍可能讓 TMDB 欄位變更直接衝擊 Presentation。4.3 已補上逐 feature 的 DTO 外洩檢查；該檢查只要求正在驗收的 feature 無輸出，不要求尚未分層的 feature 提前通過。
 
-#### G2 — 缺少 UseCase，Service 身兼 API client 與業務編排
+#### G2 — UseCase 尚未覆蓋全部業務編排（部分完成）
 
-`MovieDetail/Service/MovieDetailService.swift:70` 的 `fetchMovieDetailContent(id:recommendationPage:)` 以 `async let` 併發呼叫 8 支 API、逐支提供 fallback、再依 detail 結果決定是否抓取 collection。這是業務編排邏輯，卻與 HTTP endpoint 封裝置於同一 class。
+`LoadReviewsUseCase`、`FilterReviewsUseCase`、`LoadMovieDetailUseCase`、`LoadTVDetailUseCase`、`LoadSeasonDetailUseCase` 已建立。MovieDetail、TVDetail 與 SeasonDetail 的「主要資料失敗則整體失敗，輔助資料失敗則降級」已由 Service 移入 UseCase。
 
-影響：「主要資料失敗則整體失敗，輔助資料失敗則降級」這條規則隱藏在私有方法 `fetchAuxiliaryContent` 中，無法在不觸及網路層的情況下檢視或重用。
+`EpisodeDetailService.fetchEpisodeDetailContent` 仍同時負責 API 呼叫、併發編排與失敗降級，是下一個應遷移的明確案例。
 
-#### G3 — 缺少 Repository 抽象
+#### G3 — Repository 抽象尚未覆蓋全部遠端資料（部分完成）
 
-全專案僅 `MemberCenter/Repository/MemberCenterContentRepository.swift` 與 `MemberCenter/List/Repository/MemberCenterListContentRepository.swift` 兩個 Repository。其餘 feature 為 `ViewModel → Service → NetworkService` 直通。
+目前有 6 個 Repository 實作：MemberCenter 既有 2 個，加上 `ReviewRepository`、`MovieDetailRepository`、`TVDetailRepository`、`SeasonDetailRepository`。其餘 feature 仍多為 `ViewModel → Service → NetworkService` 直通。
 
 影響：無快取、離線、本地資料來源的插入點。
 
 #### G4 — 依賴反轉僅完成一半
 
-protocol 已宣告，但 18 處 `network: NetworkServicing = NetworkService()`、49 處 service / store concrete 預設值、4 處 `convenience init()` 使編譯期依賴仍指向具體型別：
+protocol 已宣告，但仍有 17 處 `network: NetworkServicing = NetworkService()`、多處 concrete dependency 預設值、4 處 `convenience init()`，使編譯期依賴仍指向具體型別：
 
 ```swift
 convenience init() {
     self.init(
-        service: MovieDetailService(),
+        loadMovieDetailUseCase: DefaultLoadMovieDetailUseCase(
+            repository: MovieDetailRepository(),
+            auxiliaryFailureHandler: { _, _, _ in }
+        ),
+        accountStateService: MovieAccountStateService(),
         sessionStore: SessionStore(),
         accountService: AccountService(),
         accountMediaService: MemberCenterService()
@@ -138,9 +142,9 @@ convenience init() {
 
 影響：此控制器實際承擔的是「收藏」與「評分」兩個跨 feature 業務流程，但被實作為 ViewModel 的輔助物件，與 UI 生命週期綁定。
 
-#### G6 — Movie / TV 平行重複 31 組
+#### G6 — Movie / TV 平行重複（已完成）
 
-檔名以 Movie / TV token 正規化後可配對的檔案共 31 組，涵蓋 `MovieDetail↔TVDetail`、`ReviewList/Movie↔ReviewList/TV`、`MainMovieList↔MainTVList`、`MovieSearch↔TVSearch`、`PageSheet/ReviewDetail`。
+起點以 Movie / TV token 正規化後可配對的檔案共 31 組；Phase 1 已降為 9 組，僅保留經評估不適合合併的 `MovieDetail↔TVDetail`。
 
 以 `ReviewList` 為例，正規化後 diff 僅 36 行，且內容全為文案與參數名差異：
 
@@ -152,25 +156,25 @@ convenience init() {
 
 例外是 `PageSheet/Genre`：兩個 controller 各僅 37 行，已共用 `BaseGenrePageSheetViewController`，證明此類去重在本專案是可行的。
 
-同時存在 5 個彼此獨立的 `case movie / case tv` 列舉：`MemberCenterAccountMediaType`、`PersonCreditMediaType`、`MainSearchMediaType`、`MainHomeMediaType`、`SearchHistory` 內部型別。
+原先 5 個彼此獨立的相關列舉中，2 個純二元型別已由 `MediaKind` 取代；其餘 3 個因包含額外 case 或持久化格式而保留，見 9.1。
 
-影響：任一業務規則變更需同步修改兩處。**若在此狀態下直接分層，重複量會隨層數倍增。**
+結果：Phase 2 不再建立成對的 Movie / TV 分層檔案；可共用的 Entity 與 DTO 在第二個 feature 使用時升格至 `Feature/`。
 
-#### G7 — 無模組邊界
+#### G7 — 無模組邊界（已接受的限制）
 
 單一 target 意味著層與層之間僅靠資料夾命名約束。在 ViewModel 中 `import UIKit` 或直接建立 `URLSession` 皆可通過編譯。
 
-影響：3.2 所列的既有優點全靠人工維持，沒有任何機制防止回退。
+影響：3.2 所列的既有優點仍需依靠 4.3 的機械檢查與 code review 維持，無法由編譯器防止回退。模組拆分已取消，不再列為本遷移的待完成項目。
 
 ### 3.4 判定
 
-**可以遷移，且起點優於多數 UIKit 專案。** G1–G5 皆為加法型變更，不需要推翻既有設計。
+**遷移可行，且 Phase 1 與前四個 Phase 2 feature 已證明可逐步交付。** G1–G3 正在逐 feature 收斂；G4、G5 留待 Phase 3 一次處理；G7 為已接受限制。
 
-遷移順序必須是 **G6 → G4 → G1/G2/G3 → G7**，理由：
+實際遷移順序為 **G6 → G1/G2/G3 → G4/G5**，理由：
 
-1. 未先消除 G6，新增的 Domain / Data 層會產生 62 組重複而非 31 組。修改成本會在整個遷移期間加倍。
-2. 未先處理 G4，後續建立的 UseCase 仍會被 concrete 預設值綁死，等於把舊問題複製到新層。
-3. G7 的模組邊界只有在前三者完成後才有東西可以切分，且其收益依賴實際使用情境（見 11 節 Phase 3 進入條件）。
+1. G6 已先完成，避免 Domain / Data 層把原有 Movie / TV 重複放大。
+2. G1/G2/G3 可逐 feature 交付，每次都能獨立取得 Entity、UseCase、Repository 的價值。
+3. G4/G5 必須等需要依賴反轉的 feature 完成分層後，再由 composition root 一次收斂，避免過渡期出現多個組裝點（見 10.4）。
 
 ---
 
@@ -228,6 +232,7 @@ MovieDetail/
   Presentation/  ViewModel/  Controller/  View/  Router/
 TVDetail/     同上
 ReviewList/   同上
+SeasonDetail/ 同上
 Feature/
   Domain/Entity/  Domain/Error/       跨 feature 共用
   Data/DTO/  Data/Mapper/
@@ -251,9 +256,10 @@ Network/                              尚未歸層的基礎設施
 grep -rn "^import" --include='*.swift' */Domain/ | grep -v "import Foundation"
 grep -rnE "NetworkServic|APIConfig|DTO|UIKit|ErrorMessage" --include='*.swift' */Domain/
 grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
+rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Data/**'
 ```
 
-三項皆須無輸出。`*/Domain/` 會涵蓋每個 feature 的 Domain 與 `Feature/Domain`。
+四項皆須無輸出。`*/Domain/` 會涵蓋每個 feature 的 Domain 與 `Feature/Domain`；第四項以 `MovieDetail` 示範，驗收其他 feature 時需同步替換搜尋路徑與排除路徑，避免尚未分層的 feature 阻擋逐步交付。
 
 ### 4.3.1 Presentation 與 App 的位置
 
@@ -769,8 +775,8 @@ nonisolated enum MediaKind: String, Sendable, Codable, CaseIterable {
 | 模式 | 數量 | 處置 |
 |------|------|------|
 | `convenience init()` 內建立完整依賴 | 4 | 刪除，改由 `AppDependencies` 建構 |
-| `network: NetworkServicing = NetworkService()` | 18 | 移除預設值，改為必填參數 |
-| service / store concrete 預設參數 | 49 | 移除預設值，改為必填參數 |
+| `network: NetworkServicing = NetworkService()` | 17 | 移除預設值，改為必填參數 |
+| 其他 concrete dependency 預設參數 | Phase 3 開始前重盤 | 移除預設值，改為必填參數；值型別行為預設不計入 |
 | Controller 內 `self.viewModel = XxxViewModel()` | 多處 | 改為 init 注入 |
 
 ### 10.2 允許保留的預設值
@@ -836,18 +842,26 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 2. 定義 Repository protocol（Domain）與實作（Data），取代原 Service。
 3. 依 5.6 判準把業務規則由 ViewModel 移入 UseCase 或 Entity 擴充。
 4. ViewModel 改依賴 UseCase protocol，暫時保留預設參數注入（見 10.4）。
-5. 執行 4.3 的三項機械邊界檢查，皆須無輸出。
+5. 執行 4.3 的四項機械邊界檢查，皆須無輸出。
 6. 執行 12.1 走查，兩種 `MediaKind` 各走一次。
 
 進度：
 
 | Feature | 狀態 |
 |---------|------|
-| `ReviewList` | **已完成**，作為模式範本 |
-| `MovieDetail` | 未開始。G2 最明顯的案例（`fetchMovieDetailContent` 併發 8 支 API 並逐支降級） |
-| `TVDetail` / `SeasonDetail` / `EpisodeDetail` / `PersonDetail` | 未開始 |
-| `MainMediaList` / `Search` / `HomeSectionList` / `MainHome` | 未開始 |
-| `MemberCenter` | 未開始。已有 2 個 Repository，可作為第二個範本 |
+| `ReviewList` | **已完成**，作為模式範本（`1ffc566`） |
+| `MovieDetail` | **已完成**，抽出 `LoadMovieDetailUseCase`（`d00ec9a`） |
+| `TVDetail` | **已完成**，並將跨 Movie / TV 共用型別升格至 `Feature/`（`4db4120`） |
+| `SeasonDetail` | **分層實作完成**；DTO 外洩與舊 Service 已移除，靜態檢查通過，待 build 與手動走查 |
+| `EpisodeDetail` | 未開始；目前直接使用共用 Data DTO，列為下一個遷移項目 |
+| `PersonDetail` | 未開始 |
+| `MainMediaList` | 未開始 |
+| `Search` | 未開始 |
+| `HomeSectionList` | 未開始 |
+| `MainHome` | 未開始 |
+| `MemberCenter` | 未開始；已有 2 個 Repository，可作為後續範本 |
+
+以本表 11 個 feature 為計數口徑，目前完成分層實作 4 個（約 36%）。此比例只表示 feature 數量，不代表工作量比例；各 feature 規模不同。SeasonDetail 尚待 build 與手動走查完成完整驗收。
 
 **不必全部做完。** 每個 feature 分層後即獨立產生價值；未分層的 feature 維持現狀不受影響。
 
@@ -860,7 +874,7 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 交付：
 
 - 建立 `AppDependencies` composition root。
-- 移除 4 處 `convenience init()`、18 處 network 預設值、49 處 service / store 預設值。
+- 移除 4 處 `convenience init()`、17 處 network 預設值，以及 Phase 3 開始前重新盤點的其他 concrete dependency 預設值。
 - 由 `DetailAccountMediaStateController` 抽出 4 個跨 feature UseCase（G5）。
 - 依 feature 分批提交，每批結束時專案可編譯、可執行。
 
@@ -906,12 +920,13 @@ Phase 1 的合併項目與 Phase 2 的分層項目，皆需在 **movie 與 tv �
 - [ ] 該 feature 的 Service 已由 Domain 的 Repository protocol + Data 的實作取代。
 - [ ] 該 feature 的 DTO 位於 `<feature>/Data/DTO`，Entity 位於 `<feature>/Domain/Entity`，且 Entity 無 `Decodable` / `Encodable` conformance。
 - [ ] 業務規則已依 5.6 判準移出 ViewModel。
-- [ ] 4.3 的三項機械邊界檢查皆無輸出：
+- [ ] 4.3 的四項機械邊界檢查皆無輸出：
 
 ```bash
 grep -rn "^import" --include='*.swift' */Domain/ | grep -v "import Foundation"
 grep -rnE "NetworkServic|APIConfig|DTO|UIKit|ErrorMessage" --include='*.swift' */Domain/
 grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
+rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Data/**'
 ```
 
 - [ ] 該 feature 的 12.1 相關項目在 movie 與 tv 兩條路徑各走查通過。
@@ -939,7 +954,7 @@ grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
 | R5 | 新增檔案漏加入 target | 編譯期未報錯但執行期缺功能 | 專案採顯式檔案參照（見 3.1）；每次新增檔案後確認 target membership，或評估將各 feature 資料夾改為 `PBXFileSystemSynchronizedRootGroup` |
 | R6 | Entity 與 DTO 雙軌並存期間認知負擔 | 開發者誤用 DTO | DTO 一律加 `DTO` 後綴；Phase 3 後以 access level 封閉 |
 | R7 | 過度抽象：為每個 Repository 方法造一個 UseCase | 產生大量單行轉呼叫類別 | 套用 5.4 的判準：只有含條件、編排或降級策略者才建立 UseCase |
-| R8 | 無編譯期層次邊界 | 資料夾不擋違規 import，Domain 可能悄悄依賴 Data 或 UIKit | 每次動到 Domain 或 Data 後執行 4.3 的三項機械檢查；新增 feature 時一併執行 |
+| R8 | 無編譯期層次邊界 | 資料夾不擋違規 import，Domain 可能悄悄依賴 Data 或 UIKit，DTO 也可能外洩至其他層 | 每次動到 Domain 或 Data 後執行 4.3 的四項機械檢查；新增 feature 時一併執行 |
 | R9 | App Intents 依賴既有 service，遷移時斷裂 | Siri / Shortcuts 失效 | `Feature/AppIntents` 改為依賴 UseCase；每 Phase 執行 12.1 的 Intents 走查項目 |
 | R10 | 遷移期間 TMDB API 變更 | 同時處理重構與外部變更 | 每個 Phase 控制在可於短期內完結的範圍，不長期開分支 |
 | R11 | Domain 的 throws 不具型 | 從 UseCase 簽章看不出可能拋出哪些非領域錯誤，呼叫端只能概括處理 | 已知取捨，理由見 5.5。收斂路徑為 typed throws，需同時提供 `TransportFailure` 與其文案映射，屬獨立工作 |
@@ -955,7 +970,7 @@ grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
 - 新增 UseCase 前先確認它含條件、編排或降級策略；純集合運算改為 Entity 擴充。
 - 新增依賴時，於 `AppDependencies` 註冊（Phase 3 完成後）；在此之前沿用預設參數注入，但不得於 ViewModel 或 Controller 內組裝多層依賴。
 - 新增 Domain 型別時，確認未 conform `Decodable` / `Encodable`，且只 import Foundation。
-- **每次動到 `Domain/` 或 `Data/` 後，執行 4.3 的三項機械檢查**，三項皆須無輸出。
+- **每次動到 `Domain/` 或 `Data/` 後，執行 4.3 的四項機械檢查**，四項皆須無輸出。
 - Entity 一律持有已解析的型別（`Date?`、`URL?`、列舉），不持有 wire format 字串。
 - 新增 Movie / TV 相關功能時，一律使用 `MediaKind`，不得新增第 6 個媒體型別列舉。
 - 新增任何 Swift 檔後，確認已加入 target（見 R5）。
@@ -972,17 +987,17 @@ grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
 
 | 角色 | 路徑 |
 |------|------|
-| Entity | `Domain/Entity/Review.swift`、`Domain/Entity/Page.swift`、`Domain/Entity/ReviewFilter.swift` |
-| Entity 擴充承載集合規則 | `Domain/Entity/Review.swift` 的 `[Review].appending(uniqueReviewsFrom:)` |
-| 領域錯誤 | `Domain/Error/DomainError.swift` |
-| Repository protocol | `Domain/Repository/ReviewProviding.swift` |
-| UseCase（含條件） | `Domain/UseCase/LoadReviewsUseCase.swift` |
-| UseCase（集合規則） | `Domain/UseCase/FilterReviewsUseCase.swift` |
-| DTO | `Data/DTO/ReviewDTO.swift` |
-| Mapper | `Data/Mapper/ReviewDTO+Mapping.swift` |
-| wire-format 解析 | `Data/Mapper/ISO8601DateParsing.swift` |
-| Repository 實作 | `Data/Repository/ReviewRepository.swift` |
-| Presentation 模型與文案 | `ReviewList/Model/ReviewPresentationModels.swift` |
+| Entity | `ReviewList/Domain/Entity/Review.swift`、`Feature/Domain/Entity/Page.swift`、`ReviewList/Domain/Entity/ReviewFilter.swift` |
+| Entity 擴充承載集合規則 | `ReviewList/Domain/Entity/Review.swift` 的 `[Review].appending(uniqueReviewsFrom:)` |
+| 領域錯誤 | `Feature/Domain/Error/DomainError.swift` |
+| Repository protocol | `ReviewList/Domain/Repository/ReviewProviding.swift` |
+| UseCase（含條件） | `ReviewList/Domain/UseCase/LoadReviewsUseCase.swift` |
+| UseCase（集合規則） | `ReviewList/Domain/UseCase/FilterReviewsUseCase.swift` |
+| DTO | `ReviewList/Data/DTO/ReviewDTO.swift` |
+| Mapper | `ReviewList/Data/Mapper/ReviewDTO+Mapping.swift` |
+| wire-format 解析 | `Feature/Data/Mapper/ISO8601DateParsing.swift` |
+| Repository 實作 | `ReviewList/Data/Repository/ReviewRepository.swift` |
+| Presentation 模型與文案 | `ReviewList/Presentation/ReviewPresentationModels.swift` |
 | ViewModel（依賴 UseCase） | `ReviewList/ViewModel/ReviewListViewModel.swift` |
 
 ### 15.2 其他路徑
@@ -991,7 +1006,8 @@ grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
 |------|------|
 | 網路層（尚未歸入 Data 資料夾） | `Network/NetworkService.swift`、`Network/APIConfig.swift`、`Network/NetworkError.swift`、`Network/AppLocalization.swift` |
 | 既有 Repository（Phase 2 時併入 Data） | `MemberCenter/Repository/MemberCenterContentRepository.swift`、`MemberCenter/List/Repository/MemberCenterListContentRepository.swift` |
-| UseCase 抽取來源（編排） | `MovieDetail/Service/MovieDetailService.swift:70` |
+| 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift` |
+| 下一個 DTO 外洩收斂位置 | `EisodeDetail/Service/EpisodeDetailService.swift`、`EisodeDetail/ViewModel/Presentation/` |
 | UseCase 抽取來源（跨 feature） | `Feature/Base/DetailBase/ViewModel/DetailAccountMediaStateController.swift` |
 | 待移除的 convenience init | `MovieDetail/ViewModel/MovieDetailViewModel.swift`、`TVDetail/ViewModel/TVDetailViewModel.swift`、`SeasonDetail/ViewModel/SeasonDetailViewModel.swift`、`PersonDetail/ViewModel/PersonDetailViewModel.swift` |
 | 保留、非 MediaKind 的媒體型別 | `PersonDetail/Model/PersonDetailModels.swift`、`Main/MainSearch/Model/MainSearchModels.swift`、`Feature/SearchHistory/Model/SearchHistoryModels.swift` |
@@ -1007,8 +1023,10 @@ grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
-| 1.0 | 2026-09-12 | 初版。基於全專案盤點提出四層架構規格與 Phase 0–3 計畫 |
+| 1.6 | 2026-09-13 | 完成 SeasonDetail 的 Domain / Data / UseCase 分層實作：新增 Season Entity、Repository protocol 與實作、DTO / Mapper、`LoadSeasonDetailUseCase`，移除舊 Model / Service，並將顯示 fallback 收回 Presentation。Phase 2 進度更新為 4 / 11；靜態邊界檢查通過，build 與手動走查仍待執行 |
+| 1.5 | 2026-09-13 | 依目前程式碼與 Git 歷史回填進度：Phase 2 已完成 ReviewList、MovieDetail、TVDetail，共 3 / 11 個 feature。更新檔案、行數、Repository、UseCase、Entity 與依賴預設值現況；將 G1–G3 標為部分完成、G6 標為完成、G7 標為已接受限制。修正 Phase 3 與模組拆分、MediaKind 目標、feature 內分層等過期敘述及 15 節路徑。新增逐 feature DTO 外洩檢查，並將 SeasonDetail、EpisodeDetail 列為下一批遷移項目 |
 | 1.4 | 2026-09-12 | 4.3 結構定案為「先分 feature、再分層、最後分角色」：取消頂層 `Domain/`、`Data/`，改收在各 feature 資料夾底下，跨 feature 共用放 `Feature/`。與專案既有的一畫面一資料夾慣例一致。邊界檢查指令改用 `*/Domain/`、`*/Data/`。並記錄此結構不再與 SPM `Sources/` 同形的代價 |
 | 1.3 | 2026-09-12 | 4.3 的資料夾結構曾改為「先分層、再分種類」，隨即於 1.4 再調整 |
 | 1.2 | 2026-09-12 | 依 Phase 1 與 ReviewList 分層試點的實作結果回填判準與取捨。**更正兩處規格錯誤**：9.1 原稱可取代 5 個媒體型別列舉，實際只有 2 個是純二元；9.2 原把合併對象切成四個獨立群組，實際存在型別耦合，需先統一共用型別。**決議取消 SPM package**，4.3 改寫為資料夾層次邊界並補上三項機械檢查，新增 4.3.1 說明 Presentation 與 App 檔案為何留在原位。**新增判準**：5.6「什麼該進 Domain」、6.2 Mapper 的四類工作與「Entity 持有已解析型別」、10.4「composition root 不隨個別 feature 進行」。5.5 DomainError 改寫，明列未具型 throws 的取捨理由與收斂路徑。11 節順序調整為「Phase 2 分層（逐 feature）／Phase 3 依賴反轉（一次到位）」並記錄 Phase 1 成果。12 節驗收改為逐 feature。風險表新增 R11（未具型 throws）、R12（兩種架構並存）、R13（漏看型別耦合），R8 改為無編譯期邊界。15 節新增分層模式範本 |
 | 1.1 | 2026-09-12 | 移除全部自動化測試內容：刪除原 11 節「測試規格」與原 Phase 0「建立測試基礎」，計畫改為 Phase 1–3。驗收標準改以靜態檢查與手動走查構成（12 節），Phase 3 進入條件移除測試數量門檻。風險表改編號並新增 R2（無測試的迴歸風險）、R5（顯式檔案參照漏加 target）。新增 9.4 合併作業程序與 5.4 UseCase 建立判準，作為測試以外的品質手段 |
+| 1.0 | 2026-09-12 | 初版。基於全專案盤點提出四層架構規格與 Phase 0–3 計畫 |

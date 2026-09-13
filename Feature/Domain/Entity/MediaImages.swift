@@ -21,6 +21,7 @@ nonisolated struct MediaImages: Sendable, Equatable {
 
 nonisolated struct MediaImage: Sendable, Equatable {
     let filePath: String
+    let aspectRatio: Double
     let width: Int
     let height: Int
 }
