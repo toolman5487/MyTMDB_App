@@ -123,7 +123,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
             sections.append(.facts(facts))
         }
 
-        let videoItems = content.videos.results
+        let videoItems = content.videos
             .filter { !$0.key.isEmpty }
             .sorted { videoPriority($0) < videoPriority($1) }
             .prefix(DetailSectionPreviewLimit.itemCount)
@@ -163,8 +163,8 @@ nonisolated enum EpisodeDetailPresentationBuilder {
             sections.append(.externalLinks(externalLinks))
         }
 
-        if content.supportsAccountRating, case .rated = content.accountStates.rated {
-            sections.append(.accountState(EpisodeAccountStateItem(accountStates: content.accountStates)))
+        if content.supportsAccountRating, case .rated = content.accountState.rating {
+            sections.append(.accountState(EpisodeAccountStateItem(accountState: content.accountState)))
         }
 
         return sections
@@ -172,7 +172,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
 
     private static func makeFacts(
         detail: EpisodeDetailItem,
-        source: EpisodeDetail
+        source: Episode
     ) -> [EpisodeDetailFactItem] {
         [
             makeFact(title: "季數", value: detail.seasonNumberText),
@@ -238,7 +238,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         )
     }
 
-    private static func makeExternalLinks(externalIDs: EpisodeExternalIDsResponse) -> [EpisodeExternalLinkItem] {
+    private static func makeExternalLinks(externalIDs: EpisodeExternalIDs) -> [EpisodeExternalLinkItem] {
         [
             makeIMDBLink(id: externalIDs.imdbID),
             makeWikidataLink(id: externalIDs.wikidataID)
@@ -261,7 +261,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         return EpisodeExternalLinkItem(id: "wikidata", title: "Wikidata", url: url)
     }
 
-    private static func videoPriority(_ video: VideoDTO) -> Int {
+    private static func videoPriority(_ video: Video) -> Int {
         let typeRank: Int
         switch video.type.lowercased() {
         case "trailer":
@@ -278,7 +278,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         }
 
         let siteRank = video.site.lowercased() == "youtube" ? 0 : 1
-        let officialRank = video.official ? 0 : 1
+        let officialRank = video.isOfficial ? 0 : 1
 
         return (typeRank * 100) + (siteRank * 10) + officialRank
     }

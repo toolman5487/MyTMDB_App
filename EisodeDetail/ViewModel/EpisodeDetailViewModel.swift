@@ -7,18 +7,6 @@
 
 import Foundation
 
-// MARK: - EpisodeDetailInput
-
-nonisolated struct EpisodeDetailInput: Sendable, Equatable {
-    let seriesID: Int
-    let seasonNumber: Int
-    let episodeNumber: Int
-
-    var isValid: Bool {
-        seriesID > 0 && seasonNumber >= 0 && episodeNumber > 0
-    }
-}
-
 // MARK: - EpisodeDetailViewState
 
 nonisolated enum EpisodeDetailViewState: Equatable {
@@ -54,20 +42,20 @@ final class EpisodeDetailViewModel {
     private var onStateChange: (@MainActor (EpisodeDetailViewState) -> Void)?
     private var onRatingStateChange: (@MainActor (AccountMediaRatingState) -> Void)?
     private let input: EpisodeDetailInput
-    private let service: EpisodeDetailServicing
+    private let loadEpisodeDetailUseCase: LoadEpisodeDetailUseCase
     private let accountMediaController: DetailAccountMediaStateController
 
     // MARK: - Initialization
 
     init(
         input: EpisodeDetailInput,
-        service: EpisodeDetailServicing,
+        loadEpisodeDetailUseCase: LoadEpisodeDetailUseCase,
         sessionStore: SessionStoring,
         accountService: AccountServiceProtocol,
         accountMediaService: MemberCenterServicing
     ) {
         self.input = input
-        self.service = service
+        self.loadEpisodeDetailUseCase = loadEpisodeDetailUseCase
         self.accountMediaController = DetailAccountMediaStateController(
             sessionStore: sessionStore,
             accountService: accountService,
@@ -80,9 +68,19 @@ final class EpisodeDetailViewModel {
 
     convenience init(input: EpisodeDetailInput) {
         let sessionStore = SessionStore()
+        let accountCredential = Self.makeAccountCredential(from: sessionStore.load())
+
         self.init(
             input: input,
-            service: EpisodeDetailService(session: sessionStore.load()),
+            loadEpisodeDetailUseCase: DefaultLoadEpisodeDetailUseCase(
+                repository: EpisodeDetailRepository(),
+                accountCredential: accountCredential,
+                auxiliaryFailureHandler: { name, input, error in
+                    AppLogger.network.warning(
+                        "Failed to load \(name, privacy: .public) for TV series \(input.seriesID, privacy: .public) season \(input.seasonNumber, privacy: .public) episode \(input.episodeNumber, privacy: .public): \(error.localizedDescription, privacy: .public)"
+                    )
+                }
+            ),
             sessionStore: sessionStore,
             accountService: AccountService(),
             accountMediaService: MemberCenterService()
@@ -104,25 +102,11 @@ final class EpisodeDetailViewModel {
     // MARK: - Data Loading
 
     func loadEpisodeDetail() async {
-        guard input.isValid else {
-            state = .failed(
-                ErrorMessage(
-                    title: "資料錯誤",
-                    message: "缺少有效的影集、季數或集數資訊。"
-                )
-            )
-            return
-        }
-
         state = .loading
         accountMediaController.prepareForLoading()
 
         do {
-            let content = try await service.fetchEpisodeDetailContent(
-                seriesID: input.seriesID,
-                seasonNumber: input.seasonNumber,
-                episodeNumber: input.episodeNumber
-            )
+            let content = try await loadEpisodeDetailUseCase(input: input)
             guard !Task.isCancelled else { return }
 
             accountMediaController.updateDefaultRating(
@@ -131,11 +115,15 @@ final class EpisodeDetailViewModel {
                     : nil
             )
             if content.supportsAccountRating {
-                accountMediaController.applyLoadedRating(value: content.accountStates.rated.value)
+                accountMediaController.applyLoadedRating(value: content.accountState.rating.value)
             } else {
                 accountMediaController.markRatingUnavailable()
             }
             state = .loaded(EpisodeDetailPresentationBuilder.makeContent(content: content))
+        } catch let error as DomainError {
+            guard !Task.isCancelled else { return }
+            state = .failed(Self.errorMessage(for: error))
+            accountMediaController.markUnavailable()
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage)
@@ -190,5 +178,30 @@ final class EpisodeDetailViewModel {
 
     private func notifyRatingStateChange() {
         onRatingStateChange?(ratingState)
+    }
+
+    private static func makeAccountCredential(
+        from session: AuthSession?
+    ) -> EpisodeAccountCredential? {
+        switch session {
+        case .guest(let sessionID):
+            return .guest(sessionID: sessionID)
+
+        case .user(let sessionID):
+            return .user(sessionID: sessionID)
+
+        case .loggedOut, nil:
+            return nil
+        }
+    }
+
+    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+        switch error {
+        case .invalidIdentifier:
+            return ErrorMessage(
+                title: "資料錯誤",
+                message: "缺少有效的影集、季數或集數資訊。"
+            )
+        }
     }
 }
