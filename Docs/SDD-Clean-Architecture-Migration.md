@@ -9,8 +9,8 @@
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router |
 | 目標架構 | Clean Architecture（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 279 個 Swift 檔 / 45,637 行 |
-| 狀態 | Phase 1 完成；Phase 2 已完成 8 / 11 個 feature，剩 HomeSectionList、MainHome、MemberCenter |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 298 個 Swift 檔 / 45,747 行 |
+| 狀態 | Phase 1 完成；Phase 2 已完成 10 / 11 個 feature，僅剩 MemberCenter |
 | 日期 | 2026-09-13 |
 
 ---
@@ -59,19 +59,19 @@
 
 ### 3.1 量化現況
 
-數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1，以及 ReviewList、MovieDetail、TVDetail、SeasonDetail、EpisodeDetail、PersonDetail 六個 Phase 2 feature 完成分層實作後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
+數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1，以及 ReviewList、MovieDetail、TVDetail、SeasonDetail、EpisodeDetail、PersonDetail、MainMediaList、Search、HomeSectionList、MainHome 十個 Phase 2 feature 完成分層實作後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
 
 | 項目 | 起點 | 現在 |
 |------|------|------|
-| Swift 檔案數 | 243 | 279 |
-| 程式碼行數 | 47,616 | 45,637 |
+| Swift 檔案數 | 243 | 298 |
+| 程式碼行數 | 47,616 | 45,747 |
 | Xcode target 數 | 1（`MyTMDB_App`，application） | 1 |
 | 檔案組織方式 | 240 檔為顯式 `PBXFileReference`，`MyTMDB_App/` 資料夾使用 `PBXFileSystemSynchronizedRootGroup` | 不變 |
-| ViewModel 資料夾內 Swift 檔案數 | 24 | 22 |
-| Service 資料夾內 Swift 檔案數 | 22 | 15 |
-| Repository 實作數 | 2（皆位於 `MemberCenter`） | 8 |
-| UseCase 檔案數 | 0 | 8 |
-| Domain Entity 型別數 | 0 | 71（分布於 28 檔） |
+| ViewModel 資料夾內 Swift 檔案數 | 24 | 21 |
+| Service 資料夾內 Swift 檔案數 | 22 | 11 |
+| Repository 實作數 | 2（皆位於 `MemberCenter`） | 12 |
+| UseCase 檔案數 | 0 | 14 |
+| Domain Entity 型別數 | 0 | 78（分布於 34 檔） |
 | `import UIKit` 出現在 ViewModel / Service / Model / Presentation | 2 檔 | 2 檔 |
 | `= NetworkService()` 預設參數 | 18 處 | 17 處 |
 | 其他 concrete dependency 預設參數 | 49 處 | 仍有多處，Phase 3 開始前依 10.1 重新盤點 |
@@ -97,9 +97,9 @@
 
 #### G1 — Domain Entity 尚未覆蓋全部 feature（部分完成）
 
-`ReviewList`、`MovieDetail`、`TVDetail`、`SeasonDetail`、`EpisodeDetail`、`PersonDetail` 已完成 Entity / DTO 分離，Domain Entity 不具 `Decodable` / `Encodable` conformance。其餘 Phase 2 feature 仍由 DTO 或既有 Model 直接承載資料與部分語意。
+除 `MemberCenter` 外的 Phase 2 feature 均已完成 Entity / DTO 分離，Domain Entity 不具 `Decodable` / `Encodable` conformance。
 
-SeasonDetail 與 EpisodeDetail 原本直接使用共用 Data DTO 的過渡依賴皆已解除；PersonDetail 既有 Model 的 `Decodable` 責任也已移至 Data DTO。下一個遷移項目為 MainMediaList。
+HomeSectionList 原本直接使用 `MediaGenreListDTO`、MainHome 的 `MainHomeContent` 兼任 DTO 與 Model 的過渡狀態皆已解除。唯一剩餘的 DTO 外洩是 `MemberCenter` 的 3 個檔案直接使用 `MediaSummaryDTO`，將於該 feature 分層時處理。
 
 影響：尚未分層的 feature 仍可能讓 TMDB 欄位變更直接衝擊 Presentation。4.3 已補上逐 feature 的 DTO 外洩檢查；該檢查只要求正在驗收的 feature 無輸出，不要求尚未分層的 feature 提前通過。
 
@@ -107,7 +107,9 @@ SeasonDetail 與 EpisodeDetail 原本直接使用共用 Data DTO 的過渡依賴
 
 `LoadReviewsUseCase`、`FilterReviewsUseCase`、`LoadMovieDetailUseCase`、`LoadTVDetailUseCase`、`LoadSeasonDetailUseCase`、`LoadEpisodeDetailUseCase`、`LoadPersonDetailUseCase`、`LoadPersonCreditsUseCase` 已建立。MovieDetail、TVDetail、SeasonDetail、EpisodeDetail 與 PersonDetail 的「主要資料失敗則整體失敗，輔助資料失敗則降級」已由 Service 移入 UseCase；PersonDetail 的作品類型路由與輸入驗證也已移入 UseCase。
 
-下一個明確案例是 MainMediaList 的分頁、篩選與載入流程。
+MainHome 的併發載入與部分失敗處理已由 `MainHomeService` 移入 `LoadHomeSectionsUseCase`；HomeSectionList 的類型篩選移入 `FilterMediaByGenreUseCase`。
+
+剩餘的明確案例是 MemberCenter 的帳號內容載入，以及跨 feature 的 `DetailAccountMediaStateController`（見 G5，屬 Phase 3）。
 
 #### G3 — Repository 抽象尚未覆蓋全部遠端資料（部分完成）
 
@@ -859,11 +861,11 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 | `PersonDetail` | **已完成**；DTO 外洩與舊 Service 已移除，靜態檢查通過，手動審查由開發者完成 |
 | `MainMediaList` | **已完成**（`d103977`）；LoadMediaListUseCase 承接「取類型清單→決定初始類型→取第一頁」的編排 |
 | `Search` | **已完成**（`d103977`，與 MainMediaList 同一 commit，兩者透過 MediaGrid 型別耦合）；客戶端排序移入 SortMediaUseCase |
-| `HomeSectionList` | 未開始；目前直接使用 `MediaGenreListDTO`，屬過渡狀態 |
-| `MainHome` | 未開始 |
+| `HomeSectionList` | **已完成**（`d8c1940`）；`FilterMediaByGenreUseCase` 承接類型篩選，`HomeSectionListGenre` 因與 `MediaGenre` 完全重複而刪除 |
+| `MainHome` | **已完成**（`d8c1940`，與 HomeSectionList 同一 commit，兩者透過 5 個 `MainHomeContent*` 型別耦合）；`LoadHomeSectionsUseCase` 承接併發載入與部分失敗處理 |
 | `MemberCenter` | 未開始；目前直接使用 `MediaSummaryDTO`，屬過渡狀態。已有 2 個 Repository，可作為後續範本 |
 
-以本表 11 個 feature 為計數口徑，目前完成分層實作 6 個（約 55%）。此比例只表示 feature 數量，不代表工作量比例；各 feature 規模不同。EpisodeDetail 與 PersonDetail 尚待 build 與手動走查完成完整驗收。
+以本表 11 個 feature 為計數口徑，目前完成分層實作 10 個（約 91%）。此比例只表示 feature 數量，不代表工作量比例；各 feature 規模不同。
 
 **不必全部做完。** 每個 feature 分層後即獨立產生價值；未分層的 feature 維持現狀不受影響。
 
@@ -1008,8 +1010,9 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 |------|------|
 | 網路層（尚未歸入 Data 資料夾） | `Network/NetworkService.swift`、`Network/APIConfig.swift`、`Network/NetworkError.swift`、`Network/AppLocalization.swift` |
 | 既有 Repository（Phase 2 時併入 Data） | `MemberCenter/Repository/MemberCenterContentRepository.swift`、`MemberCenter/List/Repository/MemberCenterListContentRepository.swift` |
+| 跨 feature 共用的 Domain / Data | `Feature/Domain/Entity/`、`Feature/Domain/Repository/MediaGenreProviding.swift`、`Feature/Data/DTO/`、`Feature/Data/Mapper/`、`Feature/Data/Repository/MediaGenreRepository.swift` |
 | 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift`、`EisodeDetail/Domain/UseCase/LoadEpisodeDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonCreditsUseCase.swift` |
-| 下一個 DTO / Entity 分離位置 | `Main/MainMediaList/Model/MainMediaListModels.swift`、`Main/MainMediaList/Service/MainMediaListService.swift`、`Main/MainMediaList/ViewModel/MainMediaListViewModel.swift` |
+| 下一個 DTO / Entity 分離位置 | `MemberCenter/Model/MemberCenterAccountModels.swift`、`MemberCenter/List/Model/MemberCenterListModels.swift`、`MemberCenter/ViewModel/Builder/MemberCenterPresentationBuilder.swift`（三者直接使用 `MediaSummaryDTO`） |
 | UseCase 抽取來源（跨 feature） | `Feature/Base/DetailBase/ViewModel/DetailAccountMediaStateController.swift` |
 | 待移除的 convenience init | `MovieDetail/ViewModel/MovieDetailViewModel.swift`、`TVDetail/ViewModel/TVDetailViewModel.swift`、`SeasonDetail/ViewModel/SeasonDetailViewModel.swift`、`PersonDetail/ViewModel/PersonDetailViewModel.swift` |
 | 保留、非 MediaKind 的媒體型別 | `PersonDetail/Domain/Entity/PersonCredits.swift`、`Main/MainSearch/Model/MainSearchModels.swift`、`Feature/SearchHistory/Model/SearchHistoryModels.swift` |
@@ -1025,6 +1028,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.1 | 2026-09-13 | 完成 HomeSectionList 與 MainHome 分層（同一 commit，兩者透過 5 個 `MainHomeContent*` 型別耦合）。去重：`MainHomeContent` 與 `MediaSummaryDTO` 欄位完全重疊而刪除；`HomeSectionListGenre` 與 `MediaGenre` 相同、且 `init(movieGenre:)` 與 `init(tvGenre:)` 實作一模一樣而刪除；取類型的網路呼叫抽成共用 `MediaGenreProviding` / `MediaGenreRepository`；`TMDBPageResponse` 由 `MainHome/Model` 移至 `Feature/Data/DTO`。命名統一為 `HomeCategory` / `HomeContentItem`。行為差異一處：全部分類載入失敗時改拋底層錯誤而非預先包成 `ErrorMessage`，以符合 4.3 的 Domain 邊界。Phase 2 進度 10 / 11，僅剩 MemberCenter |
 | 2.0 | 2026-09-13 | 完成 MainMediaList 與 Search 分層（同一 commit，兩者透過 MediaGrid 型別耦合）。共用型別下沉：刪除與 `MediaSummaryDTO` 重疊的 `MediaGridEntry`；`MediaSummary` 補 overview / backdropPath / popularity；`MediaSortOption` 依關注點拆為 Domain 的 `MediaSortOrder`、Presentation 的 title、Data 的 `discoverSortValue`，排序規則移入 Search 的 `SortMediaUseCase`；`MediaGenre` 升格至 `Feature/`。分層後才看清兩個排序是不同機制：MainMediaList 伺服器端、Search 客戶端 |
 | 1.9 | 2026-09-13 | EpisodeDetail 與 PersonDetail 的手動審查已由開發者完成，兩者狀態由「待 build 與手動走查」改為已完成。Phase 2 進度 6 / 11，下一批依序為 MainMediaList、Search、HomeSectionList、MainHome、MemberCenter |
 | 1.8 | 2026-09-13 | 完成 PersonDetail 的 Domain / Data / UseCase 分層實作：將人物 ID 驗證、電影／劇集作品路由、主要與輔助資料載入降級移入兩個 UseCase；新增 Person Entity、Repository、DTO / Mapper 與領域錯誤，將日期與 URL wire format 解析移至 Mapper，移除舊 Model / Service。Phase 2 進度更新為 6 / 11；靜態檢查通過，build 與手動走查仍待執行 |
