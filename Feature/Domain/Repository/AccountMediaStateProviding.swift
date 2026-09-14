@@ -35,19 +35,3 @@ nonisolated protocol AccountMediaStateProviding: Sendable {
         target: AccountMediaRatingTarget
     ) async throws -> AccountActionResult
 }
-
-// MARK: - AccountSessionProviding
-
-nonisolated protocol AccountSessionProviding: Sendable {
-    func currentUserSession() async throws -> AccountUserSession?
-}
-
-// MARK: - AccountProfileProviding
-
-nonisolated protocol AccountProfileProviding: Sendable {
-    func cachedProfile() -> AccountProfile?
-
-    func profile(sessionID: String) async throws -> AccountProfile
-
-    func clearCachedProfile()
-}

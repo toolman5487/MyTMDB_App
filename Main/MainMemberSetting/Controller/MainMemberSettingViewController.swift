@@ -5,7 +5,6 @@
 //  Created by Willy Hsu on 2026/7/13.
 //
 
-import SDWebImage
 import UIKit
 
 @MainActor
@@ -161,11 +160,10 @@ final class MainMemberSettingViewController: MainBaseViewController {
     }
 
     private func clearImageCache() {
-        SDImageCache.shared.clearMemory()
-        SDImageCache.shared.clearDisk { [weak self] in
-            Task(priority: .userInitiated) { @MainActor in
-                self?.router.showImageCacheCleared()
-            }
+        Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            await viewModel.clearImageCache()
+            router.showImageCacheCleared()
         }
     }
 
@@ -188,12 +186,10 @@ final class MainMemberSettingViewController: MainBaseViewController {
     }
 
     private func clearAllLocalData() {
-        viewModel.clearAllLocalData()
-        SDImageCache.shared.clearMemory()
-        SDImageCache.shared.clearDisk { [weak self] in
-            Task(priority: .userInitiated) { @MainActor in
-                self?.router.showLoggedOut()
-            }
+        Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            await viewModel.clearAllLocalData()
+            router.showLoggedOut()
         }
     }
 

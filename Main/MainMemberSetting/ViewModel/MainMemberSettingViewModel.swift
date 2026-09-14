@@ -17,6 +17,7 @@ final class MainMemberSettingViewModel {
     private let sessionProvider: AuthSessionProviding
     private let profileProvider: AccountProfileProviding
     private let searchHistory: SearchHistoryProviding
+    private let imageCache: ImageCacheClearing
     private let refreshAccountProfile: RefreshAccountProfileUseCase
     private let logoutUseCase: LogoutUseCase
     private let clearLocalData: ClearLocalDataUseCase
@@ -92,6 +93,7 @@ final class MainMemberSettingViewModel {
         sessionProvider: AuthSessionProviding,
         profileProvider: AccountProfileProviding,
         searchHistory: SearchHistoryProviding,
+        imageCache: ImageCacheClearing,
         refreshAccountProfile: RefreshAccountProfileUseCase,
         logout: LogoutUseCase,
         clearLocalData: ClearLocalDataUseCase,
@@ -101,6 +103,7 @@ final class MainMemberSettingViewModel {
         self.sessionProvider = sessionProvider
         self.profileProvider = profileProvider
         self.searchHistory = searchHistory
+        self.imageCache = imageCache
         self.refreshAccountProfile = refreshAccountProfile
         self.logoutUseCase = logout
         self.clearLocalData = clearLocalData
@@ -136,12 +139,16 @@ final class MainMemberSettingViewModel {
         profileProvider.clearCachedProfile()
     }
 
+    func clearImageCache() async {
+        await imageCache.clearImageCache()
+    }
+
     func clearSearchHistory() {
         searchHistory.clear(scope: nil)
     }
 
-    func clearAllLocalData() {
-        clearLocalData()
+    func clearAllLocalData() async {
+        await clearLocalData()
     }
 
     func logout() {

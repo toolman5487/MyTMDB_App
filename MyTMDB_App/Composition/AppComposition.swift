@@ -209,10 +209,12 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             sessionProvider: sessionStore,
             profileProvider: profileProvider
         )
+        let imageCache = SDWebImageCacheStore()
         let viewModel = MainMemberSettingViewModel(
             sessionProvider: sessionStore,
             profileProvider: profileProvider,
             searchHistory: searchHistoryStore,
+            imageCache: imageCache,
             refreshAccountProfile: DefaultRefreshAccountProfileUseCase(
                 sessionProvider: sessionStore,
                 profileProvider: profileProvider
@@ -220,7 +222,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             logout: logout,
             clearLocalData: DefaultClearLocalDataUseCase(
                 logout: logout,
-                searchHistory: searchHistoryStore
+                searchHistory: searchHistoryStore,
+                imageCache: imageCache
             ),
             localization: localization,
             bundle: bundle
