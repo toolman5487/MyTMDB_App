@@ -418,10 +418,10 @@ Phase 2 必須抽出的跨 feature UseCase（對應 G5）：
 
 | UseCase | 取代 | 涉及 Repository |
 |---------|------|-----------------|
-| `ToggleFavoriteUseCase` | `DetailAccountMediaStateController.toggleFavorite` | `AccountProviding`、`SessionProviding` |
-| `SubmitRatingUseCase` | `DetailAccountMediaStateController.submitRating` | `AccountProviding`、`SessionProviding` |
-| `DeleteRatingUseCase` | `DetailAccountMediaStateController.deleteRating` | `AccountProviding`、`SessionProviding` |
-| `LoadAccountMediaStateUseCase` | `DetailAccountMediaStateController.loadAccountMediaState` | `AccountProviding`、`SessionProviding` |
+| `ToggleFavoriteUseCase` | `DetailAccountMediaStateController.toggleFavorite` | `AccountSessionProviding`、`AccountMediaStateProviding` |
+| `SubmitRatingUseCase` | `DetailAccountMediaStateController.submitRating` | `AccountSessionProviding`、`AccountMediaStateProviding` |
+| `DeleteRatingUseCase` | `DetailAccountMediaStateController.deleteRating` | `AccountSessionProviding`、`AccountMediaStateProviding` |
+| `LoadAccountMediaStateUseCase` | `DetailAccountMediaStateController.loadAccountMediaState` | `AccountSessionProviding`、`AccountMediaStateProviding` |
 
 建立 UseCase 的判準：**含條件判斷、跨 Repository 編排，或有降級策略者才建立**。單純轉呼叫 Repository 的操作不建立 UseCase，由 ViewModel 直接依賴 Repository protocol。
 
@@ -1163,7 +1163,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
-| 2.7 | 2026-09-14 | 修復 2.6 cutover 後的建置中斷：`AccountService.swift` 已刪除但 `AppComposition` 等 6 處仍依賴 `AccountServiceProtocol`，且 `project.pbxproj` 殘留 `AccountService.swift` / `AccountViewModel.swift` 的失效參照。新增 Domain 窄介面 `AccountProfileProviding`，`AccountContentProviding` 改為繼承之，`AuthSessionValidator`、`AuthFlowHandler`、`AccountSessionRepository`、`AppIntentSessionResolver`、`MainTabBarAvatarService`、`MainMemberSettingViewModel` 改接此介面並由 `AppComposition.makeAccountContentRepository()` 提供。行為差異：`profile(sessionID:)` 會同步寫入 `UserProfileStoring`，因此 session 驗證與帳號解析也會刷新本機會員快取；tab avatar 取得資料時不再清除網址未變的頭像快取。更新 3.1 量化現況、8.2 / 8.5、Phase 3 進度、12.4 與 15 節路徑。simulator Debug build 通過；runtime 走查未執行 |
+| 2.7 | 2026-09-14 | 修復 2.6 cutover 後的建置中斷：`AccountService.swift` 已刪除但 `AppComposition` 等 6 處仍依賴 `AccountServiceProtocol`，且 `project.pbxproj` 殘留 `AccountService.swift` / `AccountViewModel.swift` 的失效參照。新增 Domain 窄介面 `AccountProfileProviding`，`AccountContentProviding` 改為繼承之，`AuthSessionValidator`、`AuthFlowHandler`、`AccountSessionRepository`、`AppIntentSessionResolver`、`MainTabBarAvatarService`、`MainMemberSettingViewModel` 改接此介面並由 `AppComposition.makeAccountContentRepository()` 提供。行為差異：`profile(sessionID:)` 會同步寫入 `UserProfileStoring`，因此 session 驗證與帳號解析也會刷新本機會員快取；tab avatar 取得資料時不再清除網址未變的頭像快取。更新 3.1 量化現況、5 節跨 feature UseCase 表的 Repository 名稱（`AccountProviding` / `SessionProviding` 改為實際的 `AccountSessionProviding` / `AccountMediaStateProviding`）、8.2 / 8.5、Phase 3 進度、12.4 與 15 節路徑。simulator Debug build 通過；runtime 走查未執行 |
 | 2.6 | 2026-09-14 | 依決議取消 Coordinator：刪除 `AppCoordinator` / `AuthFlowCoordinator` 規劃與實作，改由 `SceneDelegate` 直接管理 root、`AuthFlowHandler` 回報 session 完成、`MainTabBarController` 管理 tab / deep-link；`AppComposition` 以具名 `make...` factory 接管完整物件圖，Router 改依賴窄化 Scene Builder。同步移除 concrete dependency 預設值、舊 `AppRootFactory` 與 `MediaKind.Codable`，並更新 Phase 3 驗收狀態。靜態 parser 與機械檢查通過；Xcode build / runtime 未執行 |
 | 2.5 | 2026-09-13 | 新增尚未接管 runtime 的 `AppCoordinator` 基礎骨架，只建立對 `UIWindow` 與 `AppComposition` 的持有關係；未加入空的 `start()`、root 切換或 deep-link 方法，也未修改 `SceneDelegate` |
 | 2.4 | 2026-09-13 | 開始 Phase 3 的被動骨架：新增 `MyTMDB_App/Composition/AppComposition.swift`，先集中 `NetworkServicing`、`SessionStoring`、`UserProfileStoring`、`SearchHistoryStoring` 四個共享基礎設施；尚未接管 `SceneDelegate`、畫面 factory 或導航流程，因此 runtime 行為不變 |
