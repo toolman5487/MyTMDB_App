@@ -7,11 +7,11 @@
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
-| 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router |
-| 目標架構 | Clean Architecture（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 314 個 Swift 檔 / 45,799 行 |
-| 狀態 | Phase 1、Phase 2 完成；Phase 3 已完成 G5 的 4 個跨 feature UseCase，composition root 尚未開始 |
-| 日期 | 2026-09-13 |
+| 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router + `AppComposition` factory |
+| 目標架構 | Clean Architecture + `AppComposition` + make factory + Router（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 313 個 Swift 檔 / 46,166 行 |
+| 狀態 | Phase 1、Phase 2 完成；Phase 3 已完成 G4、G5 與 runtime cutover，simulator Debug build 通過，runtime 走查待執行 |
+| 日期 | 2026-09-14 |
 
 ---
 
@@ -19,7 +19,7 @@
 
 本文件定義 CineBase 由現行 MVVM 分層遷移至 Clean Architecture 的設計規格、分階段計畫與驗收標準。
 
-本文件同時要回答一個前置問題：**這個遷移在什麼條件下才划算**。因此 Phase 3（依賴反轉與 composition root）帶有明確的進入條件，不是無條件執行的項目。實體模組拆分已取消，見 11 節。
+本文件同時要回答一個前置問題：**這個遷移在什麼條件下才划算**。因此 Phase 3（`AppComposition`、make factory / Router 與依賴反轉）帶有明確的進入條件，不是無條件執行的項目。實體模組拆分已取消，見 11 節。
 
 本文件不涵蓋自動化測試規格。相關內容已於 v1.1 移除，見 16 節修訂紀錄與 13 節風險條目 R2。
 
@@ -32,7 +32,8 @@
 - 建立 Domain 層，讓業務規則不依賴 TMDB JSON 格式、不依賴 UIKit、不依賴任何第三方套件。
 - 業務編排邏輯由 Service 移出，成為職責單一的 UseCase。
 - 所有遠端資料存取統一經過 Repository 抽象，保留快取與本地資料來源的插入點。
-- 建立 composition root，移除編譯期對 concrete type 的依賴。
+- 建立 `AppComposition` composition root，集中依賴組裝並移除 Presentation 對 concrete type 的依賴。
+- 不引入 Coordinator；root / session 切換由 `SceneDelegate` 負責，tab / deep-link 流程由既有 `MainTabBarController` 負責，Router 執行 feature-local push / present。
 - 讓層與層的依賴規則可透過固定的機械檢查與 code review 驗證，而非只依靠資料夾命名直覺。
 
 ### 2.2 品質目標
@@ -59,35 +60,37 @@
 
 ### 3.1 量化現況
 
-數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1、11 個 Phase 2 feature，以及 Phase 3 的 4 個跨 feature Account UseCase 完成實作後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
+數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1、11 個 Phase 2 feature，以及 Phase 3 完成 runtime cutover 後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
 
 | 項目 | 起點 | 現在 |
 |------|------|------|
-| Swift 檔案數 | 243 | 314 |
-| 程式碼行數 | 47,616 | 45,799 |
+| Swift 檔案數 | 243 | 313 |
+| 程式碼行數 | 47,616 | 46,166 |
 | Xcode target 數 | 1（`MyTMDB_App`，application） | 1 |
 | 檔案組織方式 | 240 檔為顯式 `PBXFileReference`，`MyTMDB_App/` 資料夾使用 `PBXFileSystemSynchronizedRootGroup` | 不變 |
-| ViewModel 資料夾內 Swift 檔案數 | 24 | 20 |
-| Service 資料夾內 Swift 檔案數 | 22 | 8 |
-| Repository 實作數 | 2（皆位於 `MemberCenter`） | 13 |
+| ViewModel 資料夾內 Swift 檔案數 | 24 | 17 |
+| Service 資料夾內 Swift 檔案數 | 22 | 7 |
+| Repository 實作數 | 2（皆位於 `MemberCenter`） | 14 |
 | UseCase 檔案數 | 0 | 20 |
 | Domain Entity 型別數 | 0 | 89（分布於 40 檔） |
-| `import UIKit` 出現在 ViewModel / Service / Model / Presentation | 2 檔 | 2 檔 |
-| `= NetworkService()` 預設參數 | 18 處 | 17 處 |
-| 其他 concrete dependency 預設參數 | 49 處 | 仍有多處，Phase 3 開始前依 10.1 重新盤點 |
-| `convenience init()` 硬接依賴 | 4 處 | 4 處 |
+| `import UIKit` 出現在 ViewModel / Service / Model / Presentation | 2 檔 | 1 檔（`MainTabBarAvatarService` 的 `UIImage` 邊界） |
+| `AppComposition` 外的 `= NetworkService()` 預設參數 | 18 處 | 0 處 |
+| 待移除的 concrete dependency 預設參數（不含 `AppComposition`） | 49 行（原盤點） | 0 行 |
+| `convenience init()` 硬接依賴 | 4 處 | 0 處（保留 1 個純 UI convenience initializer） |
 | Movie / TV 平行檔案組 | 31 組 | 9 組（僅 MovieDetail↔TVDetail） |
 | 獨立的 `case movie / case tv` 列舉 | 5 個 | 3 個（皆非二元，見 9.1） |
 
-專案採用顯式檔案參照而非全資料夾同步，代表**新增 Swift 檔需手動加入 target**。既有 commit `711763f`（`fix: add member center list repository to target`）即為漏加所致。此為需持續注意的操作風險，見 13 節 R5。
+專案同時使用顯式檔案參照與 `MyTMDB_App/` 的 `PBXFileSystemSynchronizedRootGroup`。一般 feature 新增 Swift 檔仍需確認 target membership；`MyTMDB_App/` 同步根目錄下的 `Composition/AppComposition.swift` 會自動納入 target。既有 commit `711763f`（`fix: add member center list repository to target`）即為顯式參照漏加所致。此為需持續注意的操作風險，見 13 節 R5。
 
-依賴注入仍未進入系統性處理：`AppDependencies` 尚不存在、4 個 `convenience init()` 仍保留，且仍有 17 處 `= NetworkService()`。這是預期內的過渡狀態；composition root 屬於獨立步驟，不隨個別 feature 進行（見 10.4）。
+`AppComposition` 已接管 runtime 組裝：集中建立 Repository、UseCase、ViewModel、ViewController 與 App Intent 依賴；`SceneDelegate` 持有單一 composition，直接處理 loading / login / main root；`MainTabBarController` 延續 tab 與 deep-link 導航責任；Router 只依賴窄化 Scene Builder。專案不建立 Coordinator，舊 `AppRootFactory` 已由不含 UIKit 的 `AuthFlowHandler` / `AuthSessionValidator` 取代。依賴型 `convenience init`、composition 外的 `NetworkService()` 預設值與 Controller 內 ViewModel 組裝已清除。
+
+舊 `AccountService` / `AccountServiceProtocol` 與未使用的 `AccountViewModel` 已刪除。會員資料一律經 Domain 的 `AccountProfileProviding.profile(sessionID:)` 取得，由 `AccountContentRepository` 實作並同步寫入 `UserProfileStoring`；`AuthSessionValidator`、`AuthFlowHandler`、`AccountSessionRepository`、`AppIntentSessionResolver`、`MainTabBarAvatarService` 與 `MainMemberSettingViewModel` 皆只依賴此窄介面。
 
 ### 3.2 已符合 Clean Architecture 的部分
 
 這些是遷移中最難補的項目，專案已經具備，必須在遷移中**保留而非重寫**：
 
-- **UI 框架隔離已成立。** 243 檔中 130 檔 `import UIKit`，但 ViewModel / Service / Model / Presentation 層僅 2 個例外：`MainLogIn/Service/AppRootFactory.swift` 與 `MainTabBar/Service/MainTabBarAvatarService.swift`。兩者本質為 UI factory，屬於位置放錯而非設計錯誤。
+- **UI 框架隔離已成立。** ViewModel / Model / Presentation 不 import UIKit；Service 僅剩 `MainTabBarAvatarService` 因輸出 `UIImage` 保留 UIKit 邊界。舊 `AppRootFactory` 已移除。
 - **已分層 feature 的 DTO 未外洩至 UI 層。** `ReviewList`、`MovieDetail`、`TVDetail`、`SeasonDetail`、`EpisodeDetail`、`PersonDetail` 的 ViewModel、Presentation、Controller 與 View 均只使用 Domain Entity 或 presentation model。
 - **Presentation 層已存在。** `MovieDetail`、`TVDetail`、`SeasonDetail`、`PersonDetail`、`EpisodeDetail`、`MainHome`、`MemberCenter` 共有 8 個 `SectionBuilder` / `PresentationBuilder`，皆為輸入輸出俱為值型別的靜態純函數。這等同 Clean 的 Presenter。
 - **Protocol 邊界已建立。** `NetworkServicing`、`MovieDetailProviding`、`TVDetailProviding`、`ReviewProviding`、`SessionStoring`、`MemberCenterContentProviding` 等，依賴皆以 protocol 宣告。
@@ -97,7 +100,7 @@
 
 #### G1 — Domain Entity 覆蓋 Phase 2 範圍（已完成）
 
-11 個 Phase 2 feature 均已完成 Entity / DTO 分離，Domain Entity 不具 `Decodable` / `Encodable` conformance。
+11 個 Phase 2 feature 均已完成 Entity / DTO 分離；其新增的 Domain Entity 不具 `Decodable` / `Encodable` conformance。跨 feature 的既有 `MediaKind` 仍有未使用的 `Codable` conformance，列入 Phase 3 清理，見 9.1。
 
 HomeSectionList 原本直接使用 `MediaGenreListDTO`、MainHome 的 `MainHomeContent` 兼任 DTO 與 Model，以及 MemberCenter 直接使用 `MediaSummaryDTO` 的過渡狀態皆已解除。Phase 2 範圍執行 DTO 外洩檢查無輸出。
 
@@ -113,36 +116,21 @@ MemberCenter 的帳號內容載入已由 `LoadMemberCenterOverviewUseCase` 與 `
 
 #### G3 — Repository 抽象尚未覆蓋全部遠端資料（部分完成）
 
-目前有 13 個 Repository 實作，Phase 2 的 11 個 feature 與跨 feature 的帳號媒體狀態皆已有 Repository protocol 邊界。未列入 Phase 2 的既有功能仍有 `ViewModel → Service → NetworkService` 直通，因此全專案覆蓋仍屬部分完成。
+目前有 14 個 Repository 實作，Phase 2 的 11 個 feature 與跨 feature 的帳號媒體狀態皆已有 Repository protocol 邊界。未列入 Phase 2 的既有功能仍有 `ViewModel → Service → NetworkServicing` 直通，因此全專案覆蓋仍屬部分完成。
 
 影響：無快取、離線、本地資料來源的插入點。
 
-#### G4 — 依賴反轉僅完成一半
+#### G4 — 依賴反轉（已完成）
 
-protocol 已宣告，但仍有 17 處 `network: NetworkServicing = NetworkService()`、多處 concrete dependency 預設值、4 處 `convenience init()`，使編譯期依賴仍指向具體型別：
+`AppComposition` 已成為唯一完整組裝點；`NetworkService()`、Repository、UseCase、ViewModel 與 ViewController 的 concrete 物件圖均由具名 `make...` factory 建立。ViewModel / Controller 的依賴便利初始化與 concrete 預設參數已移除，Router 僅接收窄化 Scene Builder protocol。
 
-```swift
-convenience init() {
-    self.init(
-        loadMovieDetailUseCase: DefaultLoadMovieDetailUseCase(
-            repository: MovieDetailRepository(),
-            auxiliaryFailureHandler: { _, _, _ in }
-        ),
-        accountStateService: MovieAccountStateService(),
-        sessionStore: SessionStore(),
-        accountService: AccountService(),
-        accountMediaService: MemberCenterService()
-    )
-}
-```
+結果：抽換基礎實作集中修改 composition；Presentation 不再知道 concrete Data implementation，且沒有 `.shared` / `resolve<T>()` Service Locator。
 
-影響：無 composition root。抽換實作需逐處修改初始化呼叫端，變更成本與依賴數量成正比。
-
-#### G5 — Detail 系列帳號流程（UseCase 已完成，組裝待 G4 收斂）
+#### G5 — Detail 系列帳號流程（已完成）
 
 `MovieDetailViewModel`、`TVDetailViewModel`、`EpisodeDetailViewModel` 已不再直接編排 `SessionStoring`、`AccountServiceProtocol` 與 `AccountMediaStateProviding`。登入檢查、帳號解析、收藏與評分寫入已移至 4 個 Domain UseCase；`DetailAccountMediaStateController` 縮減為畫面狀態協調與錯誤文案映射。
 
-剩餘工作：UseCase 與 Repository 的 concrete 組裝仍暫存在既有便利初始化，待 G4 的 `AppDependencies` 一次集中。
+UseCase 與 Repository 的 concrete 組裝已集中至 `AppComposition.makeDetailAccountMediaStateController()`，Detail ViewModel 僅接收已完成的畫面狀態協調器。
 
 #### G6 — Movie / TV 平行重複（已完成）
 
@@ -170,7 +158,7 @@ convenience init() {
 
 ### 3.4 判定
 
-**遷移可行，且 Phase 1、Phase 2 已完成。** G1、G2、G5 的業務分層已收斂；G3 在 Phase 2 範圍完成、全專案仍為部分覆蓋；下一步為 G4 的 composition root；G7 為已接受限制。
+**遷移可行，且 Phase 1、Phase 2、Phase 3 實作已完成。** G1、G2、G4、G5、G6 已收斂；G3 在 Phase 2 範圍完成、全專案仍為部分覆蓋；G7 為已接受限制。剩餘工作是 Xcode build 與 12.1 runtime 人工走查，不把靜態 parser 結果視為建置證據。
 
 實際遷移順序為 **G6 → G1/G2/G3 → G4/G5**，理由：
 
@@ -186,8 +174,11 @@ convenience init() {
 
 ```text
 App
-  Controller / View / Cell / Router / AppDelegate / SceneDelegate
-  Composition Root (AppDependencies)
+  AppDelegate / SceneDelegate
+  Composition Root + make factory (AppComposition)
+  MainTabBarController (tab / deep-link flow)
+  Router (feature-local push / present)
+  Controller / View / Cell
   import UIKit, SnapKit, SDWebImage, Lottie, SkeletonView, YouTubeiOSPlayerHelper
         |
         v
@@ -220,7 +211,9 @@ Data
 - Domain 型別**不得** conform `Decodable` 或 `Encodable`。序列化是 Data 層的責任。
 - Presentation 層**不得** import Data。ViewModel 只認識 Domain 的 UseCase protocol。
 - Data 層的 DTO **不得**離開 Data 層，一律經 Mapper 轉為 Domain Entity 後才向外傳遞。
-- Router 屬於 App 層；ViewModel 不持有 Router，維持現行以 Controller 轉發的做法。
+- `SceneDelegate`、`MainTabBarController` 與 Router 均屬於 App 層；ViewModel 不持有它們，維持由 Controller 將使用者事件轉交導航物件的做法。
+- `SceneDelegate` 只決定 loading / login / main root；`MainTabBarController` 管理 tab 與 App Intent / deep-link 入口；Router 只執行當前 feature 的 push / present / URL 開啟。
+- `AppComposition` 只負責建立物件圖，不保存畫面流程狀態、不執行導航，也不得被 ViewModel 當作 Service Locator 使用。
 - 只有 App 層可以建立 concrete 型別。其餘各層一律以 protocol 注入。
 
 ### 4.3 層次邊界
@@ -267,7 +260,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 ### 4.3.1 Presentation 與 App 的位置
 
-Presentation（ViewModel、SectionBuilder、PresentationModels）與 App（Controller、View、Router）**留在原本的 feature 資料夾**，不另建頂層 `Presentation/` 與 `App/`。
+Presentation（ViewModel、SectionBuilder、PresentationModels）與 feature-local App 元件（Controller、View、Router）**留在原本的 feature 資料夾**，不另建頂層 `Presentation/` 與 `App/`。唯一的 composition root 放在 `MyTMDB_App/Composition/AppComposition.swift`，因為它屬於 App 入口而非任一 feature；不建立 Coordinator 目錄或型別。
 
 理由：3.3 列出的架構缺口是 G1（缺 Entity）、G2（缺 UseCase）、G3（缺 Repository），這三者靠新增 Domain/Data 解決。把既有的 ViewModel 與 Controller 換個資料夾不會修正任何缺口，卻要動到上百個檔案與 `project.pbxproj`，在沒有測試的前提下是純風險。
 
@@ -645,59 +638,168 @@ static func makeSections(
 
 ## 8. App 層規格
 
-### 8.1 Composition Root
+### 8.1 AppComposition（Composition Root）
 
 ```swift
-// MARK: - AppDependencies
+// MARK: - AppComposition
 
 @MainActor
-final class AppDependencies {
+final class AppComposition {
 
     // MARK: - Properties
 
     private let network: NetworkServicing
     private let sessionStore: SessionStoring
+    private let userProfileStore: UserProfileStoring
+    private let searchHistoryStore: SearchHistoryStoring
 
     // MARK: - Initialization
 
     init(
         network: NetworkServicing = NetworkService(),
-        sessionStore: SessionStoring = SessionStore()
+        sessionStore: SessionStoring = SessionStore(),
+        userProfileStore: UserProfileStoring = UserProfileStore(),
+        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore()
     ) {
         self.network = network
         self.sessionStore = sessionStore
+        self.userProfileStore = userProfileStore
+        self.searchHistoryStore = searchHistoryStore
     }
 
     // MARK: - Factories
 
-    func makeMovieDetailViewModel() -> MovieDetailViewModel {
+    func makeMovieDetailViewController(movieID: Int) -> UIViewController {
         let repository = MovieDetailRepository(
             network: network,
             localization: .current
         )
-        return MovieDetailViewModel(
-            loadMovieDetail: DefaultLoadMovieDetailUseCase(repository: repository),
-            toggleFavorite: makeToggleFavoriteUseCase(),
-            submitRating: makeSubmitRatingUseCase(),
-            deleteRating: makeDeleteRatingUseCase()
+        let viewModel = MovieDetailViewModel(
+            loadMovieDetailUseCase: DefaultLoadMovieDetailUseCase(
+                repository: repository,
+                auxiliaryFailureHandler: { name, movieID, error in
+                    AppLogger.network.warning(
+                        "Failed to load \(name) for movie \(movieID): \(error.localizedDescription)"
+                    )
+                }
+            ),
+            accountMediaController: makeDetailAccountMediaStateController()
+        )
+        return MovieDetailViewController(
+            movieID: movieID,
+            viewModel: viewModel,
+            sceneBuilder: self
         )
     }
 }
 ```
 
-`AppDependencies` 是全專案**唯一**允許出現 concrete 依賴預設值的位置。
+`AppComposition` 是全專案**唯一**允許建立完整 concrete 依賴鏈與提供 concrete 依賴預設值的位置。它是工廠與 Composition Root，不是讓外部任意查詢服務的 DI Container。
 
-由 `SceneDelegate` 建立單一實例並向下傳遞。不引入第三方 DI 容器，不使用 service locator，不使用全域單例。
+上例是目前已落地介面的精簡示意；實際檔案依各畫面的建構參數提供對應 `make...` factory。
 
-### 8.2 Router
+一般 App 執行流程由 `SceneDelegate` 建立並持有單一 `AppComposition`，再直接呼叫 root factory。App Intent 是獨立系統入口，可建立自己的短生命週期 `AppComposition`，但不得使用全域 `.shared`。不引入第三方 DI 容器。
 
-`BaseRouter`、`DetailRouter` 及各 feature Router 維持現狀，歸屬 App 層。Router 需要建立下一個畫面的 ViewModel 時，透過持有的 `AppDependencies` 取得。
+`AppComposition` 可以：
 
-### 8.3 位置修正
+- 建立 Repository implementation、UseCase、ViewModel、ViewController 與 App Intent handler / query factory。
+- 保存需要共享生命週期的基礎設施，例如 `NetworkServicing`、`SessionStoring`、`UserProfileStoring`。
+- 以 protocol 或 factory closure 暴露特定畫面的建構能力。
+
+`AppComposition` 不可以：
+
+- 保存目前頁面、登入流程步驟或 navigation stack 等流程狀態。
+- 持有 `UIWindow`、執行 `push` / `present` 或保存 navigation stack；session 變化僅透過注入 closure 回報 `SceneDelegate`。
+- 傳入 ViewModel、UseCase 或 Repository，讓下層任意取用依賴。
+- 以 `resolve<T>()`、字串 key 或全域 singleton 形成 Service Locator。
+
+### 8.2 Root、登入與 Tab 流程（不使用 Coordinator）
+
+本專案明確不建立 Coordinator。流程沿用 UIKit 現有擁有者，畫面及依賴一律向 `AppComposition` 的 `make...` factory 取得：
+
+```text
+SceneDelegate
+  ├─ AppComposition
+  ├─ loading / login / main root switch
+  └─ MainTabBarController
+       ├─ tab navigation stacks
+       ├─ App Intent / deep-link destination
+       └─ Feature Router → narrow Scene Builder → AppComposition factory
+```
+
+| 元件 | 責任 | 不負責 |
+|------|------|--------|
+| `SceneDelegate` | 建立 window / composition、驗證已存 session、loading / login / main root 切換、接收 URL context | 建立 Repository / UseCase / ViewModel、feature-local push 細節 |
+| `AuthSessionValidator` | 經 `AccountProfileProviding` 驗證已存 session，清理失效的 session / profile | 建立或切換畫面 |
+| `AuthFlowHandler` | 保存登入或訪客 session、經 `AccountProfileProviding` 取得並快取會員資料、以 closure 回報 session 完成 | 持有 window / navigation controller、建立畫面 |
+| `MainTabBarController` | 建立 tab navigation stack、切換 tab、把 App Intent / deep link 導向正確 feature | 建立 Repository / UseCase / ViewModel |
+
+`AuthFlowHandler` 的完成 closure 由 `AppComposition` 注入並回報 `SceneDelegate`；此 closure 只傳遞 `AuthSession`，不形成額外流程物件。登出則由 `AppFlowRouting` 的窄介面通知 composition，再透過同一 session callback 讓 `SceneDelegate` 替換 root。
+
+### 8.3 Router
+
+`BaseRouter`、`DetailRouter` 及各 feature Router 歸屬 App 層，只負責 feature-local 的 `push`、`present`、page sheet、Safari 與外部 URL 開啟。
+
+Router 不直接建立 Repository、UseCase 或 ViewModel，也不直接持有 concrete `AppComposition`。需要下一個畫面時，注入對應的 Scene Builder protocol 或 factory closure：
+
+```swift
+@MainActor
+protocol DetailSceneBuilding: AnyObject {
+    func makeMovieDetailViewController(movieID: Int) -> UIViewController
+    func makeTVDetailViewController(seriesID: Int) -> UIViewController
+    func makePersonDetailViewController(personID: Int) -> UIViewController
+}
+
+@MainActor
+final class DetailRouter: BaseRouter {
+    private let sceneBuilder: DetailSceneBuilding
+
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: DetailSceneBuilding
+    ) {
+        self.sceneBuilder = sceneBuilder
+        super.init(sourceViewController: sourceViewController)
+    }
+
+    func showMovieDetail(movieID: Int) {
+        guard movieID > 0 else { return }
+        show(
+            sceneBuilder.makeMovieDetailViewController(movieID: movieID),
+            using: .push
+        )
+    }
+}
+```
+
+Scene Builder protocol 依導航範圍拆分，例如 `DetailSceneBuilding`、`MemberCenterSceneBuilding`；不得建立一個暴露全 App 畫面的巨大 factory protocol。
+
+### 8.4 責任與事件流
+
+| 元件 | 核心責任 | 可持有 |
+|------|----------|--------|
+| `AppComposition` | 組裝物件圖 | shared infrastructure、factory |
+| `SceneDelegate` | root / session 流程 | window、單一 `AppComposition`、session validation task |
+| `MainTabBarController` | tab / deep-link 流程 | tab navigation controllers、窄化 Scene Builder |
+| Router | 執行局部導航 | source view controller、窄化 Scene Builder |
+| ViewController | 顯示畫面、轉交 UI event | ViewModel、Router protocol |
+| ViewModel | UI state、呼叫 UseCase、Presentation mapping | Domain protocol；不得持有 Router / `AppComposition` |
+
+資料流與導航流分離：
+
+```text
+資料：ViewController → ViewModel → UseCase → Repository protocol ← Repository
+導航：ViewController → Router → Scene Builder → AppComposition
+流程：SceneDelegate → AppComposition make factory → Login / MainTab；MainTabBarController → feature Router
+```
+
+### 8.5 位置修正
 
 | 檔案 | 現況 | 遷移後 |
 |------|------|--------|
-| `MainLogIn/Service/AppRootFactory.swift` | Service 層但 import UIKit | App 層 |
+| `MainLogIn/Service/AppRootFactory.swift` | Service 層但 import UIKit，並混合 root factory 與 auth flow | 已刪除；`AppComposition` 承接畫面組裝、`SceneDelegate` 承接 root 切換、`AuthFlowHandler` 承接 session 完成事件 |
+| `MainLogIn/Service/AccountService.swift` | Service 直通 `NetworkServicing`，與 `AccountContentRepository.profile(sessionID:)` 打同一支 `Account.me` API | 已刪除；改由 `Feature/Domain` 的 `AccountProfileProviding` 窄介面接收，`AccountContentProviding` 繼承之 |
+| `MainLogIn/ViewModel/AccountViewModel.swift` | 無使用端 | 已刪除 |
 | `MainTabBar/Service/MainTabBarAvatarService.swift` | Service 層但 import UIKit | 拆為 Data 層取資料 + App 層產生 UIImage |
 
 ---
@@ -711,13 +813,15 @@ final class AppDependencies {
 ```swift
 // MARK: - MediaKind
 
-nonisolated enum MediaKind: String, Sendable, Codable, CaseIterable {
+nonisolated enum MediaKind: String, Sendable, CaseIterable, Equatable {
     case movie
     case tv
 }
 ```
 
 `MediaKind` 屬於領域概念，位於 `Domain/Entity/MediaKind.swift`。其顯示文字與圖示（`displayName`、`systemImageName`）屬 Presentation，置於 `Feature/Media/MediaKind+Presentation.swift`。
+
+目前原始碼仍保留 `Codable`，但全專案沒有 `MediaKind` 的 encode / decode 使用點，且與 4.2 的 Domain 序列化禁令衝突。Phase 3 移除該 conformance；若未來需要持久化，由 Data 層 DTO 或 storage mapper 轉換 `rawValue`。
 
 **本節初版有誤。** 初版列出 5 個「應被取代」的列舉，實際盤點後只有 2 個是純二元 movie/tv：
 
@@ -778,14 +882,14 @@ nonisolated enum MediaKind: String, Sendable, Codable, CaseIterable {
 
 | 模式 | 數量 | 處置 |
 |------|------|------|
-| `convenience init()` 內建立完整依賴 | 4 | 刪除，改由 `AppDependencies` 建構 |
+| `convenience init()` 內建立完整依賴 | 4 | 刪除，改由 `AppComposition` 建構 |
 | `network: NetworkServicing = NetworkService()` | 17 | 移除預設值，改為必填參數 |
-| 其他 concrete dependency 預設參數 | Phase 3 開始前重盤 | 移除預設值，改為必填參數；值型別行為預設不計入 |
+| concrete dependency 預設參數 | 49 行（包含前述 17 行 network 預設） | 移除預設值，改為必填參數；值型別行為預設不計入 |
 | Controller 內 `self.viewModel = XxxViewModel()` | 多處 | 改為 init 注入 |
 
 ### 10.2 允許保留的預設值
 
-- `AppDependencies.init` 的 `network` 與 `sessionStore`（唯一 composition root）。
+- `AppComposition.init` 的基礎設施預設值（唯一 composition root），例如 `network`、`sessionStore`、`userProfileStore`、`searchHistoryStore`。
 - 值型別的行為預設值，例如 `recommendationPage: Int = 1`、`localization: AppLocalization = .current`。此類為參數預設而非依賴預設。
 
 ### 10.3 UIViewController 注入模式
@@ -806,13 +910,21 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 
 **依賴反轉是跨全專案的單一步驟，不可拆進各 feature 的分層工作。**
 
-理由：`AppDependencies` 的價值在於成為唯一的組裝點。若隨 feature 逐步導入，過渡期會同時存在兩種注入方式（部分走 composition root、部分走預設參數），組裝點不唯一，等於沒有 composition root，卻已付出改動成本。
+理由：`AppComposition` 的價值在於成為唯一的組裝點。若隨 feature 長期分批啟用，會同時存在兩種 runtime 注入方式（部分走 composition root、部分走預設參數），組裝點不唯一，等於沒有 composition root，卻已付出改動成本。
 
 因此分層工作（Domain / Data）與依賴反轉（10.1–10.3）分開執行：
 
 - 分層期間，ViewModel 仍以既有的預設參數注入 UseCase，例如
   `init(mediaKind:loadReviewsUseCase: LoadReviewsUseCase = DefaultLoadReviewsUseCase(repository: ReviewRepository()))`。
-- 待需要分層的 feature 都完成後，再一次性建立 `AppDependencies` 並移除全部預設值。
+- 待需要分層的 feature 都完成後，先加入尚未接入 runtime 的 `AppComposition` 與 Scene Builder protocol；下一個 cutover commit 再一次接管 `SceneDelegate` 並移除全部預設值。不得合併或發布只有部分畫面走新組裝方式的中間狀態。
+
+### 10.5 防止 Service Locator
+
+- ViewModel、UseCase、Repository initializer 不得接收 `AppComposition`。
+- 只有 `SceneDelegate` 持有完整 `AppComposition`；其他 UI 元件只接收完成的依賴或窄化 Scene Builder protocol。
+- Router 只接收導航範圍所需的 Scene Builder protocol 或 factory closure，不接收 concrete `AppComposition`。
+- Controller 接收已建構的 ViewModel 與 Router factory；不得以 `AppComposition.shared` 取得依賴。
+- `AppComposition` 不提供泛型 `resolve<T>()`、subscript 或字串 key 查詢。
 
 這也是 3.1 中依賴注入四列在分層試點後未變動的原因，屬預期結果而非遺漏。
 
@@ -871,20 +983,23 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 
 **獨立價值：有。** 業務規則脫離 UI 生命週期，Entity 持有已解析型別避免重複解析。
 
-### Phase 3：依賴反轉（composition root）
+### Phase 3：依賴反轉（AppComposition + make factory + Router）
 
 **目的**：處理 G4、G5。
 
-目前進度：G5 的 4 個跨 feature UseCase 已完成並通過 build；G4 的 `AppDependencies` 與全專案 concrete 預設值清理尚未開始。
+目前進度：G5 的 4 個跨 feature UseCase 已完成；G4 已由 `AppComposition` 接管 runtime 組裝，Auth / MainTab / Router 已改走 factory 注入，全專案 concrete dependency 預設值已清理；帳號資料取得統一經 `AccountProfileProviding`。靜態 parser、機械邊界檢查與 simulator Debug build 通過；runtime 走查尚未執行。
 
 交付：
 
-- 建立 `AppDependencies` composition root。
-- 移除 4 處 `convenience init()`、17 處 network 預設值，以及 Phase 3 開始前重新盤點的其他 concrete dependency 預設值。
+- 建立 `AppComposition` composition root，以具名 `make...` factory 集中建立 Repository、UseCase、ViewModel、ViewController 與 App Intent 依賴。
+- 不建立 Coordinator；`SceneDelegate` 管理啟動與 root 切換，`AuthFlowHandler` 以 session closure 回報登入完成，`MainTabBarController` 管理 tab stack 與跨 tab / deep-link 流程。
+- Router 改依賴窄化 Scene Builder protocol 或 factory closure，不直接建立 ViewModel，也不持有 concrete `AppComposition`。
+- 移除 4 處 `convenience init()`、17 處 network 預設值、49 行 concrete dependency 預設參數，以及 Controller 內的 ViewModel 組裝。
+- 移除 `MediaKind` 未使用的 `Codable` conformance；若未來需要持久化，改由 Data 層 mapper 轉換 `rawValue`。
 - 由 `DetailAccountMediaStateController` 抽出 4 個跨 feature UseCase（G5）。
-- 依 feature 分批提交，每批結束時專案可編譯、可執行。
+- 以單一 cutover 接管 `SceneDelegate` 和全部 feature；不得留下兩套 runtime 組裝路徑。完成後以靜態檢查、Xcode build 與人工走查分別驗收，不得把 parser 結果表述為 build 通過。
 
-**進入條件**：需要依賴反轉的 feature 都已完成 Phase 2 分層。理由見 10.4——過渡期若同時存在兩種注入方式，組裝點不唯一，等於沒有 composition root。
+**進入條件**：需要依賴反轉的 feature 都已完成 Phase 2 分層。理由見 10.4——過渡期若同時存在兩種 runtime 注入方式，組裝點不唯一，等於沒有 composition root。
 
 **獨立價值：有。** 完成後抽換任一實作的成本不再與呼叫端數量成正比。
 
@@ -939,12 +1054,21 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 ### 12.4 Phase 3
 
-- [ ] `AppDependencies` 存在，且為專案中唯一含 concrete 依賴預設值的型別。
-- [ ] 全專案 `grep "convenience init()"` 結果為 0。
-- [ ] 全專案 `grep "= NetworkService()"` 結果為 1（僅 `AppDependencies`）。
-- [ ] 全專案無 `UseCase = Default...UseCase(...)` 形式的預設參數。
+- [x] `AppComposition` 存在，且為專案中唯一建立完整 concrete 依賴鏈與提供 concrete 依賴預設值的型別。
+- [x] `SceneDelegate` 只建立並持有一組 `AppComposition`，不直接組裝 feature，也不建立 Coordinator。
+- [x] `SceneDelegate` 管理 loading / login / main root；`AuthFlowHandler` 回報 session 完成；`MainTabBarController` 管理 tab stack 與跨 tab / deep-link 路由。
+- [x] ViewModel、UseCase、Repository 均未引用 `AppComposition` 或 Router。
+- [x] Router 未直接建立 Repository、UseCase、ViewModel，且只依賴窄化 Scene Builder protocol／factory closure。
+- [x] 專案不存在 `AppComposition.shared`、`resolve<T>()` 或其他 Service Locator API。
+- [x] `MediaKind` 不再 conform `Codable`，Domain Entity 均不承擔 wire-format 序列化。
+- [x] 4 個用來硬接依賴的 `convenience init` 已移除；保留 1 個純 UI convenience initializer。
+- [x] 全專案 `= NetworkService()` 結果為 1（僅 `AppComposition`）。
+- [x] 全專案無 `AccountServiceProtocol` / `fetchAccount`；會員資料只經 `AccountProfileProviding` 取得。
+- [x] simulator Debug build 通過（`xcodebuild -scheme MyTMDB_App -destination 'generic/platform=iOS Simulator'`）。
+- [x] 全專案無 `UseCase = Default...UseCase(...)` 形式的預設參數。
 - [x] `DetailAccountMediaStateController` 已由 4 個 UseCase 取代業務編排，縮減為畫面狀態協調器。
 - [ ] 未登入 / guest 路徑不會寫入收藏（以走查確認）。
+- [ ] App Intent 使用獨立、短生命週期的 composition 入口，且 4 個公開 shortcut 均可正常觸發。
 - [ ] 12.1 走查全數通過。
 
 ---
@@ -956,16 +1080,19 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 | R1 | Phase 1 合併 Detail 時 movie / tv 行為差異被抹平 | 功能退化且不易察覺 | Detail 合併為選擇性項目；合併前依 9.4 逐項判定差異類別，不得整批套用 |
 | R2 | 無自動化測試，重構迴歸只能靠人工 | Phase 1 涉及約 3,800 行變更，人工走查可能漏掉邊界情境 | 一組一個 commit 以便精準回退；每組合併後立即執行 12.1 走查；不同時進行兩組合併。此為本計畫已知的最大弱點，若日後改變測試策略應優先補上 Phase 1 合併範圍的覆蓋 |
 | R3 | Mapper 吃掉 DTO 的 decode fallback 導致顯示文案改變 | UI 出現空字串 | 搬移前先列出所有含顯示語意的 fallback（如 `?? "未命名"`），明確移至 Presentation 而非刪除 |
-| R4 | 移除 49 處預設參數造成大範圍修改 | 單次 commit 過大、難以 review | 依 feature 分批，每批一個 commit，每批結束可編譯 |
+| R4 | 移除 49 行 concrete 預設參數造成大範圍修改 | 單次 cutover diff 大、難以 review | 先提交不接管 runtime 的 protocol / composition 骨架；cutover 只做工廠注入與預設值移除，避免混入功能修改 |
 | R5 | 新增檔案漏加入 target | 編譯期未報錯但執行期缺功能 | 專案採顯式檔案參照（見 3.1）；每次新增檔案後確認 target membership，或評估將各 feature 資料夾改為 `PBXFileSystemSynchronizedRootGroup` |
 | R6 | Entity 與 DTO 雙軌並存期間認知負擔 | 開發者誤用 DTO | DTO 一律加 `DTO` 後綴；Phase 3 後以 access level 封閉 |
 | R7 | 過度抽象：為每個 Repository 方法造一個 UseCase | 產生大量單行轉呼叫類別 | 套用 5.4 的判準：只有含條件、編排或降級策略者才建立 UseCase |
 | R8 | 無編譯期層次邊界 | 資料夾不擋違規 import，Domain 可能悄悄依賴 Data 或 UIKit，DTO 也可能外洩至其他層 | 每次動到 Domain 或 Data 後執行 4.3 的四項機械檢查；新增 feature 時一併執行 |
-| R9 | App Intents 依賴既有 service，遷移時斷裂 | Siri / Shortcuts 失效 | `Feature/AppIntents` 改為依賴 UseCase；每 Phase 執行 12.1 的 Intents 走查項目 |
+| R9 | App Intents 依賴既有 service，遷移時斷裂 | Siri / Shortcuts 失效 | `Feature/AppIntents` 改為依賴 UseCase，並由獨立短生命週期 `AppComposition` 組裝；每 Phase 執行 12.1 的 Intents 走查項目 |
 | R10 | 遷移期間 TMDB API 變更 | 同時處理重構與外部變更 | 每個 Phase 控制在可於短期內完結的範圍，不長期開分支 |
 | R11 | Domain 的 throws 不具型 | 從 UseCase 簽章看不出可能拋出哪些非領域錯誤，呼叫端只能概括處理 | 已知取捨，理由見 5.5。收斂路徑為 typed throws，需同時提供 `TransportFailure` 與其文案映射，屬獨立工作 |
 | R12 | 分層期間兩種架構並存 | 已分層與未分層的 feature 寫法不同，易誤用 | 分層以 feature 為單位一次做完，不留半分層狀態；`ReviewList` 作為模式範本供對照 |
 | R13 | 規劃合併或分層順序時漏看型別耦合 | 拆成多個 commit 後無法各自建置，被迫回頭合併 | 動工前先確認各組**沒有共用型別**；有共用型別就先統一型別再分別處理（9.2 的教訓） |
+| R14 | `SceneDelegate`、`MainTabBarController` 與 Router 同時決定相同導航 | 流程分支重複、返回行為不一致 | `SceneDelegate` 只處理 root；`MainTabBarController` 只處理 tab / deep-link 入口；Router 只執行 feature-local push / present，依 8.4 表格 review |
+| R15 | `AppComposition` 被當成 Service Locator | 下層可任意取得 concrete 依賴，依賴關係重新隱藏 | 禁止 `.shared` 與 `resolve<T>()`；ViewModel / UseCase / Repository 不得接收 `AppComposition`；Router 只接收窄化 Scene Builder |
+| R16 | composition 的 session callback 或 Router 與 Controller 形成引用環 | root 或畫面流程完成後物件持續存活 | `SceneDelegate` callback 使用 weak self；Router 對來源 Controller 與 app flow 介面維持 weak reference；非同步 Task 在 deinit 取消 |
 
 ---
 
@@ -974,7 +1101,10 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 - 新增 feature 時，依 4.2 的依賴規則配置檔案；不得在 Presentation 層 import Data。
 - 新增業務規則時，先套用 5.6 判準：顯示文案進 Presentation、wire format 進 Data Mapper、條件與編排進 Domain。
 - 新增 UseCase 前先確認它含條件、編排或降級策略；純集合運算改為 Entity 擴充。
-- 新增依賴時，於 `AppDependencies` 註冊（Phase 3 完成後）；在此之前沿用預設參數注入，但不得於 ViewModel 或 Controller 內組裝多層依賴。
+- 新增依賴時，於 `AppComposition` 增加具名 `make...` factory；不得於 ViewModel 或 Controller 內組裝多層依賴。
+- 新增 root 流程時由 `SceneDelegate` 決策；tab / deep-link 入口由 `MainTabBarController` 決策；單一 feature 的 push / present 由 Router 執行，不得重複建立相同目的地。
+- 新增 Router destination 時，擴充該導航範圍的 Scene Builder protocol；不得讓 Router 直接接收 concrete `AppComposition`。
+- 不得建立 `AppComposition.shared`、泛型 resolver 或字串 key DI API。
 - 新增 Domain 型別時，確認未 conform `Decodable` / `Encodable`，且只 import Foundation。
 - **每次動到 `Domain/` 或 `Data/` 後，執行 4.3 的四項機械檢查**，四項皆須無輸出。
 - Entity 一律持有已解析的型別（`Date?`、`URL?`、列舉），不持有 wire format 字串。
@@ -1011,16 +1141,19 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 | 用途 | 路徑 |
 |------|------|
 | 網路層（尚未歸入 Data 資料夾） | `Network/NetworkService.swift`、`Network/APIConfig.swift`、`Network/NetworkError.swift`、`Network/AppLocalization.swift` |
-| 既有 Repository（Phase 2 時併入 Data） | `MemberCenter/Repository/MemberCenterContentRepository.swift`、`MemberCenter/List/Repository/MemberCenterListContentRepository.swift` |
-| 跨 feature 共用的 Domain / Data | `Feature/Domain/Entity/`、`Feature/Domain/Repository/MediaGenreProviding.swift`、`Feature/Data/DTO/`、`Feature/Data/Mapper/`、`Feature/Data/Repository/MediaGenreRepository.swift` |
+| MemberCenter Repository 實作 | `MemberCenter/Data/Repository/AccountContentRepository.swift`、`MemberCenter/Data/Repository/AccountListPosterEnricher.swift` |
+| 跨 feature 共用的 Domain / Data | `Feature/Domain/Entity/`、`Feature/Domain/Repository/MediaGenreProviding.swift`、`Feature/Domain/Repository/AccountMediaStateProviding.swift`（含 `AccountSessionProviding`、`AccountProfileProviding`）、`Feature/Data/DTO/`、`Feature/Data/Mapper/`、`Feature/Data/Repository/MediaGenreRepository.swift` |
 | 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift`、`EisodeDetail/Domain/UseCase/LoadEpisodeDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonCreditsUseCase.swift` |
-| 下一個 DTO / Entity 分離位置 | `MemberCenter/Model/MemberCenterAccountModels.swift`、`MemberCenter/List/Model/MemberCenterListModels.swift`、`MemberCenter/ViewModel/Builder/MemberCenterPresentationBuilder.swift`（三者直接使用 `MediaSummaryDTO`） |
-| UseCase 抽取來源（跨 feature） | `Feature/Base/DetailBase/ViewModel/DetailAccountMediaStateController.swift` |
-| 待移除的 convenience init | `MovieDetail/ViewModel/MovieDetailViewModel.swift`、`TVDetail/ViewModel/TVDetailViewModel.swift`、`SeasonDetail/ViewModel/SeasonDetailViewModel.swift`、`PersonDetail/ViewModel/PersonDetailViewModel.swift` |
+| MemberCenter 已完成的分層 | `MemberCenter/Domain/`、`MemberCenter/Data/`、`MemberCenter/Presentation/`、`MemberCenter/List/Presentation/` |
+| 跨 feature Account UseCase | `Feature/Domain/UseCase/LoadAccountMediaStateUseCase.swift`、`Feature/Domain/UseCase/ToggleFavoriteUseCase.swift`、`Feature/Domain/UseCase/SubmitRatingUseCase.swift`、`Feature/Domain/UseCase/DeleteRatingUseCase.swift` |
+| Phase 3 App 入口 | `MyTMDB_App/Composition/AppComposition.swift`、`MyTMDB_App/SceneDelegate.swift`、`MainLogIn/Service/AuthFlowHandler.swift`、`MainTabBar/Controller/MainTabBarController.swift` |
+| 已移除的舊流程組裝 | `MainLogIn/Service/AppRootFactory.swift`、`MainLogIn/Service/AccountService.swift`、`MainLogIn/ViewModel/AccountViewModel.swift` 與全部 Coordinator 型別 |
+| Scene Builder 導入起點 | `Feature/Base/DetailBase/Router/DetailRouter.swift` 與各 feature 的 `Router/` |
+| 已移除的依賴 convenience init | `MovieDetail/ViewModel/MovieDetailViewModel.swift`、`TVDetail/ViewModel/TVDetailViewModel.swift`、`SeasonDetail/ViewModel/SeasonDetailViewModel.swift`、`PersonDetail/ViewModel/PersonDetailViewModel.swift` |
 | 保留、非 MediaKind 的媒體型別 | `PersonDetail/Domain/Entity/PersonCredits.swift`、`Main/MainSearch/Model/MainSearchModels.swift`、`Feature/SearchHistory/Model/SearchHistoryModels.swift` |
 | 去重完成的參考樣板 | `PageSheet/Genre/Base/BaseGenrePageSheetViewController.swift` |
 | 顯示語意 fallback 集中處 | `Feature/Formatter/BaseDisplayTextFormatter.swift`、`Feature/Components/ErrorMessage/Model/NetworkError+ErrorMessage.swift` |
-| 待搬移的 UIKit 汙染 | `MainLogIn/Service/AppRootFactory.swift`、`MainTabBar/Service/MainTabBarAvatarService.swift` |
+| 保留的 UIKit Service 邊界 | `MainTabBar/Service/MainTabBarAvatarService.swift`（輸出 tab avatar 的 `UIImage`） |
 | App Intents 相依面 | `Feature/AppIntents/Support/AppIntentFavoriteActionHandler.swift`、`Feature/AppIntents/Support/AppIntentSessionResolver.swift` |
 | 相關文件 | `Docs/SDD-Apple-Intelligence-Siri-AppIntents.md` |
 
@@ -1030,6 +1163,11 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.7 | 2026-09-14 | 修復 2.6 cutover 後的建置中斷：`AccountService.swift` 已刪除但 `AppComposition` 等 6 處仍依賴 `AccountServiceProtocol`，且 `project.pbxproj` 殘留 `AccountService.swift` / `AccountViewModel.swift` 的失效參照。新增 Domain 窄介面 `AccountProfileProviding`，`AccountContentProviding` 改為繼承之，`AuthSessionValidator`、`AuthFlowHandler`、`AccountSessionRepository`、`AppIntentSessionResolver`、`MainTabBarAvatarService`、`MainMemberSettingViewModel` 改接此介面並由 `AppComposition.makeAccountContentRepository()` 提供。行為差異：`profile(sessionID:)` 會同步寫入 `UserProfileStoring`，因此 session 驗證與帳號解析也會刷新本機會員快取；tab avatar 取得資料時不再清除網址未變的頭像快取。更新 3.1 量化現況、8.2 / 8.5、Phase 3 進度、12.4 與 15 節路徑。simulator Debug build 通過；runtime 走查未執行 |
+| 2.6 | 2026-09-14 | 依決議取消 Coordinator：刪除 `AppCoordinator` / `AuthFlowCoordinator` 規劃與實作，改由 `SceneDelegate` 直接管理 root、`AuthFlowHandler` 回報 session 完成、`MainTabBarController` 管理 tab / deep-link；`AppComposition` 以具名 `make...` factory 接管完整物件圖，Router 改依賴窄化 Scene Builder。同步移除 concrete dependency 預設值、舊 `AppRootFactory` 與 `MediaKind.Codable`，並更新 Phase 3 驗收狀態。靜態 parser 與機械檢查通過；Xcode build / runtime 未執行 |
+| 2.5 | 2026-09-13 | 新增尚未接管 runtime 的 `AppCoordinator` 基礎骨架，只建立對 `UIWindow` 與 `AppComposition` 的持有關係；未加入空的 `start()`、root 切換或 deep-link 方法，也未修改 `SceneDelegate` |
+| 2.4 | 2026-09-13 | 開始 Phase 3 的被動骨架：新增 `MyTMDB_App/Composition/AppComposition.swift`，先集中 `NetworkServicing`、`SessionStoring`、`UserProfileStoring`、`SearchHistoryStoring` 四個共享基礎設施；尚未接管 `SceneDelegate`、畫面 factory 或導航流程，因此 runtime 行為不變 |
+| 2.3 | 2026-09-13 | Phase 3 composition root 定名為 `AppComposition`，補上 `AppCoordinator` / `AuthFlowCoordinator` / `MainTabCoordinator` 的流程邊界、Router 的局部導航責任、窄化 Scene Builder 注入、child coordinator lifecycle 與防止 Service Locator 規則。依賴切換改採「被動骨架 + 單一 runtime cutover」，並同步更新驗收條件、風險、`MediaKind` 序列化清理與現況路徑 |
 | 2.2 | 2026-09-13 | 完成 MemberCenter 的 Domain / Data / UseCase 分層，Phase 2 達 11 / 11；刪除舊 Service、重複 Model 與 Repository。開始 Phase 3：新增 `AccountSessionProviding` / `AccountSessionRepository` 與 `LoadAccountMediaStateUseCase`、`ToggleFavoriteUseCase`、`SubmitRatingUseCase`、`DeleteRatingUseCase`，MovieDetail、TVDetail、EpisodeDetail 與 App Intent 收藏改走共用 UseCase，`DetailAccountMediaStateController` 僅保留畫面狀態協調。靜態邊界檢查與 simulator Debug build 通過；composition root 尚待實作 |
 | 2.1 | 2026-09-13 | 完成 HomeSectionList 與 MainHome 分層（同一 commit，兩者透過 5 個 `MainHomeContent*` 型別耦合）。去重：`MainHomeContent` 與 `MediaSummaryDTO` 欄位完全重疊而刪除；`HomeSectionListGenre` 與 `MediaGenre` 相同、且 `init(movieGenre:)` 與 `init(tvGenre:)` 實作一模一樣而刪除；取類型的網路呼叫抽成共用 `MediaGenreProviding` / `MediaGenreRepository`；`TMDBPageResponse` 由 `MainHome/Model` 移至 `Feature/Data/DTO`。命名統一為 `HomeCategory` / `HomeContentItem`。行為差異一處：全部分類載入失敗時改拋底層錯誤而非預先包成 `ErrorMessage`，以符合 4.3 的 Domain 邊界。Phase 2 進度 10 / 11，僅剩 MemberCenter |
 | 2.0 | 2026-09-13 | 完成 MainMediaList 與 Search 分層（同一 commit，兩者透過 MediaGrid 型別耦合）。共用型別下沉：刪除與 `MediaSummaryDTO` 重疊的 `MediaGridEntry`；`MediaSummary` 補 overview / backdropPath / popularity；`MediaSortOption` 依關注點拆為 Domain 的 `MediaSortOrder`、Presentation 的 title、Data 的 `discoverSortValue`，排序規則移入 Search 的 `SortMediaUseCase`；`MediaGenre` 升格至 `Feature/`。分層後才看清兩個排序是不同機制：MainMediaList 伺服器端、Search 客戶端 |
