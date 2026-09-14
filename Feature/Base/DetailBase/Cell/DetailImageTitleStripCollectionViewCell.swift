@@ -74,6 +74,7 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
         items: [DetailImageTitleItem],
         itemSize: CGSize = Layout.defaultItemSize,
         imageHeight: CGFloat = Layout.defaultImageHeight,
+        imageBackgroundColor: UIColor = DetailImageTitleCollectionViewCell.defaultImageBackgroundColor,
         onItemSelected: ((DetailImageTitleItem) -> Void)? = nil
     ) {
         updateItemSize(
@@ -89,6 +90,7 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
             cell.configure(
                 with: item,
                 imageHeight: imageHeight,
+                imageBackgroundColor: imageBackgroundColor,
                 isSelectable: onItemSelected != nil
             )
         }
@@ -111,6 +113,7 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
 final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
 
     static let reuseIdentifier = String(describing: DetailImageTitleCollectionViewCell.self)
+    static let defaultImageBackgroundColor = ThemeColor.fillSecondary
 
     private enum Layout {
         static let imageHeight: CGFloat = 168
@@ -132,7 +135,7 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
     private let itemImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
+        imageView.backgroundColor = DetailImageTitleCollectionViewCell.defaultImageBackgroundColor
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = Layout.imageCornerRadius
         return imageView
@@ -190,6 +193,7 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
     override func resetForReuse() {
         itemImageView.sd_cancelCurrentImageLoad()
         itemImageView.image = nil
+        itemImageView.backgroundColor = Self.defaultImageBackgroundColor
         titleLabel.text = nil
         subtitleLabel.text = nil
         subtitleLabel.isHidden = false
@@ -200,9 +204,11 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
     func configure(
         with item: DetailImageTitleItem,
         imageHeight: CGFloat,
+        imageBackgroundColor: UIColor,
         isSelectable: Bool
     ) {
         imageHeightConstraint?.update(offset: imageHeight)
+        itemImageView.backgroundColor = imageBackgroundColor
         itemImageView.sd_setImage(with: item.imageURL)
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
