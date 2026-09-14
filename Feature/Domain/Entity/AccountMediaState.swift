@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - AccountMediaState
 
-/// 目前登入帳號對單一媒體的收藏與評分狀態。
 nonisolated struct AccountMediaState: Sendable, Equatable, Identifiable {
     let id: Int
     let isFavorite: Bool
@@ -28,7 +27,6 @@ nonisolated struct AccountMediaState: Sendable, Equatable, Identifiable {
 
 // MARK: - AccountActionResult
 
-/// TMDB 帳號寫入 API 的結果；失敗時 `message` 為伺服器回傳的原因。
 nonisolated struct AccountActionResult: Sendable, Equatable {
     let isSuccess: Bool
     let message: String

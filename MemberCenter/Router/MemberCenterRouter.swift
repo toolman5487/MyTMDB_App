@@ -22,9 +22,17 @@ protocol MemberCenterRouting: AnyObject {
 final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
 
     private let detailRouter: DetailRouter
+    private let sceneBuilder: MemberCenterSceneBuilding
 
-    override init(sourceViewController: UIViewController) {
-        self.detailRouter = DetailRouter(sourceViewController: sourceViewController)
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: MemberCenterSceneBuilding
+    ) {
+        self.sceneBuilder = sceneBuilder
+        self.detailRouter = DetailRouter(
+            sourceViewController: sourceViewController,
+            sceneBuilder: sceneBuilder
+        )
         super.init(sourceViewController: sourceViewController)
     }
 
@@ -58,16 +66,16 @@ final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
             showSettings()
 
         case .login:
-            show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
+            detailRouter.showLogin()
         }
     }
 
     func showList(_ route: MemberCenterListRoute) {
         show(
-            MemberCenterListViewController(
+            sceneBuilder.makeMemberCenterListViewController(
                 destination: route.destination,
-                accountId: route.accountId,
-                sessionId: route.sessionId
+                accountID: route.accountId,
+                sessionID: route.sessionId
             ),
             using: .push
         )
@@ -75,7 +83,7 @@ final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
 
     private func showSettings() {
         guard let navigationController = sourceViewController?.navigationController else {
-            show(MainMemberSettingViewController(), using: .push)
+            show(sceneBuilder.makeMainMemberSettingViewController(), using: .push)
             return
         }
 
@@ -84,6 +92,6 @@ final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
             return
         }
 
-        show(MainMemberSettingViewController(), using: .push)
+        show(sceneBuilder.makeMainMemberSettingViewController(), using: .push)
     }
 }

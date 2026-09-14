@@ -34,12 +34,11 @@ final class MemberCenterViewModel {
 
     init(
         session: AuthSession,
-        loadOverview: LoadMemberCenterOverviewUseCase? = nil,
-        contentRepository: AccountContentProviding = AccountContentRepository()
+        loadOverview: LoadMemberCenterOverviewUseCase,
+        contentRepository: AccountContentProviding
     ) {
         self.session = session
         self.loadOverview = loadOverview
-            ?? DefaultLoadMemberCenterOverviewUseCase(repository: contentRepository)
 
         if case .user = session {
             self.cachedHeaderContent = contentRepository

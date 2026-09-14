@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - MemberCenterDestination
 
-/// 會員中心的八種帳號蒐藏。
 nonisolated enum MemberCenterDestination: String, Sendable, Equatable, CaseIterable, Identifiable {
     case favoriteMovies
     case favoriteTV
@@ -22,7 +21,6 @@ nonisolated enum MemberCenterDestination: String, Sendable, Equatable, CaseItera
 
     var id: Self { self }
 
-    /// 片單沒有對應的媒體型別，因此為 `nil`。
     var mediaKind: MediaKind? {
         switch self {
         case .favoriteMovies, .watchlistMovies, .ratedMovies:

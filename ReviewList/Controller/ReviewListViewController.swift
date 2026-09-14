@@ -30,13 +30,6 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     // MARK: - Initialization
 
-    convenience init(mediaKind: MediaKind, mediaID: Int) {
-        self.init(
-            mediaID: mediaID,
-            viewModel: ReviewListViewModel(mediaKind: mediaKind)
-        )
-    }
-
     init(
         mediaID: Int,
         viewModel: ReviewListViewModel
@@ -46,10 +39,9 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.mediaID = 0
-        self.viewModel = ReviewListViewModel(mediaKind: .movie)
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

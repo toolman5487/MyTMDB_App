@@ -17,7 +17,6 @@ nonisolated struct AccountProfile: Sendable, Equatable, Identifiable {
     let languageCode: String
     let regionCode: String
     let includesAdultContent: Bool
-    /// 本機快取的頭像位元組；僅在讀取本機設定檔時才有值。
     let avatarImageData: Data?
 
     init(

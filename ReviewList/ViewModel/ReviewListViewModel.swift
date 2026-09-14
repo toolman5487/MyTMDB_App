@@ -43,8 +43,8 @@ final class ReviewListViewModel {
 
     init(
         mediaKind: MediaKind,
-        loadReviewsUseCase: LoadReviewsUseCase = DefaultLoadReviewsUseCase(repository: ReviewRepository()),
-        filterReviewsUseCase: FilterReviewsUseCase = DefaultFilterReviewsUseCase()
+        loadReviewsUseCase: LoadReviewsUseCase,
+        filterReviewsUseCase: FilterReviewsUseCase
     ) {
         self.mediaKind = mediaKind
         self.loadReviewsUseCase = loadReviewsUseCase

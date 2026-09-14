@@ -19,12 +19,29 @@ protocol MainSearchRouting: AnyObject {
 @MainActor
 final class MainSearchRouter: BaseRouter, MainSearchRouting {
 
+    // MARK: - Properties
+
+    private let sceneBuilder: DetailSceneBuilding
+
+    // MARK: - Initialization
+
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: DetailSceneBuilding
+    ) {
+        self.sceneBuilder = sceneBuilder
+        super.init(sourceViewController: sourceViewController)
+    }
+
     // MARK: - Public Methods
 
     func showDetail(for item: MainSearchResultItem) {
         guard let sourceViewController else { return }
 
-        let detailRouter = DetailRouter(sourceViewController: sourceViewController)
+        let detailRouter = DetailRouter(
+            sourceViewController: sourceViewController,
+            sceneBuilder: sceneBuilder
+        )
 
         switch item.mediaType {
         case .movie:

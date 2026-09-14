@@ -11,12 +11,12 @@ import Foundation
 // MARK: - TVSeriesEntityQuery
 
 nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
-    private let searchMedia: any SearchMediaUseCase
-    private let lookupService: any AppIntentEntityLookupServicing
+    private let searchMedia: (any SearchMediaUseCase)?
+    private let lookupService: (any AppIntentEntityLookupServicing)?
 
     init() {
-        self.searchMedia = DefaultSearchMediaUseCase(repository: MediaSearchRepository())
-        self.lookupService = AppIntentEntityLookupService()
+        self.searchMedia = nil
+        self.lookupService = nil
     }
 
     init(
@@ -28,8 +28,13 @@ nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
     }
 
     func entities(for identifiers: [TVSeriesEntity.ID]) async throws -> [TVSeriesEntity] {
+        if searchMedia == nil || lookupService == nil {
+            return try await makeComposedQuery().entities(for: identifiers)
+        }
+
         var entities: [TVSeriesEntity] = []
         entities.reserveCapacity(identifiers.count)
+        guard let lookupService else { return [] }
 
         for identifier in identifiers where identifier > 0 {
             if let entity = try? await lookupService.fetchTVSeriesEntity(id: identifier) {
@@ -41,14 +46,25 @@ nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
     }
 
     func entities(matching string: String) async throws -> [TVSeriesEntity] {
+        if searchMedia == nil || lookupService == nil {
+            return try await makeComposedQuery().entities(matching: string)
+        }
+
         let keyword = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !keyword.isEmpty else { return [] }
 
+        guard let searchMedia else { return [] }
         let page = try await searchMedia(kind: .tv, keyword: keyword, page: 1)
         return page.items.prefix(10).map(TVSeriesEntity.init(series:))
     }
 
     func suggestedEntities() async throws -> [TVSeriesEntity] {
         []
+    }
+
+    private func makeComposedQuery() async -> TVSeriesEntityQuery {
+        await MainActor.run {
+            AppComposition().makeTVSeriesEntityQuery()
+        }
     }
 }

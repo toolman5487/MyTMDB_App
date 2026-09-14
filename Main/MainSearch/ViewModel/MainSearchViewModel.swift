@@ -44,8 +44,8 @@ final class MainSearchViewModel {
     // MARK: - Initialization
 
     init(
-        service: MainSearchServicing = MainSearchService(),
-        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore()
+        service: MainSearchServicing,
+        searchHistoryStore: SearchHistoryStoring
     ) {
         self.service = service
         self.searchHistoryStore = searchHistoryStore

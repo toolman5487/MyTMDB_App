@@ -41,7 +41,6 @@ nonisolated struct AccountMediaStatesDTO: Decodable, Sendable, Equatable, Identi
 
 // MARK: - AccountMediaRatedStateDTO
 
-/// TMDB 的 `rated` 欄位有三種形態：`false`、數字、或 `{ "value": Double }`。
 nonisolated enum AccountMediaRatedStateDTO: Sendable, Equatable, Decodable {
     case unrated
     case rated(Double)
@@ -81,7 +80,6 @@ nonisolated enum AccountMediaRatedStateDTO: Sendable, Equatable, Decodable {
 
 // MARK: - AccountStatusResponseDTO
 
-/// 收藏、待看與評分三種寫入 API 共用的回應格式。
 nonisolated struct AccountStatusResponseDTO: Decodable, Sendable, Equatable {
     let success: Bool
     let statusCode: Int
@@ -105,6 +103,13 @@ nonisolated struct AccountFavoriteRequestDTO: Encodable, Sendable {
         case mediaType = "media_type"
         case mediaID = "media_id"
         case favorite
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(mediaType.rawValue, forKey: .mediaType)
+        try container.encode(mediaID, forKey: .mediaID)
+        try container.encode(favorite, forKey: .favorite)
     }
 }
 

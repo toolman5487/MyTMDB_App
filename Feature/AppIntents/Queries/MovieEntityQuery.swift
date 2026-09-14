@@ -11,12 +11,12 @@ import Foundation
 // MARK: - MovieEntityQuery
 
 nonisolated struct MovieEntityQuery: EntityStringQuery {
-    private let searchMedia: any SearchMediaUseCase
-    private let lookupService: any AppIntentEntityLookupServicing
+    private let searchMedia: (any SearchMediaUseCase)?
+    private let lookupService: (any AppIntentEntityLookupServicing)?
 
     init() {
-        self.searchMedia = DefaultSearchMediaUseCase(repository: MediaSearchRepository())
-        self.lookupService = AppIntentEntityLookupService()
+        self.searchMedia = nil
+        self.lookupService = nil
     }
 
     init(
@@ -28,8 +28,13 @@ nonisolated struct MovieEntityQuery: EntityStringQuery {
     }
 
     func entities(for identifiers: [MovieEntity.ID]) async throws -> [MovieEntity] {
+        if searchMedia == nil || lookupService == nil {
+            return try await makeComposedQuery().entities(for: identifiers)
+        }
+
         var entities: [MovieEntity] = []
         entities.reserveCapacity(identifiers.count)
+        guard let lookupService else { return [] }
 
         for identifier in identifiers where identifier > 0 {
             if let entity = try? await lookupService.fetchMovieEntity(id: identifier) {
@@ -41,14 +46,25 @@ nonisolated struct MovieEntityQuery: EntityStringQuery {
     }
 
     func entities(matching string: String) async throws -> [MovieEntity] {
+        if searchMedia == nil || lookupService == nil {
+            return try await makeComposedQuery().entities(matching: string)
+        }
+
         let keyword = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !keyword.isEmpty else { return [] }
 
+        guard let searchMedia else { return [] }
         let page = try await searchMedia(kind: .movie, keyword: keyword, page: 1)
         return page.items.prefix(10).map(MovieEntity.init(movie:))
     }
 
     func suggestedEntities() async throws -> [MovieEntity] {
         []
+    }
+
+    private func makeComposedQuery() async -> MovieEntityQuery {
+        await MainActor.run {
+            AppComposition().makeMovieEntityQuery()
+        }
     }
 }

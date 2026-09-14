@@ -18,8 +18,6 @@ nonisolated protocol AccountListPosterEnriching: Sendable {
 
 // MARK: - AccountListPosterEnricher
 
-/// TMDB 的片單清單不一定帶海報，這裡併發抓每個片單的第一個項目補上。
-/// 單一片單失敗只是沒有海報，不影響其他片單。
 nonisolated final class AccountListPosterEnricher: AccountListPosterEnriching {
 
     // MARK: - Properties
@@ -30,7 +28,7 @@ nonisolated final class AccountListPosterEnricher: AccountListPosterEnriching {
     // MARK: - Initialization
 
     init(
-        network: NetworkServicing = NetworkService(),
+        network: NetworkServicing,
         localization: AppLocalization = .current
     ) {
         self.network = network

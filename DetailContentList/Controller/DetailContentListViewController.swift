@@ -15,8 +15,10 @@ final class DetailContentListViewController: BaseListViewController {
     // MARK: - Properties
 
     private let configuration: DetailContentListConfiguration
+    private let sceneBuilder: DetailSceneBuilding
     private lazy var router: DetailContentListRouting = DetailContentListRouter(
-        sourceViewController: self
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
     )
 
     // MARK: - Override Points
@@ -37,8 +39,12 @@ final class DetailContentListViewController: BaseListViewController {
 
     // MARK: - Initialization
 
-    init(configuration: DetailContentListConfiguration) {
+    init(
+        configuration: DetailContentListConfiguration,
+        sceneBuilder: DetailSceneBuilding
+    ) {
         self.configuration = configuration
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 

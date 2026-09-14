@@ -21,7 +21,7 @@ nonisolated final class AppIntentEntityLookupService: AppIntentEntityLookupServi
     private let localization: AppLocalization
 
     init(
-        network: NetworkServicing = NetworkService(),
+        network: NetworkServicing,
         localization: AppLocalization = .current
     ) {
         self.network = network

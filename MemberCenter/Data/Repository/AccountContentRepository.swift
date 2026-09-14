@@ -21,16 +21,15 @@ nonisolated final class AccountContentRepository: AccountContentProviding {
     // MARK: - Initialization
 
     init(
-        network: NetworkServicing = NetworkService(),
+        network: NetworkServicing,
         localization: AppLocalization = .current,
-        userProfileStore: UserProfileStoring = UserProfileStore(),
-        listPosterEnricher: (any AccountListPosterEnriching)? = nil
+        userProfileStore: UserProfileStoring,
+        listPosterEnricher: any AccountListPosterEnriching
     ) {
         self.network = network
         self.localization = localization
         self.userProfileStore = userProfileStore
         self.listPosterEnricher = listPosterEnricher
-            ?? AccountListPosterEnricher(network: network, localization: localization)
     }
 
     // MARK: - AccountContentProviding

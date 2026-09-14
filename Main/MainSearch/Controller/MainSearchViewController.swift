@@ -53,7 +53,11 @@ final class MainSearchViewController: MainBaseViewController {
     // MARK: - Properties
 
     private let viewModel: MainSearchViewModel
-    private lazy var router: MainSearchRouting = MainSearchRouter(sourceViewController: self)
+    private let sceneBuilder: DetailSceneBuilding
+    private lazy var router: MainSearchRouting = MainSearchRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var filters: [MainSearchFilterItem] = []
     private var results: [MainSearchResultItem] = []
@@ -83,14 +87,18 @@ final class MainSearchViewController: MainBaseViewController {
 
     // MARK: - Initialization
 
-    init(viewModel: MainSearchViewModel = MainSearchViewModel()) {
+    init(
+        viewModel: MainSearchViewModel,
+        sceneBuilder: DetailSceneBuilding
+    ) {
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = MainSearchViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

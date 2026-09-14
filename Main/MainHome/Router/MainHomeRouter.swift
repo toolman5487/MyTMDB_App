@@ -20,24 +20,35 @@ protocol MainHomeRouting: AnyObject {
 @MainActor
 final class MainHomeRouter: BaseRouter, MainHomeRouting {
 
+    // MARK: - Properties
+
+    private let sceneBuilder: HomeSceneBuilding
+
+    // MARK: - Initialization
+
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: HomeSceneBuilding
+    ) {
+        self.sceneBuilder = sceneBuilder
+        super.init(sourceViewController: sourceViewController)
+    }
+
     // MARK: - MainHomeRouting
 
     func showDetail(for item: HomeContentItem) {
-        let detailViewController: UIViewController
-
-        switch item.mediaType {
+        let viewController = switch item.mediaType {
         case .movie:
-            detailViewController = MovieDetailViewController(movieID: item.id)
+            sceneBuilder.makeMovieDetailViewController(movieID: item.id)
 
         case .tv:
-            detailViewController = TVDetailViewController(seriesID: item.id)
+            sceneBuilder.makeTVDetailViewController(seriesID: item.id)
         }
 
-        show(detailViewController, using: .push)
+        show(viewController, using: .push)
     }
 
     func showSectionList(for category: HomeCategory) {
-        let viewController = HomeSectionListViewController(category: category)
-        show(viewController, using: .push)
+        show(sceneBuilder.makeHomeSectionListViewController(category: category), using: .push)
     }
 }

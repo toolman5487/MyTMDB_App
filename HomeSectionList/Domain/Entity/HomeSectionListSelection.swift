@@ -11,7 +11,6 @@ import Foundation
 
 nonisolated enum HomeGenreFilterID {
 
-    /// 不套用任何類型篩選的哨兵值；TMDB 的類型 ID 不會是 0。
     static let all = 0
 }
 

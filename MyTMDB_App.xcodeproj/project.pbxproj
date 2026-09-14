@@ -64,8 +64,6 @@
 		1598AA952DC4BCC1005E972C /* TMDBAuthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */; };
 		1598AA972DC4BF57005E972C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AA962DC4BF57005E972C /* LoginViewModel.swift */; };
 		1598AB262DC867DA005E972C /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB252DC867DA005E972C /* AccountModel.swift */; };
-		1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB272DC88D98005E972C /* AccountViewModel.swift */; };
-		1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1598AB2B2DC88DED005E972C /* AccountService.swift */; };
 		159DB0746D1DF41CA8B30476 /* MediaKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86A3039B02DED99BC09DC1D /* MediaKind.swift */; };
 		15A6A077300488A900AD5E46 /* MainMemberSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A076300488A900AD5E46 /* MainMemberSettingViewController.swift */; };
 		15A6A0803005000000AD5E46 /* MainMemberSettingSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A6A0863005000000AD5E46 /* MainMemberSettingSectionCollectionViewCells.swift */; };
@@ -146,7 +144,7 @@
 		15D198112FF2200000545A85 /* AuthSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198102FF2200000545A85 /* AuthSession.swift */; };
 		15D198112FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */; };
 		15D198132FF2201000545A85 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198122FF2201000545A85 /* SessionStore.swift */; };
-		15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198142FF2202000545A85 /* AppRootFactory.swift */; };
+		15D198152FF2202000545A85 /* AuthFlowHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198142FF2202000545A85 /* AuthFlowHandler.swift */; };
 		15D198212FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */; };
 		15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */; };
 		15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */; };
@@ -383,8 +381,6 @@
 		1598AA942DC4BCC1005E972C /* TMDBAuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBAuthModels.swift; sourceTree = "<group>"; };
 		1598AA962DC4BF57005E972C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		1598AB252DC867DA005E972C /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
-		1598AB272DC88D98005E972C /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
-		1598AB2B2DC88DED005E972C /* AccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountService.swift; sourceTree = "<group>"; };
 		15A6A076300488A900AD5E46 /* MainMemberSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberSettingViewController.swift; sourceTree = "<group>"; };
 		15A6A0863005000000AD5E46 /* MainMemberSettingSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberSettingSectionCollectionViewCells.swift; sourceTree = "<group>"; };
 		15A6A0873005000000AD5E46 /* MainMemberSettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMemberSettingViewModel.swift; sourceTree = "<group>"; };
@@ -465,7 +461,7 @@
 		15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionCollectionViewCells.swift; sourceTree = "<group>"; };
 		15D198102FF2200000545A85 /* AuthSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSession.swift; sourceTree = "<group>"; };
 		15D198122FF2201000545A85 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
-		15D198142FF2202000545A85 /* AppRootFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootFactory.swift; sourceTree = "<group>"; };
+		15D198142FF2202000545A85 /* AuthFlowHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowHandler.swift; sourceTree = "<group>"; };
 		15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeFeaturedHeaderView.swift; sourceTree = "<group>"; };
 		15D4A626300DBF0000CEA123 /* ErrorAnimation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ErrorAnimation.json; sourceTree = "<group>"; };
 		15D547132DF01A4700CAA0EE /* loadingAnimation_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = loadingAnimation_blue.json; sourceTree = "<group>"; };
@@ -690,7 +686,6 @@
 			children = (
 				618953BFC416BE0A65A99718 /* ReviewDTO+Mapping.swift */,
 			);
-			name = Mapper;
 			path = Mapper;
 			sourceTree = "<group>";
 		};
@@ -700,7 +695,6 @@
 				957F9A8DA6F9387CBB2291CA /* Repository */,
 				E5329F101923C42686B20D65 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -711,7 +705,6 @@
 				3706A6C4E7EF132A75EDAD08 /* Repository */,
 				2E7693AD292A5CC3FB355B89 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -721,16 +714,7 @@
 				FEB1ABF8B760C97201F06857 /* Entity */,
 				E8AD452C301823A0B0F8FEB5 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
-			sourceTree = "<group>";
-		};
-		10BD85A8648DD7207864C202 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Model;
-			path = Model;
 			sourceTree = "<group>";
 		};
 		127A1AF48632847510E4750A /* View */ = {
@@ -739,7 +723,6 @@
 				B125FBF9F4EFBCD10BB04DA6 /* Cell */,
 				2ED470A0FE2379E2DE3B05E4 /* Header */,
 			);
-			name = View;
 			path = View;
 			sourceTree = "<group>";
 		};
@@ -782,13 +765,13 @@
 		152BE71F2FF4F9C2006681A5 /* ReviewList */ = {
 			isa = PBXGroup;
 			children = (
-				47A21141B50F6ABB65C65BDF /* ViewModel */,
 				F00073CD6B122146646E642F /* Controller */,
-				27DDBD121C7A32862425E642 /* Router */,
-				5BD854C6C0BBFAF5C1BD3BFE /* View */,
 				88F7348C9B39824EDDDBDF06 /* Data */,
 				614F280994814C2ADCCC0BA0 /* Domain */,
 				DBBE1B0BBCCEFB938D1309DD /* Presentation */,
+				27DDBD121C7A32862425E642 /* Router */,
+				5BD854C6C0BBFAF5C1BD3BFE /* View */,
+				47A21141B50F6ABB65C65BDF /* ViewModel */,
 			);
 			path = ReviewList;
 			sourceTree = "<group>";
@@ -815,7 +798,6 @@
 		1535F9912DD744200090E25A /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				1598AB272DC88D98005E972C /* AccountViewModel.swift */,
 				1598AA962DC4BF57005E972C /* LoginViewModel.swift */,
 			);
 			path = ViewModel;
@@ -825,12 +807,12 @@
 			isa = PBXGroup;
 			children = (
 				15606C852FF4DF940036898B /* Controller */,
+				9F68A593B55CE80446D2EF33 /* Data */,
+				79C92BBA0613721F8156E8BD /* Domain */,
 				15F1200A300E200000F12001 /* Presentation */,
 				15606CCA2FF530000036898B /* Router */,
 				15606CA12FF4E12A0036898B /* View */,
 				15606CA22FF4E1310036898B /* ViewModel */,
-				9F68A593B55CE80446D2EF33 /* Data */,
-				79C92BBA0613721F8156E8BD /* Domain */,
 			);
 			path = TVDetail;
 			sourceTree = "<group>";
@@ -873,7 +855,6 @@
 			children = (
 				627E6B44E467470A02A1F487 /* LoadHomeSectionsUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -1015,11 +996,11 @@
 			isa = PBXGroup;
 			children = (
 				1588252A2FFF743A0028B219 /* Controller */,
+				0D341E212F18C01C10027966 /* Domain */,
+				3AF3F000C59137D7140A1502 /* Presentation */,
 				158825592FFF7A9C0028B219 /* Router */,
 				1588252B2FFF74460028B219 /* View */,
 				158825352FFF7A880028B219 /* ViewModel */,
-				0D341E212F18C01C10027966 /* Domain */,
-				3AF3F000C59137D7140A1502 /* Presentation */,
 			);
 			path = HomeSectionList;
 			sourceTree = "<group>";
@@ -1077,13 +1058,13 @@
 			isa = PBXGroup;
 			children = (
 				158893D82FFFA8640028B219 /* Controller */,
+				BB210398729C6A3637D4010E /* Data */,
+				0C6FB8FE1282A23D56CF81E1 /* Domain */,
 				158809133000DA6E0081E4E9 /* List */,
+				442003DA8E8791D4009A9055 /* Presentation */,
 				158809B02FFEB0010081E4E9 /* Router */,
 				158893D92FFFA86D0028B219 /* View */,
 				1588090C3000D1850081E4E9 /* ViewModel */,
-				0C6FB8FE1282A23D56CF81E1 /* Domain */,
-				BB210398729C6A3637D4010E /* Data */,
-				442003DA8E8791D4009A9055 /* Presentation */,
 			);
 			path = MemberCenter;
 			sourceTree = "<group>";
@@ -1197,9 +1178,9 @@
 			isa = PBXGroup;
 			children = (
 				15A94F982FF27D0900FCBB0F /* MainHome */,
+				6E7B89A9A1E5A7F692CF918E /* MainMediaList */,
 				15A6A0733004885E00AD5E46 /* MainMemberSetting */,
 				1596680B30120282000079DA /* MainSearch */,
-				6E7B89A9A1E5A7F692CF918E /* MainMediaList */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -1222,9 +1203,9 @@
 				15BAE94A2FF6094B006B0E15 /* PersonDetail */,
 				1598AA4A2DC4B69F005E972C /* Products */,
 				152BE71F2FF4F9C2006681A5 /* ReviewList */,
+				94212C537E35E0565315FFAD /* Search */,
 				15BAE9F42FF61D50006B0E15 /* SeasonDetail */,
 				15606C842FF4DF840036898B /* TVDetail */,
-				94212C537E35E0565315FFAD /* Search */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1431,12 +1412,12 @@
 			isa = PBXGroup;
 			children = (
 				15A94F992FF27D1600FCBB0F /* Controller */,
+				6380535B57D6F97378477E67 /* Data */,
+				64D23B7ABA6985F6AEB3D9EB /* Domain */,
+				5F05A30270A98A621C308F34 /* Presentation */,
 				15A950382FF5100000FCBB0F /* Router */,
 				15A94F9A2FF27D1F00FCBB0F /* View */,
 				15A950122FF2A10000FCBB0F /* ViewModel */,
-				64D23B7ABA6985F6AEB3D9EB /* Domain */,
-				6380535B57D6F97378477E67 /* Data */,
-				5F05A30270A98A621C308F34 /* Presentation */,
 			);
 			path = MainHome;
 			sourceTree = "<group>";
@@ -1584,8 +1565,7 @@
 		15B067462DDC76C0009591F9 /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				1598AB2B2DC88DED005E972C /* AccountService.swift */,
-				15D198142FF2202000545A85 /* AppRootFactory.swift */,
+				15D198142FF2202000545A85 /* AuthFlowHandler.swift */,
 				15D198122FF2201000545A85 /* SessionStore.swift */,
 				1598AA922DC4BBA2005E972C /* TMDBAuthService.swift */,
 				15A6A09A3005700000AD5E46 /* UserProfileStore.swift */,
@@ -1758,12 +1738,12 @@
 			isa = PBXGroup;
 			children = (
 				15CF99C82FF3701B0041F4CC /* Controller */,
+				BDBB6376BCC4E21B5CA0BED1 /* Data */,
+				E09CAB08AB8EE198DD7E686F /* Domain */,
 				15F12009300E200000F12001 /* Presentation */,
 				15AB10043005000000AB1001 /* Router */,
 				15CF99C92FF370210041F4CC /* View */,
 				15CF99D92FF371A60041F4CC /* ViewModel */,
-				BDBB6376BCC4E21B5CA0BED1 /* Data */,
-				E09CAB08AB8EE198DD7E686F /* Domain */,
 			);
 			path = MovieDetail;
 			sourceTree = "<group>";
@@ -1943,18 +1923,18 @@
 		15D198632FF210DE00545A85 /* Feature */ = {
 			isa = PBXGroup;
 			children = (
-				15AF01013015000000AF0101 /* AppIntents */,
 				15D547122DF01A2700CAA0EE /* Animations */,
+				15AF01013015000000AF0101 /* AppIntents */,
 				15A94F4B2FF26D7900FCBB0F /* Base */,
 				1503369E2FF35CFC003125EC /* Components */,
 				1598AA982DC4C29C005E972C /* Config */,
+				26EFD4E446759EBE4113060D /* Data */,
+				FC020D295BDB530B47E3420E /* Domain */,
 				15D197282FF167E300545A85 /* Extension */,
 				15F11000300E100000F11000 /* Formatter */,
 				15D196C42FF14CD300545A85 /* Logger */,
-				15BE02003016000000BE0200 /* SearchHistory */,
 				6FCB662F48AA4E6D9B71E66F /* Media */,
-				26EFD4E446759EBE4113060D /* Data */,
-				FC020D295BDB530B47E3420E /* Domain */,
+				15BE02003016000000BE0200 /* SearchHistory */,
 			);
 			path = Feature;
 			sourceTree = "<group>";
@@ -2277,7 +2257,6 @@
 				B47FB859A38A08E2D5FDC04A /* AccountContentRepository.swift */,
 				2567043E7571766379CADF70 /* AccountListPosterEnricher.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2289,7 +2268,6 @@
 				3D41FA6E730C023B6E8D896C /* MovieCredits.swift */,
 				A82EEC2EC60B908638F59F22 /* MovieDetailContent.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -2300,7 +2278,6 @@
 				1F5859CEF235882A67299959 /* SearchSubmittedLoadingView.swift */,
 				ED334D08EEBE3E3C234B746C /* Cell */,
 			);
-			name = View;
 			path = View;
 			sourceTree = "<group>";
 		};
@@ -2309,7 +2286,6 @@
 			children = (
 				8C533F31227AA5372A1F1A54 /* ReviewRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2318,7 +2294,6 @@
 			children = (
 				D151F54BD9C5052AC88E0C43 /* MainMediaListPresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -2327,7 +2302,6 @@
 			children = (
 				96E8CDCE126B1E2394AE9FB1 /* SearchResultsViewController.swift */,
 			);
-			name = Controller;
 			path = Controller;
 			sourceTree = "<group>";
 		};
@@ -2338,7 +2312,6 @@
 				C165717921FBA6A1C32EF7F3 /* Mapper */,
 				AA74D736757E739B650394E0 /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2347,7 +2320,6 @@
 			children = (
 				6FC48D80C7B3E18951B11A9D /* ReviewListRouter.swift */,
 			);
-			name = Router;
 			path = Router;
 			sourceTree = "<group>";
 		};
@@ -2356,7 +2328,6 @@
 			children = (
 				0B983E2B69A0D19FE4A9C18A /* LoadMediaListUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -2365,7 +2336,6 @@
 			children = (
 				5D36424BD5DA66F5C74B518C /* ReviewProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2374,7 +2344,6 @@
 			children = (
 				2EA5D4D2539232F1A58E2ED2 /* MainMediaListViewModel.swift */,
 			);
-			name = ViewModel;
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
@@ -2384,7 +2353,6 @@
 				3BAD3F0B6EDBE0CED7194357 /* LoadMemberCenterOverviewUseCase.swift */,
 				B8309E9D4190F6D443B11ECB /* LoadAccountCollectionPageUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -2393,7 +2361,6 @@
 			children = (
 				7ECE2289C22CDEADE87AB447 /* MainMediaListFilterHeaderView.swift */,
 			);
-			name = Header;
 			path = Header;
 			sourceTree = "<group>";
 		};
@@ -2402,7 +2369,6 @@
 			children = (
 				347899803A8669B30DAD13BC /* LoadMovieDetailUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -2411,16 +2377,7 @@
 			children = (
 				841E2B9878226BC31E176AB6 /* MovieDetailDTO.swift */,
 			);
-			name = DTO;
 			path = DTO;
-			sourceTree = "<group>";
-		};
-		3589CEAC7309E113C77A668F /* Service */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Service;
-			path = Service;
 			sourceTree = "<group>";
 		};
 		3706A6C4E7EF132A75EDAD08 /* Repository */ = {
@@ -2428,7 +2385,6 @@
 			children = (
 				B822AD89AD2DAD79C44DA635 /* AccountContentProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2437,7 +2393,6 @@
 			children = (
 				F980BDABD83734B2B059792B /* HomeSectionListPresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -2447,7 +2402,6 @@
 				6E39E1399C8F432FEDD7AFE5 /* MediaGridLayoutMetrics.swift */,
 				0EDB56160E4034C0C7A8FB70 /* MediaGridPaginationTaskController.swift */,
 			);
-			name = View;
 			path = View;
 			sourceTree = "<group>";
 		};
@@ -2457,7 +2411,6 @@
 				93D15A66D93E46C7FADDA4B6 /* MediaGenreProviding.swift */,
 				9F4345EFA1F51F0165494A8C /* AccountMediaStateProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2467,16 +2420,7 @@
 				0E02B77C92C518A598624CDD /* FilterReviewsUseCase.swift */,
 				61461F9CBCC6605703F27EF9 /* LoadReviewsUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
-			sourceTree = "<group>";
-		};
-		43AE32A1F87438F98ECA40CD /* Service */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Service;
-			path = Service;
 			sourceTree = "<group>";
 		};
 		442003DA8E8791D4009A9055 /* Presentation */ = {
@@ -2484,7 +2428,6 @@
 			children = (
 				9479A2ABF24948881C6045C1 /* MemberCenterPresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -2493,7 +2436,6 @@
 			children = (
 				F1417E6FC462FB7D06F3DF79 /* ReviewListViewModel.swift */,
 			);
-			name = ViewModel;
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
@@ -2502,7 +2444,6 @@
 			children = (
 				A53861A18F2D86D9C2677247 /* MovieDetailRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2512,16 +2453,7 @@
 				1BA9A092ED27ABF604EE179B /* ReviewCollectionViewCell.swift */,
 				6F7CDC643FE28049712DE4C6 /* ReviewFilterCollectionViewCell.swift */,
 			);
-			name = Cell;
 			path = Cell;
-			sourceTree = "<group>";
-		};
-		4E5E0C79BE92821BD0FD17F4 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Model;
-			path = Model;
 			sourceTree = "<group>";
 		};
 		5BD854C6C0BBFAF5C1BD3BFE /* View */ = {
@@ -2530,7 +2462,6 @@
 				4B8980E99AD02DDF78D37AB7 /* Cell */,
 				8FEB34E14C40FFBB04BF8A1C /* Header */,
 			);
-			name = View;
 			path = View;
 			sourceTree = "<group>";
 		};
@@ -2539,7 +2470,6 @@
 			children = (
 				C9805B05F8530E198B90DDE8 /* HomeContentProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2548,7 +2478,6 @@
 			children = (
 				E4BB194EF79B6E0F3C1ACF4B /* MainHomePresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -2557,7 +2486,6 @@
 			children = (
 				ED89E683D491DA91B8DAB160 /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2568,7 +2496,6 @@
 				2B3C7791D68DDF9FB82C85E5 /* Repository */,
 				41E80A62126508BDC1700DF4 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -2577,7 +2504,6 @@
 			children = (
 				9EAC7E4F74225BBCB67E91BA /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2588,7 +2514,6 @@
 				5DFB46CEBB918C66B77A788C /* Repository */,
 				1569FED48E73348A03F3641F /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -2599,7 +2524,6 @@
 				329DCA3312AE891B7285E3AD /* AccountProfile.swift */,
 				E37734416CAF21CD14348502 /* AccountCollection.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -2608,7 +2532,6 @@
 			children = (
 				D4FD884C1CCD332E7750587E /* MediaListProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2617,24 +2540,20 @@
 			children = (
 				BE87FD77E0B0359C98126B5E /* DetailAccountMediaStates.swift */,
 			);
-			name = Model;
 			path = Model;
 			sourceTree = "<group>";
 		};
 		6E7B89A9A1E5A7F692CF918E /* MainMediaList */ = {
 			isa = PBXGroup;
 			children = (
-				4E5E0C79BE92821BD0FD17F4 /* Model */,
-				43AE32A1F87438F98ECA40CD /* Service */,
-				2C1F2875865FE80BE925FAC1 /* ViewModel */,
 				B3082FADEED9CEED63E6A5E0 /* Controller */,
-				F4254A5CDA82C2901A52342D /* Router */,
-				127A1AF48632847510E4750A /* View */,
 				5F87D7BA5A6309D08107E43C /* Data */,
 				E58E33887312D334680AC834 /* Domain */,
 				251876677CB5978A38143615 /* Presentation */,
+				F4254A5CDA82C2901A52342D /* Router */,
+				127A1AF48632847510E4750A /* View */,
+				2C1F2875865FE80BE925FAC1 /* ViewModel */,
 			);
-			name = MainMediaList;
 			path = MainMediaList;
 			sourceTree = "<group>";
 		};
@@ -2643,7 +2562,6 @@
 			children = (
 				E5EB411BD98372D8648F92B0 /* MediaKind+Presentation.swift */,
 			);
-			name = Media;
 			path = Media;
 			sourceTree = "<group>";
 		};
@@ -2652,7 +2570,6 @@
 			children = (
 				B0A508E79CDF887504B82FB3 /* AccountContentDTO+Mapping.swift */,
 			);
-			name = Mapper;
 			path = Mapper;
 			sourceTree = "<group>";
 		};
@@ -2663,7 +2580,6 @@
 				A3818D875DB19D6E8C27F53B /* Repository */,
 				CF2C9FA2724D3796CB14C014 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -2673,7 +2589,6 @@
 				8B3AC0909D842A89DFD9F3C0 /* Review.swift */,
 				BEF381CFE663593316A05A00 /* ReviewFilter.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -2684,7 +2599,6 @@
 				02D5E9D7AC4A2140088400DF /* Mapper */,
 				2273DD823DF0DAB5F8834CEA /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2693,7 +2607,6 @@
 			children = (
 				AD8B51F19F3684B923C3062C /* AccountContentDTO.swift */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -2703,7 +2616,6 @@
 				BA8FA062565448424A7CD870 /* ReviewFilterHeaderView.swift */,
 				5205B5CE8EE9C79E4BCC4184 /* ReviewLoadingFooterView.swift */,
 			);
-			name = Header;
 			path = Header;
 			sourceTree = "<group>";
 		};
@@ -2712,7 +2624,6 @@
 			children = (
 				D37B5DD4487F0A403C6B5D51 /* MovieDetailDTO+Mapping.swift */,
 			);
-			name = Mapper;
 			path = Mapper;
 			sourceTree = "<group>";
 		};
@@ -2721,7 +2632,6 @@
 			children = (
 				D617C1F49A4736CBDA29209A /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2733,23 +2643,19 @@
 				69DA937E9CCA1C9BC7D5B46A /* TMDBPageResponse.swift */,
 				0D21B6C95994F2F88B6E8DC7 /* AccountMediaStateDTO.swift */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
 		94212C537E35E0565315FFAD /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				10BD85A8648DD7207864C202 /* Model */,
-				3589CEAC7309E113C77A668F /* Service */,
-				B12F82A2C577EF3D7F42A452 /* ViewModel */,
 				268C57661CCB22C601F38EC8 /* Controller */,
-				1F80730F3108911386173269 /* View */,
 				93CA635431549365A490F87F /* Data */,
 				085248F3F3FAEE46E3656401 /* Domain */,
 				F686136E4E3704912AEBDDCF /* Presentation */,
+				1F80730F3108911386173269 /* View */,
+				B12F82A2C577EF3D7F42A452 /* ViewModel */,
 			);
-			name = Search;
 			path = Search;
 			sourceTree = "<group>";
 		};
@@ -2758,7 +2664,6 @@
 			children = (
 				D382E358A7D0AC95194CEB66 /* MediaSearchProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2767,7 +2672,6 @@
 			children = (
 				B1DD7D4F190273C2B0C8FC39 /* HomeContentRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2778,7 +2682,6 @@
 				CD9EAFB871E204DD1E821EE7 /* Mapper */,
 				CAFED28630EEF18117167DDF /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2787,7 +2690,6 @@
 			children = (
 				2947A58DA8739F73FCC519F6 /* TVDetailProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2796,7 +2698,6 @@
 			children = (
 				13B1F99E8FF365C7BBAA3C1F /* MediaGridModels.swift */,
 			);
-			name = Model;
 			path = Model;
 			sourceTree = "<group>";
 		};
@@ -2807,7 +2708,6 @@
 				3163A9A56DE166DF58D3BA4A /* AccountMediaStateRepository.swift */,
 				C51000013019000000510001 /* AccountSessionRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -2816,7 +2716,6 @@
 			children = (
 				69A67420D646EDBD8B0D163D /* MainMediaListItemCollectionViewCell.swift */,
 			);
-			name = Cell;
 			path = Cell;
 			sourceTree = "<group>";
 		};
@@ -2825,7 +2724,6 @@
 			children = (
 				99FD55E3BCD2F3F083BD9BC2 /* SearchResultsViewModel.swift */,
 			);
-			name = ViewModel;
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
@@ -2834,7 +2732,6 @@
 			children = (
 				35A8AA1A3F64A06DD73A71A1 /* MainMediaListViewController.swift */,
 			);
-			name = Controller;
 			path = Controller;
 			sourceTree = "<group>";
 		};
@@ -2843,7 +2740,6 @@
 			children = (
 				4A757B9BD715AD1DDAB4A276 /* DomainError.swift */,
 			);
-			name = Error;
 			path = Error;
 			sourceTree = "<group>";
 		};
@@ -2854,7 +2750,6 @@
 				7421FC8E030D5BA5E911F799 /* Mapper */,
 				1BA2C3032EE793F78C4BE845 /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2863,7 +2758,6 @@
 			children = (
 				02C55B4149C4284303539940 /* TVDetailDTO.swift */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -2874,7 +2768,6 @@
 				9260EF1750DD94F0D70AB664 /* Mapper */,
 				48D8D24AC7F824CFCA109ED7 /* Repository */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -2883,7 +2776,6 @@
 			children = (
 				5F9C50F81A868C3BDB630F93 /* MediaListSelection.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -2897,7 +2789,6 @@
 				193C6D3E752060E6AB1A3DB3 /* TMDBPageResponse+Mapping.swift */,
 				414C1ABAE20A1769AD026BD9 /* AccountMediaStateDTO+Mapping.swift */,
 			);
-			name = Mapper;
 			path = Mapper;
 			sourceTree = "<group>";
 		};
@@ -3124,13 +3015,23 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
+		C51200013019000000512001 /* UseCase */ = {
+			isa = PBXGroup;
+			children = (
+				C51000023019000000510002 /* LoadAccountMediaStateUseCase.swift */,
+				C51000033019000000510003 /* ToggleFavoriteUseCase.swift */,
+				C51000043019000000510004 /* SubmitRatingUseCase.swift */,
+				C51000053019000000510005 /* DeleteRatingUseCase.swift */,
+			);
+			path = UseCase;
+			sourceTree = "<group>";
+		};
 		C58E1F5B7A950F78570E5A14 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
 				9B1835A014D8C15328557092 /* HomeCategory.swift */,
 				E60ACEABAA3474A074E8E0F7 /* HomeSection.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -3139,7 +3040,6 @@
 			children = (
 				FFBE643F3876F79C7AEFA78E /* TVDetailRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -3148,7 +3048,6 @@
 			children = (
 				EF396913E951E07C13BF93E6 /* TVDetailDTO+Mapping.swift */,
 			);
-			name = Mapper;
 			path = Mapper;
 			sourceTree = "<group>";
 		};
@@ -3157,7 +3056,6 @@
 			children = (
 				17B30CBE1937ADA19804ACD3 /* LoadTVDetailUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -3177,7 +3075,6 @@
 				BDC99F7C062AA4D9AA1D6B04 /* AccountMediaRatingTarget.swift */,
 				BA98EDDFF82C824CC3DED6F2 /* AccountMediaRatingValue.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -3186,7 +3083,6 @@
 			children = (
 				D6CF99EF4BF83CC99A6F8C07 /* MediaSearchRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -3195,7 +3091,6 @@
 			children = (
 				632F89F43C9CB4B17D09A888 /* ReviewDTO.swift */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -3204,7 +3099,6 @@
 			children = (
 				7B5749B06494DFED91AC044A /* ReviewPresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -3215,7 +3109,6 @@
 				F1D536698644439E739A36A1 /* Repository */,
 				2F467625F7732E4F2CF4DAEE /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -3224,7 +3117,6 @@
 			children = (
 				7DF5D92FF1D6129FD774AD89 /* MemberCenterListPresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -3234,7 +3126,6 @@
 				875207D03DC2322A8631B941 /* SearchMediaUseCase.swift */,
 				1998C1F71D27E20B1447F1AA /* SortMediaUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -3245,7 +3136,6 @@
 				6882E3FE4CB4DEDB1FF6956D /* Repository */,
 				29CAE7ECEBBBA2161E8A1052 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
 			sourceTree = "<group>";
 		};
@@ -3255,7 +3145,6 @@
 				71FE80E269D584330A9883FE /* LoadHomeSectionListUseCase.swift */,
 				4BEAD86D588328C2266A6E7F /* FilterMediaByGenreUseCase.swift */,
 			);
-			name = UseCase;
 			path = UseCase;
 			sourceTree = "<group>";
 		};
@@ -3265,7 +3154,6 @@
 				A719C1FEA2649AA3BE16D05D /* Model */,
 				3D89BC64B9632A8FC7FCBF5F /* View */,
 			);
-			name = MediaGrid;
 			path = MediaGrid;
 			sourceTree = "<group>";
 		};
@@ -3274,7 +3162,6 @@
 			children = (
 				C4CD77D443CEEF6C1EE8846D /* SearchResultCollectionViewCell.swift */,
 			);
-			name = Cell;
 			path = Cell;
 			sourceTree = "<group>";
 		};
@@ -3283,7 +3170,6 @@
 			children = (
 				FF731D8560EE0B6301B278F3 /* MediaListRepository.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -3292,7 +3178,6 @@
 			children = (
 				9978FF1D58F8A0C6A6508B63 /* ReviewListViewController.swift */,
 			);
-			name = Controller;
 			path = Controller;
 			sourceTree = "<group>";
 		};
@@ -3301,7 +3186,6 @@
 			children = (
 				37D56244A298960B86729C2B /* MovieDetailProviding.swift */,
 			);
-			name = Repository;
 			path = Repository;
 			sourceTree = "<group>";
 		};
@@ -3310,7 +3194,6 @@
 			children = (
 				50E8B7A549E6046591A73A1F /* MainMediaListRouter.swift */,
 			);
-			name = Router;
 			path = Router;
 			sourceTree = "<group>";
 		};
@@ -3319,7 +3202,6 @@
 			children = (
 				5ECEA17729C14F117F6363EA /* SearchPresentationModels.swift */,
 			);
-			name = Presentation;
 			path = Presentation;
 			sourceTree = "<group>";
 		};
@@ -3331,20 +3213,7 @@
 				3DE6B2479C0C27EC08CF13BE /* Repository */,
 				C51200013019000000512001 /* UseCase */,
 			);
-			name = Domain;
 			path = Domain;
-			sourceTree = "<group>";
-		};
-		C51200013019000000512001 /* UseCase */ = {
-			isa = PBXGroup;
-			children = (
-				C51000023019000000510002 /* LoadAccountMediaStateUseCase.swift */,
-				C51000033019000000510003 /* ToggleFavoriteUseCase.swift */,
-				C51000043019000000510004 /* SubmitRatingUseCase.swift */,
-				C51000053019000000510005 /* DeleteRatingUseCase.swift */,
-			);
-			name = UseCase;
-			path = UseCase;
 			sourceTree = "<group>";
 		};
 		FC24F2A86D1E7FD1F5D83C2D /* Entity */ = {
@@ -3354,7 +3223,6 @@
 				AB6FFFF19609167D7B5958CE /* TVDetailContent.swift */,
 				32AF243EA2F8205BAD523CA7 /* TVSeries.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -3363,7 +3231,6 @@
 			children = (
 				1059F950910841A59DA310A4 /* HomeSectionListSelection.swift */,
 			);
-			name = Entity;
 			path = Entity;
 			sourceTree = "<group>";
 		};
@@ -3600,7 +3467,7 @@
 				15A6A0833005000000AD5E46 /* MainMemberSettingViewModel.swift in Sources */,
 				15A6A0B63005A00000AD5E46 /* MainMemberSettingSectionHeaderView.swift in Sources */,
 				15A6A0C23005B00000AD5E46 /* MainMemberSettingRouter.swift in Sources */,
-				15D198152FF2202000545A85 /* AppRootFactory.swift in Sources */,
+				15D198152FF2202000545A85 /* AuthFlowHandler.swift in Sources */,
 				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C12FF14A2100545A85 /* NetworkService.swift in Sources */,
@@ -3629,8 +3496,6 @@
 				152BE7262FF4FA60006681A5 /* GlassBaseViewController.swift in Sources */,
 				15A94F6F2FF2704800FCBB0F /* MainTabBarController.swift in Sources */,
 				15A94F642FF26FB800FCBB0F /* MainBaseViewController.swift in Sources */,
-				1598AB2C2DC88DED005E972C /* AccountService.swift in Sources */,
-				1598AB282DC88D98005E972C /* AccountViewModel.swift in Sources */,
 				15BAE9792FF60C50006B0E15 /* PersonDetailViewController.swift in Sources */,
 				15E100162FF7000000E10001 /* DetailActionBarViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,

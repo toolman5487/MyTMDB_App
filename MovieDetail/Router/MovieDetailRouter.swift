@@ -38,16 +38,22 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
     // MARK: - Properties
 
     private let movieID: Int
+    private let sceneBuilder: DetailSceneBuilding
     private let detailRouter: DetailRouter
 
     // MARK: - Initialization
 
     init(
         sourceViewController: UIViewController,
-        movieID: Int
+        movieID: Int,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.movieID = movieID
-        self.detailRouter = DetailRouter(sourceViewController: sourceViewController)
+        self.sceneBuilder = sceneBuilder
+        self.detailRouter = DetailRouter(
+            sourceViewController: sourceViewController,
+            sceneBuilder: sceneBuilder
+        )
         super.init(sourceViewController: sourceViewController)
     }
 
@@ -55,7 +61,10 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showReviewList() {
         guard movieID > 0 else { return }
-        show(ReviewListViewController(mediaKind: .movie, mediaID: movieID), using: .push)
+        show(
+            sceneBuilder.makeReviewListViewController(mediaKind: .movie, mediaID: movieID),
+            using: .push
+        )
     }
 
     func showYouTubeVideo(videoKey: String, title: String?) {
@@ -117,6 +126,6 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
     }
 
     func showLogin() {
-        show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
+        detailRouter.showLogin()
     }
 }

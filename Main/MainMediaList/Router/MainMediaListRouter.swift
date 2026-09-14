@@ -35,12 +35,18 @@ final class MainMediaListRouter: BaseRouter, MainMediaListRouting {
     // MARK: - Properties
 
     private let mediaKind: MediaKind
+    private let sceneBuilder: DetailSceneBuilding
     private(set) var isDismissingSearchForNavigation = false
 
     // MARK: - Initialization
 
-    init(sourceViewController: UIViewController, mediaKind: MediaKind) {
+    init(
+        sourceViewController: UIViewController,
+        mediaKind: MediaKind,
+        sceneBuilder: DetailSceneBuilding
+    ) {
         self.mediaKind = mediaKind
+        self.sceneBuilder = sceneBuilder
         super.init(sourceViewController: sourceViewController)
     }
 
@@ -122,10 +128,10 @@ final class MainMediaListRouter: BaseRouter, MainMediaListRouting {
     private func makeDetailViewController(itemID: Int) -> UIViewController {
         switch mediaKind {
         case .movie:
-            return MovieDetailViewController(movieID: itemID)
+            return sceneBuilder.makeMovieDetailViewController(movieID: itemID)
 
         case .tv:
-            return TVDetailViewController(seriesID: itemID)
+            return sceneBuilder.makeTVDetailViewController(seriesID: itemID)
         }
     }
 }

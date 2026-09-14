@@ -60,49 +60,6 @@ final class EpisodeDetailViewModel {
         }
     }
 
-    convenience init(input: EpisodeDetailInput) {
-        let sessionStore = SessionStore()
-        let accountService = AccountService()
-        let sessionRepository = AccountSessionRepository(
-            sessionStore: sessionStore,
-            accountService: accountService
-        )
-        let mediaRepository = AccountMediaStateRepository()
-        let accountCredential = Self.makeAccountCredential(from: sessionStore.load())
-
-        self.init(
-            input: input,
-            loadEpisodeDetailUseCase: DefaultLoadEpisodeDetailUseCase(
-                repository: EpisodeDetailRepository(),
-                accountCredential: accountCredential,
-                auxiliaryFailureHandler: { name, input, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for TV series \(input.seriesID, privacy: .public) season \(input.seasonNumber, privacy: .public) episode \(input.episodeNumber, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            ),
-            accountMediaController: DetailAccountMediaStateController(
-                isUserAuthenticated: Self.isUserAuthenticated(sessionStore.load()),
-                loadAccountMediaStateUseCase: DefaultLoadAccountMediaStateUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                ),
-                toggleFavoriteUseCase: DefaultToggleFavoriteUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                ),
-                submitRatingUseCase: DefaultSubmitRatingUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                ),
-                deleteRatingUseCase: DefaultDeleteRatingUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                )
-            )
-        )
-    }
-
     // MARK: - Output Binding
 
     func bind(
@@ -194,26 +151,6 @@ final class EpisodeDetailViewModel {
 
     private func notifyRatingStateChange() {
         onRatingStateChange?(ratingState)
-    }
-
-    private static func makeAccountCredential(
-        from session: AuthSession?
-    ) -> EpisodeAccountCredential? {
-        switch session {
-        case .guest(let sessionID):
-            return .guest(sessionID: sessionID)
-
-        case .user(let sessionID):
-            return .user(sessionID: sessionID)
-
-        case .loggedOut, nil:
-            return nil
-        }
-    }
-
-    private static func isUserAuthenticated(_ session: AuthSession) -> Bool {
-        if case .user = session { return true }
-        return false
     }
 
     private static func errorMessage(for error: DomainError) -> ErrorMessage {

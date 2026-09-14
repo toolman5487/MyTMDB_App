@@ -43,22 +43,36 @@ protocol DetailRouting {
 @MainActor
 final class DetailRouter: BaseRouter, DetailRouting {
 
+    // MARK: - Properties
+
+    private let sceneBuilder: DetailSceneBuilding
+
+    // MARK: - Initialization
+
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: DetailSceneBuilding
+    ) {
+        self.sceneBuilder = sceneBuilder
+        super.init(sourceViewController: sourceViewController)
+    }
+
     // MARK: - Push
 
     func showMovieDetail(movieID: Int) {
         guard movieID > 0 else { return }
-        show(MovieDetailViewController(movieID: movieID), using: .push)
+        show(sceneBuilder.makeMovieDetailViewController(movieID: movieID), using: .push)
     }
 
     func showTVDetail(seriesID: Int) {
         guard seriesID > 0 else { return }
-        show(TVDetailViewController(seriesID: seriesID), using: .push)
+        show(sceneBuilder.makeTVDetailViewController(seriesID: seriesID), using: .push)
     }
 
     func showSeasonDetail(seriesID: Int, seasonNumber: Int) {
         guard seriesID > 0, seasonNumber >= 0 else { return }
         show(
-            SeasonDetailViewController(
+            sceneBuilder.makeSeasonDetailViewController(
                 seriesID: seriesID,
                 seasonNumber: seasonNumber
             ),
@@ -69,7 +83,7 @@ final class DetailRouter: BaseRouter, DetailRouting {
     func showEpisodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int) {
         guard seriesID > 0, seasonNumber >= 0, episodeNumber > 0 else { return }
         show(
-            EpisodeDetailViewController(
+            sceneBuilder.makeEpisodeDetailViewController(
                 seriesID: seriesID,
                 seasonNumber: seasonNumber,
                 episodeNumber: episodeNumber
@@ -80,7 +94,7 @@ final class DetailRouter: BaseRouter, DetailRouting {
 
     func showPersonDetail(personID: Int) {
         guard personID > 0 else { return }
-        show(PersonDetailViewController(personID: personID), using: .push)
+        show(sceneBuilder.makePersonDetailViewController(personID: personID), using: .push)
     }
 
     func showCreditDetail(_ item: PersonDetailCreditItem) {
@@ -98,7 +112,10 @@ final class DetailRouter: BaseRouter, DetailRouting {
 
     func showContentList(_ configuration: DetailContentListConfiguration) {
         guard !configuration.items.isEmpty else { return }
-        show(DetailContentListViewController(configuration: configuration), using: .push)
+        show(
+            sceneBuilder.makeDetailContentListViewController(configuration: configuration),
+            using: .push
+        )
     }
 
     func showWebVideo(url: URL, title: String?) {
@@ -110,7 +127,7 @@ final class DetailRouter: BaseRouter, DetailRouting {
     }
 
     func showLogin() {
-        show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
+        show(sceneBuilder.makeLoginNavigationController(), using: .fullScreen)
     }
 
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?) {

@@ -44,8 +44,8 @@ final class SearchResultsViewModel {
 
     init(
         mediaKind: MediaKind,
-        searchMedia: SearchMediaUseCase = DefaultSearchMediaUseCase(repository: MediaSearchRepository()),
-        sortMedia: SortMediaUseCase = DefaultSortMediaUseCase()
+        searchMedia: SearchMediaUseCase,
+        sortMedia: SortMediaUseCase
     ) {
         self.mediaKind = mediaKind
         self.searchMedia = searchMedia

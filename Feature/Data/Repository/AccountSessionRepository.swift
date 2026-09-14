@@ -11,14 +11,14 @@ import Foundation
 
 nonisolated final class AccountSessionRepository: AccountSessionProviding {
     private let sessionStore: SessionStoring
-    private let accountService: AccountServiceProtocol
+    private let profileProvider: AccountProfileProviding
 
     init(
         sessionStore: SessionStoring,
-        accountService: AccountServiceProtocol
+        profileProvider: AccountProfileProviding
     ) {
         self.sessionStore = sessionStore
-        self.accountService = accountService
+        self.profileProvider = profileProvider
     }
 
     func currentUserSession() async throws -> AccountUserSession? {
@@ -26,9 +26,9 @@ nonisolated final class AccountSessionRepository: AccountSessionProviding {
             return nil
         }
 
-        let account = try await accountService.fetchAccount(sessionId: sessionID)
-        guard account.id > 0 else { return nil }
+        let profile = try await profileProvider.profile(sessionID: sessionID)
+        guard profile.id > 0 else { return nil }
 
-        return AccountUserSession(accountID: account.id, sessionID: sessionID)
+        return AccountUserSession(accountID: profile.id, sessionID: sessionID)
     }
 }

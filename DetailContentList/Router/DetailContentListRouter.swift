@@ -24,8 +24,14 @@ final class DetailContentListRouter: DetailContentListRouting {
 
     private let detailRouter: DetailRouter
 
-    init(sourceViewController: UIViewController) {
-        self.detailRouter = DetailRouter(sourceViewController: sourceViewController)
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: DetailSceneBuilding
+    ) {
+        self.detailRouter = DetailRouter(
+            sourceViewController: sourceViewController,
+            sceneBuilder: sceneBuilder
+        )
     }
 
     func showDestination(

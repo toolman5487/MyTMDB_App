@@ -31,8 +31,25 @@ protocol MainMemberSettingRouting: AnyObject {
 @MainActor
 final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
 
+    // MARK: - Properties
+
+    private let sceneBuilder: MemberCenterSceneBuilding
+    private weak var appFlowRouter: AppFlowRouting?
+
+    // MARK: - Initialization
+
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: MemberCenterSceneBuilding,
+        appFlowRouter: AppFlowRouting
+    ) {
+        self.sceneBuilder = sceneBuilder
+        self.appFlowRouter = appFlowRouter
+        super.init(sourceViewController: sourceViewController)
+    }
+
     func showMemberCenter(session: AuthSession) {
-        show(MemberCenterViewController(session: session), using: .push)
+        show(sceneBuilder.makeMemberCenterViewController(session: session), using: .push)
     }
 
     func showProfileRefreshCompleted() {
@@ -105,13 +122,6 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
     }
 
     func showLoggedOut() {
-        guard let window = sourceViewController?.view.window else {
-            AppLogger.navigation.warning(
-                "MainMemberSetting logout navigation failed because source window was unavailable."
-            )
-            return
-        }
-
-        AppRootFactory.replaceRoot(in: window, for: .loggedOut)
+        appFlowRouter?.showLoggedOutRoot()
     }
 }

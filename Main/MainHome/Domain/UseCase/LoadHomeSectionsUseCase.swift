@@ -33,8 +33,6 @@ nonisolated struct DefaultLoadHomeSectionsUseCase: LoadHomeSectionsUseCase {
 
     // MARK: - LoadHomeSectionsUseCase
 
-    /// 併發載入所有分類，允許部分失敗：只要有任何一個分類成功就回傳成功的部分，
-    /// 全部失敗時拋出第一個底層錯誤，讓 Presentation 決定要顯示什麼訊息。
     func callAsFunction() async throws -> [HomeSection] {
         try Task.checkCancellation()
 

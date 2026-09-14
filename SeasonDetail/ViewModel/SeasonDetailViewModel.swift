@@ -46,22 +46,6 @@ final class SeasonDetailViewModel {
         self.loadSeasonDetailUseCase = loadSeasonDetailUseCase
     }
 
-    convenience init() {
-        let accountCredential = Self.makeAccountCredential(from: SessionStore().load())
-
-        self.init(
-            loadSeasonDetailUseCase: DefaultLoadSeasonDetailUseCase(
-                repository: SeasonDetailRepository(),
-                accountCredential: accountCredential,
-                auxiliaryFailureHandler: { name, seriesID, seasonNumber, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for TV series \(seriesID, privacy: .public) season \(seasonNumber, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            )
-        )
-    }
-
     // MARK: - Output Binding
 
     func bind(onStateChange: @escaping @MainActor (SeasonDetailViewState) -> Void) {
@@ -95,21 +79,6 @@ final class SeasonDetailViewModel {
     }
 
     // MARK: - Private Helpers
-
-    private static func makeAccountCredential(
-        from session: AuthSession?
-    ) -> SeasonAccountCredential? {
-        switch session {
-        case .guest(let sessionID):
-            return .guest(sessionID: sessionID)
-
-        case .user(let sessionID):
-            return .user(sessionID: sessionID)
-
-        case .loggedOut, nil:
-            return nil
-        }
-    }
 
     private static func errorMessage(for error: DomainError) -> ErrorMessage {
         switch error {

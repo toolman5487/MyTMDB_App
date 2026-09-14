@@ -33,11 +33,7 @@ final class MainHomeViewModel {
 
     // MARK: - Initialization
 
-    init(
-        loadHomeSections: LoadHomeSectionsUseCase = DefaultLoadHomeSectionsUseCase(
-            repository: HomeContentRepository()
-        )
-    ) {
+    init(loadHomeSections: LoadHomeSectionsUseCase) {
         self.loadHomeSections = loadHomeSections
     }
 

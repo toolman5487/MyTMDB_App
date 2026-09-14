@@ -15,9 +15,11 @@ final class TVDetailViewController: DetailActionBarViewController {
 
     private let seriesID: Int
     private let viewModel: TVDetailViewModel
+    private let sceneBuilder: DetailSceneBuilding
     private lazy var router: TVDetailRouting = TVDetailRouter(
         sourceViewController: self,
-        seriesID: seriesID
+        seriesID: seriesID,
+        sceneBuilder: sceneBuilder
     )
 
     private var sections: [TVDetailSectionItem] = []
@@ -26,26 +28,20 @@ final class TVDetailViewController: DetailActionBarViewController {
 
     // MARK: - Initialization
 
-    convenience init(seriesID: Int) {
-        self.init(
-            seriesID: seriesID,
-            viewModel: TVDetailViewModel()
-        )
-    }
-
     init(
         seriesID: Int,
-        viewModel: TVDetailViewModel
+        viewModel: TVDetailViewModel,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.seriesID = seriesID
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.seriesID = 0
-        self.viewModel = TVDetailViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

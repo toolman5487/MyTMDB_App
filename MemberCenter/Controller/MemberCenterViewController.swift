@@ -23,7 +23,11 @@ final class MemberCenterViewController: BaseListViewController {
     // MARK: - Properties
 
     private let viewModel: MemberCenterViewModel
-    private lazy var router: MemberCenterRouting = MemberCenterRouter(sourceViewController: self)
+    private let sceneBuilder: MemberCenterSceneBuilding
+    private lazy var router: MemberCenterRouting = MemberCenterRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var hasStartedInitialLoad = false
 
@@ -31,19 +35,18 @@ final class MemberCenterViewController: BaseListViewController {
 
     // MARK: - Initialization
 
-    init(session: AuthSession) {
-        self.viewModel = MemberCenterViewModel(session: session)
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    init(viewModel: MemberCenterViewModel) {
+    init(
+        viewModel: MemberCenterViewModel,
+        sceneBuilder: MemberCenterSceneBuilding
+    ) {
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = MemberCenterViewModel(session: .loggedOut)
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

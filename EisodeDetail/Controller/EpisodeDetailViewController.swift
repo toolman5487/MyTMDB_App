@@ -14,7 +14,11 @@ final class EpisodeDetailViewController: DetailActionBarViewController {
     // MARK: - Properties
 
     private let viewModel: EpisodeDetailViewModel
-    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+    private let sceneBuilder: DetailSceneBuilding
+    private lazy var router: DetailRouting = DetailRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var sections: [EpisodeDetailSectionItem] = []
 
@@ -22,33 +26,18 @@ final class EpisodeDetailViewController: DetailActionBarViewController {
 
     // MARK: - Initialization
 
-    convenience init(
-        seriesID: Int,
-        seasonNumber: Int,
-        episodeNumber: Int
+    init(
+        viewModel: EpisodeDetailViewModel,
+        sceneBuilder: DetailSceneBuilding
     ) {
-        let input = EpisodeDetailInput(
-            seriesID: seriesID,
-            seasonNumber: seasonNumber,
-            episodeNumber: episodeNumber
-        )
-        self.init(viewModel: EpisodeDetailViewModel(input: input))
-    }
-
-    init(viewModel: EpisodeDetailViewModel) {
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = EpisodeDetailViewModel(
-            input: EpisodeDetailInput(
-                seriesID: 0,
-                seasonNumber: 0,
-                episodeNumber: 0
-            )
-        )
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

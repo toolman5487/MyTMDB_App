@@ -14,9 +14,11 @@ final class MovieDetailViewController: DetailActionBarViewController {
 
     private let movieID: Int
     private let viewModel: MovieDetailViewModel
+    private let sceneBuilder: DetailSceneBuilding
     private lazy var router: MovieDetailRouting = MovieDetailRouter(
         sourceViewController: self,
-        movieID: movieID
+        movieID: movieID,
+        sceneBuilder: sceneBuilder
     )
 
     private var sections: [MovieDetailSectionItem] = []
@@ -25,26 +27,20 @@ final class MovieDetailViewController: DetailActionBarViewController {
 
     // MARK: - Initialization
 
-    convenience init(movieID: Int) {
-        self.init(
-            movieID: movieID,
-            viewModel: MovieDetailViewModel()
-        )
-    }
-
     init(
         movieID: Int,
-        viewModel: MovieDetailViewModel
+        viewModel: MovieDetailViewModel,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.movieID = movieID
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.movieID = 0
-        self.viewModel = MovieDetailViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

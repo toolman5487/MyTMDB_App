@@ -20,14 +20,13 @@ nonisolated final class MediaListRepository: MediaListProviding {
     // MARK: - Initialization
 
     init(
-        network: NetworkServicing = NetworkService(),
+        network: NetworkServicing,
         localization: AppLocalization = .current,
-        genreRepository: MediaGenreProviding? = nil
+        genreRepository: MediaGenreProviding
     ) {
         self.network = network
         self.localization = localization
         self.genreRepository = genreRepository
-            ?? MediaGenreRepository(network: network, localization: localization)
     }
 
     // MARK: - MediaGenreProviding

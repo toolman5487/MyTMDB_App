@@ -25,18 +25,18 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
 
     // MARK: - Properties
 
-    private let accountService: AccountServiceProtocol
+    private let profileProvider: AccountProfileProviding
     private let userProfileStore: UserProfileStoring
     private let urlSession: URLSession
 
     // MARK: - Initialization
 
     init(
-        accountService: AccountServiceProtocol = AccountService(),
-        userProfileStore: UserProfileStoring = UserProfileStore(),
-        urlSession: URLSession = .shared
+        profileProvider: AccountProfileProviding,
+        userProfileStore: UserProfileStoring,
+        urlSession: URLSession
     ) {
-        self.accountService = accountService
+        self.profileProvider = profileProvider
         self.userProfileStore = userProfileStore
         self.urlSession = urlSession
     }
@@ -49,9 +49,7 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
         }
 
         do {
-            let account = try await accountService.fetchAccount(sessionId: sessionId)
-            let profile = StoredUserProfile(account: account)
-            userProfileStore.save(profile)
+            let profile = try await profileProvider.profile(sessionID: sessionId)
 
             guard let avatarURL = profile.avatarURL else { return nil }
 

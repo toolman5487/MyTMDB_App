@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - RatedMedia
 
-/// 已評分的電影或影集：公開資料加上本帳號給的分數。
 nonisolated struct RatedMedia: Sendable, Equatable, Identifiable {
     let summary: MediaSummary
     let kind: MediaKind
@@ -64,7 +63,6 @@ nonisolated struct AccountList: Sendable, Equatable, Identifiable {
 
 // MARK: - AccountCollectionItem
 
-/// 八種 destination 共用的項目型別；destination 決定實際會出現哪一種 case。
 nonisolated enum AccountCollectionItem: Sendable, Equatable {
     case media(MediaSummary, kind: MediaKind)
     case ratedMedia(RatedMedia)

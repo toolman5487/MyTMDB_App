@@ -33,9 +33,7 @@ final class MemberCenterListViewModel {
         destination: MemberCenterDestination,
         accountId: Int,
         sessionId: String,
-        loadCollectionPage: LoadAccountCollectionPageUseCase = DefaultLoadAccountCollectionPageUseCase(
-            repository: AccountContentRepository()
-        )
+        loadCollectionPage: LoadAccountCollectionPageUseCase
     ) {
         self.destination = destination
         self.accountId = accountId

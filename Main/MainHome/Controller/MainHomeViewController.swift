@@ -33,7 +33,11 @@ final class MainHomeViewController: MainBaseViewController {
     // MARK: - Properties
 
     private let viewModel: MainHomeViewModel
-    private lazy var router: MainHomeRouting = MainHomeRouter(sourceViewController: self)
+    private let sceneBuilder: HomeSceneBuilding
+    private lazy var router: MainHomeRouting = MainHomeRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var sections: [MainHomeSectionItem] = []
     private var carouselItems: [HomeContentItem] = []
@@ -42,19 +46,18 @@ final class MainHomeViewController: MainBaseViewController {
 
     // MARK: - Initialization
 
-    init() {
-        self.viewModel = MainHomeViewModel()
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    init(viewModel: MainHomeViewModel) {
+    init(
+        viewModel: MainHomeViewModel,
+        sceneBuilder: HomeSceneBuilding
+    ) {
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = MainHomeViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

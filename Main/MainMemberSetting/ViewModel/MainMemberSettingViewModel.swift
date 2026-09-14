@@ -17,7 +17,7 @@ final class MainMemberSettingViewModel {
     private let sessionStore: SessionStoring
     private let userProfileStore: UserProfileStoring
     private let searchHistoryStore: SearchHistoryStoring
-    private let accountService: AccountServiceProtocol
+    private let profileProvider: AccountProfileProviding
     private let localization: AppLocalization
     private let bundle: Bundle
 
@@ -61,17 +61,17 @@ final class MainMemberSettingViewModel {
     // MARK: - Initialization
 
     init(
-        sessionStore: SessionStoring = SessionStore(),
-        userProfileStore: UserProfileStoring = UserProfileStore(),
-        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore(),
-        accountService: AccountServiceProtocol = AccountService(),
+        sessionStore: SessionStoring,
+        userProfileStore: UserProfileStoring,
+        searchHistoryStore: SearchHistoryStoring,
+        profileProvider: AccountProfileProviding,
         localization: AppLocalization = .current,
         bundle: Bundle = .main
     ) {
         self.sessionStore = sessionStore
         self.userProfileStore = userProfileStore
         self.searchHistoryStore = searchHistoryStore
-        self.accountService = accountService
+        self.profileProvider = profileProvider
         self.localization = localization
         self.bundle = bundle
     }
@@ -98,8 +98,7 @@ final class MainMemberSettingViewModel {
 
     func refreshProfile() async throws {
         guard case .user(let sessionId) = sessionStore.load() else { return }
-        let account = try await accountService.fetchAccount(sessionId: sessionId)
-        userProfileStore.save(account: account)
+        _ = try await profileProvider.profile(sessionID: sessionId)
     }
 
     func clearProfileCache() {

@@ -51,22 +51,6 @@ final class PersonDetailViewModel {
         self.loadPersonCreditsUseCase = loadPersonCreditsUseCase
     }
 
-    convenience init() {
-        let repository = PersonDetailRepository()
-
-        self.init(
-            loadPersonDetailUseCase: DefaultLoadPersonDetailUseCase(
-                repository: repository,
-                auxiliaryFailureHandler: { name, personID, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for person \(personID, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            ),
-            loadPersonCreditsUseCase: DefaultLoadPersonCreditsUseCase(repository: repository)
-        )
-    }
-
     // MARK: - Output Binding
 
     func bind(onStateChange: @escaping @MainActor (PersonDetailViewState) -> Void) {

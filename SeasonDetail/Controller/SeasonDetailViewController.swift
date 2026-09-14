@@ -15,10 +15,12 @@ final class SeasonDetailViewController: DetailBaseViewController {
     private let seriesID: Int
     private let seasonNumber: Int
     private let viewModel: SeasonDetailViewModel
+    private let sceneBuilder: DetailSceneBuilding
     private lazy var router: SeasonDetailRouting = SeasonDetailRouter(
         sourceViewController: self,
         seriesID: seriesID,
-        seasonNumber: seasonNumber
+        seasonNumber: seasonNumber,
+        sceneBuilder: sceneBuilder
     )
 
     private var sections: [SeasonDetailSectionItem] = []
@@ -27,33 +29,22 @@ final class SeasonDetailViewController: DetailBaseViewController {
 
     // MARK: - Initialization
 
-    convenience init(
-        seriesID: Int,
-        seasonNumber: Int
-    ) {
-        self.init(
-            seriesID: seriesID,
-            seasonNumber: seasonNumber,
-            viewModel: SeasonDetailViewModel()
-        )
-    }
-
     init(
         seriesID: Int,
         seasonNumber: Int,
-        viewModel: SeasonDetailViewModel
+        viewModel: SeasonDetailViewModel,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.seriesID = seriesID
         self.seasonNumber = seasonNumber
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.seriesID = 0
-        self.seasonNumber = 0
-        self.viewModel = SeasonDetailViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

@@ -17,7 +17,7 @@ nonisolated final class ReviewRepository: ReviewProviding {
 
     // MARK: - Initialization
 
-    init(network: NetworkServicing = NetworkService()) {
+    init(network: NetworkServicing) {
         self.network = network
     }
 

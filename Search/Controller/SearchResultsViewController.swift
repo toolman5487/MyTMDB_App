@@ -58,22 +58,15 @@ final class SearchResultsViewController: BaseViewController {
 
     // MARK: - Initialization
 
-    init(mediaKind: MediaKind) {
-        self.mediaKind = mediaKind
-        self.viewModel = SearchResultsViewModel(mediaKind: mediaKind)
-        super.init(nibName: nil, bundle: nil)
-    }
-
     init(mediaKind: MediaKind, viewModel: SearchResultsViewModel) {
         self.mediaKind = mediaKind
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.mediaKind = .movie
-        self.viewModel = SearchResultsViewModel(mediaKind: .movie)
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

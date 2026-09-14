@@ -51,46 +51,6 @@ final class TVDetailViewModel {
         }
     }
 
-    convenience init() {
-        let sessionStore = SessionStore()
-        let accountService = AccountService()
-        let sessionRepository = AccountSessionRepository(
-            sessionStore: sessionStore,
-            accountService: accountService
-        )
-        let mediaRepository = AccountMediaStateRepository()
-
-        self.init(
-            loadTVDetailUseCase: DefaultLoadTVDetailUseCase(
-                repository: TVDetailRepository(),
-                auxiliaryFailureHandler: { name, seriesID, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for TV \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            ),
-            accountMediaController: DetailAccountMediaStateController(
-                isUserAuthenticated: Self.isUserAuthenticated(sessionStore.load()),
-                loadAccountMediaStateUseCase: DefaultLoadAccountMediaStateUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                ),
-                toggleFavoriteUseCase: DefaultToggleFavoriteUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                ),
-                submitRatingUseCase: DefaultSubmitRatingUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                ),
-                deleteRatingUseCase: DefaultDeleteRatingUseCase(
-                    sessionRepository: sessionRepository,
-                    mediaRepository: mediaRepository
-                )
-            )
-        )
-    }
-
     // MARK: - Output Binding
 
     func bind(
@@ -189,8 +149,4 @@ final class TVDetailViewModel {
         onAccountStateChange?(favoriteState, ratingState)
     }
 
-    private static func isUserAuthenticated(_ session: AuthSession) -> Bool {
-        if case .user = session { return true }
-        return false
-    }
 }

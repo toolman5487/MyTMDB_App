@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - AccountMediaRatingValue
 
-/// TMDB 評分規則：0.5 至 10.0、以 0.5 為級距。
 nonisolated enum AccountMediaRatingValue {
     static let minimum = 0.5
     static let maximum = 10.0

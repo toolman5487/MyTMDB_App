@@ -18,7 +18,6 @@ nonisolated protocol LoadMemberCenterOverviewUseCase: Sendable {
 nonisolated struct DefaultLoadMemberCenterOverviewUseCase: LoadMemberCenterOverviewUseCase {
 
     private enum Configuration {
-        /// 首頁預覽只替前 10 筆片單補海報，避免一次打太多 list detail。
         static let listPosterFallbackLimit = 10
     }
 
@@ -34,8 +33,6 @@ nonisolated struct DefaultLoadMemberCenterOverviewUseCase: LoadMemberCenterOverv
 
     // MARK: - LoadMemberCenterOverviewUseCase
 
-    /// 先取得帳號（優先用本機快取省一次往返），再併發載入八種蒐藏。
-    /// 單一蒐藏失敗只會讓該區塊消失，不影響其他區塊。
     func callAsFunction(sessionID: String) async throws -> MemberCenterOverview {
         let profile = try await resolveProfile(sessionID: sessionID)
         let collections = try await loadCollections(

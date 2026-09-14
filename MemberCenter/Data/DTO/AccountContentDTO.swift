@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - RatedMediaDTO
 
-/// 已評分電影與影集共用；電影回傳 `title` / `release_date`，影集回傳 `name` / `first_air_date`。
 nonisolated struct RatedMediaDTO: Decodable, Sendable, Equatable, Identifiable {
     let id: Int
     let title: String

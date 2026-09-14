@@ -38,18 +38,14 @@ final class HomeSectionListViewModel {
 
     init(
         category: HomeCategory,
-        loadSectionList: LoadHomeSectionListUseCase? = nil,
-        filterByGenre: FilterMediaByGenreUseCase = DefaultFilterMediaByGenreUseCase(),
-        contentRepository: HomeContentProviding = HomeContentRepository()
+        loadSectionList: LoadHomeSectionListUseCase,
+        filterByGenre: FilterMediaByGenreUseCase,
+        contentRepository: HomeContentProviding
     ) {
         self.category = category
         self.contentRepository = contentRepository
         self.filterByGenre = filterByGenre
         self.loadSectionList = loadSectionList
-            ?? DefaultLoadHomeSectionListUseCase(
-                contentRepository: contentRepository,
-                genreRepository: MediaGenreRepository()
-            )
     }
 
     // MARK: - Output Binding

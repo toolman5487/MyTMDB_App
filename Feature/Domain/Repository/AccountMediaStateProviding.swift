@@ -41,3 +41,9 @@ nonisolated protocol AccountMediaStateProviding: Sendable {
 nonisolated protocol AccountSessionProviding: Sendable {
     func currentUserSession() async throws -> AccountUserSession?
 }
+
+// MARK: - AccountProfileProviding
+
+nonisolated protocol AccountProfileProviding: Sendable {
+    func profile(sessionID: String) async throws -> AccountProfile
+}

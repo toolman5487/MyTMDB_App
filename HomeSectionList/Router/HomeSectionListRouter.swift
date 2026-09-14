@@ -25,15 +25,29 @@ protocol HomeSectionListRouting: AnyObject {
 @MainActor
 final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
 
+    // MARK: - Properties
+
+    private let sceneBuilder: DetailSceneBuilding
+
+    // MARK: - Initialization
+
+    init(
+        sourceViewController: UIViewController,
+        sceneBuilder: DetailSceneBuilding
+    ) {
+        self.sceneBuilder = sceneBuilder
+        super.init(sourceViewController: sourceViewController)
+    }
+
     func showDetail(for item: HomeContentItem) {
         let detailViewController: UIViewController
 
         switch item.mediaType {
         case .movie:
-            detailViewController = MovieDetailViewController(movieID: item.id)
+            detailViewController = sceneBuilder.makeMovieDetailViewController(movieID: item.id)
 
         case .tv:
-            detailViewController = TVDetailViewController(seriesID: item.id)
+            detailViewController = sceneBuilder.makeTVDetailViewController(seriesID: item.id)
         }
 
         show(detailViewController, using: .push)

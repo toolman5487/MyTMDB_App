@@ -25,7 +25,7 @@ final class LoginViewController: BaseViewController {
     // MARK: - Properties
 
     private let loginVM: LoginViewModel
-    private let authCoordinator: AuthFlowCoordinating
+    private let authFlowHandler: AuthFlowHandling
     private lazy var router: LoginRouting = LoginRouter(sourceViewController: self)
 
     private var currentPage: AuthPage = .login
@@ -115,18 +115,17 @@ final class LoginViewController: BaseViewController {
     // MARK: - Initialization
 
     init(
-        loginViewModel: LoginViewModel = LoginViewModel(),
-        authCoordinator: AuthFlowCoordinating = AuthFlowCoordinator()
+        loginViewModel: LoginViewModel,
+        authFlowHandler: AuthFlowHandling
     ) {
         self.loginVM = loginViewModel
-        self.authCoordinator = authCoordinator
+        self.authFlowHandler = authFlowHandler
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.loginVM = LoginViewModel()
-        self.authCoordinator = AuthFlowCoordinator()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {
@@ -297,7 +296,7 @@ final class LoginViewController: BaseViewController {
             guard let self else { return }
 
             do {
-                try await authCoordinator.finishUserLogin(sessionId: sessionId, from: self)
+                try await authFlowHandler.finishUserLogin(sessionID: sessionId)
             } catch {
                 guard !Task.isCancelled else { return }
                 handledSuccessSessionID = nil
@@ -308,7 +307,7 @@ final class LoginViewController: BaseViewController {
 
     private func finishGuestLogin(sessionId: String) {
         authFlowTask?.cancel()
-        authCoordinator.finishGuestLogin(sessionId: sessionId, from: self)
+        authFlowHandler.finishGuestLogin(sessionID: sessionId)
     }
 
     private func scrollToPage(_ page: AuthPage, animated: Bool) {

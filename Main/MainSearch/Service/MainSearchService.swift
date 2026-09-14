@@ -32,7 +32,7 @@ nonisolated final class MainSearchService: MainSearchServicing {
     // MARK: - Initialization
 
     init(
-        network: NetworkServicing = NetworkService(),
+        network: NetworkServicing,
         localization: AppLocalization = .current
     ) {
         self.network = network

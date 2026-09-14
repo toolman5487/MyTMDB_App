@@ -11,18 +11,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-    private let sessionStore: SessionStoring = SessionStore()
-    private let userProfileStore: UserProfileStoring = UserProfileStore()
-    private let sessionValidator = AuthSessionValidator()
+    private var composition: AppComposition?
+    private var sessionValidationTask: Task<Void, Never>?
     private var pendingIntentDestination: AppIntentDestination?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         window.overrideUserInterfaceStyle = .dark
+        let composition = AppComposition { [weak self] session in
+            self?.replaceRoot(for: session)
+        }
 
-        window.rootViewController = AppRootFactory.makeLoadingViewController()
+        window.rootViewController = composition.makeRootLoadingViewController()
 
+        self.composition = composition
         self.window = window
         window.makeKeyAndVisible()
 
@@ -30,36 +33,54 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .compactMap { AppIntentDestination(url: $0.url) }
             .first
 
-        validateStoredSession(in: window)
+        validateStoredSession()
     }
 
-    private func validateStoredSession(in window: UIWindow) {
-        let storedSession = sessionStore.load()
+    private func validateStoredSession() {
+        guard let composition else { return }
+        let sessionValidator = composition.makeSessionValidator()
 
-        Task(priority: .userInitiated) { @MainActor in
-            let validatedSession = await sessionValidator.validatedSession(storedSession)
-
-            if validatedSession == .loggedOut {
-                sessionStore.clear()
-                userProfileStore.clear()
-            } else if validatedSession != storedSession {
-                sessionStore.save(validatedSession)
-            }
-
-            AppRootFactory.replaceRoot(in: window, for: validatedSession)
-            await routePendingIntentDestinationIfNeeded(in: window)
+        sessionValidationTask?.cancel()
+        sessionValidationTask = Task(priority: .userInitiated) { [weak self] in
+            let validatedSession = await sessionValidator.validatedStoredSession()
+            guard !Task.isCancelled, let self else { return }
+            replaceRoot(for: validatedSession)
+            await routePendingIntentDestinationIfNeeded()
         }
     }
 
     @MainActor
-    private func routePendingIntentDestinationIfNeeded(in window: UIWindow) async {
-        guard let destination = pendingIntentDestination else { return }
+    private func routePendingIntentDestinationIfNeeded() async {
+        guard let destination = pendingIntentDestination,
+              let window,
+              let composition else {
+            return
+        }
         pendingIntentDestination = nil
-        _ = await AppIntentNavigator.open(destination, in: window)
+        _ = await AppIntentNavigator.open(
+            destination,
+            in: window,
+            sessionResolver: composition.makeAppIntentSessionResolver()
+        )
+    }
+
+    @MainActor
+    private func replaceRoot(for session: AuthSession) {
+        guard let window, let composition else { return }
+
+        switch session {
+        case .loggedOut:
+            window.rootViewController = composition.makeLoginNavigationController()
+
+        case .guest, .user:
+            window.rootViewController = composition.makeMainTabBarController(session: session)
+        }
+
+        window.makeKeyAndVisible()
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let window else { return }
+        guard let window, let composition else { return }
 
         for context in URLContexts {
             guard let destination = AppIntentDestination(url: context.url) else {
@@ -67,13 +88,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             Task { @MainActor in
-                _ = await AppIntentNavigator.open(destination, in: window)
+                _ = await AppIntentNavigator.open(
+                    destination,
+                    in: window,
+                    sessionResolver: composition.makeAppIntentSessionResolver()
+                )
             }
             return
         }
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
+        sessionValidationTask?.cancel()
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
         // Release any resources associated with this scene that can be re-created the next time the scene connects.

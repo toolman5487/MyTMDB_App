@@ -19,7 +19,7 @@ nonisolated final class MediaGenreRepository: MediaGenreProviding {
     // MARK: - Initialization
 
     init(
-        network: NetworkServicing = NetworkService(),
+        network: NetworkServicing,
         localization: AppLocalization = .current
     ) {
         self.network = network

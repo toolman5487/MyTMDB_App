@@ -25,20 +25,32 @@ final class MainMemberSettingViewController: MainBaseViewController {
     // MARK: - Properties
 
     private let viewModel: MainMemberSettingViewModel
-    private lazy var router: MainMemberSettingRouting = MainMemberSettingRouter(sourceViewController: self)
+    private let sceneBuilder: MemberCenterSceneBuilding
+    private let appFlowRouter: AppFlowRouting
+    private lazy var router: MainMemberSettingRouting = MainMemberSettingRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder,
+        appFlowRouter: appFlowRouter
+    )
 
     private var profileRefreshTask: Task<Void, Never>?
 
     // MARK: - Initialization
 
-    init(viewModel: MainMemberSettingViewModel = MainMemberSettingViewModel()) {
+    init(
+        viewModel: MainMemberSettingViewModel,
+        sceneBuilder: MemberCenterSceneBuilding,
+        appFlowRouter: AppFlowRouting
+    ) {
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
+        self.appFlowRouter = appFlowRouter
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = MainMemberSettingViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

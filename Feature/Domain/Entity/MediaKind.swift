@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - MediaKind
 
-nonisolated enum MediaKind: String, CaseIterable, Codable, Sendable, Equatable {
+nonisolated enum MediaKind: String, CaseIterable, Sendable, Equatable {
     case movie
     case tv
 }

@@ -39,16 +39,22 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
     // MARK: - Properties
 
     private let seriesID: Int
+    private let sceneBuilder: DetailSceneBuilding
     private let detailRouter: DetailRouter
 
     // MARK: - Initialization
 
     init(
         sourceViewController: UIViewController,
-        seriesID: Int
+        seriesID: Int,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.seriesID = seriesID
-        self.detailRouter = DetailRouter(sourceViewController: sourceViewController)
+        self.sceneBuilder = sceneBuilder
+        self.detailRouter = DetailRouter(
+            sourceViewController: sourceViewController,
+            sceneBuilder: sceneBuilder
+        )
         super.init(sourceViewController: sourceViewController)
     }
 
@@ -56,7 +62,10 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
 
     func showReviewList() {
         guard seriesID > 0 else { return }
-        show(ReviewListViewController(mediaKind: .tv, mediaID: seriesID), using: .push)
+        show(
+            sceneBuilder.makeReviewListViewController(mediaKind: .tv, mediaID: seriesID),
+            using: .push
+        )
     }
 
     func showYouTubeVideo(videoKey: String, title: String?) {
@@ -125,6 +134,6 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
     }
 
     func showLogin() {
-        show(UINavigationController(rootViewController: LoginViewController()), using: .fullScreen)
+        detailRouter.showLogin()
     }
 }

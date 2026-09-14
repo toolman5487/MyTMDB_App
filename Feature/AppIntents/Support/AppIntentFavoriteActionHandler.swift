@@ -36,15 +36,7 @@ nonisolated enum AppIntentFavoriteActionOutcome: Sendable, Equatable {
 nonisolated struct AppIntentFavoriteActionHandler: Sendable {
     private let toggleFavorite: ToggleFavoriteUseCase
 
-    init(
-        toggleFavorite: ToggleFavoriteUseCase = DefaultToggleFavoriteUseCase(
-            sessionRepository: AccountSessionRepository(
-                sessionStore: SessionStore(),
-                accountService: AccountService()
-            ),
-            mediaRepository: AccountMediaStateRepository()
-        )
-    ) {
+    init(toggleFavorite: ToggleFavoriteUseCase) {
         self.toggleFavorite = toggleFavorite
     }
 

@@ -44,8 +44,8 @@ final class MainMediaListViewModel {
 
     init(
         mediaKind: MediaKind,
-        loadMediaList: LoadMediaListUseCase = DefaultLoadMediaListUseCase(repository: MediaListRepository()),
-        repository: MediaListProviding = MediaListRepository(),
+        loadMediaList: LoadMediaListUseCase,
+        repository: MediaListProviding,
         initialGenreID: Int? = nil
     ) {
         self.mediaKind = mediaKind

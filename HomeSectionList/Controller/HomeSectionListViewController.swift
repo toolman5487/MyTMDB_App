@@ -22,7 +22,11 @@ final class HomeSectionListViewController: BaseListViewController {
 
     private let category: HomeCategory
     private let viewModel: HomeSectionListViewModel
-    private lazy var router: HomeSectionListRouting = HomeSectionListRouter(sourceViewController: self)
+    private let sceneBuilder: DetailSceneBuilding
+    private lazy var router: HomeSectionListRouting = HomeSectionListRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var filters: [HomeSectionListGenreItem] = []
     private var items: [HomeContentItem] = []
@@ -36,18 +40,14 @@ final class HomeSectionListViewController: BaseListViewController {
 
     // MARK: - Initialization
 
-    init(category: HomeCategory) {
-        self.category = category
-        self.viewModel = HomeSectionListViewModel(category: category)
-        super.init(nibName: nil, bundle: nil)
-    }
-
     init(
         category: HomeCategory,
-        viewModel: HomeSectionListViewModel
+        viewModel: HomeSectionListViewModel,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.category = category
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 

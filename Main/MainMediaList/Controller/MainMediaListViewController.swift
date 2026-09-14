@@ -22,9 +22,11 @@ final class MainMediaListViewController: MainBaseViewController {
 
     private let mediaKind: MediaKind
     private let viewModel: MainMediaListViewModel
+    private let sceneBuilder: MediaListSceneBuilding
     private lazy var router: MainMediaListRouting = MainMediaListRouter(
         sourceViewController: self,
-        mediaKind: mediaKind
+        mediaKind: mediaKind,
+        sceneBuilder: sceneBuilder
     )
 
     private var filters: [MainMediaGenreItem] = []
@@ -42,7 +44,7 @@ final class MainMediaListViewController: MainBaseViewController {
     // MARK: - UI Components
 
     private lazy var searchResultsViewController: SearchResultsViewController = {
-        let viewController = SearchResultsViewController(mediaKind: mediaKind)
+        let viewController = sceneBuilder.makeSearchResultsViewController(mediaKind: mediaKind)
         viewController.onItemSelected = { [weak self] itemID in
             self?.showSearchResultDetail(itemID: itemID)
         }
@@ -77,30 +79,20 @@ final class MainMediaListViewController: MainBaseViewController {
 
     // MARK: - Initialization
 
-    convenience init(mediaKind: MediaKind, initialGenreID: Int) {
-        self.init(
-            mediaKind: mediaKind,
-            viewModel: MainMediaListViewModel(mediaKind: mediaKind, initialGenreID: initialGenreID)
-        )
-    }
-
-    convenience init(mediaKind: MediaKind) {
-        self.init(
-            mediaKind: mediaKind,
-            viewModel: MainMediaListViewModel(mediaKind: mediaKind)
-        )
-    }
-
-    init(mediaKind: MediaKind, viewModel: MainMediaListViewModel) {
+    init(
+        mediaKind: MediaKind,
+        viewModel: MainMediaListViewModel,
+        sceneBuilder: MediaListSceneBuilding
+    ) {
         self.mediaKind = mediaKind
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.mediaKind = .movie
-        self.viewModel = MainMediaListViewModel(mediaKind: .movie)
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

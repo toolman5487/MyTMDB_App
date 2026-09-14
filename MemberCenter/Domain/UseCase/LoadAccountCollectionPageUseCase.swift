@@ -34,7 +34,6 @@ nonisolated struct DefaultLoadAccountCollectionPageUseCase: LoadAccountCollectio
 
     // MARK: - LoadAccountCollectionPageUseCase
 
-    /// 完整清單頁會替整頁片單補海報，與首頁預覽只補前 10 筆不同。
     func callAsFunction(
         destination: MemberCenterDestination,
         accountID: Int,

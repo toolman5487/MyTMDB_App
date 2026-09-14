@@ -37,6 +37,7 @@ final class MainTabBarController: UITabBarController {
     private let session: AuthSession
     private let viewModel: MainTabBarViewModel
     private let avatarProvider: MainTabBarAvatarProviding
+    private let sceneBuilder: MainTabSceneBuilding
     private var tabBarVisibilityState: MainTabBarVisibilityState = .visible
     private var pendingTransitionDirection: MainTabNavigationDirection?
     private var isReselectingSelectedTab = false
@@ -58,19 +59,20 @@ final class MainTabBarController: UITabBarController {
 
     init(
         session: AuthSession,
-        avatarProvider: MainTabBarAvatarProviding = MainTabBarAvatarService()
+        viewModel: MainTabBarViewModel,
+        avatarProvider: MainTabBarAvatarProviding,
+        sceneBuilder: MainTabSceneBuilding
     ) {
         self.session = session
-        self.viewModel = MainTabBarViewModel()
+        self.viewModel = viewModel
         self.avatarProvider = avatarProvider
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.session = .loggedOut
-        self.viewModel = MainTabBarViewModel()
-        self.avatarProvider = MainTabBarAvatarService()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {
@@ -148,8 +150,10 @@ final class MainTabBarController: UITabBarController {
             return
         }
 
-        let sourceViewController = navigationController.topViewController ?? navigationController
-        DetailRouter(sourceViewController: sourceViewController).showMovieDetail(movieID: movieID)
+        navigationController.pushViewController(
+            sceneBuilder.makeMovieDetailViewController(movieID: movieID),
+            animated: true
+        )
     }
 
     func showTVDetailFromIntent(seriesID: Int) {
@@ -158,8 +162,10 @@ final class MainTabBarController: UITabBarController {
             return
         }
 
-        let sourceViewController = navigationController.topViewController ?? navigationController
-        DetailRouter(sourceViewController: sourceViewController).showTVDetail(seriesID: seriesID)
+        navigationController.pushViewController(
+            sceneBuilder.makeTVDetailViewController(seriesID: seriesID),
+            animated: true
+        )
     }
 
     func showMemberCenterListFromIntent(
@@ -171,10 +177,10 @@ final class MainTabBarController: UITabBarController {
         }
 
         navigationController.pushViewController(
-            MemberCenterListViewController(
+            sceneBuilder.makeMemberCenterListViewController(
                 destination: destination,
-                accountId: accountContext.accountId,
-                sessionId: accountContext.sessionId
+                accountID: accountContext.accountId,
+                sessionID: accountContext.sessionId
             ),
             animated: true
         )
@@ -182,11 +188,11 @@ final class MainTabBarController: UITabBarController {
 
     func showLoginFromIntent() {
         guard let navigationController = selectedViewController as? UINavigationController else {
-            present(UINavigationController(rootViewController: LoginViewController()), animated: true)
+            present(sceneBuilder.makeLoginNavigationController(), animated: true)
             return
         }
 
-        DetailRouter(sourceViewController: navigationController.topViewController ?? navigationController).showLogin()
+        navigationController.present(sceneBuilder.makeLoginNavigationController(), animated: true)
     }
 
     // MARK: - Setup
@@ -212,23 +218,29 @@ final class MainTabBarController: UITabBarController {
     private func makeContentViewController(for item: MainTabItem) -> UIViewController {
         switch item.kind {
         case .home:
-            return MainHomeViewController()
+            return sceneBuilder.makeMainHomeViewController()
 
         case .search:
-            return MainSearchViewController()
+            return sceneBuilder.makeMainSearchViewController()
 
         case .movie:
-            let viewController = MainMediaListViewController(mediaKind: .movie)
+            let viewController = sceneBuilder.makeMainMediaListViewController(
+                mediaKind: .movie,
+                initialGenreID: nil
+            )
             viewController.title = item.title
             return viewController
 
         case .series:
-            let viewController = MainMediaListViewController(mediaKind: .tv)
+            let viewController = sceneBuilder.makeMainMediaListViewController(
+                mediaKind: .tv,
+                initialGenreID: nil
+            )
             viewController.title = item.title
             return viewController
 
         case .memberSetting:
-            let viewController = MainMemberSettingViewController()
+            let viewController = sceneBuilder.makeMainMemberSettingViewController()
             viewController.title = item.title
             return viewController
         }

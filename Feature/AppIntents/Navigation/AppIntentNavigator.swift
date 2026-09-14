@@ -10,9 +10,16 @@ import UIKit
 // MARK: - AppIntentNavigator
 
 enum AppIntentNavigator {
+    static func open(_ destination: AppIntentDestination) async -> Bool {
+        let sessionResolver = await MainActor.run {
+            AppComposition().makeAppIntentSessionResolver()
+        }
+        return await open(destination, sessionResolver: sessionResolver)
+    }
+
     static func open(
         _ destination: AppIntentDestination,
-        sessionResolver: any AppIntentSessionResolving = AppIntentSessionResolver()
+        sessionResolver: any AppIntentSessionResolving
     ) async -> Bool {
         switch destination {
         case .favoriteMovies, .favoriteTV:
@@ -31,8 +38,18 @@ enum AppIntentNavigator {
 
     static func open(
         _ destination: AppIntentDestination,
+        in window: UIWindow
+    ) async -> Bool {
+        let sessionResolver = await MainActor.run {
+            AppComposition().makeAppIntentSessionResolver()
+        }
+        return await open(destination, in: window, sessionResolver: sessionResolver)
+    }
+
+    static func open(
+        _ destination: AppIntentDestination,
         in window: UIWindow,
-        sessionResolver: any AppIntentSessionResolving = AppIntentSessionResolver()
+        sessionResolver: any AppIntentSessionResolving
     ) async -> Bool {
         switch destination {
         case .favoriteMovies, .favoriteTV:

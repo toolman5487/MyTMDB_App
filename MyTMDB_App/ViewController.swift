@@ -15,7 +15,8 @@ final class ViewController: BaseViewController {
 
     private let displayTitle: String
     private let placeholderContent: PlaceholderContent
-    private let sessionStore: SessionStoring = SessionStore()
+    private let sessionStore: SessionStoring
+    private let appFlowRouter: AppFlowRouting
 
     // MARK: - UI Components
 
@@ -37,9 +38,13 @@ final class ViewController: BaseViewController {
     init(
         displayTitle: String = "MyTMDB",
         tabKind: MainTabKind = .home,
-        session: AuthSession = .loggedOut
+        session: AuthSession = .loggedOut,
+        sessionStore: SessionStoring,
+        appFlowRouter: AppFlowRouting
     ) {
         self.displayTitle = displayTitle
+        self.sessionStore = sessionStore
+        self.appFlowRouter = appFlowRouter
         self.placeholderContent = PlaceholderContent(
             title: displayTitle,
             tabKind: tabKind,
@@ -48,10 +53,9 @@ final class ViewController: BaseViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.displayTitle = "MyTMDB"
-        self.placeholderContent = PlaceholderContent(title: "MyTMDB", tabKind: .home, session: .loggedOut)
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - BaseViewController
@@ -99,12 +103,7 @@ final class ViewController: BaseViewController {
     }
 
     private func navigateToLoginScreen() {
-        guard let windowScene = view.window?.windowScene,
-              let sceneDelegate = windowScene.delegate as? SceneDelegate,
-              let window = sceneDelegate.window else {
-            return
-        }
-        AppRootFactory.replaceRoot(in: window, for: .loggedOut)
+        appFlowRouter.showLoggedOutRoot()
     }
 }
 

@@ -50,7 +50,11 @@ final class MemberCenterListViewController: BaseListViewController {
     // MARK: - Properties
 
     private let viewModel: MemberCenterListViewModel
-    private lazy var router: MemberCenterRouting = MemberCenterRouter(sourceViewController: self)
+    private let sceneBuilder: MemberCenterSceneBuilding
+    private lazy var router: MemberCenterRouting = MemberCenterRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var items: [MemberCenterListItem] = []
 
@@ -60,30 +64,17 @@ final class MemberCenterListViewController: BaseListViewController {
     // MARK: - Initialization
 
     init(
-        destination: MemberCenterDestination,
-        accountId: Int,
-        sessionId: String
+        viewModel: MemberCenterListViewModel,
+        sceneBuilder: MemberCenterSceneBuilding
     ) {
-        self.viewModel = MemberCenterListViewModel(
-            destination: destination,
-            accountId: accountId,
-            sessionId: sessionId
-        )
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    init(viewModel: MemberCenterListViewModel) {
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = MemberCenterListViewModel(
-            destination: .favoriteMovies,
-            accountId: 0,
-            sessionId: ""
-        )
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

@@ -14,7 +14,11 @@ final class PersonDetailViewController: DetailBaseViewController {
 
     private let personID: Int
     private let viewModel: PersonDetailViewModel
-    private lazy var router: DetailRouting = DetailRouter(sourceViewController: self)
+    private let sceneBuilder: DetailSceneBuilding
+    private lazy var router: DetailRouting = DetailRouter(
+        sourceViewController: self,
+        sceneBuilder: sceneBuilder
+    )
 
     private var sections: [PersonDetailSectionItem] = []
 
@@ -23,26 +27,20 @@ final class PersonDetailViewController: DetailBaseViewController {
 
     // MARK: - Initialization
 
-    convenience init(personID: Int) {
-        self.init(
-            personID: personID,
-            viewModel: PersonDetailViewModel()
-        )
-    }
-
     init(
         personID: Int,
-        viewModel: PersonDetailViewModel
+        viewModel: PersonDetailViewModel,
+        sceneBuilder: DetailSceneBuilding
     ) {
         self.personID = personID
         self.viewModel = viewModel
+        self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.personID = 0
-        self.viewModel = PersonDetailViewModel()
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

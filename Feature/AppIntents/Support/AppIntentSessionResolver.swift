@@ -24,14 +24,14 @@ nonisolated protocol AppIntentSessionResolving: Sendable {
 
 nonisolated struct AppIntentSessionResolver: AppIntentSessionResolving {
     private let sessionStore: any SessionStoring
-    private let accountService: any AccountServiceProtocol
+    private let profileProvider: any AccountProfileProviding
 
     init(
-        sessionStore: any SessionStoring = SessionStore(),
-        accountService: any AccountServiceProtocol = AccountService()
+        sessionStore: any SessionStoring,
+        profileProvider: any AccountProfileProviding
     ) {
         self.sessionStore = sessionStore
-        self.accountService = accountService
+        self.profileProvider = profileProvider
     }
 
     func resolveUserAccountContext() async throws -> MemberCenterAccountContext {
@@ -40,13 +40,13 @@ nonisolated struct AppIntentSessionResolver: AppIntentSessionResolving {
             throw AppIntentSessionResolutionError.requiresUserLogin
         }
 
-        let account = try await accountService.fetchAccount(sessionId: sessionId)
-        guard account.id > 0 else {
+        let profile = try await profileProvider.profile(sessionID: sessionId)
+        guard profile.id > 0 else {
             throw AppIntentSessionResolutionError.invalidAccount
         }
 
         return MemberCenterAccountContext(
-            accountId: account.id,
+            accountId: profile.id,
             sessionId: sessionId
         )
     }

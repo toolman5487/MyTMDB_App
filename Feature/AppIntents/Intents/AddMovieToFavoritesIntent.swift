@@ -23,7 +23,10 @@ struct AddMovieToFavoritesIntent: AppIntent {
     }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let outcome = await AppIntentFavoriteActionHandler().updateFavorite(
+        let handler = await MainActor.run {
+            AppComposition().makeAppIntentFavoriteActionHandler()
+        }
+        let outcome = await handler.updateFavorite(
             mediaType: .movie,
             mediaID: movie.id,
             favorite: true,

@@ -46,7 +46,7 @@ final class LoginViewModel {
 
     // MARK: - Initialization
 
-    init(authService: TMDBAuthServicing = TMDBAuthService()) {
+    init(authService: TMDBAuthServicing) {
         self.authService = authService
     }
 
