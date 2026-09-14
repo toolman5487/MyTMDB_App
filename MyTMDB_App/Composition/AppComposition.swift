@@ -81,7 +81,6 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     private let localization: AppLocalization
     private let urlSession: URLSession
     private let bundle: Bundle
-    private let authService: TMDBAuthServicing
     private let onSessionChanged: @MainActor (AuthSession) -> Void
 
     // MARK: - Initialization
@@ -103,7 +102,6 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         self.localization = localization
         self.urlSession = urlSession
         self.bundle = bundle
-        self.authService = TMDBAuthService(network: network)
         self.onSessionChanged = onSessionChanged
     }
 
@@ -132,7 +130,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
 
     func makeLoginNavigationController() -> UIViewController {
         let viewController = LoginViewController(
-            loginViewModel: LoginViewModel(authService: authService),
+            loginViewModel: LoginViewModel(authentication: AuthenticationRepository(network: network)),
             authFlowHandler: makeAuthFlowHandler()
         )
         return UINavigationController(rootViewController: viewController)
@@ -140,7 +138,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
 
     func makeLoginViewController() -> LoginViewController {
         LoginViewController(
-            loginViewModel: LoginViewModel(authService: authService),
+            loginViewModel: LoginViewModel(authentication: AuthenticationRepository(network: network)),
             authFlowHandler: makeAuthFlowHandler()
         )
     }
@@ -151,10 +149,12 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         MainTabBarController(
             session: session,
             viewModel: MainTabBarViewModel(),
-            avatarProvider: MainTabBarAvatarService(
-                profileProvider: makeAccountContentRepository(),
-                userProfileStore: userProfileStore,
-                urlSession: urlSession
+            avatarProvider: MainTabBarAvatarImageProvider(
+                avatarProvider: AccountAvatarRepository(
+                    profileProvider: makeAccountContentRepository(),
+                    userProfileStore: userProfileStore,
+                    urlSession: urlSession
+                )
             ),
             sceneBuilder: self
         )
@@ -175,9 +175,10 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     }
 
     func makeMainSearchViewController() -> UIViewController {
-        let service = MainSearchService(network: network, localization: localization)
+        let repository = MainSearchRepository(network: network, localization: localization)
         let viewModel = MainSearchViewModel(
-            service: service,
+            loadDiscovery: DefaultLoadMainSearchDiscoveryUseCase(repository: repository),
+            repository: repository,
             searchHistoryStore: searchHistoryStore
         )
         return MainSearchViewController(viewModel: viewModel, sceneBuilder: self)
@@ -454,10 +455,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let repository = MediaSearchRepository(network: network, localization: localization)
         return MovieEntityQuery(
             searchMedia: DefaultSearchMediaUseCase(repository: repository),
-            lookupService: AppIntentEntityLookupService(
-                network: network,
-                localization: localization
-            )
+            movieDetail: MovieDetailRepository(network: network, localization: localization)
         )
     }
 
@@ -465,10 +463,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let repository = MediaSearchRepository(network: network, localization: localization)
         return TVSeriesEntityQuery(
             searchMedia: DefaultSearchMediaUseCase(repository: repository),
-            lookupService: AppIntentEntityLookupService(
-                network: network,
-                localization: localization
-            )
+            seriesDetail: TVDetailRepository(network: network, localization: localization)
         )
     }
 

@@ -1,8 +1,8 @@
 //
-//  MainTabBarAvatarService.swift
+//  MainTabBarAvatarImageProvider.swift
 //  MyTMDB_App
 //
-//  Created by Codex on 2026/7/13.
+//  Created by Claude on 2026/9/14.
 //
 
 import UIKit
@@ -14,10 +14,10 @@ protocol MainTabBarAvatarProviding: AnyObject {
     func fetchAvatarImage(sessionId: String, displayScale: CGFloat) async -> UIImage?
 }
 
-// MARK: - MainTabBarAvatarService
+// MARK: - MainTabBarAvatarImageProvider
 
 @MainActor
-final class MainTabBarAvatarService: MainTabBarAvatarProviding {
+final class MainTabBarAvatarImageProvider: MainTabBarAvatarProviding {
 
     private enum Layout {
         static let imageSize = CGSize(width: 28, height: 28)
@@ -25,38 +25,23 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
 
     // MARK: - Properties
 
-    private let profileProvider: AccountProfileProviding
-    private let userProfileStore: UserProfileStoring
-    private let urlSession: URLSession
+    private let avatarProvider: AccountAvatarProviding
 
     // MARK: - Initialization
 
-    init(
-        profileProvider: AccountProfileProviding,
-        userProfileStore: UserProfileStoring,
-        urlSession: URLSession
-    ) {
-        self.profileProvider = profileProvider
-        self.userProfileStore = userProfileStore
-        self.urlSession = urlSession
+    init(avatarProvider: AccountAvatarProviding) {
+        self.avatarProvider = avatarProvider
     }
 
     // MARK: - MainTabBarAvatarProviding
 
     func fetchAvatarImage(sessionId: String, displayScale: CGFloat) async -> UIImage? {
-        if let cachedAvatarImage = loadCachedAvatarImage() {
-            return makeTabBarAvatarImage(from: cachedAvatarImage, displayScale: displayScale)
-        }
-
         do {
-            let profile = try await profileProvider.profile(sessionID: sessionId)
+            guard let data = try await avatarProvider.avatarImageData(sessionID: sessionId),
+                  let image = UIImage(data: data) else {
+                return nil
+            }
 
-            guard let avatarURL = profile.avatarURL else { return nil }
-
-            let (data, _) = try await urlSession.data(from: avatarURL)
-            guard let image = UIImage(data: data) else { return nil }
-
-            userProfileStore.saveAvatarImageData(data)
             return makeTabBarAvatarImage(from: image, displayScale: displayScale)
         } catch {
             AppLogger.authentication.error(
@@ -66,16 +51,7 @@ final class MainTabBarAvatarService: MainTabBarAvatarProviding {
         }
     }
 
-    // MARK: - Private Methods
-
-    private func loadCachedAvatarImage() -> UIImage? {
-        guard let data = userProfileStore.load()?.avatarImageData,
-              let image = UIImage(data: data) else {
-            return nil
-        }
-
-        return image
-    }
+    // MARK: - Helpers
 
     private func makeTabBarAvatarImage(from image: UIImage, displayScale: CGFloat) -> UIImage {
         let format = UIGraphicsImageRendererFormat()

@@ -12,33 +12,33 @@ import Foundation
 
 nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
     private let searchMedia: (any SearchMediaUseCase)?
-    private let lookupService: (any AppIntentEntityLookupServicing)?
+    private let seriesDetail: (any TVDetailProviding)?
 
     init() {
         self.searchMedia = nil
-        self.lookupService = nil
+        self.seriesDetail = nil
     }
 
     init(
         searchMedia: any SearchMediaUseCase,
-        lookupService: any AppIntentEntityLookupServicing
+        seriesDetail: any TVDetailProviding
     ) {
         self.searchMedia = searchMedia
-        self.lookupService = lookupService
+        self.seriesDetail = seriesDetail
     }
 
     func entities(for identifiers: [TVSeriesEntity.ID]) async throws -> [TVSeriesEntity] {
-        if searchMedia == nil || lookupService == nil {
+        if searchMedia == nil || seriesDetail == nil {
             return try await makeComposedQuery().entities(for: identifiers)
         }
 
         var entities: [TVSeriesEntity] = []
         entities.reserveCapacity(identifiers.count)
-        guard let lookupService else { return [] }
+        guard let seriesDetail else { return [] }
 
         for identifier in identifiers where identifier > 0 {
-            if let entity = try? await lookupService.fetchTVSeriesEntity(id: identifier) {
-                entities.append(entity)
+            if let detail = try? await seriesDetail.series(id: identifier) {
+                entities.append(TVSeriesEntity(detail: detail))
             }
         }
 
@@ -46,7 +46,7 @@ nonisolated struct TVSeriesEntityQuery: EntityStringQuery {
     }
 
     func entities(matching string: String) async throws -> [TVSeriesEntity] {
-        if searchMedia == nil || lookupService == nil {
+        if searchMedia == nil || seriesDetail == nil {
             return try await makeComposedQuery().entities(matching: string)
         }
 

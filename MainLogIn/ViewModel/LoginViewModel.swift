@@ -41,13 +41,13 @@ final class LoginViewModel {
     }
 
     private var onStateChange: (@MainActor (LoginState) -> Void)?
-    private let authService: TMDBAuthServicing
+    private let authentication: AuthenticationProviding
     private var authenticationTask: Task<Void, Never>?
 
     // MARK: - Initialization
 
-    init(authService: TMDBAuthServicing) {
-        self.authService = authService
+    init(authentication: AuthenticationProviding) {
+        self.authentication = authentication
     }
 
     // MARK: - Output Binding
@@ -98,7 +98,7 @@ final class LoginViewModel {
         state = .loading
 
         do {
-            let sessionId = try await authService.login(username: username, password: password)
+            let sessionId = try await authentication.createUserSession(username: username, password: password)
             guard !Task.isCancelled else { return }
             state = .success(sessionId: sessionId)
         } catch {
@@ -115,7 +115,7 @@ final class LoginViewModel {
         state = .loading
 
         do {
-            let guestSessionId = try await authService.createGuestSession()
+            let guestSessionId = try await authentication.createGuestSession()
             guard !Task.isCancelled else { return }
             state = .guestSuccess(guestSessionId: guestSessionId)
         } catch {

@@ -58,6 +58,17 @@ nonisolated struct MovieEntity: AppEntity, Sendable, Equatable {
         )
     }
 
+    init(detail: Movie) {
+        self.init(
+            id: detail.id,
+            title: detail.title,
+            originalTitle: detail.originalTitle.isEmpty ? nil : detail.originalTitle,
+            overview: detail.overview.isEmpty ? nil : detail.overview,
+            posterPath: detail.posterPath,
+            releaseYear: Self.releaseYear(from: detail.releaseDate)
+        )
+    }
+
     var displaySubtitle: LocalizedStringResource? {
         guard let releaseYear else { return "電影" }
         return "\(releaseYear) 電影"

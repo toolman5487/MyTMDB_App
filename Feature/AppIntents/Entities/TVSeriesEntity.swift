@@ -58,6 +58,17 @@ nonisolated struct TVSeriesEntity: AppEntity, Sendable, Equatable {
         )
     }
 
+    init(detail: TVSeries) {
+        self.init(
+            id: detail.id,
+            name: detail.name,
+            originalName: detail.originalName.isEmpty ? nil : detail.originalName,
+            overview: detail.overview.isEmpty ? nil : detail.overview,
+            posterPath: detail.posterPath,
+            firstAirYear: Self.firstAirYear(from: detail.firstAirDate)
+        )
+    }
+
     var displaySubtitle: LocalizedStringResource? {
         guard let firstAirYear else { return "影集" }
         return "\(firstAirYear) 影集"

@@ -12,33 +12,33 @@ import Foundation
 
 nonisolated struct MovieEntityQuery: EntityStringQuery {
     private let searchMedia: (any SearchMediaUseCase)?
-    private let lookupService: (any AppIntentEntityLookupServicing)?
+    private let movieDetail: (any MovieDetailProviding)?
 
     init() {
         self.searchMedia = nil
-        self.lookupService = nil
+        self.movieDetail = nil
     }
 
     init(
         searchMedia: any SearchMediaUseCase,
-        lookupService: any AppIntentEntityLookupServicing
+        movieDetail: any MovieDetailProviding
     ) {
         self.searchMedia = searchMedia
-        self.lookupService = lookupService
+        self.movieDetail = movieDetail
     }
 
     func entities(for identifiers: [MovieEntity.ID]) async throws -> [MovieEntity] {
-        if searchMedia == nil || lookupService == nil {
+        if searchMedia == nil || movieDetail == nil {
             return try await makeComposedQuery().entities(for: identifiers)
         }
 
         var entities: [MovieEntity] = []
         entities.reserveCapacity(identifiers.count)
-        guard let lookupService else { return [] }
+        guard let movieDetail else { return [] }
 
         for identifier in identifiers where identifier > 0 {
-            if let entity = try? await lookupService.fetchMovieEntity(id: identifier) {
-                entities.append(entity)
+            if let detail = try? await movieDetail.movie(id: identifier) {
+                entities.append(MovieEntity(detail: detail))
             }
         }
 
@@ -46,7 +46,7 @@ nonisolated struct MovieEntityQuery: EntityStringQuery {
     }
 
     func entities(matching string: String) async throws -> [MovieEntity] {
-        if searchMedia == nil || lookupService == nil {
+        if searchMedia == nil || movieDetail == nil {
             return try await makeComposedQuery().entities(matching: string)
         }
 

@@ -1,5 +1,5 @@
 //
-//  MainSearchModels.swift
+//  MainSearchPresentationModels.swift
 //  MyTMDB_App
 //
 //  Created by Codex on 2026/7/23.
@@ -7,19 +7,9 @@
 
 import Foundation
 
-// MARK: - MainSearchMediaType
+// MARK: - MainSearchMediaType Presentation
 
-nonisolated enum MainSearchMediaType: String, Decodable, Sendable, Equatable {
-    case movie
-    case tv
-    case person
-    case unknown
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let value = try container.decode(String.self)
-        self = MainSearchMediaType(rawValue: value) ?? .unknown
-    }
+extension MainSearchMediaType {
 
     var title: String {
         switch self {
@@ -31,12 +21,8 @@ nonisolated enum MainSearchMediaType: String, Decodable, Sendable, Equatable {
 
         case .person:
             return "人物"
-
-        case .unknown:
-            return "未知"
         }
     }
-
 }
 
 // MARK: - MainSearchFilter
@@ -84,113 +70,6 @@ nonisolated enum MainSearchFilter: String, CaseIterable, Sendable, Equatable, Id
     }
 }
 
-// MARK: - MainSearchResult
-
-nonisolated struct MainSearchResult: Decodable, Sendable, Equatable, Identifiable {
-    let id: Int
-    let mediaType: MainSearchMediaType
-    let title: String
-    let overview: String
-    let posterPath: String?
-    let profilePath: String?
-    let primaryDate: String?
-    let voteAverage: Double
-    let voteCount: Int
-    let popularity: Double
-    let knownForDepartment: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case mediaType = "media_type"
-        case title
-        case name
-        case overview
-        case posterPath = "poster_path"
-        case profilePath = "profile_path"
-        case releaseDate = "release_date"
-        case firstAirDate = "first_air_date"
-        case voteAverage = "vote_average"
-        case voteCount = "vote_count"
-        case popularity
-        case knownForDepartment = "known_for_department"
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        self.id = try container.decode(Int.self, forKey: .id)
-        self.mediaType = try container.decodeIfPresent(MainSearchMediaType.self, forKey: .mediaType) ?? .unknown
-        self.title = try container.decodeIfPresent(String.self, forKey: .title)
-            ?? container.decodeIfPresent(String.self, forKey: .name)
-            ?? "未命名"
-        self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
-        self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
-        self.profilePath = try container.decodeIfPresent(String.self, forKey: .profilePath)
-        self.primaryDate = try container.decodeIfPresent(String.self, forKey: .releaseDate)
-            ?? container.decodeIfPresent(String.self, forKey: .firstAirDate)
-        self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
-        self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
-        self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
-        self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment)
-    }
-}
-
-// MARK: - MainSearchResultPage
-
-nonisolated struct MainSearchResultPage: Sendable, Equatable {
-    let keyword: String
-    let page: Int
-    let totalPages: Int
-    let totalResults: Int
-    let results: [MainSearchResult]
-}
-
-// MARK: - MainSearchDailyTrendingPage
-
-nonisolated struct MainSearchDailyTrendingPage: Sendable, Equatable {
-    let page: Int
-    let totalPages: Int
-    let totalResults: Int
-    let results: [MainSearchResult]
-}
-
-// MARK: - MainSearchPopularPerson
-
-nonisolated struct MainSearchPopularPerson: Decodable, Sendable, Equatable, Identifiable {
-    let id: Int
-    let name: String
-    let profilePath: String?
-    let knownForDepartment: String?
-    let popularity: Double
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case profilePath = "profile_path"
-        case knownForDepartment = "known_for_department"
-        case popularity
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        self.id = try container.decode(Int.self, forKey: .id)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
-        self.profilePath = try container.decodeIfPresent(String.self, forKey: .profilePath)
-        self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment)
-        self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
-    }
-}
-
-// MARK: - MainSearchPopularPeoplePage
-
-nonisolated struct MainSearchPopularPeoplePage: Sendable, Equatable {
-    let page: Int
-    let totalPages: Int
-    let totalResults: Int
-    let people: [MainSearchPopularPerson]
-}
-
 // MARK: - MainSearchDailyTrendingContent
 
 nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
@@ -218,10 +97,10 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: MainSearchDailyTrendingPage) -> MainSearchDailyTrendingContent {
+    func appending(page: Page<MainSearchResult>) -> MainSearchDailyTrendingContent {
         let existingIDs = Set(items.map(\.id))
         let newItems = MainSearchContent.uniqueResults(
-            page.results.map(MainSearchResultItem.init(result:))
+            page.items.map(MainSearchResultItem.init(result:))
         )
         .filter { !existingIDs.contains($0.id) }
         .shuffled()
@@ -230,7 +109,7 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
             recentSearchEntries: recentSearchEntries,
             popularPeople: popularPeople,
             items: items + newItems,
-            currentPage: page.page,
+            currentPage: page.number,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
             isLoadingNextPage: false
@@ -291,12 +170,12 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: MainSearchResultPage) -> MainSearchContent {
+    func appending(page: Page<MainSearchResult>) -> MainSearchContent {
         MainSearchContent(
             keyword: keyword,
-            allResults: Self.uniqueResults(allResults + page.results.map(MainSearchResultItem.init(result:))),
+            allResults: Self.uniqueResults(allResults + page.items.map(MainSearchResultItem.init(result:))),
             selectedFilter: selectedFilter,
-            currentPage: page.page,
+            currentPage: page.number,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
             isLoadingNextPage: false
@@ -353,7 +232,7 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         self.id = "\(result.mediaType.rawValue)-\(result.id)"
         self.sourceID = result.id
         self.mediaType = result.mediaType
-        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: result.title)
+        self.title = Self.makeTitle(result.title)
         self.subtitle = Self.makeSubtitle(for: result)
         self.imageURL = Self.makeImageURL(for: result)
         self.popularity = result.popularity
@@ -363,7 +242,7 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         self.id = "\(MainSearchMediaType.person.rawValue)-\(person.id)"
         self.sourceID = person.id
         self.mediaType = .person
-        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: person.name)
+        self.title = Self.makeTitle(person.name)
         self.subtitle = BaseDisplayTextFormatter.nonEmptyText(person.knownForDepartment)
         self.imageURL = person.profilePath.flatMap {
             APIConfig.tmdbImageURL(path: $0, size: .w185)
@@ -371,19 +250,24 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         self.popularity = person.popularity
     }
 
+    private static func makeTitle(_ title: String) -> String {
+        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+            return "未命名"
+        }
+
+        return BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: title)
+    }
+
     private static func makeSubtitle(for result: MainSearchResult) -> String? {
         switch result.mediaType {
         case .movie, .tv:
             return BaseDisplayTextFormatter.metadata([
-                BaseDisplayTextFormatter.year(from: result.primaryDate),
+                result.primaryDate.map { String($0.year) },
                 BaseDisplayTextFormatter.ratingText(result.voteAverage)
             ])
 
         case .person:
             return BaseDisplayTextFormatter.nonEmptyText(result.knownForDepartment)
-
-        case .unknown:
-            return nil
         }
     }
 
@@ -398,9 +282,6 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
             return result.profilePath.flatMap {
                 APIConfig.tmdbImageURL(path: $0, size: .w185)
             }
-
-        case .unknown:
-            return nil
         }
     }
 }
@@ -430,9 +311,6 @@ extension MainSearchResultItem {
 
         case .person:
             return "點兩下開啟人物詳細資料"
-
-        case .unknown:
-            return "點兩下開啟詳細資料"
         }
     }
 }

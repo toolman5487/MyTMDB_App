@@ -36,7 +36,8 @@ final class MainSearchViewModel {
     }
 
     private var onStateChange: (@MainActor (MainSearchViewState) -> Void)?
-    private let service: MainSearchServicing
+    private let loadDiscovery: LoadMainSearchDiscoveryUseCase
+    private let repository: MainSearchProviding
     private let searchHistoryStore: SearchHistoryStoring
     private let recentSearchLimit = 15
     private var cachedDailyTrendingContent: MainSearchDailyTrendingContent?
@@ -44,10 +45,12 @@ final class MainSearchViewModel {
     // MARK: - Initialization
 
     init(
-        service: MainSearchServicing,
+        loadDiscovery: LoadMainSearchDiscoveryUseCase,
+        repository: MainSearchProviding,
         searchHistoryStore: SearchHistoryStoring
     ) {
-        self.service = service
+        self.loadDiscovery = loadDiscovery
+        self.repository = repository
         self.searchHistoryStore = searchHistoryStore
     }
 
@@ -71,24 +74,22 @@ final class MainSearchViewModel {
         state = .dailyTrendingLoading
 
         do {
-            async let dailyTrendingPage = service.fetchDailyTrending(page: 1)
-            async let popularPeoplePage = service.fetchPopularPeople(page: 1)
-
-            let (page, peoplePage) = try await (dailyTrendingPage, popularPeoplePage)
+            let discovery = try await loadDiscovery()
             guard !Task.isCancelled else { return }
 
+            let page = discovery.trending
             let items = MainSearchContent.uniqueResults(
-                page.results.map(MainSearchResultItem.init(result:))
+                page.items.map(MainSearchResultItem.init(result:))
             ).shuffled()
             let popularPeople = MainSearchContent.uniqueResults(
-                peoplePage.people.map(MainSearchResultItem.init(person:))
+                discovery.popularPeople.map(MainSearchResultItem.init(person:))
             )
 
             let content = MainSearchDailyTrendingContent(
                 recentSearchEntries: loadRecentSearchEntries(),
                 popularPeople: popularPeople,
                 items: items,
-                currentPage: page.page,
+                currentPage: page.number,
                 totalPages: page.totalPages,
                 totalResults: page.totalResults,
                 isLoadingNextPage: false
@@ -113,7 +114,7 @@ final class MainSearchViewModel {
         state = .dailyTrending(content.updatingLoadingNextPage(true))
 
         do {
-            let nextPage = try await service.fetchDailyTrending(
+            let nextPage = try await repository.dailyTrending(
                 page: content.currentPage + 1
             )
 
@@ -184,7 +185,7 @@ final class MainSearchViewModel {
         state = .searching(trimmedKeyword)
 
         do {
-            let page = try await service.searchAll(keyword: trimmedKeyword, page: 1)
+            let page = try await repository.searchResults(keyword: trimmedKeyword, page: 1)
             guard !Task.isCancelled else { return }
 
             let content = makeContent(keyword: trimmedKeyword, page: page)
@@ -206,7 +207,7 @@ final class MainSearchViewModel {
         state = .results(content.updatingLoadingNextPage(true))
 
         do {
-            let nextPage = try await service.searchAll(
+            let nextPage = try await repository.searchResults(
                 keyword: content.keyword,
                 page: content.currentPage + 1
             )
@@ -250,13 +251,13 @@ final class MainSearchViewModel {
 
     private func makeContent(
         keyword: String,
-        page: MainSearchResultPage
+        page: Page<MainSearchResult>
     ) -> MainSearchContent {
         MainSearchContent(
             keyword: keyword,
-            allResults: MainSearchContent.uniqueResults(page.results.map(MainSearchResultItem.init(result:))),
+            allResults: MainSearchContent.uniqueResults(page.items.map(MainSearchResultItem.init(result:))),
             selectedFilter: .all,
-            currentPage: page.page,
+            currentPage: page.number,
             totalPages: page.totalPages,
             totalResults: page.totalResults,
             isLoadingNextPage: false
