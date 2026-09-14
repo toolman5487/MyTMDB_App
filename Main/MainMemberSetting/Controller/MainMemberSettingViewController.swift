@@ -61,6 +61,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        viewModel.reload()
         collectionView.reloadData()
     }
 

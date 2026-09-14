@@ -26,6 +26,10 @@ nonisolated final class AccountSessionRepository: AccountSessionProviding {
             return nil
         }
 
+        if let cachedAccountID = profileProvider.cachedProfile()?.id, cachedAccountID > 0 {
+            return AccountUserSession(accountID: cachedAccountID, sessionID: sessionID)
+        }
+
         let profile = try await profileProvider.profile(sessionID: sessionID)
         guard profile.id > 0 else { return nil }
 

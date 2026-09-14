@@ -161,6 +161,19 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
     let id: String
     let sourceID: Int
     let mediaType: PersonCreditMediaType
+
+    var mediaKind: MediaKind? {
+        switch mediaType {
+        case .movie:
+            return .movie
+
+        case .tv:
+            return .tv
+
+        case .unknown:
+            return nil
+        }
+    }
     let title: String
     let subtitle: String
     let dateText: String?

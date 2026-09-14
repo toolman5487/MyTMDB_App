@@ -31,22 +31,6 @@ nonisolated struct Movie: Sendable, Equatable, Identifiable {
     let collectionID: Int?
 }
 
-// MARK: - Genre
-
-nonisolated struct Genre: Sendable, Equatable, Identifiable {
-    let id: Int
-    let name: String
-}
-
-// MARK: - ProductionCompany
-
-nonisolated struct ProductionCompany: Sendable, Equatable, Identifiable {
-    let id: Int
-    let name: String
-    let logoPath: String?
-    let originCountry: String
-}
-
 // MARK: - MovieStatus
 
 nonisolated enum MovieStatus: Sendable, Equatable {

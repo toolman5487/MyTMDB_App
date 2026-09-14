@@ -19,7 +19,7 @@ protocol DetailRouting {
     func showSeasonDetail(seriesID: Int, seasonNumber: Int)
     func showEpisodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
     func showPersonDetail(personID: Int)
-    func showCreditDetail(_ item: PersonDetailCreditItem)
+    func showMediaDetail(kind: MediaKind, id: Int)
     func showContentList(_ configuration: DetailContentListConfiguration)
     func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
@@ -97,16 +97,13 @@ final class DetailRouter: BaseRouter, DetailRouting {
         show(sceneBuilder.makePersonDetailViewController(personID: personID), using: .push)
     }
 
-    func showCreditDetail(_ item: PersonDetailCreditItem) {
-        switch item.mediaType {
+    func showMediaDetail(kind: MediaKind, id: Int) {
+        switch kind {
         case .movie:
-            showMovieDetail(movieID: item.sourceID)
+            showMovieDetail(movieID: id)
 
         case .tv:
-            showTVDetail(seriesID: item.sourceID)
-
-        case .unknown:
-            return
+            showTVDetail(seriesID: id)
         }
     }
 

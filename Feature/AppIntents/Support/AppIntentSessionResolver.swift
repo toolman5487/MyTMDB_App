@@ -40,6 +40,13 @@ nonisolated struct AppIntentSessionResolver: AppIntentSessionResolving {
             throw AppIntentSessionResolutionError.requiresUserLogin
         }
 
+        if let cachedAccountID = profileProvider.cachedProfile()?.id, cachedAccountID > 0 {
+            return MemberCenterAccountContext(
+                accountId: cachedAccountID,
+                sessionId: sessionId
+            )
+        }
+
         let profile = try await profileProvider.profile(sessionID: sessionId)
         guard profile.id > 0 else {
             throw AppIntentSessionResolutionError.invalidAccount

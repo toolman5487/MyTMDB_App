@@ -9,7 +9,7 @@
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router + `AppComposition` factory |
 | 目標架構 | Clean Architecture + `AppComposition` + make factory + Router（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 326 個 Swift 檔 / 46,408 行 |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 337 個 Swift 檔 / 46,537 行 |
 | 狀態 | Phase 1、Phase 2、Phase 3 實作完成；G3 補齊、舊角色資料夾歸位，simulator Debug build 通過，runtime 走查待執行 |
 | 日期 | 2026-09-14 |
 
@@ -64,15 +64,15 @@
 
 | 項目 | 起點 | 現在 |
 |------|------|------|
-| Swift 檔案數 | 243 | 326 |
-| 程式碼行數 | 47,616 | 46,408 |
+| Swift 檔案數 | 243 | 337 |
+| 程式碼行數 | 47,616 | 46,537 |
 | Xcode target 數 | 1（`MyTMDB_App`，application） | 1 |
 | 檔案組織方式 | 240 檔為顯式 `PBXFileReference`，`MyTMDB_App/` 資料夾使用 `PBXFileSystemSynchronizedRootGroup` | 不變 |
 | ViewModel 資料夾內 Swift 檔案數 | 24 | 17 |
 | Service 資料夾內 Swift 檔案數 | 22 | 0（`Service/`、`Model/`、`Network/` 角色資料夾皆已歸位，見 4.3.1） |
 | Repository 實作數 | 2（皆位於 `MemberCenter`） | 17 |
-| UseCase 檔案數 | 0 | 21 |
-| Domain Entity 型別數 | 0 | 96（分布於 43 檔） |
+| UseCase 檔案數 | 0 | 23 |
+| Domain Entity 型別數 | 0 | 96（分布於 45 檔） |
 | `import UIKit` 出現在 ViewModel / Service / Model / Presentation / Data | 2 檔 | 0 檔（tab avatar 繪製移至 `MainTabBar/View/MainTabBarAvatarImageProvider`） |
 | `AppComposition` 外的 `= NetworkService()` 預設參數 | 18 處 | 0 處 |
 | 待移除的 concrete dependency 預設參數（不含 `AppComposition`） | 49 行（原盤點） | 0 行 |
@@ -200,7 +200,7 @@ Domain
         ^
         |
 Data
-  DTO / Mapper / Repository impl / NetworkService / SessionStore / APIConfig
+  DTO / Mapper / Repository impl / NetworkService / SessionStore / APIConfig / SDWebImageCacheStore
   import Foundation, Domain
 ```
 
@@ -209,9 +209,11 @@ Data
 | 層 | 可依賴 | 不可依賴 |
 |----|--------|----------|
 | Domain | Foundation | 其他任何層、UIKit、任何第三方套件 |
-| Data | Foundation、Domain | Presentation、App、UIKit |
+| Data | Foundation、Domain、基礎設施轉接用的第三方套件（目前僅 SDWebImage） | Presentation、App、UIKit |
 | Presentation | Foundation、Domain | Data、App、UIKit |
 | App | 全部 | 無限制 |
+
+**第三方套件的位置。** Domain 與 Presentation 不得 import 第三方套件。Data 可為基礎設施轉接引用第三方套件，但必須實作 Domain protocol 並只經 protocol 對外，例如 `SDWebImageCacheStore: ImageCacheClearing`。App 層的 Controller / View 可直接使用 UI 類套件（SnapKit、SDWebImage 的圖片載入、Lottie），但不得直接操作儲存或快取（例如 `SDImageCache.shared.clearDisk`），一律經 Domain protocol。
 
 **跨層共用設定。** `Feature/Config/` 的 `TMDBResourceURL`（圖片、Gravatar、TMDB 網站網址）與 `AppLocalization` 只 import Foundation、不含 I/O，Data 與 Presentation 皆可引用。API endpoint 與 `NetworkService` 仍屬 `Feature/Data/Network/`，Presentation 不得引用。`Feature/Config/ThemeColor` 依賴 UIKit，只供 View 層使用。
 
@@ -243,11 +245,12 @@ Feature/
   Domain/Entity/  Domain/Error/       跨 feature 共用
   Data/DTO/  Data/Mapper/  Data/Repository/
   Data/Network/                       NetworkService、APIConfig、NetworkError
-  Data/Storage/                       AppPreferencesStorage（UserDefaults + Mutex）
+  Data/Storage/                       AppPreferencesStorage（UserDefaults + Mutex）、SessionStore、UserProfileStore
+  Components/<元件>/Presentation/      跨 feature 共用的 presentation model（例：HomeContent、MediaGrid）
   Config/                             TMDBResourceURL、AppLocalization（跨層共用設定，見 4.2）
 MainLogIn/
-  Domain/Entity/  Domain/Repository/
-  Data/DTO/  Data/Repository/  Data/Storage/
+  Domain/Repository/
+  Data/DTO/  Data/Repository/
   Flow/  ViewModel/  Controller/  View/  Router/
 ```
 
@@ -257,6 +260,21 @@ MainLogIn/
 
 **共用的判準**：被一個以上的 feature 使用，或本身不屬於任何單一 feature（`CalendarDay`、`Page`、`DomainError`）。只有單一 feature 使用的型別一律歸該 feature，**即使名稱看似通用**。由專屬升格為共用的時機是第二個 feature 開始使用它——`MediaSummary` 與 `MediaDTO` 即是在 TVDetail 分層時由 MovieDetail 專屬升格而來。
 
+判準的「feature」不含 App 層入口：`MyTMDB_App/`（composition、SceneDelegate）、`MainTabBar/` 與 `Feature/AppIntents/` 依 4.2 可依賴任何層，它們引用某個 feature 的型別不構成升格理由。`Feature/Base/`、`Feature/Components/`、`Feature/SearchHistory/` 本身即為共用模組。反向規則同樣成立：放在 `Feature/` 卻只剩一個 feature 使用的型別，應移回該 feature。
+
+v2.12 依此判準的調整：
+
+| 型別 | 使用者 | 調整 |
+|------|--------|------|
+| `Genre`、`ProductionCompany` | MovieDetail、TVDetail | 由 `MovieDetail/Domain/Entity/Movie.swift` 拆出至 `Feature/Domain/Entity/` |
+| `AggregateCredits` 系列 Entity / DTO / Mapper | TVDetail、SeasonDetail | 由 `TVDetail/` 移至 `Feature/Domain/Entity/`、`Feature/Data/DTO/`、`Feature/Data/Mapper/` |
+| `Account`、`SessionStore`、`UserProfileStore`、`AccountProfile`、`AccountAvatarURLFactory` | MainLogIn、MemberCenter、MainMemberSetting、共用 Repository | 移至 `Feature/Data/DTO/`、`Feature/Data/Storage/`、`Feature/Domain/Entity/`、`Feature/Data/Mapper/AccountDTO+Mapping.swift`；`UserProfileStore` 的重複頭像網址邏輯改用 `AccountAvatarURLFactory` |
+| `HomeCategory`、`HomeContentProviding`、`HomeContentRepository`、`HomeContentItem` | MainHome、HomeSectionList | 移至 `Feature/Domain/`、`Feature/Data/Repository/`、`Feature/Components/HomeContent/Presentation/`；首頁專屬的 `HomeSection`、`LoadHomeSectionsUseCase`、`displayPriority` 留在 MainHome |
+| `AccountAvatarProviding`、`AccountAvatarRepository` | 僅 MainTabBar | 由 `Feature/` 移回 `MainTabBar/Domain/Repository/`、`MainTabBar/Data/Repository/` |
+| `ImageCacheClearing`、`SDWebImageCacheStore` | 僅 MainMemberSetting | 由 `Feature/` 移回 `Main/MainMemberSetting/Domain/Repository/`、`Main/MainMemberSetting/Data/Storage/` |
+
+保留在 `Feature/` 的單一使用者型別：`ISO8601DateParsing`、`CalendarDayParsing` 為通用 wire-format 解析工具；`LoadAccountMediaStateUseCase`、`SubmitRatingUseCase`、`DeleteRatingUseCase` 由 `Feature/Base` 的 `DetailAccountMediaStateController` 服務 MovieDetail、TVDetail、EpisodeDetail。
+
 **與 SPM package 的關係**：此結構不再與 `Sources/<target>/` 同形。若日後決定拆 package，需要先把各 feature 的 `Domain/` 與 `Data/` 收攏，屬額外工作。這是為了日常可讀性而付出的代價，且 Phase 3 的模組拆分已依決議取消。
 
 **代價必須明講**：資料夾不是編譯期邊界。Domain 裡寫 `import UIKit` 仍會通過編譯。維持邊界只能靠兩件事：
@@ -265,13 +283,19 @@ MainLogIn/
 2. 下列機械檢查，每次動到 Domain 或 Data 後執行：
 
 ```bash
-grep -rn "^import" --include='*.swift' */Domain/ | grep -v "import Foundation"
-grep -rnE "NetworkServic|APIConfig|DTO|UIKit|ErrorMessage" --include='*.swift' */Domain/
-grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
-rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Data/**'
+DOMAIN_DIRS=$(find . -type d -name Domain -not -path './build/*' -not -path './.git/*')
+DATA_DIRS=$(find . -type d -name Data -not -path './build/*' -not -path './.git/*')
+PRES_DIRS=$(find . -type d \( -name Presentation -o -name ViewModel \) -not -path './build/*' -not -path './.git/*')
+
+grep -rn "^import" --include='*.swift' $DOMAIN_DIRS | grep -v "import Foundation"
+grep -rnE "NetworkServic|APIConfig|DTO|UIKit|ErrorMessage" --include='*.swift' $DOMAIN_DIRS
+grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' $DATA_DIRS
+grep -rnwE '[A-Za-z][A-Za-z0-9]*DTO' --include='*.swift' . | grep -v '/Data/'
+PRES_TYPES=$(grep -rhoE "^(nonisolated )?(final )?(struct|enum|class|protocol) [A-Z][A-Za-z0-9]+" --include='*.swift' $PRES_DIRS | awk '{print $NF}' | sort -u | paste -sd'|' -)
+grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 ```
 
-四項皆須無輸出。`*/Domain/` 會涵蓋每個 feature 的 Domain 與 `Feature/Domain`；第四項以 `MovieDetail` 示範，驗收其他 feature 時需同步替換搜尋路徑與排除路徑，避免尚未分層的 feature 阻擋逐步交付。
+五項皆須無輸出。`find` 會涵蓋所有層級的 `Domain/`、`Data/`（含 `Main/MainSearch/Domain`、`Feature/SearchHistory/Data` 等巢狀位置）。第四項檢查 DTO 是否外洩至 `Data/` 以外；第五項檢查 Data 層是否引用 Presentation / ViewModel 資料夾宣告的型別（v2.12 以此發現 `StoredUserProfile.headerContent` 建立 `MemberCenterProfileHeaderContent`，已刪除）。
 
 ### 4.3.1 Presentation 與 App 的位置
 
@@ -286,9 +310,9 @@ Presentation（ViewModel、SectionBuilder、PresentationModels）與 feature-loc
 | 原位置 | 內容 | 歸位 |
 |--------|------|------|
 | `Network/` | `NetworkService`、`APIConfig`、`NetworkError`、`AppLocalization` | `Feature/Data/Network/`；`AppLocalization` 與 `APIConfig` 的外部資源網址其後移至 `Feature/Config/`（v2.10） |
-| `MainLogIn/Service/SessionStore.swift`、`UserProfileStore.swift` | 本機 session / 會員資料儲存 | `MainLogIn/Data/Storage/` |
+| `MainLogIn/Service/SessionStore.swift`、`UserProfileStore.swift` | 本機 session / 會員資料儲存 | `MainLogIn/Data/Storage/`；跨 feature 使用，v2.12 升格至 `Feature/Data/Storage/` |
 | `Feature/SearchHistory/Service/SearchHistoryStore.swift` | 本機搜尋紀錄儲存 | `Feature/SearchHistory/Data/Storage/` |
-| `MainLogIn/Model/AccountModel.swift` | TMDB `Account` 回應模型 | `MainLogIn/Data/DTO/` |
+| `MainLogIn/Model/AccountModel.swift` | TMDB `Account` 回應模型 | `MainLogIn/Data/DTO/`；跨 feature 使用，v2.12 升格至 `Feature/Data/DTO/` |
 | `MainLogIn/Model/AuthSession.swift` | 登入狀態 | `Feature/Domain/Entity/`（跨 feature 使用，v2.10 由 `MainLogIn/Domain/Entity/` 升格） |
 | `Feature/SearchHistory/Model/SearchHistoryModels.swift` | 搜尋紀錄 Entity | `Feature/SearchHistory/Domain/Entity/` |
 | `MainLogIn/Service/AuthFlowHandler.swift` | `AuthSessionValidator` / `AuthFlowHandler`，App 層流程元件（見 8.2） | `MainLogIn/Flow/` |
@@ -760,9 +784,20 @@ SceneDelegate
 | `SceneDelegate` | 建立 window / composition、驗證已存 session、loading / login / main root 切換、接收 URL context | 建立 Repository / UseCase / ViewModel、feature-local push 細節 |
 | `AuthSessionValidator` | 經 `AccountProfileProviding` 驗證已存 session，清理失效的 session / profile | 建立或切換畫面 |
 | `AuthFlowHandler` | 保存登入或訪客 session、經 `AccountProfileProviding` 取得並快取會員資料、以 closure 回報 session 完成 | 持有 window / navigation controller、建立畫面 |
-| `MainTabBarController` | 建立 tab navigation stack、切換 tab、把 App Intent / deep link 導向正確 feature | 建立 Repository / UseCase / ViewModel |
+| `MainTabBarController` | 建立 tab navigation stack、切換 tab、以 `initialTab` 還原選取中的 tab、把 App Intent / deep link 導向正確 feature | 建立 Repository / UseCase / ViewModel |
 
 `AuthFlowHandler` 的完成 closure 由 `AppComposition` 注入並回報 `SceneDelegate`；此 closure 只傳遞 `AuthSession`，不形成額外流程物件。登出則由 `AppFlowRouting` 的窄介面通知 composition，再透過同一 session callback 讓 `SceneDelegate` 替換 root。
+
+**登入入口與 root 替換規則：**
+
+| 情境 | 登入頁呈現 | `LoginEntryContext` | 登入後 |
+|------|------------|---------------------|--------|
+| 冷啟動未登入、登出、清除所有本機資料 | `SceneDelegate` 設為 root | `.root`：登入 / 訪客 / 註冊三頁 | 建立 `MainTabBarController`，停在首頁 |
+| 訪客於設定頁、會員中心、詳情頁或 App Intent 觸發登入 | 由 Router / `MainTabBarController` 以 `.present`（page sheet）呈現 | `.inApp`：登入 / 註冊兩頁，顯示關閉按鈕；登入進行中停用關閉與下滑關閉 | `SceneDelegate` 替換 root 前讀取舊 `MainTabBarController.selectedTabKind`，傳給新 tab bar 的 `initialTab`；只還原 tab，不還原 tab 內的 navigation stack |
+
+`LoginSceneBuilding.makeLoginNavigationController(context:)` 為唯一登入頁 factory，呼叫端必須明確指定 context。
+
+**設定頁依帳號模式組裝。** `MainMemberSettingViewModel` 經 `AuthSessionProviding` 判斷帳號模式：會員顯示會員資料卡、帳號區塊與登出；訪客（含 `.loggedOut`）改顯示訪客卡（登入 / 註冊）、隱藏帳號區塊與登出。「註冊」直接以 Safari 開啟 `TMDBResourceURL.signup`。
 
 ### 8.3 Router
 
@@ -802,6 +837,8 @@ final class DetailRouter: BaseRouter {
 
 Scene Builder protocol 依導航範圍拆分，例如 `DetailSceneBuilding`、`MemberCenterSceneBuilding`；不得建立一個暴露全 App 畫面的巨大 factory protocol。
 
+共用 Router（`Feature/Base/` 的 `DetailRouter` 等）的參數只能使用 Domain 型別或基本值，不得依賴特定 feature 的 presentation model。例如人物作品跳轉使用 `showMediaDetail(kind: MediaKind, id: Int)`，由 PersonDetail 自行將 `PersonDetailCreditItem` 轉為 `MediaKind`。
+
 ### 8.4 責任與事件流
 
 | 元件 | 核心責任 | 可持有 |
@@ -828,7 +865,7 @@ Scene Builder protocol 依導航範圍拆分，例如 `DetailSceneBuilding`、`M
 | `MainLogIn/Service/AppRootFactory.swift` | Service 層但 import UIKit，並混合 root factory 與 auth flow | 已刪除；`AppComposition` 承接畫面組裝、`SceneDelegate` 承接 root 切換、`AuthFlowHandler` 承接 session 完成事件 |
 | `MainLogIn/Service/AccountService.swift` | Service 直通 `NetworkServicing`，與 `AccountContentRepository.profile(sessionID:)` 打同一支 `Account.me` API | 已刪除；改由 `Feature/Domain` 的 `AccountProfileProviding` 窄介面接收，`AccountContentProviding` 繼承之 |
 | `MainLogIn/ViewModel/AccountViewModel.swift` | 無使用端 | 已刪除 |
-| `MainTabBar/Service/MainTabBarAvatarService.swift` | Service 層但 import UIKit | 已拆為 `Feature/Data/Repository/AccountAvatarRepository.swift`（取圖與快取）+ `MainTabBar/View/MainTabBarAvatarImageProvider.swift`（產生 `UIImage`） |
+| `MainTabBar/Service/MainTabBarAvatarService.swift` | Service 層但 import UIKit | 已拆為 `MainTabBar/Data/Repository/AccountAvatarRepository.swift`（取圖與快取）+ `MainTabBar/View/MainTabBarAvatarImageProvider.swift`（產生 `UIImage`） |
 | `MainLogIn/Service/TMDBAuthService.swift`、`MainLogIn/Model/TMDBAuthModels.swift` | Service 直通 `NetworkServicing` | 已刪除；改為 `AuthenticationProviding` / `AuthenticationRepository` / `AuthenticationDTO` |
 | `Main/MainSearch/Service/MainSearchService.swift`、`Main/MainSearch/Model/MainSearchModels.swift` | Service 直通 `NetworkServicing`，Model 兼任 DTO 與 presentation model | 已刪除；拆為 MainSearch 的 Domain / Data 與 `Presentation/MainSearchPresentationModels.swift` |
 | `Feature/AppIntents/Queries/AppIntentEntityLookupService.swift` | 與詳情 Repository 重複的 DTO 與 API 呼叫 | 已刪除；改用 `MovieDetailProviding` / `TVDetailProviding` |
@@ -989,7 +1026,7 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 2. 定義 Repository protocol（Domain）與實作（Data），取代原 Service。
 3. 依 5.6 判準把業務規則由 ViewModel 移入 UseCase 或 Entity 擴充。
 4. ViewModel 改依賴 UseCase protocol，暫時保留預設參數注入（見 10.4）。
-5. 執行 4.3 的四項機械邊界檢查，皆須無輸出。
+5. 執行 4.3 的五項機械邊界檢查，皆須無輸出。
 6. 執行 12.1 走查，兩種 `MediaKind` 各走一次。
 
 進度：
@@ -1072,13 +1109,19 @@ Phase 1 的合併項目與 Phase 2 的分層項目，皆需在 **movie 與 tv �
 - [ ] 該 feature 的 Service 已由 Domain 的 Repository protocol + Data 的實作取代。
 - [ ] 該 feature 的 DTO 位於 `<feature>/Data/DTO`，Entity 位於 `<feature>/Domain/Entity`，且 Entity 無 `Decodable` / `Encodable` conformance。
 - [ ] 業務規則已依 5.6 判準移出 ViewModel。
-- [ ] 4.3 的四項機械邊界檢查皆無輸出：
+- [ ] 4.3 的五項機械邊界檢查皆無輸出：
 
 ```bash
-grep -rn "^import" --include='*.swift' */Domain/ | grep -v "import Foundation"
-grep -rnE "NetworkServic|APIConfig|DTO|UIKit|ErrorMessage" --include='*.swift' */Domain/
-grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' */Data/
-rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Data/**'
+DOMAIN_DIRS=$(find . -type d -name Domain -not -path './build/*' -not -path './.git/*')
+DATA_DIRS=$(find . -type d -name Data -not -path './build/*' -not -path './.git/*')
+PRES_DIRS=$(find . -type d \( -name Presentation -o -name ViewModel \) -not -path './build/*' -not -path './.git/*')
+
+grep -rn "^import" --include='*.swift' $DOMAIN_DIRS | grep -v "import Foundation"
+grep -rnE "NetworkServic|APIConfig|DTO|UIKit|ErrorMessage" --include='*.swift' $DOMAIN_DIRS
+grep -rnE "ViewModel|ViewController|UIKit" --include='*.swift' $DATA_DIRS
+grep -rnwE '[A-Za-z][A-Za-z0-9]*DTO' --include='*.swift' . | grep -v '/Data/'
+PRES_TYPES=$(grep -rhoE "^(nonisolated )?(final )?(struct|enum|class|protocol) [A-Z][A-Za-z0-9]+" --include='*.swift' $PRES_DIRS | awk '{print $NF}' | sort -u | paste -sd'|' -)
+grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 ```
 
 - [ ] 該 feature 的 12.1 相關項目在 movie 與 tv 兩條路徑各走查通過。
@@ -1100,6 +1143,9 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 - [x] Data 層無中文顯示文案；DTO fallback 不含 `未命名` 類字串。
 - [x] `AppComposition` 不讀取 session 狀態；登入判斷與 season / episode credential 由 `AuthSessionProviding` 在使用時解析。
 - [x] Domain UseCase 不接收 `@escaping` closure；輔助資料失敗改注入 `AuxiliaryLoadFailureReporting`。
+- [x] Controller 不直接操作儲存或快取；圖片快取清除經 `ImageCacheClearing`，併入 `ClearLocalDataUseCase`。
+- [x] Domain protocol 與 UseCase 一型別一檔；所有 feature 的 presentation model 位於 feature 根目錄的 `Presentation/`。
+- [x] 專案不含未使用的佔位 `ViewController`。
 - [x] 全專案無 `AccountServiceProtocol` / `fetchAccount`；會員資料只經 `AccountProfileProviding` 取得。
 - [x] simulator Debug build 通過（`xcodebuild -scheme MyTMDB_App -destination 'generic/platform=iOS Simulator'`）。
 - [x] 全專案無 `UseCase = Default...UseCase(...)` 形式的預設參數。
@@ -1121,7 +1167,7 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 | R5 | 新增檔案漏加入 target | 編譯期未報錯但執行期缺功能 | 專案採顯式檔案參照（見 3.1）；每次新增檔案後確認 target membership，或評估將各 feature 資料夾改為 `PBXFileSystemSynchronizedRootGroup` |
 | R6 | Entity 與 DTO 雙軌並存期間認知負擔 | 開發者誤用 DTO | DTO 一律加 `DTO` 後綴；Phase 3 後以 access level 封閉 |
 | R7 | 過度抽象：為每個 Repository 方法造一個 UseCase | 產生大量單行轉呼叫類別 | 套用 5.4 的判準：只有含條件、編排或降級策略者才建立 UseCase |
-| R8 | 無編譯期層次邊界 | 資料夾不擋違規 import，Domain 可能悄悄依賴 Data 或 UIKit，DTO 也可能外洩至其他層 | 每次動到 Domain 或 Data 後執行 4.3 的四項機械檢查；新增 feature 時一併執行 |
+| R8 | 無編譯期層次邊界 | 資料夾不擋違規 import，Domain 可能悄悄依賴 Data 或 UIKit，DTO 也可能外洩至其他層 | 每次動到 Domain 或 Data 後執行 4.3 的五項機械檢查；新增 feature 時一併執行 |
 | R9 | App Intents 依賴既有 service，遷移時斷裂 | Siri / Shortcuts 失效 | `Feature/AppIntents` 改為依賴 UseCase，並由獨立短生命週期 `AppComposition` 組裝；每 Phase 執行 12.1 的 Intents 走查項目 |
 | R10 | 遷移期間 TMDB API 變更 | 同時處理重構與外部變更 | 每個 Phase 控制在可於短期內完結的範圍，不長期開分支 |
 | R11 | Domain 的 throws 不具型 | 從 UseCase 簽章看不出可能拋出哪些非領域錯誤，呼叫端只能概括處理 | 已知取捨，理由見 5.5。收斂路徑為 typed throws，需同時提供 `TransportFailure` 與其文案映射，屬獨立工作 |
@@ -1143,7 +1189,8 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 - 新增 Router destination 時，擴充該導航範圍的 Scene Builder protocol；不得讓 Router 直接接收 concrete `AppComposition`。
 - 不得建立 `AppComposition.shared`、泛型 resolver 或字串 key DI API。
 - 新增 Domain 型別時，確認未 conform `Decodable` / `Encodable`，且只 import Foundation。
-- **每次動到 `Domain/` 或 `Data/` 後，執行 4.3 的四項機械檢查**，四項皆須無輸出。
+- **每次動到 `Domain/` 或 `Data/` 後，執行 4.3 的五項機械檢查**，五項皆須無輸出。
+- 新增或移動 Domain / Data 型別時，依 4.3 的共用判準決定位置：兩個以上 feature 使用放 `Feature/`，只剩一個 feature 使用則移回該 feature。
 - Entity 一律持有已解析的型別（`Date?`、`URL?`、列舉），不持有 wire format 字串。
 - 新增 Movie / TV 相關功能時，一律使用 `MediaKind`，不得新增第 6 個媒體型別列舉。
 - 新增任何 Swift 檔後，確認已加入 target（見 R5）。
@@ -1179,12 +1226,13 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 |------|------|
 | 網路層 | `Feature/Data/Network/NetworkService.swift`、`Feature/Data/Network/APIConfig.swift`、`Feature/Data/Network/NetworkError.swift` |
 | 跨層共用設定 | `Feature/Config/TMDBResourceURL.swift`、`Feature/Config/AppLocalization.swift` |
-| 本機資料 Domain 介面 | `Feature/Domain/Repository/AuthSessionProviding.swift`、`Feature/SearchHistory/Domain/Repository/SearchHistoryProviding.swift`、`Main/MainMemberSetting/Domain/UseCase/LocalAccountDataUseCases.swift` |
+| 本機資料 Domain 介面 | `Feature/Domain/Repository/AuthSessionProviding.swift`、`Feature/SearchHistory/Domain/Repository/SearchHistoryProviding.swift`、`Main/MainMemberSetting/Domain/UseCase/RefreshAccountProfileUseCase.swift`、`Main/MainMemberSetting/Domain/UseCase/LogoutUseCase.swift`、`Main/MainMemberSetting/Domain/UseCase/ClearLocalDataUseCase.swift` |
 | 輔助資料失敗回報 | `Feature/Domain/Error/AuxiliaryLoadFailureReporting.swift`、`MyTMDB_App/Composition/AppLoggerAuxiliaryFailureReporter.swift` |
-| 本機儲存 | `Feature/Data/Storage/AppPreferencesStorage.swift`、`MainLogIn/Data/Storage/SessionStore.swift`、`MainLogIn/Data/Storage/UserProfileStore.swift`、`Feature/SearchHistory/Data/Storage/SearchHistoryStore.swift` |
-| G3 補齊的 Repository | `MainLogIn/Data/Repository/AuthenticationRepository.swift`、`Main/MainSearch/Data/Repository/MainSearchRepository.swift`、`Feature/Data/Repository/AccountAvatarRepository.swift` |
+| 本機儲存 | `Feature/Data/Storage/AppPreferencesStorage.swift`、`Feature/Data/Storage/SessionStore.swift`、`Feature/Data/Storage/UserProfileStore.swift`、`Main/MainMemberSetting/Data/Storage/SDWebImageCacheStore.swift`（實作 `Main/MainMemberSetting/Domain/Repository/ImageCacheClearing.swift`）、`Feature/SearchHistory/Data/Storage/SearchHistoryStore.swift` |
+| G3 補齊的 Repository | `MainLogIn/Data/Repository/AuthenticationRepository.swift`、`Main/MainSearch/Data/Repository/MainSearchRepository.swift`、`MainTabBar/Data/Repository/AccountAvatarRepository.swift`（實作 `MainTabBar/Domain/Repository/AccountAvatarProviding.swift`） |
 | MemberCenter Repository 實作 | `MemberCenter/Data/Repository/AccountContentRepository.swift`、`MemberCenter/Data/Repository/AccountListPosterEnricher.swift` |
-| 跨 feature 共用的 Domain / Data | `Feature/Domain/Entity/`、`Feature/Domain/Repository/MediaGenreProviding.swift`、`Feature/Domain/Repository/AccountMediaStateProviding.swift`（含 `AccountSessionProviding`、`AccountProfileProviding`）、`Feature/Domain/Repository/AccountAvatarProviding.swift`、`Feature/Data/DTO/`、`Feature/Data/Mapper/`、`Feature/Data/Repository/` |
+| 跨 feature 共用的 Domain / Data | `Feature/Domain/Entity/`、`Feature/Domain/Repository/MediaGenreProviding.swift`、`Feature/Domain/Repository/AccountMediaStateProviding.swift`、`Feature/Domain/Repository/AccountSessionProviding.swift`、`Feature/Domain/Repository/AccountProfileProviding.swift`、`Feature/Domain/Repository/HomeContentProviding.swift`、`Feature/Data/DTO/`（含 `AccountModel.swift`、`AggregateCreditsDTO.swift`）、`Feature/Data/Mapper/`（含 `AccountDTO+Mapping.swift`、`AggregateCreditsDTO+Mapping.swift`）、`Feature/Data/Repository/`（含 `HomeContentRepository.swift`） |
+| 跨 feature 共用的 presentation model | `Feature/Components/HomeContent/Presentation/HomeContentPresentationModels.swift`、`Feature/Components/MediaGrid/Presentation/MediaGridModels.swift` |
 | 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift`、`EisodeDetail/Domain/UseCase/LoadEpisodeDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonCreditsUseCase.swift` |
 | MemberCenter 已完成的分層 | `MemberCenter/Domain/`、`MemberCenter/Data/`、`MemberCenter/Presentation/`、`MemberCenter/List/Presentation/` |
 | 跨 feature Account UseCase | `Feature/Domain/UseCase/LoadAccountMediaStateUseCase.swift`、`Feature/Domain/UseCase/ToggleFavoriteUseCase.swift`、`Feature/Domain/UseCase/SubmitRatingUseCase.swift`、`Feature/Domain/UseCase/DeleteRatingUseCase.swift` |
@@ -1205,6 +1253,8 @@ rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' MovieDetail -g '*.swift' -g '!MovieDetail/Da
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.12 | 2026-09-14 | 依 4.3 共用判準全面檢查 Domain / Data / Presentation 型別歸屬。(A) 依賴方向：刪除 Data 層 `StoredUserProfile.headerContent`（建立 MemberCenter 的 presentation 型別，無使用端）；共用 `DetailRouter.showCreditDetail(_: PersonDetailCreditItem)` 改為 `showMediaDetail(kind:id:)`，8.3 補共用 Router 參數規則。(B) 跨 feature 使用而升格至 `Feature/`：`Genre`、`ProductionCompany`、`AggregateCredits` 系列、`Account`、`SessionStore`、`UserProfileStore`、`AccountProfile`、`AccountAvatarURLFactory`（合併重複頭像網址邏輯）、`HomeCategory`、`HomeContentProviding`、`HomeContentRepository`、`HomeContentItem`。(C) 只剩單一 feature 使用而移回：`AccountAvatarProviding` / `AccountAvatarRepository` → MainTabBar；`ImageCacheClearing` / `SDWebImageCacheStore` → MainMemberSetting。4.3 補判準細則與調整表，機械檢查改以 `find` 涵蓋巢狀資料夾並新增第五項「Data 不得引用 Presentation 型別」，同步 11 節 Phase 2 程序、12.3、13 節 R8、14 節維護規則與 15 節路徑。simulator Debug clean build 無警告、五項機械檢查無輸出；runtime 走查未執行 |
+| 2.11 | 2026-09-14 | (1) 刪除未使用的 `MyTMDB_App/ViewController.swift`（佔位畫面，直接依賴 `SessionStoring` 並自行處理登出）。(2) 新增 Domain `ImageCacheClearing` 與 Data `SDWebImageCacheStore`，`ClearLocalDataUseCase` 改為 `async` 並統一清除 session、會員快取、搜尋紀錄與圖片快取；`MainMemberSettingViewController` 不再直接呼叫 `SDImageCache`。4.2 補第三方套件位置規則。(3) `AccountSessionProviding`、`AccountProfileProviding` 由 `AccountMediaStateProviding.swift` 拆為獨立檔；`LocalAccountDataUseCases.swift` 拆為三個 UseCase 檔；`EisodeDetail/ViewModel/Presentation/` 移至 `EisodeDetail/Presentation/`。同步記錄先前未入文件的流程變更於 8.2：設定頁依帳號模式顯示訪客卡（登入 / 註冊）並隱藏帳號區塊與登出；`LoginEntryContext`（`.root` / `.inApp`）與 page sheet 登入頁；登入後以 `initialTab` 還原原 tab。更新 3.1、12.4 與 15 節路徑。simulator Debug clean build 無警告、4.3 機械檢查無輸出；runtime 走查未執行 |
 | 2.10 | 2026-09-14 | 依 SDD 合規稽核修正：(1) `MainMemberSettingViewModel`、`MainSearchViewModel` 不再依賴 Data 儲存協定，新增 Domain `AuthSessionProviding`、`SearchHistoryProviding`，`AccountProfileProviding` 補 `cachedProfile()` / `clearCachedProfile()`，新增 `RefreshAccountProfileUseCase`、`LogoutUseCase`、`ClearLocalDataUseCase`；`SearchHistoryStore` 改用共用 `AppPreferencesStorage`（抽至 `Feature/Data/Storage/`）以符合 `Sendable`；`AuthSession` 升格至 `Feature/Domain/Entity/`。(2) 16 處 DTO 的 `未命名` 類 fallback 改為空字串，文案移至 Presentation 與 App Intent entity。(3) `APIConfig` 的外部資源網址抽為 `Feature/Config/TMDBResourceURL`，`AppLocalization` 移至 `Feature/Config/`，4.2 補跨層共用設定規則。(4) `NetworkError.errorDescription` 改為英文除錯描述，App Intent 收藏失敗訊息改用 `errorMessage`。小項：`AuthSession` 補 `nonisolated`；刪除只轉呼叫 Repository 的 `LoadAccountCollectionPageUseCase`；5 個詳情 UseCase 的 `@escaping` log closure 改為注入 `AuxiliaryLoadFailureReporting`；`AppComposition` 移除 session 讀取，season / episode credential 與登入判斷改於使用時由 `AuthSessionProviding` 解析（不再於建立畫面時快照）；移除 `HomeCategory` 未使用的 `Codable`。simulator Debug clean build 無警告、稽核檢查無輸出；runtime 走查未執行 |
 | 2.9 | 2026-09-14 | 舊角色資料夾歸位：`Network/` 移至 `Feature/Data/Network/`；`SessionStore`、`UserProfileStore`、`SearchHistoryStore` 移至各自的 `Data/Storage/`；`Account` 移至 `MainLogIn/Data/DTO/`；`AuthSession`、`SearchHistoryModels` 移至 `Domain/Entity/`；`AuthFlowHandler` 移至 `MainLogIn/Flow/`；5 個 `Model/` 資料夾的 presentation model 移至同 feature 的 `Presentation/`。共 17 檔，只搬位置、不改型別與內容，`project.pbxproj` 以 `xcodeproj` gem 同步。2.3 非目標補上角色資料夾例外，4.3 樹狀圖與 4.3.1 補歸位表，記錄 `Codable` 本機儲存相容性例外與 `HomeCategory.Codable` 待清理。更新 3.1 量化現況、12.4 與 15 節路徑。simulator Debug clean build 無警告、4.3 機械檢查無輸出；runtime 走查未執行 |
 | 2.8 | 2026-09-14 | G3 完成：`TMDBAuthService` 改為 `AuthenticationProviding` / `AuthenticationRepository`；`MainSearchService` 改為 MainSearch 的 Entity / DTO / Mapper / `MainSearchRepository` 與 `LoadMainSearchDiscoveryUseCase`，presentation model 移至 `Presentation/`；刪除 `AppIntentEntityLookupService`，App Intent entity 改由詳情 Repository 映射；`MainTabBarAvatarService` 拆為 `AccountAvatarRepository` 與 `MainTabBarAvatarImageProvider`（8.5）。行為差異：avatar 快取改以 HTTP 2xx 與 image MIME 判定，不再以 `UIImage` 解碼判定；搜尋結果空標題改在 Presentation 顯示「未命名」；年份改由 `CalendarDay` 取得，需完整 `yyyy-MM-dd`；`MainSearchMediaType.unknown` 移除，由 Mapper 過濾。12.1 build 項目勾選 |

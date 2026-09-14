@@ -24,28 +24,12 @@ final class MainMemberSettingViewModel {
     private let localization: AppLocalization
     private let bundle: Bundle
 
-    var sections: [MainMemberSettingSectionItem] {
-        guard isMember else {
-            return [
-                guestSection,
-                dataSection,
-                preferencesSection,
-                aboutSection
-            ]
-        }
-
-        return [
-            profileSection,
-            accountSection,
-            dataSection,
-            preferencesSection,
-            aboutSection,
-            dangerSection
-        ]
-    }
+    private(set) var sections: [MainMemberSettingSectionItem] = []
+    private(set) var currentSession: AuthSession = .loggedOut
+    private(set) var profileSummary = MainMemberSettingViewModel.placeholderProfileSummary
 
     var isMember: Bool {
-        if case .user = sessionProvider.currentSession() {
+        if case .user = currentSession {
             return true
         }
         return false
@@ -65,27 +49,12 @@ final class MainMemberSettingViewModel {
         URL(string: TMDBResourceURL.websiteBaseURL)
     }
 
-    var currentSession: AuthSession {
-        sessionProvider.currentSession()
-    }
-
-    var profileSummary: MainMemberSettingProfileSummaryItem {
-        guard let profile = profileProvider.cachedProfile() else {
-            return MainMemberSettingProfileSummaryItem(
-                displayName: "TMDB 會員",
-                usernameText: "尚未同步 username",
-                avatarURL: nil,
-                avatarImageData: nil
-            )
-        }
-
-        return MainMemberSettingProfileSummaryItem(
-            displayName: profile.displayName,
-            usernameText: "@\(profile.username)",
-            avatarURL: profile.avatarURL,
-            avatarImageData: profile.avatarImageData
-        )
-    }
+    private static let placeholderProfileSummary = MainMemberSettingProfileSummaryItem(
+        displayName: "TMDB 會員",
+        usernameText: "尚未同步 username",
+        avatarURL: nil,
+        avatarImageData: nil
+    )
 
     // MARK: - Initialization
 
@@ -109,9 +78,23 @@ final class MainMemberSettingViewModel {
         self.clearLocalData = clearLocalData
         self.localization = localization
         self.bundle = bundle
+        reload()
     }
 
     // MARK: - Public Methods
+
+    func reload() {
+        let session = sessionProvider.currentSession()
+        let profile: AccountProfile? = if case .user = session {
+            profileProvider.cachedProfile()
+        } else {
+            nil
+        }
+
+        currentSession = session
+        profileSummary = makeProfileSummary(profile: profile)
+        sections = makeSections(session: session, profile: profile)
+    }
 
     func section(at index: Int) -> MainMemberSettingSectionItem? {
         guard sections.indices.contains(index) else { return nil }
@@ -133,10 +116,12 @@ final class MainMemberSettingViewModel {
 
     func refreshProfile() async throws {
         try await refreshAccountProfile()
+        reload()
     }
 
     func clearProfileCache() {
         profileProvider.clearCachedProfile()
+        reload()
     }
 
     func clearImageCache() async {
@@ -145,6 +130,7 @@ final class MainMemberSettingViewModel {
 
     func clearSearchHistory() {
         searchHistory.clear(scope: nil)
+        reload()
     }
 
     func clearAllLocalData() async {
@@ -156,6 +142,42 @@ final class MainMemberSettingViewModel {
     }
 
     // MARK: - Private Methods
+
+    private func makeSections(
+        session: AuthSession,
+        profile: AccountProfile?
+    ) -> [MainMemberSettingSectionItem] {
+        guard case .user = session else {
+            return [
+                guestSection,
+                dataSection,
+                preferencesSection,
+                aboutSection(session: session)
+            ]
+        }
+
+        return [
+            profileSection,
+            accountSection(profile: profile),
+            dataSection,
+            preferencesSection,
+            aboutSection(session: session),
+            dangerSection
+        ]
+    }
+
+    private func makeProfileSummary(profile: AccountProfile?) -> MainMemberSettingProfileSummaryItem {
+        guard let profile else {
+            return Self.placeholderProfileSummary
+        }
+
+        return MainMemberSettingProfileSummaryItem(
+            displayName: profile.displayName,
+            usernameText: "@\(profile.username)",
+            avatarURL: profile.avatarURL,
+            avatarImageData: profile.avatarImageData
+        )
+    }
 
     private var profileSection: MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
@@ -184,7 +206,7 @@ final class MainMemberSettingViewModel {
         )
     }
 
-    private var accountSection: MainMemberSettingSectionItem {
+    private func accountSection(profile: AccountProfile?) -> MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
             kind: .account,
             title: "帳號",
@@ -193,7 +215,7 @@ final class MainMemberSettingViewModel {
                     kind: .accountId,
                     title: "Account ID",
                     systemImageName: "number",
-                    accessory: .value(accountIdText)
+                    accessory: .value(accountIDText(profile: profile))
                 ),
                 MainMemberSettingRowItem(
                     kind: .refreshProfile,
@@ -265,7 +287,7 @@ final class MainMemberSettingViewModel {
         )
     }
 
-    private var aboutSection: MainMemberSettingSectionItem {
+    private func aboutSection(session: AuthSession) -> MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
             kind: .about,
             title: "關於",
@@ -286,7 +308,7 @@ final class MainMemberSettingViewModel {
                     kind: .loginStatus,
                     title: "目前登入狀態",
                     systemImageName: "person.crop.circle.badge.checkmark",
-                    accessory: .value(loginStatusText)
+                    accessory: .value(loginStatusText(session: session))
                 ),
                 MainMemberSettingRowItem(
                     kind: .tmdbAttribution,
@@ -333,16 +355,16 @@ final class MainMemberSettingViewModel {
         }
     }
 
-    private var accountIdText: String {
-        guard let accountID = profileProvider.cachedProfile()?.id else {
+    private func accountIDText(profile: AccountProfile?) -> String {
+        guard let accountID = profile?.id else {
             return "尚未同步"
         }
 
         return String(accountID)
     }
 
-    private var loginStatusText: String {
-        switch sessionProvider.currentSession() {
+    private func loginStatusText(session: AuthSession) -> String {
+        switch session {
         case .loggedOut:
             return "未登入"
 

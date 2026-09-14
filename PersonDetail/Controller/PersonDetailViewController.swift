@@ -232,7 +232,8 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? PersonDetailMovieCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
-                self?.router.showCreditDetail(item)
+                guard let kind = item.mediaKind else { return }
+                self?.router.showMediaDetail(kind: kind, id: item.sourceID)
             }
             return cell
 
@@ -242,7 +243,8 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? PersonDetailTVCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
-                self?.router.showCreditDetail(item)
+                guard let kind = item.mediaKind else { return }
+                self?.router.showMediaDetail(kind: kind, id: item.sourceID)
             }
             return cell
 
