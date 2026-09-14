@@ -45,5 +45,9 @@ nonisolated protocol AccountSessionProviding: Sendable {
 // MARK: - AccountProfileProviding
 
 nonisolated protocol AccountProfileProviding: Sendable {
+    func cachedProfile() -> AccountProfile?
+
     func profile(sessionID: String) async throws -> AccountProfile
+
+    func clearCachedProfile()
 }

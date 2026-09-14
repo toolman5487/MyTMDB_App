@@ -18,6 +18,8 @@ nonisolated enum MainMemberSettingAction: Sendable, Equatable {
     case clearAllLocalData
     case tmdbAttribution
     case logout
+    case login
+    case register
 }
 
 // MARK: - MainMemberSettingRowRole
@@ -40,6 +42,7 @@ nonisolated enum MainMemberSettingRowAccessory: Sendable, Equatable {
 
 nonisolated enum MainMemberSettingRowKind: Sendable, Equatable, Hashable {
     case profileSummary
+    case guestPrompt
     case accountId
     case refreshProfile
     case clearProfileCache
@@ -107,6 +110,16 @@ nonisolated struct MainMemberSettingProfileSummaryItem: Sendable, Equatable {
     let usernameText: String
     let avatarURL: URL?
     let avatarImageData: Data?
+}
+
+// MARK: - MainMemberSettingGuestPromptItem
+
+nonisolated struct MainMemberSettingGuestPromptItem: Sendable, Equatable {
+    let title: String
+    let message: String
+    let systemImageName: String
+    let loginTitle: String
+    let registerTitle: String
 }
 
 // MARK: - MainMemberSettingSectionItem

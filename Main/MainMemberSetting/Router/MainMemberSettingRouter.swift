@@ -20,10 +20,12 @@ protocol MainMemberSettingRouting: AnyObject {
     func showImageCacheCleared()
     func showClearSearchHistoryConfirmation(onConfirm: @escaping () -> Void)
     func showSearchHistoryCleared()
-    func showClearAllLocalDataConfirmation(onConfirm: @escaping () -> Void)
+    func showClearAllLocalDataConfirmation(isMember: Bool, onConfirm: @escaping () -> Void)
     func openTMDBAttribution(_ url: URL)
     func showLogoutConfirmation(onConfirm: @escaping () -> Void)
     func showLoggedOut()
+    func showLogin()
+    func showRegister()
 }
 
 // MARK: - MainMemberSettingRouter
@@ -99,10 +101,12 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
         showAlert(title: "已清除", message: "搜尋紀錄已清除。")
     }
 
-    func showClearAllLocalDataConfirmation(onConfirm: @escaping () -> Void) {
+    func showClearAllLocalDataConfirmation(isMember: Bool, onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
             title: "清除所有本機資料",
-            message: "會清除會員資料、Session、搜尋紀錄與圖片快取，並返回登入頁。",
+            message: isMember
+                ? "會清除會員資料、Session、搜尋紀錄與圖片快取，並返回登入頁。"
+                : "會結束訪客模式，清除搜尋紀錄與圖片快取，並返回登入頁。",
             actionTitle: "清除",
             onConfirm: onConfirm
         )
@@ -123,5 +127,14 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
 
     func showLoggedOut() {
         appFlowRouter?.showLoggedOutRoot()
+    }
+
+    func showLogin() {
+        show(sceneBuilder.makeLoginNavigationController(context: .inApp), using: .present)
+    }
+
+    func showRegister() {
+        guard let url = TMDBResourceURL.signup else { return }
+        openSafari(url)
     }
 }

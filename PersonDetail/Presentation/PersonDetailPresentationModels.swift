@@ -85,7 +85,7 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
         self.name = BaseDisplayTextFormatter.nonEmptyText(detail.name) ?? "未命名"
         self.biography = BaseDisplayTextFormatter.nonEmptyText(detail.biography)
         self.profileURL = detail.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.birthdayText = BaseDisplayTextFormatter.isoDayText(from: detail.birthday)
         self.deathdayText = BaseDisplayTextFormatter.isoDayText(from: detail.deathday)
@@ -180,7 +180,7 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
         self.dateText = BaseDisplayTextFormatter.isoDayText(from: cast.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(cast.voteAverage, voteCount: cast.voteCount)
         self.posterURL = cast.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -200,7 +200,7 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
         self.dateText = BaseDisplayTextFormatter.isoDayText(from: crew.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(crew.voteAverage, voteCount: crew.voteCount)
         self.posterURL = crew.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -218,7 +218,7 @@ nonisolated struct PersonDetailProfileImageItem: Sendable, Equatable, Identifiab
 
     init(image: PersonProfileImage) {
         self.id = image.filePath
-        self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
+        self.imageURL = TMDBResourceURL.image(path: image.filePath, size: .w500)
         self.sizeText = BaseDisplayTextFormatter.resolutionText(
             width: image.width,
             height: image.height

@@ -52,7 +52,7 @@ final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
             )
 
         case .list(let id):
-            guard let url = URL(string: "\(APIConfig.tmdbWebsiteBaseURL)/list/\(id)") else {
+            guard let url = URL(string: "\(TMDBResourceURL.websiteBaseURL)/list/\(id)") else {
                 return
             }
 

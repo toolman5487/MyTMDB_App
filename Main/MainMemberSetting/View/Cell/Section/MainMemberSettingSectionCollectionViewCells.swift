@@ -195,3 +195,151 @@ final class MainMemberSettingTMDBAttributionCollectionViewCell: MainMemberSettin
 final class MainMemberSettingLogoutButtonCollectionViewCell: MainMemberSettingButtonCollectionViewCell {
     static let reuseIdentifier = String(describing: MainMemberSettingLogoutButtonCollectionViewCell.self)
 }
+
+// MARK: - MainMemberSettingGuestPromptCollectionViewCell
+
+@MainActor
+final class MainMemberSettingGuestPromptCollectionViewCell: UICollectionViewCell {
+
+    static let reuseIdentifier = String(describing: MainMemberSettingGuestPromptCollectionViewCell.self)
+
+    // MARK: - Constants
+
+    private enum Layout {
+        static let cornerRadius: CGFloat = 12
+        static let contentInset: CGFloat = 24
+        static let iconSize: CGFloat = 40
+        static let textSpacing: CGFloat = 8
+        static let actionTopSpacing: CGFloat = 16
+        static let actionSpacing: CGFloat = 12
+        static let actionHeight: CGFloat = 44
+    }
+
+    // MARK: - Properties
+
+    private var onLogin: (() -> Void)?
+    private var onRegister: (() -> Void)?
+
+    // MARK: - UI Components
+
+    private let iconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = ThemeColor.textTertiary
+        imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: Layout.iconSize)
+        return imageView
+    }()
+
+    private let titleLabel = AppFactory.Label.headline(alignment: .center, lines: 0)
+
+    private let messageLabel: UILabel = {
+        let label = AppFactory.Label.body(alignment: .center, lines: 0)
+        label.textColor = ThemeColor.textSecondary
+        return label
+    }()
+
+    private lazy var loginButton: UIButton = {
+        let button = AppFactory.Button.primaryFilled(title: "")
+        button.addAction(UIAction { [weak self] _ in self?.onLogin?() }, for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var registerButton: UIButton = {
+        var configuration = UIButton.Configuration.filled()
+        configuration.baseBackgroundColor = .label
+        configuration.baseForegroundColor = ThemeColor.primary
+        configuration.cornerStyle = .medium
+        let button = UIButton(configuration: configuration)
+        button.addAction(UIAction { [weak self] _ in self?.onRegister?() }, for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var actionStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [loginButton, registerButton])
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = Layout.actionSpacing
+        return stackView
+    }()
+
+    private lazy var contentStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            iconImageView,
+            titleLabel,
+            messageLabel,
+            actionStackView
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = Layout.textSpacing
+        stackView.setCustomSpacing(Layout.actionTopSpacing, after: messageLabel)
+        return stackView
+    }()
+
+    // MARK: - Initialization
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Life Cycle
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onLogin = nil
+        onRegister = nil
+    }
+
+    // MARK: - Configuration
+
+    func configure(
+        with item: MainMemberSettingGuestPromptItem,
+        onLogin: @escaping () -> Void,
+        onRegister: @escaping () -> Void
+    ) {
+        iconImageView.image = UIImage(systemName: item.systemImageName)
+        titleLabel.text = item.title
+        messageLabel.text = item.message
+        loginButton.configuration?.attributedTitle = Self.buttonTitle(item.loginTitle)
+        registerButton.configuration?.attributedTitle = Self.buttonTitle(item.registerTitle)
+        self.onLogin = onLogin
+        self.onRegister = onRegister
+    }
+
+    // MARK: - Layout
+
+    private func setupView() {
+        contentView.backgroundColor = .secondarySystemGroupedBackground
+        contentView.layer.cornerRadius = Layout.cornerRadius
+        contentView.layer.cornerCurve = .continuous
+        contentView.clipsToBounds = true
+        contentView.addSubview(contentStackView)
+
+        contentStackView.translatesAutoresizingMaskIntoConstraints = false
+        actionStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            contentStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Layout.contentInset),
+            contentStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Layout.contentInset),
+            contentStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Layout.contentInset),
+            contentStackView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -Layout.contentInset),
+            iconImageView.heightAnchor.constraint(equalToConstant: Layout.iconSize),
+            actionStackView.widthAnchor.constraint(equalTo: contentStackView.widthAnchor),
+            actionStackView.heightAnchor.constraint(equalToConstant: Layout.actionHeight)
+        ])
+    }
+
+    // MARK: - Helpers
+
+    private static func buttonTitle(_ title: String) -> AttributedString {
+        var attributedTitle = AttributedString(title)
+        attributedTitle.font = UIFont.preferredFont(forTextStyle: .headline)
+        return attributedTitle
+    }
+}

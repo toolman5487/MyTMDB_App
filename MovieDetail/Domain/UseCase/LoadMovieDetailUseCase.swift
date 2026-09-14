@@ -27,16 +27,16 @@ nonisolated struct DefaultLoadMovieDetailUseCase: LoadMovieDetailUseCase {
     // MARK: - Properties
 
     private let repository: MovieDetailProviding
-    private let auxiliaryFailureHandler: @Sendable (String, Int, any Error) -> Void
+    private let failureReporter: AuxiliaryLoadFailureReporting
 
     // MARK: - Initialization
 
     init(
         repository: MovieDetailProviding,
-        auxiliaryFailureHandler: @escaping @Sendable (String, Int, any Error) -> Void
+        failureReporter: AuxiliaryLoadFailureReporting
     ) {
         self.repository = repository
-        self.auxiliaryFailureHandler = auxiliaryFailureHandler
+        self.failureReporter = failureReporter
     }
 
     // MARK: - LoadMovieDetailUseCase
@@ -116,7 +116,7 @@ nonisolated struct DefaultLoadMovieDetailUseCase: LoadMovieDetailUseCase {
         do {
             return try await operation()
         } catch {
-            auxiliaryFailureHandler(name, movieID, error)
+            failureReporter.reportAuxiliaryFailure(name, target: "movie \(movieID)", error: error)
             return fallback
         }
     }

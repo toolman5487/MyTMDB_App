@@ -14,15 +14,26 @@ final class MainMemberSettingViewModel {
 
     // MARK: - Properties
 
-    private let sessionStore: SessionStoring
-    private let userProfileStore: UserProfileStoring
-    private let searchHistoryStore: SearchHistoryStoring
+    private let sessionProvider: AuthSessionProviding
     private let profileProvider: AccountProfileProviding
+    private let searchHistory: SearchHistoryProviding
+    private let refreshAccountProfile: RefreshAccountProfileUseCase
+    private let logoutUseCase: LogoutUseCase
+    private let clearLocalData: ClearLocalDataUseCase
     private let localization: AppLocalization
     private let bundle: Bundle
 
     var sections: [MainMemberSettingSectionItem] {
-        [
+        guard isMember else {
+            return [
+                guestSection,
+                dataSection,
+                preferencesSection,
+                aboutSection
+            ]
+        }
+
+        return [
             profileSection,
             accountSection,
             dataSection,
@@ -32,16 +43,33 @@ final class MainMemberSettingViewModel {
         ]
     }
 
+    var isMember: Bool {
+        if case .user = sessionProvider.currentSession() {
+            return true
+        }
+        return false
+    }
+
+    var guestPrompt: MainMemberSettingGuestPromptItem {
+        MainMemberSettingGuestPromptItem(
+            title: "目前以訪客身分瀏覽",
+            message: "登入 TMDB 帳號後即可同步收藏、片單與評分。",
+            systemImageName: "person.crop.circle.badge.plus",
+            loginTitle: "登入",
+            registerTitle: "註冊"
+        )
+    }
+
     var tmdbAttributionURL: URL? {
-        URL(string: APIConfig.tmdbWebsiteBaseURL)
+        URL(string: TMDBResourceURL.websiteBaseURL)
     }
 
     var currentSession: AuthSession {
-        sessionStore.load()
+        sessionProvider.currentSession()
     }
 
     var profileSummary: MainMemberSettingProfileSummaryItem {
-        guard let profile = userProfileStore.load() else {
+        guard let profile = profileProvider.cachedProfile() else {
             return MainMemberSettingProfileSummaryItem(
                 displayName: "TMDB 會員",
                 usernameText: "尚未同步 username",
@@ -61,17 +89,21 @@ final class MainMemberSettingViewModel {
     // MARK: - Initialization
 
     init(
-        sessionStore: SessionStoring,
-        userProfileStore: UserProfileStoring,
-        searchHistoryStore: SearchHistoryStoring,
+        sessionProvider: AuthSessionProviding,
         profileProvider: AccountProfileProviding,
+        searchHistory: SearchHistoryProviding,
+        refreshAccountProfile: RefreshAccountProfileUseCase,
+        logout: LogoutUseCase,
+        clearLocalData: ClearLocalDataUseCase,
         localization: AppLocalization = .current,
         bundle: Bundle = .main
     ) {
-        self.sessionStore = sessionStore
-        self.userProfileStore = userProfileStore
-        self.searchHistoryStore = searchHistoryStore
+        self.sessionProvider = sessionProvider
         self.profileProvider = profileProvider
+        self.searchHistory = searchHistory
+        self.refreshAccountProfile = refreshAccountProfile
+        self.logoutUseCase = logout
+        self.clearLocalData = clearLocalData
         self.localization = localization
         self.bundle = bundle
     }
@@ -97,27 +129,23 @@ final class MainMemberSettingViewModel {
     }
 
     func refreshProfile() async throws {
-        guard case .user(let sessionId) = sessionStore.load() else { return }
-        _ = try await profileProvider.profile(sessionID: sessionId)
+        try await refreshAccountProfile()
     }
 
     func clearProfileCache() {
-        userProfileStore.clear()
+        profileProvider.clearCachedProfile()
     }
 
     func clearSearchHistory() {
-        searchHistoryStore.clear(scope: nil)
+        searchHistory.clear(scope: nil)
     }
 
     func clearAllLocalData() {
-        sessionStore.clear()
-        userProfileStore.clear()
-        searchHistoryStore.clear(scope: nil)
+        clearLocalData()
     }
 
     func logout() {
-        sessionStore.clear()
-        userProfileStore.clear()
+        logoutUseCase()
     }
 
     // MARK: - Private Methods
@@ -131,6 +159,19 @@ final class MainMemberSettingViewModel {
                     title: "會員資料",
                     systemImageName: "person.crop.circle",
                     action: .showMemberCenter
+                )
+            ]
+        )
+    }
+
+    private var guestSection: MainMemberSettingSectionItem {
+        MainMemberSettingSectionItem(
+            kind: .profile,
+            rows: [
+                MainMemberSettingRowItem(
+                    kind: .guestPrompt,
+                    title: "訪客",
+                    systemImageName: "person.crop.circle.badge.plus"
                 )
             ]
         )
@@ -286,15 +327,15 @@ final class MainMemberSettingViewModel {
     }
 
     private var accountIdText: String {
-        guard let accountId = userProfileStore.load()?.accountId else {
+        guard let accountID = profileProvider.cachedProfile()?.id else {
             return "尚未同步"
         }
 
-        return String(accountId)
+        return String(accountID)
     }
 
     private var loginStatusText: String {
-        switch sessionStore.load() {
+        switch sessionProvider.currentSession() {
         case .loggedOut:
             return "未登入"
 

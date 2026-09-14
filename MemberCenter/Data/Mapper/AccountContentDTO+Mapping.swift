@@ -55,12 +55,12 @@ nonisolated enum AccountAvatarURLFactory {
     static func make(tmdbAvatarPath: String?, gravatarHash: String) -> URL? {
         if let tmdbAvatarPath,
            !tmdbAvatarPath.isEmpty,
-           let url = APIConfig.tmdbImageURL(path: tmdbAvatarPath, size: .w185) {
+           let url = TMDBResourceURL.image(path: tmdbAvatarPath, size: .w185) {
             return url
         }
 
         guard !gravatarHash.isEmpty else { return nil }
-        return APIConfig.gravatarURL(hash: gravatarHash)
+        return TMDBResourceURL.gravatar(hash: gravatarHash)
     }
 }
 

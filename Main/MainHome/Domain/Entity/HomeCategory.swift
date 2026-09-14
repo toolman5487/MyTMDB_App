@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - HomeCategory
 
-nonisolated enum HomeCategory: CaseIterable, Codable, Sendable, Equatable, Identifiable {
+nonisolated enum HomeCategory: CaseIterable, Sendable, Equatable, Identifiable {
     case trendingMovies
     case trendingTV
     case popularMovies

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Auth Session
 
-enum AuthSession: Equatable, Codable, Sendable {
+nonisolated enum AuthSession: Equatable, Codable, Sendable {
     case loggedOut
     case guest(sessionId: String)
     case user(sessionId: String)

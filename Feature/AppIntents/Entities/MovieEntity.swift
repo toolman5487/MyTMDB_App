@@ -51,7 +51,7 @@ nonisolated struct MovieEntity: AppEntity, Sendable, Equatable {
     init(movie: MediaSummary) {
         self.init(
             id: movie.id,
-            title: movie.title,
+            title: BaseDisplayTextFormatter.text(movie.title, fallback: "未命名"),
             overview: movie.overview.isEmpty ? nil : movie.overview,
             posterPath: movie.posterPath,
             releaseYear: Self.releaseYear(from: movie.releaseDate)
@@ -61,7 +61,7 @@ nonisolated struct MovieEntity: AppEntity, Sendable, Equatable {
     init(detail: Movie) {
         self.init(
             id: detail.id,
-            title: detail.title,
+            title: BaseDisplayTextFormatter.text(detail.title, fallback: "未命名"),
             originalTitle: detail.originalTitle.isEmpty ? nil : detail.originalTitle,
             overview: detail.overview.isEmpty ? nil : detail.overview,
             posterPath: detail.posterPath,

@@ -31,26 +31,26 @@ nonisolated enum NetworkError: LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "網址格式錯誤"
+            return "Invalid URL"
 
         case .invalidResponse:
-            return "伺服器回應異常"
+            return "Invalid server response"
 
         case .requestFailed(let code):
-            return "網路請求失敗（\(code.rawValue)）"
+            return "Request failed (URLError \(code.rawValue))"
 
         case .encodingFailed:
-            return "請求資料編碼失敗"
+            return "Request body encoding failed"
 
         case .httpError(let statusCode):
-            return "HTTP 錯誤（\(statusCode)）"
+            return "HTTP error \(statusCode)"
 
         case .apiError(_, let apiCode, let message):
-            let apiCodeText = apiCode.map { "（\($0)）" } ?? ""
-            return message.isEmpty ? "API 回傳錯誤\(apiCodeText)" : "API 回傳錯誤\(apiCodeText)：\(message)"
+            let apiCodeText = apiCode.map { " (code \($0))" } ?? ""
+            return message.isEmpty ? "TMDB API error\(apiCodeText)" : "TMDB API error\(apiCodeText): \(message)"
 
         case .decodingFailed:
-            return "資料解析失敗"
+            return "Response decoding failed"
         }
     }
 }

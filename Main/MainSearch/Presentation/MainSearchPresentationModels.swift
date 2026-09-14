@@ -245,7 +245,7 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         self.title = Self.makeTitle(person.name)
         self.subtitle = BaseDisplayTextFormatter.nonEmptyText(person.knownForDepartment)
         self.imageURL = person.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
         self.popularity = person.popularity
     }
@@ -275,12 +275,12 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         switch result.mediaType {
         case .movie, .tv:
             return result.posterPath.flatMap {
-                APIConfig.tmdbImageURL(path: $0, size: .w185)
+                TMDBResourceURL.image(path: $0, size: .w185)
             }
 
         case .person:
             return result.profilePath.flatMap {
-                APIConfig.tmdbImageURL(path: $0, size: .w185)
+                TMDBResourceURL.image(path: $0, size: .w185)
             }
         }
     }

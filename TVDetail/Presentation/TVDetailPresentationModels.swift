@@ -178,7 +178,7 @@ nonisolated struct TVDetailImageItem: Sendable, Equatable, Identifiable {
     let imageURL: URL
 
     init?(image: MediaImage, index: Int) {
-        guard let imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500) else {
+        guard let imageURL = TMDBResourceURL.image(path: image.filePath, size: .w500) else {
             return nil
         }
 
@@ -220,15 +220,15 @@ nonisolated struct TVDetailItem: Sendable, Equatable, Identifiable {
 
     init(series: TVSeries) {
         self.id = series.id
-        self.title = series.name
+        self.title = BaseDisplayTextFormatter.text(series.name, fallback: "未命名")
         self.originalTitle = series.originalName
         self.tagline = BaseDisplayTextFormatter.nonEmptyText(series.tagline)
         self.overview = BaseDisplayTextFormatter.nonEmptyText(series.overview)
         self.posterURL = series.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.backdropURL = series.backdropPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.firstAirDateText = BaseDisplayTextFormatter.isoDayText(from: series.firstAirDate)
         self.lastAirDateText = BaseDisplayTextFormatter.isoDayText(from: series.lastAirDate)
@@ -336,11 +336,11 @@ nonisolated struct TVDetailCastItem: Sendable, Equatable, Identifiable {
 
     init(cast: AggregateCastMember) {
         self.id = cast.id
-        self.name = cast.name
+        self.name = BaseDisplayTextFormatter.text(cast.name, fallback: "未命名")
         self.characterText = Self.makeCharacterText(characters: cast.characters)
         self.episodeCountText = BaseDisplayTextFormatter.count(cast.episodeCount, unit: "集") ?? ""
         self.profileURL = cast.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -363,11 +363,11 @@ nonisolated struct TVDetailCrewItem: Sendable, Equatable, Identifiable {
     init(crew: AggregateCrewMember) {
         self.id = "\(crew.id)-\(crew.department)"
         self.personID = crew.id
-        self.name = crew.name
+        self.name = BaseDisplayTextFormatter.text(crew.name, fallback: "未命名")
         self.jobText = Self.makeJobText(crew: crew)
         self.episodeCountText = BaseDisplayTextFormatter.count(crew.episodeCount, unit: "集") ?? ""
         self.profileURL = crew.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -391,11 +391,11 @@ nonisolated struct TVDetailSeasonItem: Sendable, Equatable, Identifiable {
 
     init(season: TVSeason) {
         self.id = season.id
-        self.title = season.name
+        self.title = BaseDisplayTextFormatter.text(season.name, fallback: "未命名季數")
         self.subtitle = Self.makeSubtitle(season: season)
         self.seasonNumber = season.seasonNumber
         self.posterURL = season.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -417,7 +417,7 @@ nonisolated struct TVDetailVideoItem: Sendable, Equatable, Identifiable {
 
     init(video: Video) {
         self.id = video.id
-        self.title = video.name
+        self.title = BaseDisplayTextFormatter.text(video.name, fallback: "未命名影片")
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
         if video.site.lowercased() == "youtube", !video.key.isEmpty {
@@ -452,11 +452,11 @@ nonisolated struct TVWatchProviderItem: Sendable, Equatable, Identifiable {
     ) {
         self.countryCode = countryCode
         self.providerID = provider.id
-        self.title = provider.name
+        self.title = BaseDisplayTextFormatter.text(provider.name, fallback: "未命名平台")
         self.category = category
         self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -470,14 +470,14 @@ nonisolated struct TVDetailRecommendationItem: Sendable, Equatable, Identifiable
 
     init(recommendation: MediaSummary) {
         self.id = recommendation.id
-        self.title = recommendation.title
+        self.title = BaseDisplayTextFormatter.text(recommendation.title, fallback: "未命名")
         self.firstAirDateText = BaseDisplayTextFormatter.isoDayText(from: recommendation.releaseDate) ?? ""
         self.scoreText = BaseDisplayTextFormatter.score(
             recommendation.voteAverage,
             voteCount: recommendation.voteCount
         )
         self.posterURL = recommendation.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }

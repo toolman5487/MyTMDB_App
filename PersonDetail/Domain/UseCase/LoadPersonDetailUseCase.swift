@@ -20,16 +20,16 @@ nonisolated struct DefaultLoadPersonDetailUseCase: LoadPersonDetailUseCase {
     // MARK: - Properties
 
     private let repository: PersonDetailProviding
-    private let auxiliaryFailureHandler: @Sendable (String, Int, any Error) -> Void
+    private let failureReporter: AuxiliaryLoadFailureReporting
 
     // MARK: - Initialization
 
     init(
         repository: PersonDetailProviding,
-        auxiliaryFailureHandler: @escaping @Sendable (String, Int, any Error) -> Void
+        failureReporter: AuxiliaryLoadFailureReporting
     ) {
         self.repository = repository
-        self.auxiliaryFailureHandler = auxiliaryFailureHandler
+        self.failureReporter = failureReporter
     }
 
     // MARK: - LoadPersonDetailUseCase
@@ -80,7 +80,7 @@ nonisolated struct DefaultLoadPersonDetailUseCase: LoadPersonDetailUseCase {
         do {
             return try await operation()
         } catch {
-            auxiliaryFailureHandler(name, personID, error)
+            failureReporter.reportAuxiliaryFailure(name, target: "person \(personID)", error: error)
             return fallback
         }
     }

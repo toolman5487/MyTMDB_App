@@ -15,6 +15,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     private enum Layout {
         static let profileItemHeight: CGFloat = 88
+        static let guestPromptItemHeight: CGFloat = 232
         static let itemHeight: CGFloat = 56
         static let minimumLineSpacing: CGFloat = 4
         static let sectionHeaderHeight: CGFloat = 32
@@ -57,6 +58,13 @@ final class MainMemberSettingViewController: MainBaseViewController {
         profileRefreshTask?.cancel()
     }
 
+    // MARK: - Life Cycle
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
+    }
+
     // MARK: - BaseViewController
 
     override func configureView() {
@@ -86,6 +94,10 @@ final class MainMemberSettingViewController: MainBaseViewController {
         collectionView.register(
             MainMemberSettingProfileSummaryCollectionViewCell.self,
             forCellWithReuseIdentifier: MainMemberSettingProfileSummaryCollectionViewCell.reuseIdentifier
+        )
+        collectionView.register(
+            MainMemberSettingGuestPromptCollectionViewCell.self,
+            forCellWithReuseIdentifier: MainMemberSettingGuestPromptCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
             MainMemberSettingRefreshProfileCollectionViewCell.self,
@@ -170,7 +182,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
     }
 
     private func presentClearAllLocalDataConfirmation() {
-        router.showClearAllLocalDataConfirmation { [weak self] in
+        router.showClearAllLocalDataConfirmation(isMember: viewModel.isMember) { [weak self] in
             self?.clearAllLocalData()
         }
     }
@@ -204,6 +216,14 @@ final class MainMemberSettingViewController: MainBaseViewController {
     private func showMemberCenter() {
         router.showMemberCenter(session: viewModel.currentSession)
     }
+
+    private func showLogin() {
+        router.showLogin()
+    }
+
+    private func showRegister() {
+        router.showRegister()
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -228,6 +248,15 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
         }
 
         let cell = dequeueCell(for: row, at: indexPath)
+        if let guestPromptCell = cell as? MainMemberSettingGuestPromptCollectionViewCell {
+            guestPromptCell.configure(
+                with: viewModel.guestPrompt,
+                onLogin: { [weak self] in self?.showLogin() },
+                onRegister: { [weak self] in self?.showRegister() }
+            )
+            return guestPromptCell
+        }
+
         if let profileCell = cell as? MainMemberSettingProfileSummaryCollectionViewCell {
             profileCell.configure(with: viewModel.profileSummary)
             return profileCell
@@ -250,6 +279,9 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
         switch row.kind {
         case .profileSummary:
             reuseIdentifier = MainMemberSettingProfileSummaryCollectionViewCell.reuseIdentifier
+
+        case .guestPrompt:
+            reuseIdentifier = MainMemberSettingGuestPromptCollectionViewCell.reuseIdentifier
 
         case .accountId,
              .clearImageCache,
@@ -336,9 +368,18 @@ extension MainMemberSettingViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let height = viewModel.row(at: indexPath)?.kind == .profileSummary
-            ? Layout.profileItemHeight
-            : Layout.itemHeight
+        let height: CGFloat
+
+        switch viewModel.row(at: indexPath)?.kind {
+        case .profileSummary:
+            height = Layout.profileItemHeight
+
+        case .guestPrompt:
+            height = Layout.guestPromptItemHeight
+
+        default:
+            height = Layout.itemHeight
+        }
 
         return CGSize(
             width: collectionView.bounds.width - Layout.sectionHorizontalInset * 2,
@@ -377,6 +418,12 @@ extension MainMemberSettingViewController: UICollectionViewDelegateFlowLayout {
 
         case .logout:
             presentLogoutConfirmation()
+
+        case .login:
+            showLogin()
+
+        case .register:
+            showRegister()
 
         case nil:
             return

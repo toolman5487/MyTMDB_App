@@ -23,6 +23,27 @@ enum AuthPage: Int, CaseIterable {
     }
 }
 
+// MARK: - LoginEntryContext
+
+enum LoginEntryContext {
+    case root
+    case inApp
+
+    var pages: [AuthPage] {
+        switch self {
+        case .root:
+            return AuthPage.allCases
+
+        case .inApp:
+            return [.login, .register]
+        }
+    }
+
+    var showsCloseButton: Bool {
+        self == .inApp
+    }
+}
+
 // MARK: - AuthPageView
 
 protocol AuthPageView: UIView {

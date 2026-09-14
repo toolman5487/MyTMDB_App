@@ -37,7 +37,7 @@ final class DetailAccountMediaStateController {
 
     var stateDidChange: (@MainActor () -> Void)?
 
-    private let isUserAuthenticated: Bool
+    private let sessionProvider: AuthSessionProviding
     private let loadAccountMediaStateUseCase: LoadAccountMediaStateUseCase
     private let toggleFavoriteUseCase: ToggleFavoriteUseCase
     private let submitRatingUseCase: SubmitRatingUseCase
@@ -46,13 +46,13 @@ final class DetailAccountMediaStateController {
     // MARK: - Initialization
 
     init(
-        isUserAuthenticated: Bool,
+        sessionProvider: AuthSessionProviding,
         loadAccountMediaStateUseCase: LoadAccountMediaStateUseCase,
         toggleFavoriteUseCase: ToggleFavoriteUseCase,
         submitRatingUseCase: SubmitRatingUseCase,
         deleteRatingUseCase: DeleteRatingUseCase
     ) {
-        self.isUserAuthenticated = isUserAuthenticated
+        self.sessionProvider = sessionProvider
         self.loadAccountMediaStateUseCase = loadAccountMediaStateUseCase
         self.toggleFavoriteUseCase = toggleFavoriteUseCase
         self.submitRatingUseCase = submitRatingUseCase
@@ -269,6 +269,15 @@ final class DetailAccountMediaStateController {
                 return error.errorMessage
             }
         }
+    }
+
+    // MARK: - Session
+
+    private var isUserAuthenticated: Bool {
+        if case .user = sessionProvider.currentSession() {
+            return true
+        }
+        return false
     }
 
     // MARK: - Error Mapping

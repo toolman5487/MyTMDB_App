@@ -70,7 +70,7 @@ nonisolated struct MovieDetailDTO: Decodable, Sendable, Equatable, Identifiable 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? "未命名"
+        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
         self.originalTitle = try container.decodeIfPresent(String.self, forKey: .originalTitle) ?? title
         self.tagline = try container.decodeIfPresent(String.self, forKey: .tagline) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview)
@@ -143,7 +143,7 @@ nonisolated struct MovieCollectionDTO: Decodable, Sendable, Equatable, Identifia
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名系列"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview)
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
@@ -178,7 +178,7 @@ nonisolated struct MovieCollectionPartDTO: Decodable, Sendable, Equatable, Ident
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? "未命名"
+        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
@@ -258,7 +258,7 @@ nonisolated struct CastMemberDTO: Decodable, Sendable, Equatable, Identifiable {
         self.creditID = try container.decodeIfPresent(String.self, forKey: .creditID) ?? ""
         self.gender = try container.decodeIfPresent(Int.self, forKey: .gender)
         self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment) ?? ""
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.order = try container.decodeIfPresent(Int.self, forKey: .order) ?? 0
         self.originalName = try container.decodeIfPresent(String.self, forKey: .originalName) ?? name
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
@@ -302,7 +302,7 @@ nonisolated struct CrewMemberDTO: Decodable, Sendable, Equatable, Identifiable {
         self.gender = try container.decodeIfPresent(Int.self, forKey: .gender)
         self.job = try container.decodeIfPresent(String.self, forKey: .job) ?? ""
         self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment) ?? ""
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.originalName = try container.decodeIfPresent(String.self, forKey: .originalName) ?? name
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
         self.profilePath = try container.decodeIfPresent(String.self, forKey: .profilePath)

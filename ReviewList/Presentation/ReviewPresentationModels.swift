@@ -89,6 +89,6 @@ nonisolated struct ReviewItem: Sendable, Equatable, Identifiable {
             return URL(string: String(trimmedPath.dropFirst()))
         }
 
-        return APIConfig.tmdbImageURL(path: trimmedPath, size: .w185)
+        return TMDBResourceURL.image(path: trimmedPath, size: .w185)
     }
 }

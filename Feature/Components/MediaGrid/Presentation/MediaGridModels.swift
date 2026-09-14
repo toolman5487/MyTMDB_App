@@ -19,10 +19,10 @@ nonisolated struct MediaGridItem: Sendable, Equatable, Identifiable {
 
     init(summary: MediaSummary) {
         self.id = summary.id
-        self.title = summary.title
+        self.title = BaseDisplayTextFormatter.text(summary.title, fallback: "未命名")
         self.overview = BaseDisplayTextFormatter.overview(summary.overview)
         self.posterURL = summary.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
         self.dateText = BaseDisplayTextFormatter.announcedText(
             BaseDisplayTextFormatter.isoDayText(from: summary.releaseDate)

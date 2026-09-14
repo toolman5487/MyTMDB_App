@@ -20,19 +20,19 @@ nonisolated struct DefaultLoadEpisodeDetailUseCase: LoadEpisodeDetailUseCase {
     // MARK: - Properties
 
     private let repository: EpisodeDetailProviding
-    private let accountCredential: EpisodeAccountCredential?
-    private let auxiliaryFailureHandler: @Sendable (String, EpisodeDetailInput, any Error) -> Void
+    private let sessionProvider: AuthSessionProviding
+    private let failureReporter: AuxiliaryLoadFailureReporting
 
     // MARK: - Initialization
 
     init(
         repository: EpisodeDetailProviding,
-        accountCredential: EpisodeAccountCredential?,
-        auxiliaryFailureHandler: @escaping @Sendable (String, EpisodeDetailInput, any Error) -> Void
+        sessionProvider: AuthSessionProviding,
+        failureReporter: AuxiliaryLoadFailureReporting
     ) {
         self.repository = repository
-        self.accountCredential = accountCredential
-        self.auxiliaryFailureHandler = auxiliaryFailureHandler
+        self.sessionProvider = sessionProvider
+        self.failureReporter = failureReporter
     }
 
     // MARK: - LoadEpisodeDetailUseCase
@@ -120,8 +120,25 @@ nonisolated struct DefaultLoadEpisodeDetailUseCase: LoadEpisodeDetailUseCase {
         do {
             return try await operation()
         } catch {
-            auxiliaryFailureHandler(name, input, error)
+            failureReporter.reportAuxiliaryFailure(
+                name,
+                target: "TV series \(input.seriesID) season \(input.seasonNumber) episode \(input.episodeNumber)",
+                error: error
+            )
             return fallback
+        }
+    }
+
+    private var accountCredential: EpisodeAccountCredential? {
+        switch sessionProvider.currentSession() {
+        case .guest(let sessionID):
+            return .guest(sessionID: sessionID)
+
+        case .user(let sessionID):
+            return .user(sessionID: sessionID)
+
+        case .loggedOut:
+            return nil
         }
     }
 }

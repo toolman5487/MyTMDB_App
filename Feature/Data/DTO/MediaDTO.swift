@@ -114,7 +114,7 @@ nonisolated struct VideoDTO: Decodable, Sendable, Equatable, Identifiable {
         self.iso639Code = try container.decodeIfPresent(String.self, forKey: .iso639Code) ?? ""
         self.iso3166Code = try container.decodeIfPresent(String.self, forKey: .iso3166Code) ?? ""
         self.key = try container.decodeIfPresent(String.self, forKey: .key) ?? ""
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名影片"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.official = try container.decodeIfPresent(Bool.self, forKey: .official) ?? false
         self.publishedAt = try container.decodeIfPresent(String.self, forKey: .publishedAt) ?? ""
         self.site = try container.decodeIfPresent(String.self, forKey: .site) ?? ""
@@ -285,7 +285,7 @@ nonisolated struct MediaSummaryDTO: Decodable, Sendable, Equatable, Identifiable
             ?? ""
         self.title = try container.decodeIfPresent(String.self, forKey: .title)
             ?? container.decodeIfPresent(String.self, forKey: .name)
-            ?? "未命名"
+            ?? ""
         self.video = try container.decodeIfPresent(Bool.self, forKey: .video) ?? false
         self.voteAverage = try container.decodeIfPresent(Double.self, forKey: .voteAverage) ?? 0
         self.voteCount = try container.decodeIfPresent(Int.self, forKey: .voteCount) ?? 0
@@ -368,6 +368,6 @@ nonisolated struct WatchProviderDTO: Decodable, Sendable, Equatable, Identifiabl
         self.id = try container.decode(Int.self, forKey: .id)
         self.displayPriority = try container.decodeIfPresent(Int.self, forKey: .displayPriority) ?? 0
         self.logoPath = try container.decodeIfPresent(String.self, forKey: .logoPath)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名平台"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
     }
 }

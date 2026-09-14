@@ -75,13 +75,13 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
     private static func makeAvatarURL(from account: Account) -> URL? {
         if let avatarPath = account.avatar.tmdb.avatar_path,
            !avatarPath.isEmpty,
-           let url = APIConfig.tmdbImageURL(path: avatarPath, size: .w185) {
+           let url = TMDBResourceURL.image(path: avatarPath, size: .w185) {
             return url
         }
 
         let hash = account.avatar.gravatar.hash
         guard !hash.isEmpty else { return nil }
-        return APIConfig.gravatarURL(hash: hash)
+        return TMDBResourceURL.gravatar(hash: hash)
     }
 }
 

@@ -70,10 +70,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         switch session {
         case .loggedOut:
-            window.rootViewController = composition.makeLoginNavigationController()
+            window.rootViewController = composition.makeLoginNavigationController(context: .root)
 
         case .guest, .user:
-            window.rootViewController = composition.makeMainTabBarController(session: session)
+            let previousTab = (window.rootViewController as? MainTabBarController)?.selectedTabKind
+            window.rootViewController = composition.makeMainTabBarController(
+                session: session,
+                initialTab: previousTab
+            )
         }
 
         window.makeKeyAndVisible()

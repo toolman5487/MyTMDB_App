@@ -107,7 +107,7 @@ nonisolated struct SeasonDetailItem: Sendable, Equatable, Identifiable {
         self.seasonNumberText = BaseDisplayTextFormatter.seasonNumberText(detail.seasonNumber)
         self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
         self.posterURL = detail.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
     }
 }
@@ -131,7 +131,7 @@ nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
         self.subtitle = Self.makeSubtitle(episode: episode)
         self.overview = BaseDisplayTextFormatter.overview(episode.overview)
         self.stillURL = episode.stillPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.scoreText = BaseDisplayTextFormatter.decimal(episode.voteAverage)
     }
@@ -163,7 +163,7 @@ nonisolated struct SeasonVideoItem: Sendable, Equatable, Identifiable {
 
     init(video: Video) {
         self.id = video.id
-        self.title = video.name
+        self.title = BaseDisplayTextFormatter.text(video.name, fallback: "未命名影片")
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
         if video.site.lowercased() == "youtube", !video.key.isEmpty {
@@ -189,7 +189,7 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
         self.title = BaseDisplayTextFormatter.text(aggregateCast.name, fallback: "未命名")
         self.subtitle = aggregateCast.characters.first
         self.profileURL = aggregateCast.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -198,7 +198,7 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
         self.title = BaseDisplayTextFormatter.text(creditCast.name, fallback: "未命名")
         self.subtitle = BaseDisplayTextFormatter.nonEmptyText(creditCast.character)
         self.profileURL = creditCast.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -219,7 +219,7 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
             department: aggregateCrew.department
         )
         self.profileURL = aggregateCrew.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -232,7 +232,7 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
             department: creditCrew.department
         )
         self.profileURL = creditCrew.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -258,7 +258,7 @@ nonisolated struct SeasonImageItem: Sendable, Equatable, Identifiable {
 
     init(image: MediaImage) {
         self.filePath = image.filePath
-        self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
+        self.imageURL = TMDBResourceURL.image(path: image.filePath, size: .w500)
         self.aspectRatio = image.aspectRatio
     }
 }
@@ -283,11 +283,11 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
     ) {
         self.countryCode = countryCode
         self.providerID = provider.id
-        self.title = provider.name
+        self.title = BaseDisplayTextFormatter.text(provider.name, fallback: "未命名平台")
         self.category = category
         self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }

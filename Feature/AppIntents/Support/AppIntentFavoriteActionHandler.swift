@@ -71,7 +71,7 @@ nonisolated struct AppIntentFavoriteActionHandler: Sendable {
         } catch AccountMediaError.requiresUserLogin {
             return .failed(message: "需要登入 TMDB 帳號後才能更新收藏。")
         } catch {
-            return .failed(message: "更新收藏失敗：\(error.localizedDescription)")
+            return .failed(message: "更新收藏失敗：\(error.errorMessage.message)")
         }
     }
 

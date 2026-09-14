@@ -42,7 +42,7 @@ nonisolated struct RatedMediaDTO: Decodable, Sendable, Equatable, Identifiable {
         self.id = try container.decode(Int.self, forKey: .id)
         self.title = try container.decodeIfPresent(String.self, forKey: .title)
             ?? container.decodeIfPresent(String.self, forKey: .name)
-            ?? "未命名"
+            ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
         self.backdropPath = try container.decodeIfPresent(String.self, forKey: .backdropPath)
@@ -91,7 +91,7 @@ nonisolated struct RatedEpisodeDTO: Decodable, Sendable, Equatable, Identifiable
         self.showID = try container.decode(Int.self, forKey: .showID)
         self.seasonNumber = try container.decodeIfPresent(Int.self, forKey: .seasonNumber) ?? 0
         self.episodeNumber = try container.decodeIfPresent(Int.self, forKey: .episodeNumber) ?? 0
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.airDate = try container.decodeIfPresent(String.self, forKey: .airDate)
         self.stillPath = try container.decodeIfPresent(String.self, forKey: .stillPath)
@@ -128,7 +128,7 @@ nonisolated struct AccountListDTO: Decodable, Sendable, Equatable, Identifiable 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名片單"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
         self.languageCode = try container.decodeIfPresent(String.self, forKey: .languageCode) ?? ""
         self.listType = try container.decodeIfPresent(String.self, forKey: .listType) ?? ""

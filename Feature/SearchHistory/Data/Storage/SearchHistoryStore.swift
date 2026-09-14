@@ -7,46 +7,35 @@
 
 import Foundation
 
-// MARK: - SearchHistoryStoring
-
-nonisolated protocol SearchHistoryStoring {
-    func load(scope: SearchHistoryScope?, limit: Int) -> [SearchHistoryEntry]
-    func add(keyword: String, scope: SearchHistoryScope)
-    func remove(id: UUID)
-    func move(id: UUID, to destinationIndex: Int, scope: SearchHistoryScope)
-    func clear(scope: SearchHistoryScope?)
-}
-
 // MARK: - SearchHistoryStore
 
-final class SearchHistoryStore: SearchHistoryStoring {
+final class SearchHistoryStore: SearchHistoryProviding {
 
     // MARK: - Properties
 
-    private let defaults: UserDefaults
+    private let preferences: AppPreferencesStorage
     private let storageKey: String
     private let maxEntriesPerScope: Int
-    private let lock = NSLock()
 
     // MARK: - Initialization
 
     init(
-        defaults: UserDefaults = .standard,
+        preferences: AppPreferencesStorage = .standard,
         storageKey: String = "SearchHistory.v1",
         maxEntriesPerScope: Int = 15
     ) {
-        self.defaults = defaults
+        self.preferences = preferences
         self.storageKey = storageKey
         self.maxEntriesPerScope = maxEntriesPerScope
     }
 
-    // MARK: - SearchHistoryStoring
+    // MARK: - SearchHistoryProviding
 
     func load(scope: SearchHistoryScope?, limit: Int) -> [SearchHistoryEntry] {
         guard limit > 0 else { return [] }
 
-        return lock.performLocked {
-            let entries = sortedEntries(loadEntries())
+        return preferences.performLocked { defaults in
+            let entries = sortedEntries(loadEntries(from: defaults))
             let scopedEntries = entries.filter { entry in
                 scope.map { entry.scope == $0 } ?? true
             }
@@ -58,9 +47,9 @@ final class SearchHistoryStore: SearchHistoryStoring {
         let trimmedKeyword = SearchHistoryEntry.trimmedKeyword(keyword)
         guard !trimmedKeyword.isEmpty else { return }
 
-        lock.performLocked {
+        preferences.performLocked { defaults in
             let normalizedKeyword = SearchHistoryEntry.normalizedKeyword(trimmedKeyword)
-            var entries = loadEntries()
+            var entries = loadEntries(from: defaults)
             let matchesDuplicate: (SearchHistoryEntry) -> Bool = { entry in
                 entry.scope == scope &&
                     SearchHistoryEntry.normalizedKeyword(entry.keyword) == normalizedKeyword
@@ -87,21 +76,21 @@ final class SearchHistoryStore: SearchHistoryStoring {
                 )
             }
 
-            saveEntries(normalizedEntries(entries))
+            saveEntries(normalizedEntries(entries), to: defaults)
         }
     }
 
     func remove(id: UUID) {
-        lock.performLocked {
-            var entries = loadEntries()
+        preferences.performLocked { defaults in
+            var entries = loadEntries(from: defaults)
             entries.removeAll { $0.id == id }
-            saveEntries(normalizedEntries(entries))
+            saveEntries(normalizedEntries(entries), to: defaults)
         }
     }
 
     func move(id: UUID, to destinationIndex: Int, scope: SearchHistoryScope) {
-        lock.performLocked {
-            let entries = loadEntries()
+        preferences.performLocked { defaults in
+            let entries = loadEntries(from: defaults)
             var scopedEntries = sortedEntries(entries.filter { $0.scope == scope })
 
             guard let sourceIndex = scopedEntries.firstIndex(where: { $0.id == id }) else {
@@ -117,30 +106,30 @@ final class SearchHistoryStore: SearchHistoryStoring {
             }
             let otherEntries = entries.filter { $0.scope != scope }
 
-            saveEntries(normalizedEntries(otherEntries + reorderedScopedEntries))
+            saveEntries(normalizedEntries(otherEntries + reorderedScopedEntries), to: defaults)
         }
     }
 
     func clear(scope: SearchHistoryScope?) {
-        lock.performLocked {
+        preferences.performLocked { defaults in
             guard let scope else {
                 defaults.removeObject(forKey: storageKey)
                 return
             }
 
-            let entries = loadEntries().filter { $0.scope != scope }
-            saveEntries(normalizedEntries(entries))
+            let entries = loadEntries(from: defaults).filter { $0.scope != scope }
+            saveEntries(normalizedEntries(entries), to: defaults)
         }
     }
 
     // MARK: - Private Methods
 
-    private func loadEntries() -> [SearchHistoryEntry] {
+    private func loadEntries(from defaults: UserDefaults) -> [SearchHistoryEntry] {
         guard let data = defaults.data(forKey: storageKey) else { return [] }
         return (try? JSONDecoder().decode([SearchHistoryEntry].self, from: data)) ?? []
     }
 
-    private func saveEntries(_ entries: [SearchHistoryEntry]) {
+    private func saveEntries(_ entries: [SearchHistoryEntry], to defaults: UserDefaults) {
         guard !entries.isEmpty else {
             defaults.removeObject(forKey: storageKey)
             return
@@ -175,16 +164,5 @@ final class SearchHistoryStore: SearchHistoryStoring {
 
             return lhs.keyword < rhs.keyword
         }
-    }
-}
-
-// MARK: - NSLock Convenience
-
-private extension NSLock {
-
-    func performLocked<Result>(_ work: () -> Result) -> Result {
-        lock()
-        defer { unlock() }
-        return work()
     }
 }

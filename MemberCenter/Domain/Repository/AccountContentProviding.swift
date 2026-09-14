@@ -10,8 +10,6 @@ import Foundation
 // MARK: - AccountContentProviding
 
 nonisolated protocol AccountContentProviding: AccountProfileProviding {
-    func cachedProfile() -> AccountProfile?
-
     func collection(
         destination: MemberCenterDestination,
         accountID: Int,

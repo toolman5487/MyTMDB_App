@@ -27,16 +27,16 @@ nonisolated struct DefaultLoadTVDetailUseCase: LoadTVDetailUseCase {
     // MARK: - Properties
 
     private let repository: TVDetailProviding
-    private let auxiliaryFailureHandler: @Sendable (String, Int, any Error) -> Void
+    private let failureReporter: AuxiliaryLoadFailureReporting
 
     // MARK: - Initialization
 
     init(
         repository: TVDetailProviding,
-        auxiliaryFailureHandler: @escaping @Sendable (String, Int, any Error) -> Void
+        failureReporter: AuxiliaryLoadFailureReporting
     ) {
         self.repository = repository
-        self.auxiliaryFailureHandler = auxiliaryFailureHandler
+        self.failureReporter = failureReporter
     }
 
     // MARK: - LoadTVDetailUseCase
@@ -106,7 +106,7 @@ nonisolated struct DefaultLoadTVDetailUseCase: LoadTVDetailUseCase {
         do {
             return try await operation()
         } catch {
-            auxiliaryFailureHandler(name, seriesID, error)
+            failureReporter.reportAuxiliaryFailure(name, target: "TV \(seriesID)", error: error)
             return fallback
         }
     }

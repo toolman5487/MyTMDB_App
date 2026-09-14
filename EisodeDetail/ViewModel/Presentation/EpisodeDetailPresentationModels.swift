@@ -36,7 +36,7 @@ nonisolated struct EpisodeDetailItem: Sendable, Equatable, Identifiable {
         self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
         self.voteCountText = BaseDisplayTextFormatter.countText(detail.voteCount, unit: "票")
         self.stillURL = detail.stillPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
     }
 }
@@ -56,7 +56,7 @@ nonisolated struct EpisodePersonItem: Sendable, Equatable, Identifiable {
         self.title = BaseDisplayTextFormatter.text(cast.name, fallback: "未命名")
         self.subtitle = BaseDisplayTextFormatter.nonEmptyText(cast.character)
         self.profileURL = cast.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -69,7 +69,7 @@ nonisolated struct EpisodePersonItem: Sendable, Equatable, Identifiable {
             department: crew.department
         )
         self.profileURL = crew.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -86,7 +86,7 @@ nonisolated struct EpisodeVideoItem: Sendable, Equatable, Identifiable {
 
     init(video: Video) {
         self.id = video.id
-        self.title = video.name
+        self.title = BaseDisplayTextFormatter.text(video.name, fallback: "未命名影片")
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
         if video.isYouTube, video.isPlayable {
@@ -114,7 +114,7 @@ nonisolated struct EpisodeImageItem: Sendable, Equatable, Identifiable {
 
     init(image: MediaImage) {
         self.filePath = image.filePath
-        self.imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500)
+        self.imageURL = TMDBResourceURL.image(path: image.filePath, size: .w500)
         self.aspectRatio = image.aspectRatio
     }
 }

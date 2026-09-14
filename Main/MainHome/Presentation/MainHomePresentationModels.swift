@@ -67,25 +67,27 @@ nonisolated struct HomeContentItem: Sendable, Equatable, Identifiable {
             BaseDisplayTextFormatter.ratingText(scoreText)
         ])
 
+        let title = BaseDisplayTextFormatter.text(summary.title, fallback: "未命名")
+
         self.id = summary.id
-        self.title = summary.title
+        self.title = title
         self.mediaType = mediaType
         self.overview = summary.overview
         self.posterURL = summary.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
         self.backdropURL = summary.backdropPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.dateText = dateText
         self.scoreText = scoreText
         self.accessibilityText = AccessibilityText(
-            label: summary.title,
+            label: title,
             value: accessibilityValue,
             hint: mediaType.accessibilityDetailHint
         )
         self.featuredAccessibilityText = AccessibilityText(
-            label: "現正熱映，\(summary.title)",
+            label: "現正熱映，\(title)",
             value: accessibilityValue,
             hint: mediaType.accessibilityDetailHint
         )

@@ -210,15 +210,15 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
 
     init(movie: Movie) {
         self.id = movie.id
-        self.title = movie.title
+        self.title = BaseDisplayTextFormatter.text(movie.title, fallback: "未命名")
         self.originalTitle = movie.originalTitle
         self.tagline = BaseDisplayTextFormatter.nonEmptyText(movie.tagline)
         self.overview = BaseDisplayTextFormatter.nonEmptyText(movie.overview)
         self.posterURL = movie.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.backdropURL = movie.backdropPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w500)
+            TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: movie.releaseDate)
         self.runtimeText = BaseDisplayTextFormatter.runtime(movie.runtime)
@@ -330,10 +330,10 @@ nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
 
     init(cast: CastMember) {
         self.id = cast.id
-        self.name = cast.name
+        self.name = BaseDisplayTextFormatter.text(cast.name, fallback: "未命名")
         self.characterText = BaseDisplayTextFormatter.nonEmptyText(cast.character) ?? ""
         self.profileURL = cast.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -350,10 +350,10 @@ nonisolated struct MovieDetailCrewItem: Sendable, Equatable, Identifiable {
     init(crew: CrewMember) {
         self.id = crew.creditID.isEmpty ? "\(crew.id)-\(crew.department)-\(crew.job)" : crew.creditID
         self.personID = crew.id
-        self.name = crew.name
+        self.name = BaseDisplayTextFormatter.text(crew.name, fallback: "未命名")
         self.jobText = Self.makeJobText(crew: crew)
         self.profileURL = crew.profilePath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
@@ -377,7 +377,7 @@ nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
 
     init(video: Video) {
         self.id = video.id
-        self.title = video.name
+        self.title = BaseDisplayTextFormatter.text(video.name, fallback: "未命名影片")
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
         if video.site.lowercased() == "youtube", !video.key.isEmpty {
@@ -401,7 +401,7 @@ nonisolated struct MovieDetailImageItem: Sendable, Equatable, Identifiable {
     let imageURL: URL
 
     init?(image: MediaImage, index: Int) {
-        guard let imageURL = APIConfig.tmdbImageURL(path: image.filePath, size: .w500) else {
+        guard let imageURL = TMDBResourceURL.image(path: image.filePath, size: .w500) else {
             return nil
         }
 
@@ -437,11 +437,11 @@ nonisolated struct MovieWatchProviderItem: Sendable, Equatable, Identifiable {
     ) {
         self.countryCode = countryCode
         self.providerID = provider.id
-        self.title = provider.name
+        self.title = BaseDisplayTextFormatter.text(provider.name, fallback: "未命名平台")
         self.category = category
         self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -460,7 +460,7 @@ nonisolated struct MovieDetailCollectionSectionItem: Sendable, Equatable, Identi
 
     init(collection: MovieCollection, currentMovieID: Int) {
         self.id = collection.id
-        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: collection.name)
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: BaseDisplayTextFormatter.text(collection.name, fallback: "未命名系列"))
         self.overview = BaseDisplayTextFormatter.nonEmptyText(collection.overview)
         self.parts = collection
             .partsExcluding(movieID: currentMovieID)
@@ -480,7 +480,7 @@ nonisolated struct MovieDetailCollectionPartItem: Sendable, Equatable, Identifia
 
     init(part: MovieCollectionPart) {
         self.id = part.id
-        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: part.title)
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: BaseDisplayTextFormatter.text(part.title, fallback: "未命名"))
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: part.releaseDate)
         self.scoreText = BaseDisplayTextFormatter.score(
             part.voteAverage,
@@ -488,7 +488,7 @@ nonisolated struct MovieDetailCollectionPartItem: Sendable, Equatable, Identifia
         )
         self.subtitle = BaseDisplayTextFormatter.ratingText(scoreText)
         self.posterURL = part.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }
@@ -504,14 +504,14 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
 
     init(recommendation: MediaSummary) {
         self.id = recommendation.id
-        self.title = recommendation.title
+        self.title = BaseDisplayTextFormatter.text(recommendation.title, fallback: "未命名")
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: recommendation.releaseDate) ?? ""
         self.scoreText = BaseDisplayTextFormatter.score(
             recommendation.voteAverage,
             voteCount: recommendation.voteCount
         )
         self.posterURL = recommendation.posterPath.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 }

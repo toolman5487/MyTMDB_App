@@ -77,7 +77,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         switch item {
         case .media(let summary, let kind):
             self.id = Self.identifier(destination: destination, kind: kind, mediaID: summary.id)
-            self.title = summary.title
+            self.title = BaseDisplayTextFormatter.text(summary.title, fallback: "未命名")
             self.subtitle = Self.dateText(summary.releaseDate)
             self.metadataText = BaseDisplayTextFormatter.ratingText(summary.voteAverage)
             self.imageURL = Self.posterURL(path: summary.posterPath)
@@ -89,7 +89,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
                 kind: ratedMedia.kind,
                 mediaID: ratedMedia.summary.id
             )
-            self.title = ratedMedia.summary.title
+            self.title = BaseDisplayTextFormatter.text(ratedMedia.summary.title, fallback: "未命名")
             self.subtitle = Self.dateText(ratedMedia.summary.releaseDate)
             self.metadataText = BaseDisplayTextFormatter.userRatingText(ratedMedia.rating)
             self.imageURL = Self.posterURL(path: ratedMedia.summary.posterPath)
@@ -100,7 +100,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
 
         case .ratedEpisode(let episode):
             self.id = "\(destination.rawValue)-episode-\(episode.seriesID)-\(episode.seasonNumber)-\(episode.episodeNumber)-\(episode.id)"
-            self.title = episode.name
+            self.title = BaseDisplayTextFormatter.text(episode.name, fallback: "未命名")
             self.subtitle = Self.episodeSubtitle(episode)
             self.metadataText = BaseDisplayTextFormatter.userRatingText(episode.rating)
             self.imageURL = Self.posterURL(path: episode.stillPath)
@@ -112,7 +112,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
 
         case .list(let list):
             self.id = "\(destination.rawValue)-list-\(list.id)"
-            self.title = list.name
+            self.title = BaseDisplayTextFormatter.text(list.name, fallback: "未命名片單")
             self.subtitle = list.description.isEmpty ? "沒有描述" : list.description
             self.metadataText = BaseDisplayTextFormatter.countText(list.itemCount, unit: "個項目")
             self.imageURL = Self.posterURL(path: list.posterPath)
@@ -151,7 +151,7 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
 
     private static func posterURL(path: String?) -> URL? {
         path.flatMap {
-            APIConfig.tmdbImageURL(path: $0, size: .w185)
+            TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 

@@ -51,7 +51,7 @@ nonisolated struct TVSeriesEntity: AppEntity, Sendable, Equatable {
     init(series: MediaSummary) {
         self.init(
             id: series.id,
-            name: series.title,
+            name: BaseDisplayTextFormatter.text(series.title, fallback: "未命名"),
             overview: series.overview.isEmpty ? nil : series.overview,
             posterPath: series.posterPath,
             firstAirYear: Self.firstAirYear(from: series.releaseDate)
@@ -61,7 +61,7 @@ nonisolated struct TVSeriesEntity: AppEntity, Sendable, Equatable {
     init(detail: TVSeries) {
         self.init(
             id: detail.id,
-            name: detail.name,
+            name: BaseDisplayTextFormatter.text(detail.name, fallback: "未命名"),
             originalName: detail.originalName.isEmpty ? nil : detail.originalName,
             overview: detail.overview.isEmpty ? nil : detail.overview,
             posterPath: detail.posterPath,

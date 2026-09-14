@@ -26,6 +26,7 @@ final class LoginViewController: BaseViewController {
 
     private let loginVM: LoginViewModel
     private let authFlowHandler: AuthFlowHandling
+    private let entryContext: LoginEntryContext
     private lazy var router: LoginRouting = LoginRouter(sourceViewController: self)
 
     private var currentPage: AuthPage = .login
@@ -40,11 +41,20 @@ final class LoginViewController: BaseViewController {
     private lazy var guestPageView = GuestPageView()
     private lazy var registerPageView = RegisterPageView()
 
-    private lazy var pageViews: [AuthPageView] = [
-        loginPageView,
-        guestPageView,
-        registerPageView,
-    ]
+    private lazy var pageViews: [AuthPageView] = {
+        let allPageViews: [AuthPageView] = [
+            loginPageView,
+            guestPageView,
+            registerPageView,
+        ]
+        return entryContext.pages.compactMap { page in
+            allPageViews.first { $0.page == page }
+        }
+    }()
+
+    private var pages: [AuthPage] {
+        entryContext.pages
+    }
 
     private let pageScrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -67,7 +77,6 @@ final class LoginViewController: BaseViewController {
 
     private let pageControl: UIPageControl = {
         let control = UIPageControl()
-        control.numberOfPages = AuthPage.allCases.count
         control.currentPage = 0
         control.currentPageIndicatorTintColor = .label
         control.pageIndicatorTintColor = .tertiaryLabel
@@ -116,10 +125,12 @@ final class LoginViewController: BaseViewController {
 
     init(
         loginViewModel: LoginViewModel,
-        authFlowHandler: AuthFlowHandling
+        authFlowHandler: AuthFlowHandling,
+        entryContext: LoginEntryContext
     ) {
         self.loginVM = loginViewModel
         self.authFlowHandler = authFlowHandler
+        self.entryContext = entryContext
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -135,15 +146,14 @@ final class LoginViewController: BaseViewController {
     // MARK: - Lifecycle
 
     override func configureView() {
+        pageControl.numberOfPages = pages.count
         setupNavigationBar()
         setupPageDelegates()
         updatePageControlAccessibility(for: currentPage)
     }
 
     override func setupHierarchy() {
-        pageScrollView.addSubview(loginPageView)
-        pageScrollView.addSubview(guestPageView)
-        pageScrollView.addSubview(registerPageView)
+        pageViews.forEach { pageScrollView.addSubview($0) }
         errorOverlayView.addSubview(errorStackView)
 
         view.addSubview(pageScrollView)
@@ -160,23 +170,22 @@ final class LoginViewController: BaseViewController {
             make.height.equalTo(AuthPageStyle.Layout.pageHeight)
         }
 
-        loginPageView.snp.makeConstraints { make in
-            make.top.equalTo(pageScrollView.contentLayoutGuide)
-            make.bottom.equalTo(pageScrollView.contentLayoutGuide)
-            make.leading.equalTo(pageScrollView.contentLayoutGuide)
-            make.width.equalTo(pageScrollView.frameLayoutGuide)
-            make.height.equalTo(AuthPageStyle.Layout.pageHeight)
-        }
+        for (index, pageView) in pageViews.enumerated() {
+            pageView.snp.makeConstraints { make in
+                make.top.bottom.equalTo(pageScrollView.contentLayoutGuide)
+                make.width.equalTo(pageScrollView.frameLayoutGuide)
+                make.height.equalTo(AuthPageStyle.Layout.pageHeight)
 
-        guestPageView.snp.makeConstraints { make in
-            make.top.bottom.width.equalTo(loginPageView)
-            make.leading.equalTo(loginPageView.snp.trailing)
-        }
+                if index == 0 {
+                    make.leading.equalTo(pageScrollView.contentLayoutGuide)
+                } else {
+                    make.leading.equalTo(pageViews[index - 1].snp.trailing)
+                }
 
-        registerPageView.snp.makeConstraints { make in
-            make.top.bottom.width.equalTo(loginPageView)
-            make.leading.equalTo(guestPageView.snp.trailing)
-            make.trailing.equalTo(pageScrollView.contentLayoutGuide)
+                if index == pageViews.count - 1 {
+                    make.trailing.equalTo(pageScrollView.contentLayoutGuide)
+                }
+            }
         }
 
         pageControl.snp.makeConstraints { make in
@@ -230,6 +239,14 @@ final class LoginViewController: BaseViewController {
         navigationItem.title = AuthPage.login.title
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
+
+        guard entryContext.showsCloseButton else { return }
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            systemItem: .close,
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismiss(animated: true)
+            }
+        )
     }
 
     private func setupPageDelegates() {
@@ -241,7 +258,8 @@ final class LoginViewController: BaseViewController {
     // MARK: - Actions
 
     @objc private func pageControlChanged() {
-        scrollToPage(AuthPage(rawValue: pageControl.currentPage) ?? .login, animated: true)
+        guard pages.indices.contains(pageControl.currentPage) else { return }
+        scrollToPage(pages[pageControl.currentPage], animated: true)
     }
 
     @objc private func handleErrorActionButtonTapped() {
@@ -311,27 +329,30 @@ final class LoginViewController: BaseViewController {
     }
 
     private func scrollToPage(_ page: AuthPage, animated: Bool) {
-        let offsetX = CGFloat(page.rawValue) * pageScrollView.bounds.width
+        let offsetX = CGFloat(pages.firstIndex(of: page) ?? 0) * pageScrollView.bounds.width
         pageScrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: animated)
         currentPage = page
         updateCurrentPage(page)
     }
 
     private func updateCurrentPage(_ page: AuthPage) {
-        pageControl.currentPage = page.rawValue
+        pageControl.currentPage = pages.firstIndex(of: page) ?? 0
         navigationItem.title = page.title
         updatePageControlAccessibility(for: page)
     }
 
     private func updatePageControlAccessibility(for page: AuthPage) {
-        pageControl.accessibilityValue = "\(page.title)，第 \(page.rawValue + 1) 頁，共 \(AuthPage.allCases.count) 頁"
-        pageControl.accessibilityHint = "左右滑動切換登入、訪客或註冊"
+        let pageNumber = (pages.firstIndex(of: page) ?? 0) + 1
+        pageControl.accessibilityValue = "\(page.title)，第 \(pageNumber) 頁，共 \(pages.count) 頁"
+        pageControl.accessibilityHint = "左右滑動切換\(pages.map(\.title).joined(separator: "、"))"
     }
 
     private func setActionButtonsEnabled(_ isEnabled: Bool) {
         pageViews.forEach { $0.setInteractionEnabled(isEnabled) }
         pageScrollView.isScrollEnabled = isEnabled
         pageControl.isEnabled = isEnabled
+        navigationItem.leftBarButtonItem?.isEnabled = isEnabled
+        navigationController?.isModalInPresentation = !isEnabled
     }
 
     private func showFailureState(
@@ -460,7 +481,7 @@ extension LoginViewController: GuestPageViewDelegate {
 @MainActor
 extension LoginViewController: RegisterPageViewDelegate {
     func registerPageViewDidTapRegister(_ view: RegisterPageView) {
-        guard let url = APIConfig.tmdbSignupURL else { return }
+        guard let url = TMDBResourceURL.signup else { return }
         router.openSignup(url: url)
     }
 }
@@ -472,9 +493,10 @@ extension LoginViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView.bounds.width > 0 else { return }
         let pageIndex = Int(round(scrollView.contentOffset.x / scrollView.bounds.width))
-        guard let page = AuthPage(rawValue: pageIndex) else { return }
+        guard pages.indices.contains(pageIndex) else { return }
+        let page = pages[pageIndex]
         currentPage = page
-        pageControl.currentPage = page.rawValue
+        pageControl.currentPage = pageIndex
         navigationItem.title = page.title
         updatePageControlAccessibility(for: page)
         hideFailureState()

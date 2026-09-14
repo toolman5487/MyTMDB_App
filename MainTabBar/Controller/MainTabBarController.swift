@@ -38,6 +38,7 @@ final class MainTabBarController: UITabBarController {
     private let viewModel: MainTabBarViewModel
     private let avatarProvider: MainTabBarAvatarProviding
     private let sceneBuilder: MainTabSceneBuilding
+    private let initialTab: MainTabKind?
     private var tabBarVisibilityState: MainTabBarVisibilityState = .visible
     private var pendingTransitionDirection: MainTabNavigationDirection?
     private var isReselectingSelectedTab = false
@@ -61,12 +62,14 @@ final class MainTabBarController: UITabBarController {
         session: AuthSession,
         viewModel: MainTabBarViewModel,
         avatarProvider: MainTabBarAvatarProviding,
-        sceneBuilder: MainTabSceneBuilding
+        sceneBuilder: MainTabSceneBuilding,
+        initialTab: MainTabKind?
     ) {
         self.session = session
         self.viewModel = viewModel
         self.avatarProvider = avatarProvider
         self.sceneBuilder = sceneBuilder
+        self.initialTab = initialTab
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -93,6 +96,14 @@ final class MainTabBarController: UITabBarController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         applyTabBarVisibility(tabBarVisibilityState)
+    }
+
+    // MARK: - Selected Tab
+
+    var selectedTabKind: MainTabKind? {
+        let items = viewModel.items
+        guard items.indices.contains(selectedIndex) else { return nil }
+        return items[selectedIndex].kind
     }
 
     // MARK: - Tab Bar Visibility
@@ -188,19 +199,26 @@ final class MainTabBarController: UITabBarController {
 
     func showLoginFromIntent() {
         guard let navigationController = selectedViewController as? UINavigationController else {
-            present(sceneBuilder.makeLoginNavigationController(), animated: true)
+            present(sceneBuilder.makeLoginNavigationController(context: .inApp), animated: true)
             return
         }
 
-        navigationController.present(sceneBuilder.makeLoginNavigationController(), animated: true)
+        navigationController.present(sceneBuilder.makeLoginNavigationController(context: .inApp), animated: true)
     }
 
     // MARK: - Setup
 
     private func setupViewControllers() {
-        viewControllers = viewModel.items.map { item in
+        let items = viewModel.items
+        viewControllers = items.map { item in
             makeNavigationController(for: item)
         }
+
+        if let initialTab,
+           let initialIndex = items.firstIndex(where: { $0.kind == initialTab }) {
+            selectedIndex = initialIndex
+        }
+
         updateTabBarAccessibilityValues()
     }
 

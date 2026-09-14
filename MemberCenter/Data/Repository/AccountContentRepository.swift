@@ -48,6 +48,10 @@ nonisolated final class AccountContentRepository: AccountContentProviding {
         return account.mapped()
     }
 
+    func clearCachedProfile() {
+        userProfileStore.clear()
+    }
+
     func collection(
         destination: MemberCenterDestination,
         accountID: Int,

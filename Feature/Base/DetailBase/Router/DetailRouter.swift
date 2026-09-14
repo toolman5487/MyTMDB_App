@@ -127,7 +127,7 @@ final class DetailRouter: BaseRouter, DetailRouting {
     }
 
     func showLogin() {
-        show(sceneBuilder.makeLoginNavigationController(), using: .fullScreen)
+        show(sceneBuilder.makeLoginNavigationController(context: .inApp), using: .present)
     }
 
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?) {

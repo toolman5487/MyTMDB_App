@@ -6,40 +6,25 @@
 //
 
 import Foundation
-import Synchronization
 
 // MARK: - SessionStoring
 
-protocol SessionStoring: Sendable {
+protocol SessionStoring: AuthSessionProviding {
     func load() -> AuthSession
     func save(_ session: AuthSession)
     func clear()
 }
 
-// MARK: - AppPreferencesStorage
+// MARK: - AuthSessionProviding
 
-nonisolated final class AppPreferencesStorage: Sendable {
+extension SessionStoring {
 
-    // MARK: - Properties
-
-    static let standard = AppPreferencesStorage()
-
-    private let lock = Mutex(())
-    private let suiteName: String?
-
-    // MARK: - Initialization
-
-    init(suiteName: String? = nil) {
-        self.suiteName = suiteName
+    func currentSession() -> AuthSession {
+        load()
     }
 
-    // MARK: - Public Methods
-
-    func performLocked<Result>(_ work: (UserDefaults) -> Result) -> Result {
-        lock.withLock { _ in
-            let preferencesStore = suiteName.flatMap(UserDefaults.init(suiteName:)) ?? .standard
-            return work(preferencesStore)
-        }
+    func clearSession() {
+        clear()
     }
 }
 

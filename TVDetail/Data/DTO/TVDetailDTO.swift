@@ -82,7 +82,7 @@ nonisolated struct TVSeriesDTO: Decodable, Sendable, Equatable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.originalName = try container.decodeIfPresent(String.self, forKey: .originalName) ?? name
         self.tagline = try container.decodeIfPresent(String.self, forKey: .tagline) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview)
@@ -179,7 +179,7 @@ nonisolated struct TVEpisodeDTO: Decodable, Sendable, Equatable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名集數"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.airDate = try container.decodeIfPresent(String.self, forKey: .airDate) ?? ""
         self.episodeNumber = try container.decodeIfPresent(Int.self, forKey: .episodeNumber) ?? 0
@@ -214,7 +214,7 @@ nonisolated struct TVSeasonDTO: Decodable, Sendable, Equatable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(Int.self, forKey: .id)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名季數"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.overview = try container.decodeIfPresent(String.self, forKey: .overview) ?? ""
         self.airDate = try container.decodeIfPresent(String.self, forKey: .airDate) ?? ""
         self.episodeCount = try container.decodeIfPresent(Int.self, forKey: .episodeCount) ?? 0
@@ -287,7 +287,7 @@ nonisolated struct AggregateCastMemberDTO: Decodable, Sendable, Equatable, Ident
         self.id = try container.decode(Int.self, forKey: .id)
         self.gender = try container.decodeIfPresent(Int.self, forKey: .gender)
         self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment) ?? ""
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.originalName = try container.decodeIfPresent(String.self, forKey: .originalName) ?? name
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
         self.profilePath = try container.decodeIfPresent(String.self, forKey: .profilePath)
@@ -350,7 +350,7 @@ nonisolated struct AggregateCrewMemberDTO: Decodable, Sendable, Equatable, Ident
         self.gender = try container.decodeIfPresent(Int.self, forKey: .gender)
         self.jobs = try container.decodeIfPresent([AggregateJobDTO].self, forKey: .jobs) ?? []
         self.knownForDepartment = try container.decodeIfPresent(String.self, forKey: .knownForDepartment) ?? ""
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "未命名"
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
         self.originalName = try container.decodeIfPresent(String.self, forKey: .originalName) ?? name
         self.popularity = try container.decodeIfPresent(Double.self, forKey: .popularity) ?? 0
         self.profilePath = try container.decodeIfPresent(String.self, forKey: .profilePath)

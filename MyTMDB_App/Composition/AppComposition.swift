@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 protocol LoginSceneBuilding: AnyObject {
-    func makeLoginNavigationController() -> UIViewController
+    func makeLoginNavigationController(context: LoginEntryContext) -> UIViewController
 }
 
 @MainActor
@@ -77,7 +77,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     private let network: NetworkServicing
     private let sessionStore: SessionStoring
     private let userProfileStore: UserProfileStoring
-    private let searchHistoryStore: SearchHistoryStoring
+    private let searchHistoryStore: SearchHistoryProviding
     private let localization: AppLocalization
     private let urlSession: URLSession
     private let bundle: Bundle
@@ -89,7 +89,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         network: NetworkServicing = NetworkService(),
         sessionStore: SessionStoring = SessionStore(),
         userProfileStore: UserProfileStoring = UserProfileStore(),
-        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore(),
+        searchHistoryStore: SearchHistoryProviding = SearchHistoryStore(),
         localization: AppLocalization = .current,
         urlSession: URLSession = .shared,
         bundle: Bundle = .main,
@@ -128,23 +128,18 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         RootLoadingViewController()
     }
 
-    func makeLoginNavigationController() -> UIViewController {
+    func makeLoginNavigationController(context: LoginEntryContext) -> UIViewController {
         let viewController = LoginViewController(
             loginViewModel: LoginViewModel(authentication: AuthenticationRepository(network: network)),
-            authFlowHandler: makeAuthFlowHandler()
+            authFlowHandler: makeAuthFlowHandler(),
+            entryContext: context
         )
         return UINavigationController(rootViewController: viewController)
     }
 
-    func makeLoginViewController() -> LoginViewController {
-        LoginViewController(
-            loginViewModel: LoginViewModel(authentication: AuthenticationRepository(network: network)),
-            authFlowHandler: makeAuthFlowHandler()
-        )
-    }
-
     func makeMainTabBarController(
-        session: AuthSession
+        session: AuthSession,
+        initialTab: MainTabKind?
     ) -> MainTabBarController {
         MainTabBarController(
             session: session,
@@ -156,7 +151,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                     urlSession: urlSession
                 )
             ),
-            sceneBuilder: self
+            sceneBuilder: self,
+            initialTab: initialTab
         )
     }
 
@@ -179,7 +175,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = MainSearchViewModel(
             loadDiscovery: DefaultLoadMainSearchDiscoveryUseCase(repository: repository),
             repository: repository,
-            searchHistoryStore: searchHistoryStore
+            searchHistory: searchHistoryStore
         )
         return MainSearchViewController(viewModel: viewModel, sceneBuilder: self)
     }
@@ -208,11 +204,24 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     }
 
     func makeMainMemberSettingViewController() -> UIViewController {
+        let profileProvider = makeAccountContentRepository()
+        let logout = DefaultLogoutUseCase(
+            sessionProvider: sessionStore,
+            profileProvider: profileProvider
+        )
         let viewModel = MainMemberSettingViewModel(
-            sessionStore: sessionStore,
-            userProfileStore: userProfileStore,
-            searchHistoryStore: searchHistoryStore,
-            profileProvider: makeAccountContentRepository(),
+            sessionProvider: sessionStore,
+            profileProvider: profileProvider,
+            searchHistory: searchHistoryStore,
+            refreshAccountProfile: DefaultRefreshAccountProfileUseCase(
+                sessionProvider: sessionStore,
+                profileProvider: profileProvider
+            ),
+            logout: logout,
+            clearLocalData: DefaultClearLocalDataUseCase(
+                logout: logout,
+                searchHistory: searchHistoryStore
+            ),
             localization: localization,
             bundle: bundle
         )
@@ -267,11 +276,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = MovieDetailViewModel(
             loadMovieDetailUseCase: DefaultLoadMovieDetailUseCase(
                 repository: repository,
-                auxiliaryFailureHandler: { name, movieID, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for movie \(movieID, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
+                failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
             accountMediaController: makeDetailAccountMediaStateController()
         )
@@ -289,11 +294,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = TVDetailViewModel(
             loadTVDetailUseCase: DefaultLoadTVDetailUseCase(
                 repository: repository,
-                auxiliaryFailureHandler: { name, seriesID, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for TV \(seriesID, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
+                failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
             accountMediaController: makeDetailAccountMediaStateController()
         )
@@ -312,12 +313,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = SeasonDetailViewModel(
             loadSeasonDetailUseCase: DefaultLoadSeasonDetailUseCase(
                 repository: repository,
-                accountCredential: seasonAccountCredential,
-                auxiliaryFailureHandler: { name, seriesID, seasonNumber, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for TV series \(seriesID, privacy: .public) season \(seasonNumber, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
+                sessionProvider: sessionStore,
+                failureReporter: AppLoggerAuxiliaryFailureReporter()
             )
         )
         return SeasonDetailViewController(
@@ -343,12 +340,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             input: input,
             loadEpisodeDetailUseCase: DefaultLoadEpisodeDetailUseCase(
                 repository: repository,
-                accountCredential: episodeAccountCredential,
-                auxiliaryFailureHandler: { name, input, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for TV series \(input.seriesID, privacy: .public) season \(input.seasonNumber, privacy: .public) episode \(input.episodeNumber, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
+                sessionProvider: sessionStore,
+                failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
             accountMediaController: makeDetailAccountMediaStateController()
         )
@@ -362,11 +355,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = PersonDetailViewModel(
             loadPersonDetailUseCase: DefaultLoadPersonDetailUseCase(
                 repository: repository,
-                auxiliaryFailureHandler: { name, personID, error in
-                    AppLogger.network.warning(
-                        "Failed to load \(name, privacy: .public) for person \(personID, privacy: .public): \(error.localizedDescription, privacy: .public)"
-                    )
-                }
+                failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
             loadPersonCreditsUseCase: DefaultLoadPersonCreditsUseCase(repository: repository)
         )
@@ -418,12 +407,11 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         accountID: Int,
         sessionID: String
     ) -> UIViewController {
-        let repository = makeAccountContentRepository()
         let viewModel = MemberCenterListViewModel(
             destination: destination,
             accountId: accountID,
             sessionId: sessionID,
-            loadCollectionPage: DefaultLoadAccountCollectionPageUseCase(repository: repository)
+            contentRepository: makeAccountContentRepository()
         )
         return MemberCenterListViewController(viewModel: viewModel, sceneBuilder: self)
     }
@@ -489,7 +477,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let mediaRepository = AccountMediaStateRepository(network: network)
 
         return DetailAccountMediaStateController(
-            isUserAuthenticated: isUserAuthenticated,
+            sessionProvider: sessionStore,
             loadAccountMediaStateUseCase: DefaultLoadAccountMediaStateUseCase(
                 sessionRepository: sessionRepository,
                 mediaRepository: mediaRepository
@@ -509,38 +497,6 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         )
     }
 
-    private var isUserAuthenticated: Bool {
-        if case .user = sessionStore.load() {
-            return true
-        }
-        return false
-    }
-
-    private var seasonAccountCredential: SeasonAccountCredential? {
-        switch sessionStore.load() {
-        case .guest(let sessionID):
-            return .guest(sessionID: sessionID)
-
-        case .user(let sessionID):
-            return .user(sessionID: sessionID)
-
-        case .loggedOut:
-            return nil
-        }
-    }
-
-    private var episodeAccountCredential: EpisodeAccountCredential? {
-        switch sessionStore.load() {
-        case .guest(let sessionID):
-            return .guest(sessionID: sessionID)
-
-        case .user(let sessionID):
-            return .user(sessionID: sessionID)
-
-        case .loggedOut:
-            return nil
-        }
-    }
 }
 
 // MARK: - RootLoadingViewController

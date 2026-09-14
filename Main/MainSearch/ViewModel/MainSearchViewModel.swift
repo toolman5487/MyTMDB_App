@@ -38,7 +38,7 @@ final class MainSearchViewModel {
     private var onStateChange: (@MainActor (MainSearchViewState) -> Void)?
     private let loadDiscovery: LoadMainSearchDiscoveryUseCase
     private let repository: MainSearchProviding
-    private let searchHistoryStore: SearchHistoryStoring
+    private let searchHistory: SearchHistoryProviding
     private let recentSearchLimit = 15
     private var cachedDailyTrendingContent: MainSearchDailyTrendingContent?
 
@@ -47,11 +47,11 @@ final class MainSearchViewModel {
     init(
         loadDiscovery: LoadMainSearchDiscoveryUseCase,
         repository: MainSearchProviding,
-        searchHistoryStore: SearchHistoryStoring
+        searchHistory: SearchHistoryProviding
     ) {
         self.loadDiscovery = loadDiscovery
         self.repository = repository
-        self.searchHistoryStore = searchHistoryStore
+        self.searchHistory = searchHistory
     }
 
     // MARK: - Output Binding
@@ -152,17 +152,17 @@ final class MainSearchViewModel {
     }
 
     func addSearchHistory(keyword: String) {
-        searchHistoryStore.add(keyword: keyword, scope: .multi)
+        searchHistory.add(keyword: keyword, scope: .multi)
         cachedDailyTrendingContent = cachedDailyTrendingContent?.updatingRecentSearchEntries(loadRecentSearchEntries())
     }
 
     func removeSearchHistory(id: UUID) {
-        searchHistoryStore.remove(id: id)
+        searchHistory.remove(id: id)
         refreshRecentSearchEntries()
     }
 
     func moveSearchHistory(id: UUID, to destinationIndex: Int) {
-        searchHistoryStore.move(id: id, to: destinationIndex, scope: .multi)
+        searchHistory.move(id: id, to: destinationIndex, scope: .multi)
         refreshRecentSearchEntries()
     }
 
@@ -287,7 +287,7 @@ final class MainSearchViewModel {
     }
 
     private func loadRecentSearchEntries() -> [SearchHistoryEntry] {
-        searchHistoryStore.load(scope: .multi, limit: recentSearchLimit)
+        searchHistory.load(scope: .multi, limit: recentSearchLimit)
     }
 
     private func dailyTrendingState(for content: MainSearchDailyTrendingContent) -> MainSearchViewState {
