@@ -58,7 +58,7 @@
 - 不新增 Unit Test target、測試或 CI 流程。
 - 不改變 TMDB endpoint、JSON key、URL query key、UserDefaults key 或 Codable 儲存格式。
 - 不處理 Accessibility、UI 視覺、spacing、動畫或其他非命名需求。
-- 不將既有 `EisodeDetail/` 路徑拼字納入本次更名；檔案搬移與 project membership 風險應另案處理。
+- 不將既有 `EisodeDetail/` 路徑拼字納入本次更名；檔案搬移與 project membership 風險應另案處理（已於 2026-09-15 另案修正為 `EpisodeDetail/`）。
 
 ---
 

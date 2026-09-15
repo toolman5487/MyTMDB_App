@@ -63,7 +63,7 @@
 - 不修改底部收藏／評分／評論 Action Bar。
 - 不新增第三方套件、SPM package、Xcode target 或測試 target。
 - 不修改 `Package.resolved` 或 `project.pbxproj`。
-- 不處理既有 `EisodeDetail/` 資料夾拼字。
+- 不處理既有 `EisodeDetail/` 資料夾拼字（已於 2026-09-15 另案修正為 `EpisodeDetail/`）。
 
 ---
 
@@ -370,7 +370,7 @@ private func handleShareButtonTapped() {
 | `MovieDetail/Controller/MovieDetailViewController.swift` | 新增分享按鈕與 Movie URL |
 | `TVDetail/Controller/TVDetailViewController.swift` | 新增分享按鈕與 TV URL |
 | `SeasonDetail/Controller/SeasonDetailViewController.swift` | 新增分享按鈕與 Season URL |
-| `EisodeDetail/Controller/EpisodeDetailViewController.swift` | 保存 input，新增分享按鈕與 Episode URL |
+| `EpisodeDetail/Controller/EpisodeDetailViewController.swift` | 保存 input，新增分享按鈕與 Episode URL |
 | `MyTMDB_App/Composition/AppComposition.swift` | 將既有 Episode input 注入 Controller |
 
 不新增檔案，因此不應產生 `project.pbxproj` target membership 變更。
@@ -459,13 +459,13 @@ private func handleShareButtonTapped() {
 
 ```bash
 rg -n "UIActivityViewController|showShareSheet|shareBarButtonItem" \
-  Feature MovieDetail TVDetail SeasonDetail EisodeDetail
+  Feature MovieDetail TVDetail SeasonDetail EpisodeDetail
 
 rg -n "cinebase://|api_key|session_id" \
   Feature/Config/TMDBResourceURL.swift
 
 rg -n "import UIKit" \
-  MovieDetail/ViewModel TVDetail/ViewModel SeasonDetail/ViewModel EisodeDetail/ViewModel
+  MovieDetail/ViewModel TVDetail/ViewModel SeasonDetail/ViewModel EpisodeDetail/ViewModel
 
 git diff --check
 ```

@@ -78,7 +78,7 @@ MyTMDB_App/
 ├── MovieDetail/             # 電影詳細頁
 ├── TVDetail/                # 劇集詳細頁
 ├── SeasonDetail/            # 季詳細頁
-├── EisodeDetail/            # 集詳細頁
+├── EpisodeDetail/           # 集詳細頁
 ├── PersonDetail/            # 人物詳細頁
 ├── MemberCenter/            # 會員中心與帳號內容
 ├── PageSheet/               # Rating、Genre、ReviewDetail 等 Sheet 畫面

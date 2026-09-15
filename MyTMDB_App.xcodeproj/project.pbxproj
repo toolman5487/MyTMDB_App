@@ -1246,7 +1246,7 @@
 			isa = PBXGroup;
 			children = (
 				15DCE000300D000000DCE000 /* DetailContentList */,
-				15DAAEE22FFDE670009FB88A /* EisodeDetail */,
+				15DAAEE22FFDE670009FB88A /* EpisodeDetail */,
 				15D198632FF210DE00545A85 /* Feature */,
 				158825292FFF742E0028B219 /* HomeSectionList */,
 				1596A5FB30109402000079DA /* Main */,
@@ -1957,7 +1957,7 @@
 			path = Animations;
 			sourceTree = "<group>";
 		};
-		15DAAEE22FFDE670009FB88A /* EisodeDetail */ = {
+		15DAAEE22FFDE670009FB88A /* EpisodeDetail */ = {
 			isa = PBXGroup;
 			children = (
 				15DAAEE32FFDE694009FB88A /* Controller */,
@@ -1967,7 +1967,7 @@
 				15DAAEE62FFDE6A5009FB88A /* ViewModel */,
 				3815A1E424D0693358D9CC70 /* Presentation */,
 			);
-			path = EisodeDetail;
+			path = EpisodeDetail;
 			sourceTree = "<group>";
 		};
 		15DAAEE32FFDE694009FB88A /* Controller */ = {
@@ -3944,6 +3944,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.willyhsu.CineBase;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
@@ -3976,6 +3979,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.willyhsu.CineBase;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;

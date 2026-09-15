@@ -239,7 +239,7 @@ MovieDetail/
 TVDetail/     同上
 ReviewList/   同上
 SeasonDetail/ 同上
-EisodeDetail/ 同上（保留既有資料夾拼字）
+EpisodeDetail/ 同上
 PersonDetail/  同上
 Feature/
   Domain/Entity/  Domain/Error/       跨 feature 共用
@@ -1233,7 +1233,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 | MemberCenter Repository 實作 | `MemberCenter/Data/Repository/AccountContentRepository.swift`、`MemberCenter/Data/Repository/AccountListPosterEnricher.swift` |
 | 跨 feature 共用的 Domain / Data | `Feature/Domain/Entity/`、`Feature/Domain/Repository/MediaGenreProviding.swift`、`Feature/Domain/Repository/AccountMediaStateProviding.swift`、`Feature/Domain/Repository/AccountSessionProviding.swift`、`Feature/Domain/Repository/AccountProfileProviding.swift`、`Feature/Domain/Repository/HomeContentProviding.swift`、`Feature/Data/DTO/`（含 `AccountModel.swift`、`AggregateCreditsDTO.swift`）、`Feature/Data/Mapper/`（含 `AccountDTO+Mapping.swift`、`AggregateCreditsDTO+Mapping.swift`）、`Feature/Data/Repository/`（含 `HomeContentRepository.swift`） |
 | 跨 feature 共用的 presentation model | `Feature/Components/HomeContent/Presentation/HomeContentPresentationModels.swift`、`Feature/Components/MediaGrid/Presentation/MediaGridModels.swift` |
-| 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift`、`EisodeDetail/Domain/UseCase/LoadEpisodeDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonCreditsUseCase.swift` |
+| 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift`、`EpisodeDetail/Domain/UseCase/LoadEpisodeDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonCreditsUseCase.swift` |
 | MemberCenter 已完成的分層 | `MemberCenter/Domain/`、`MemberCenter/Data/`、`MemberCenter/Presentation/`、`MemberCenter/List/Presentation/` |
 | 跨 feature Account UseCase | `Feature/Domain/UseCase/LoadAccountMediaStateUseCase.swift`、`Feature/Domain/UseCase/ToggleFavoriteUseCase.swift`、`Feature/Domain/UseCase/SubmitRatingUseCase.swift`、`Feature/Domain/UseCase/DeleteRatingUseCase.swift` |
 | Phase 3 App 入口 | `MyTMDB_App/Composition/AppComposition.swift`、`MyTMDB_App/SceneDelegate.swift`、`MainLogIn/Flow/AuthFlowHandler.swift`、`MainTabBar/Controller/MainTabBarController.swift` |
