@@ -362,7 +362,11 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             ),
             accountMediaController: makeDetailAccountMediaStateController()
         )
-        return EpisodeDetailViewController(viewModel: viewModel, sceneBuilder: self)
+        return EpisodeDetailViewController(
+            input: input,
+            viewModel: viewModel,
+            sceneBuilder: self
+        )
     }
 
     func makePersonDetailViewController(

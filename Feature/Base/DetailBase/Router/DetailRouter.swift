@@ -36,6 +36,10 @@ protocol DetailRouting {
         onDelete: @escaping () -> Void
     )
     func showYouTubeVideo(videoKey: String, title: String?)
+
+    // MARK: Share
+
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem)
 }
 
 // MARK: - DetailRouter
@@ -165,5 +169,16 @@ final class DetailRouter: BaseRouter, DetailRouting {
 
         let viewController = YouTubePlayerViewController(videoKey: videoKey, title: title)
         show(viewController, using: .pageSheet(.medium))
+    }
+
+    // MARK: - Share
+
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem) {
+        let activityViewController = UIActivityViewController(
+            activityItems: [url],
+            applicationActivities: nil
+        )
+        activityViewController.popoverPresentationController?.sourceItem = sourceItem
+        show(activityViewController, using: .present)
     }
 }

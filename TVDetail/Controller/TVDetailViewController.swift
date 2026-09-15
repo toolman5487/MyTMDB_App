@@ -21,6 +21,16 @@ final class TVDetailViewController: DetailActionBarViewController {
         seriesID: seriesID,
         sceneBuilder: sceneBuilder
     )
+    private lazy var shareBarButtonItem = UIBarButtonItem(
+        image: UIImage(systemName: "square.and.arrow.up"),
+        primaryAction: UIAction { [weak self] _ in
+            self?.handleShareButtonTapped()
+        }
+    )
+
+    private var shareURL: URL? {
+        TMDBResourceURL.tvSeries(id: seriesID)
+    }
 
     private var sections: [TVDetailSectionItem] = []
 
@@ -52,6 +62,7 @@ final class TVDetailViewController: DetailActionBarViewController {
 
     override func configureView() {
         super.configureView()
+        configureShareButton()
         configureActionBar()
         configureCollectionView()
     }
@@ -135,6 +146,11 @@ final class TVDetailViewController: DetailActionBarViewController {
 
             return self.makeLayoutSection(for: self.sections[sectionIndex])
         }
+    }
+
+    private func configureShareButton() {
+        navigationItem.rightBarButtonItem = shareBarButtonItem
+        shareBarButtonItem.isEnabled = shareURL != nil
     }
 
     private func configureActionBar() {
@@ -331,6 +347,11 @@ final class TVDetailViewController: DetailActionBarViewController {
     }
 
     // MARK: - Actions
+
+    private func handleShareButtonTapped() {
+        guard let shareURL else { return }
+        router.showShareSheet(for: shareURL, sourceItem: shareBarButtonItem)
+    }
 
     private func handleRatingButtonTapped() {
         if viewModel.ratingState.requiresUserLogin {

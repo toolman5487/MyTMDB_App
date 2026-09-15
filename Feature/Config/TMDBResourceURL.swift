@@ -39,4 +39,36 @@ nonisolated enum TMDBResourceURL {
     static var signup: URL? {
         URL(string: "\(websiteBaseURL)/signup")
     }
+
+    // MARK: - Website URL
+
+    static func movie(id: Int) -> URL? {
+        guard id > 0 else { return nil }
+        return URL(string: "\(websiteBaseURL)/movie/\(id)")
+    }
+
+    static func tvSeries(id: Int) -> URL? {
+        guard id > 0 else { return nil }
+        return URL(string: "\(websiteBaseURL)/tv/\(id)")
+    }
+
+    static func season(
+        seriesID: Int,
+        seasonNumber: Int
+    ) -> URL? {
+        guard seasonNumber >= 0, let seriesURL = tvSeries(id: seriesID) else { return nil }
+        return URL(string: "\(seriesURL.absoluteString)/season/\(seasonNumber)")
+    }
+
+    static func episode(
+        seriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) -> URL? {
+        guard
+            episodeNumber > 0,
+            let seasonURL = season(seriesID: seriesID, seasonNumber: seasonNumber)
+        else { return nil }
+        return URL(string: "\(seasonURL.absoluteString)/episode/\(episodeNumber)")
+    }
 }

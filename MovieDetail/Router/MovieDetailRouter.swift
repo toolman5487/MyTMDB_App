@@ -28,6 +28,7 @@ protocol MovieDetailRouting: AnyObject {
         onDelete: @escaping () -> Void
     )
     func showLogin()
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem)
 }
 
 // MARK: - MovieDetailRouter
@@ -127,5 +128,11 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
 
     func showLogin() {
         detailRouter.showLogin()
+    }
+
+    // MARK: - Share
+
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem) {
+        detailRouter.showShareSheet(for: url, sourceItem: sourceItem)
     }
 }

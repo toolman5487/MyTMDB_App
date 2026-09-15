@@ -17,6 +17,7 @@ protocol SeasonDetailRouting: AnyObject {
     func showWebVideo(url: URL, title: String?)
     func showPersonDetail(personID: Int)
     func showWatchProvider(url: URL, title: String?)
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem)
 }
 
 // MARK: - SeasonDetailRouter
@@ -75,5 +76,11 @@ final class SeasonDetailRouter: BaseRouter, SeasonDetailRouting {
 
     func showWatchProvider(url: URL, title: String?) {
         detailRouter.showWebVideo(url: url, title: title)
+    }
+
+    // MARK: - Share
+
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem) {
+        detailRouter.showShareSheet(for: url, sourceItem: sourceItem)
     }
 }

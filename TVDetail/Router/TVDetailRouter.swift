@@ -29,6 +29,7 @@ protocol TVDetailRouting: AnyObject {
         onDelete: @escaping () -> Void
     )
     func showLogin()
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem)
 }
 
 // MARK: - TVDetailRouter
@@ -135,5 +136,11 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
 
     func showLogin() {
         detailRouter.showLogin()
+    }
+
+    // MARK: - Share
+
+    func showShareSheet(for url: URL, sourceItem: UIBarButtonItem) {
+        detailRouter.showShareSheet(for: url, sourceItem: sourceItem)
     }
 }
