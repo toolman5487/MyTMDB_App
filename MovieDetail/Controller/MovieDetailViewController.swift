@@ -65,7 +65,7 @@ final class MovieDetailViewController: DetailActionBarViewController {
                 self?.updateRatingAction(with: ratingState)
             }
         )
-        loadMovieDetail()
+        loadInitialContent()
     }
 
     // MARK: - Setup
@@ -263,11 +263,11 @@ final class MovieDetailViewController: DetailActionBarViewController {
 
     // MARK: - Data Loading
 
-    private func loadMovieDetail() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadMovieDetail(id: movieID)
+            await viewModel.loadInitialContent(movieID: movieID)
         }
     }
 
@@ -293,7 +293,7 @@ final class MovieDetailViewController: DetailActionBarViewController {
         case .failed(let message):
             sections = []
             renderDetailContent(
-                .failed(message: message) { [weak self] in self?.loadMovieDetail() }
+                .failed(message: message) { [weak self] in self?.loadInitialContent() }
             )
             clearDetailUserActivity()
         }

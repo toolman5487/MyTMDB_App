@@ -13,8 +13,8 @@ import UIKit
 protocol MainMediaListRouting: AnyObject {
     var shouldIgnoreSearchCancellation: Bool { get }
 
-    func showDetail(itemID: Int)
-    func showDetailFromSearch(
+    func showMediaDetail(itemID: Int)
+    func showMediaDetailFromSearch(
         itemID: Int,
         searchController: UISearchController,
         onSearchDismissed: @escaping () -> Void
@@ -56,12 +56,12 @@ final class MainMediaListRouter: BaseRouter, MainMediaListRouting {
 
     // MARK: - Push
 
-    func showDetail(itemID: Int) {
+    func showMediaDetail(itemID: Int) {
         guard itemID > 0 else { return }
         show(makeDetailViewController(itemID: itemID), using: .push)
     }
 
-    func showDetailFromSearch(
+    func showMediaDetailFromSearch(
         itemID: Int,
         searchController: UISearchController,
         onSearchDismissed: @escaping () -> Void

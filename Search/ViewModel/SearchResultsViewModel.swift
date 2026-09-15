@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - SearchResultsViewState
 
@@ -22,14 +21,19 @@ nonisolated enum SearchResultsViewState: Equatable {
 // MARK: - SearchResultsViewModel
 
 @MainActor
-@Observable
 final class SearchResultsViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: SearchResultsViewState = .idle
+    private(set) var state: SearchResultsViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
     private(set) var selectedSortOption: MediaSortOrder?
 
+    private var onStateChange: (@MainActor (SearchResultsViewState) -> Void)?
     private let mediaKind: MediaKind
     private let searchMedia: SearchMediaUseCase
     private let sortMedia: SortMediaUseCase
@@ -50,6 +54,13 @@ final class SearchResultsViewModel {
         self.mediaKind = mediaKind
         self.searchMedia = searchMedia
         self.sortMedia = sortMedia
+    }
+
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (SearchResultsViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
     }
 
     // MARK: - Public Methods

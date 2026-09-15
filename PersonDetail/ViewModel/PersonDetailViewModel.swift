@@ -60,11 +60,11 @@ final class PersonDetailViewModel {
 
     // MARK: - Public Methods
 
-    func loadPersonDetail(id: Int) async {
+    func loadInitialContent(personID: Int) async {
         state = .loading
 
         do {
-            let content = try await loadPersonDetailUseCase(personID: id)
+            let content = try await loadPersonDetailUseCase(personID: personID)
             guard !Task.isCancelled else { return }
             state = .loaded(PersonDetailSectionBuilder.makeSections(content: content))
         } catch let error as PersonDetailError {
@@ -77,12 +77,12 @@ final class PersonDetailViewModel {
     }
 
     func loadCreditsList(
-        id: Int,
+        personID: Int,
         mediaType: PersonCreditMediaType
     ) async -> PersonDetailCreditsListResult {
         do {
             let credits = try await loadPersonCreditsUseCase(
-                personID: id,
+                personID: personID,
                 mediaType: mediaType
             )
 

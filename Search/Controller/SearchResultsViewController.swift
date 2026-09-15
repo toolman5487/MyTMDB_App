@@ -8,18 +8,28 @@
 import SnapKit
 import UIKit
 
+// MARK: - SearchResultsHandling
+
+@MainActor
+protocol SearchResultsHandling: AnyObject {
+    func showTypingLoading()
+    func submitSearch(keyword: String)
+    func selectSortOption(_ option: MediaSortOrder)
+    func reset()
+}
+
 // MARK: - SearchResultsViewController
 
 @MainActor
-final class SearchResultsViewController: BaseViewController {
+final class SearchResultsViewController: BaseViewController, SearchResultsHandling {
 
     // MARK: - Properties
 
     private let mediaKind: MediaKind
     private let viewModel: SearchResultsViewModel
 
-    var onItemSelected: ((Int) -> Void)?
-    var onSortBarButtonVisibilityChanged: ((Bool, MediaSortOrder?) -> Void)?
+    private let onItemSelected: @MainActor (Int) -> Void
+    private let onSortBarButtonVisibilityChanged: @MainActor (Bool, MediaSortOrder?) -> Void
 
     private var items: [MediaGridItem] = []
 
@@ -58,9 +68,16 @@ final class SearchResultsViewController: BaseViewController {
 
     // MARK: - Initialization
 
-    init(mediaKind: MediaKind, viewModel: SearchResultsViewModel) {
+    init(
+        mediaKind: MediaKind,
+        viewModel: SearchResultsViewModel,
+        onItemSelected: @escaping @MainActor (Int) -> Void,
+        onSortBarButtonVisibilityChanged: @escaping @MainActor (Bool, MediaSortOrder?) -> Void
+    ) {
         self.mediaKind = mediaKind
         self.viewModel = viewModel
+        self.onItemSelected = onItemSelected
+        self.onSortBarButtonVisibilityChanged = onSortBarButtonVisibilityChanged
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -92,12 +109,18 @@ final class SearchResultsViewController: BaseViewController {
         }
     }
 
+    override func bindViewModel() {
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+            self?.updateSortBarButtonVisibility(for: state)
+        }
+    }
+
     // MARK: - Rendering
 
     func showTypingLoading() {
         searchTask?.cancel()
         viewModel.showTypingLoading()
-        renderCurrentState()
     }
 
     func submitSearch(keyword: String) {
@@ -111,33 +134,22 @@ final class SearchResultsViewController: BaseViewController {
         }
 
         viewModel.showSearchLoading(keyword: trimmedKeyword)
-        renderCurrentState()
 
         searchTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             await viewModel.search(keyword: trimmedKeyword)
-
-            guard !Task.isCancelled else { return }
-            renderCurrentState()
         }
     }
 
     func selectSortOption(_ option: MediaSortOrder) {
         viewModel.selectSortOption(option)
-        renderCurrentState()
     }
 
     func reset() {
         searchTask?.cancel()
         cancelLoadNextPageTask()
         viewModel.reset()
-        renderCurrentState()
-    }
-
-    private func renderCurrentState() {
-        render(state: viewModel.state)
-        updateSortBarButtonVisibility(for: viewModel.state)
     }
 
     private func render(state: SearchResultsViewState) {
@@ -232,7 +244,7 @@ extension SearchResultsViewController: UICollectionViewDelegateFlowLayout {
         let itemID = items[indexPath.item].id
 
         collectionView.deselectItem(at: indexPath, animated: true)
-        onItemSelected?(itemID)
+        onItemSelected(itemID)
     }
 
     func collectionView(
@@ -301,7 +313,6 @@ private extension SearchResultsViewController {
             guard let self else { return }
 
             await viewModel.loadNextPageIfNeeded(currentItemID: currentItemID)
-            renderCurrentState()
         }
     }
 
@@ -312,10 +323,10 @@ private extension SearchResultsViewController {
     func updateSortBarButtonVisibility(for state: SearchResultsViewState) {
         switch state {
         case .results(let content):
-            onSortBarButtonVisibilityChanged?(true, content.selectedSortOption)
+            onSortBarButtonVisibilityChanged(true, content.selectedSortOption)
 
         case .idle, .typing, .searching, .empty, .failed:
-            onSortBarButtonVisibilityChanged?(false, nil)
+            onSortBarButtonVisibilityChanged(false, nil)
         }
     }
 }

@@ -65,7 +65,7 @@ final class TVDetailViewModel {
 
     // MARK: - Data Loading
 
-    func loadTVDetail(seriesID: Int) async {
+    func loadInitialContent(seriesID: Int) async {
         state = .loading
         accountMediaController.prepareForLoading()
 

@@ -87,7 +87,7 @@ nonisolated final class AccountListPosterEnricher: AccountListPosterEnriching {
 
     private func fetchListDetail(listID: Int) async throws -> AccountListDetailDTO {
         try await network.get(
-            path: APIConfig.List.detail(listId: listID),
+            path: APIConfig.List.detail(listID: listID),
             queryItems: [
                 URLQueryItem(name: "language", value: localization.languageParameter),
                 URLQueryItem(name: "page", value: "1")

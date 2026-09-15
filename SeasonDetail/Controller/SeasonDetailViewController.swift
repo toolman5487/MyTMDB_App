@@ -62,7 +62,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
         viewModel.bind { [weak self] state in
             self?.render(state: state)
         }
-        loadSeasonDetail()
+        loadInitialContent()
     }
 
     // MARK: - Setup
@@ -140,11 +140,11 @@ final class SeasonDetailViewController: DetailBaseViewController {
 
     // MARK: - Data Loading
 
-    private func loadSeasonDetail() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadSeasonDetail(
+            await viewModel.loadInitialContent(
                 seriesID: seriesID,
                 seasonNumber: seasonNumber
             )
@@ -168,7 +168,7 @@ final class SeasonDetailViewController: DetailBaseViewController {
         case .failed(let message):
             sections = []
             renderDetailContent(
-                .failed(message: message) { [weak self] in self?.loadSeasonDetail() }
+                .failed(message: message) { [weak self] in self?.loadInitialContent() }
             )
         }
 

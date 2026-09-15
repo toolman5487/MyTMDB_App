@@ -9,6 +9,7 @@ import Foundation
 
 // MARK: - MainMemberSettingViewModel
 
+/// Synchronous query/action model; it intentionally has no asynchronous state binding.
 @MainActor
 final class MainMemberSettingViewModel {
 
@@ -78,12 +79,12 @@ final class MainMemberSettingViewModel {
         self.clearLocalData = clearLocalData
         self.localization = localization
         self.bundle = bundle
-        reload()
+        reloadContent()
     }
 
     // MARK: - Public Methods
 
-    func reload() {
+    func reloadContent() {
         let session = sessionProvider.currentSession()
         let profile: AccountProfile? = if case .user = session {
             profileProvider.cachedProfile()
@@ -116,12 +117,12 @@ final class MainMemberSettingViewModel {
 
     func refreshProfile() async throws {
         try await refreshAccountProfile()
-        reload()
+        reloadContent()
     }
 
     func clearProfileCache() {
         profileProvider.clearCachedProfile()
-        reload()
+        reloadContent()
     }
 
     func clearImageCache() async {
@@ -130,7 +131,7 @@ final class MainMemberSettingViewModel {
 
     func clearSearchHistory() {
         searchHistory.clear(scope: nil)
-        reload()
+        reloadContent()
     }
 
     func clearAllLocalData() async {
@@ -212,7 +213,7 @@ final class MainMemberSettingViewModel {
             title: "帳號",
             rows: [
                 MainMemberSettingRowItem(
-                    kind: .accountId,
+                    kind: .accountID,
                     title: "Account ID",
                     systemImageName: "number",
                     accessory: .value(accountIDText(profile: profile))

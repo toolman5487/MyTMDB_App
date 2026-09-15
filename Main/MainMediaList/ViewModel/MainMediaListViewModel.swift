@@ -111,11 +111,11 @@ final class MainMediaListViewModel {
         }
     }
 
-    func loadNextPageIfNeeded(currentMovieID: Int) async {
+    func loadNextPageIfNeeded(currentItemID: Int) async {
         guard case .loaded(let content) = state,
               content.canLoadNextPage,
               !content.isLoadingNextPage,
-              shouldLoadNextPage(currentMovieID: currentMovieID, items: content.items) else {
+              shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
@@ -184,7 +184,7 @@ final class MainMediaListViewModel {
         }
     }
 
-    func loadContent(selectingGenreID genreID: Int) async {
+    func loadInitialContent(selectingGenreID genreID: Int) async {
         preferredGenreID = genreID
 
         guard !genres.isEmpty else {
@@ -245,10 +245,10 @@ final class MainMediaListViewModel {
     }
 
     private func shouldLoadNextPage(
-        currentMovieID: Int,
+        currentItemID: Int,
         items: [MediaGridItem]
     ) -> Bool {
-        guard let currentIndex = items.firstIndex(where: { $0.id == currentMovieID }) else {
+        guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
             return false
         }
 

@@ -23,21 +23,21 @@ final class MemberCenterListViewModel {
     }
 
     private var onStateChange: (@MainActor (MemberCenterListViewState) -> Void)?
-    private let accountId: Int
-    private let sessionId: String
+    private let accountID: Int
+    private let sessionID: String
     private let contentRepository: AccountContentProviding
 
     // MARK: - Initialization
 
     init(
         destination: MemberCenterDestination,
-        accountId: Int,
-        sessionId: String,
+        accountID: Int,
+        sessionID: String,
         contentRepository: AccountContentProviding
     ) {
         self.destination = destination
-        self.accountId = accountId
-        self.sessionId = sessionId
+        self.accountID = accountID
+        self.sessionID = sessionID
         self.contentRepository = contentRepository
     }
 
@@ -103,8 +103,8 @@ final class MemberCenterListViewModel {
     private func fetchContent(page: Int) async throws -> MemberCenterListContent {
         let collection = try await contentRepository.collection(
             destination: destination,
-            accountID: accountId,
-            sessionID: sessionId,
+            accountID: accountID,
+            sessionID: sessionID,
             page: page,
             posterFallbackLimit: .max
         )

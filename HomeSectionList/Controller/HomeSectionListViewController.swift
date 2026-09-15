@@ -112,7 +112,7 @@ final class HomeSectionListViewController: BaseListViewController {
         cancelLoadNextPageTask()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadInitial()
+            await viewModel.loadInitialContent()
         }
     }
 

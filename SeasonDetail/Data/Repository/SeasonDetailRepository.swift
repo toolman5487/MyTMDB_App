@@ -30,7 +30,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func season(seriesID: Int, seasonNumber: Int) async throws -> Season {
         let dto: SeasonDetailDTO = try await network.get(
-            path: APIConfig.TV.seasonDetail(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonDetail(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
@@ -38,7 +38,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func aggregateCredits(seriesID: Int, seasonNumber: Int) async throws -> AggregateCredits {
         let dto: AggregateCreditsDTO = try await network.get(
-            path: APIConfig.TV.seasonAggregateCredits(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonAggregateCredits(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
@@ -46,7 +46,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func credits(seriesID: Int, seasonNumber: Int) async throws -> SeasonCredits {
         let dto: SeasonCreditsDTO = try await network.get(
-            path: APIConfig.TV.seasonCredits(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonCredits(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
@@ -54,7 +54,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func images(seriesID: Int, seasonNumber: Int) async throws -> MediaImages {
         let dto: MediaImagesDTO = try await network.get(
-            path: APIConfig.TV.seasonImages(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonImages(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: imageQueryItems
         )
         return dto.mapped()
@@ -62,7 +62,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func videos(seriesID: Int, seasonNumber: Int) async throws -> [Video] {
         let dto: VideosDTO = try await network.get(
-            path: APIConfig.TV.seasonVideos(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonVideos(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: videoQueryItems
         )
         return dto.mapped()
@@ -70,7 +70,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func watchProviders(seriesID: Int, seasonNumber: Int) async throws -> WatchProviders {
         let dto: WatchProvidersDTO = try await network.get(
-            path: APIConfig.TV.seasonWatchProviders(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonWatchProviders(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: []
         )
         return dto.mapped()
@@ -78,7 +78,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func externalIDs(seriesID: Int, seasonNumber: Int) async throws -> SeasonExternalIDs {
         let dto: SeasonExternalIDsDTO = try await network.get(
-            path: APIConfig.TV.seasonExternalIds(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonExternalIDs(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: []
         )
         return dto.mapped()
@@ -86,7 +86,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
 
     func translations(seriesID: Int, seasonNumber: Int) async throws -> SeasonTranslations {
         let dto: SeasonTranslationsDTO = try await network.get(
-            path: APIConfig.TV.seasonTranslations(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonTranslations(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: []
         )
         return dto.mapped()
@@ -98,7 +98,7 @@ nonisolated final class SeasonDetailRepository: SeasonDetailProviding {
         credential: SeasonAccountCredential
     ) async throws -> SeasonAccountState {
         let dto: SeasonAccountStateDTO = try await network.get(
-            path: APIConfig.TV.seasonAccountStates(seriesId: seriesID, seasonNumber: seasonNumber),
+            path: APIConfig.TV.seasonAccountStates(seriesID: seriesID, seasonNumber: seasonNumber),
             queryItems: accountStateQueryItems(credential: credential)
         )
         return dto.mapped()

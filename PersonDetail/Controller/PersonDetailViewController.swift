@@ -60,7 +60,7 @@ final class PersonDetailViewController: DetailBaseViewController {
         viewModel.bind { [weak self] state in
             self?.render(state: state)
         }
-        loadPersonDetail()
+        loadInitialContent()
     }
 
     // MARK: - Setup
@@ -125,11 +125,11 @@ final class PersonDetailViewController: DetailBaseViewController {
 
     // MARK: - Data Loading
 
-    private func loadPersonDetail() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadPersonDetail(id: personID)
+            await viewModel.loadInitialContent(personID: personID)
         }
     }
 
@@ -140,7 +140,7 @@ final class PersonDetailViewController: DetailBaseViewController {
 
             setLoadingVisible(true)
             let result = await viewModel.loadCreditsList(
-                id: personID,
+                personID: personID,
                 mediaType: mediaType
             )
             setLoadingVisible(false)
@@ -176,7 +176,7 @@ final class PersonDetailViewController: DetailBaseViewController {
         case .failed(let message):
             sections = []
             renderDetailContent(
-                .failed(message: message) { [weak self] in self?.loadPersonDetail() }
+                .failed(message: message) { [weak self] in self?.loadInitialContent() }
             )
         }
 

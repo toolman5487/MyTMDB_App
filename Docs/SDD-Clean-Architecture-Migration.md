@@ -9,9 +9,9 @@
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router + `AppComposition` factory |
 | 目標架構 | Clean Architecture + `AppComposition` + make factory + Router（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 337 個 Swift 檔 / 46,537 行 |
-| 狀態 | Phase 1、Phase 2、Phase 3 實作完成；G3 補齊、舊角色資料夾歸位，simulator Debug build 通過，runtime 走查待執行 |
-| 日期 | 2026-09-14 |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 337 個 Swift 檔 / 46,714 行 |
+| 狀態 | Phase 1、Phase 2、Phase 3 已落地；統一命名 source applied、靜態檢查通過；本次 Build / Runtime NotRun（先前 baseline simulator Debug build 通過） |
+| 日期 | 2026-09-15 |
 
 ---
 
@@ -328,7 +328,7 @@ Presentation（ViewModel、SectionBuilder、PresentationModels）與 feature-loc
 
 - Domain Entity、UseCase、Repository、Mapper 一律 `nonisolated` 且 `Sendable`。
 - UseCase 以 `async throws` 暴露，不標註 `@MainActor`。
-- ViewModel 標註 `@MainActor`，以既有 `bind(onStateChange:)` 輸出模式驅動 UI。
+- ViewModel 標註 `@MainActor`；具有非同步 state flow 的 ViewModel 以 `bind(onStateChange:)` 驅動 UI，binding 立即送出目前 state，且相同 state 不重送。同步 query/action model 不建立空的 binding。
 - 並行使用 `async let` 與 `withThrowingTaskGroup`，不使用 `DispatchQueue` 或 `@escaping` 回呼。
 - 不使用 `@unchecked Sendable` 與 `nonisolated(unsafe)`。
 
@@ -835,7 +835,7 @@ final class DetailRouter: BaseRouter {
 }
 ```
 
-Scene Builder protocol 依導航範圍拆分，例如 `DetailSceneBuilding`、`MemberCenterSceneBuilding`；不得建立一個暴露全 App 畫面的巨大 factory protocol。
+Scene Builder protocol 依導航範圍拆分，例如 `DetailSceneBuilding`、`MemberCenterSceneBuilding`；不得建立一個暴露全 App 畫面的巨大 factory protocol。Factory 對外回傳 `UIViewController`；父畫面需要接收 child event 時，由 factory 參數注入 callback。父畫面需要送入 child action 時，只依賴窄化的 action protocol（例如 `SearchResultsHandling`），不得要求 factory 暴露具體 ViewController 型別。
 
 共用 Router（`Feature/Base/` 的 `DetailRouter` 等）的參數只能使用 Domain 型別或基本值，不得依賴特定 feature 的 presentation model。例如人物作品跳轉使用 `showMediaDetail(kind: MediaKind, id: Int)`，由 PersonDetail 自行將 `PersonDetailCreditItem` 轉為 `MediaKind`。
 
@@ -1253,6 +1253,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.13 | 2026-09-15 | 依 `SDD-Unified-Interface-Naming.md` 同步 ViewModel output 與 Scene Builder 規則：14 個非同步 state ViewModel 統一 `bind(onStateChange:)`，2 個同步 query/action model 明確保留無 binding；Scene factory 回傳 `UIViewController`、callback 由參數注入，child input 使用窄化 `...Handling` protocol。同步套用 Swift 縮寫／ID、完整畫面 `loadInitialContent` 與 Router 動詞規則；Swift parser、Codable executable check 與五項 Clean Architecture 靜態邊界檢查通過，Xcode Build / Runtime NotRun |
 | 2.12 | 2026-09-14 | 依 4.3 共用判準全面檢查 Domain / Data / Presentation 型別歸屬。(A) 依賴方向：刪除 Data 層 `StoredUserProfile.headerContent`（建立 MemberCenter 的 presentation 型別，無使用端）；共用 `DetailRouter.showCreditDetail(_: PersonDetailCreditItem)` 改為 `showMediaDetail(kind:id:)`，8.3 補共用 Router 參數規則。(B) 跨 feature 使用而升格至 `Feature/`：`Genre`、`ProductionCompany`、`AggregateCredits` 系列、`Account`、`SessionStore`、`UserProfileStore`、`AccountProfile`、`AccountAvatarURLFactory`（合併重複頭像網址邏輯）、`HomeCategory`、`HomeContentProviding`、`HomeContentRepository`、`HomeContentItem`。(C) 只剩單一 feature 使用而移回：`AccountAvatarProviding` / `AccountAvatarRepository` → MainTabBar；`ImageCacheClearing` / `SDWebImageCacheStore` → MainMemberSetting。4.3 補判準細則與調整表，機械檢查改以 `find` 涵蓋巢狀資料夾並新增第五項「Data 不得引用 Presentation 型別」，同步 11 節 Phase 2 程序、12.3、13 節 R8、14 節維護規則與 15 節路徑。simulator Debug clean build 無警告、五項機械檢查無輸出；runtime 走查未執行 |
 | 2.11 | 2026-09-14 | (1) 刪除未使用的 `MyTMDB_App/ViewController.swift`（佔位畫面，直接依賴 `SessionStoring` 並自行處理登出）。(2) 新增 Domain `ImageCacheClearing` 與 Data `SDWebImageCacheStore`，`ClearLocalDataUseCase` 改為 `async` 並統一清除 session、會員快取、搜尋紀錄與圖片快取；`MainMemberSettingViewController` 不再直接呼叫 `SDImageCache`。4.2 補第三方套件位置規則。(3) `AccountSessionProviding`、`AccountProfileProviding` 由 `AccountMediaStateProviding.swift` 拆為獨立檔；`LocalAccountDataUseCases.swift` 拆為三個 UseCase 檔；`EisodeDetail/ViewModel/Presentation/` 移至 `EisodeDetail/Presentation/`。同步記錄先前未入文件的流程變更於 8.2：設定頁依帳號模式顯示訪客卡（登入 / 註冊）並隱藏帳號區塊與登出；`LoginEntryContext`（`.root` / `.inApp`）與 page sheet 登入頁；登入後以 `initialTab` 還原原 tab。更新 3.1、12.4 與 15 節路徑。simulator Debug clean build 無警告、4.3 機械檢查無輸出；runtime 走查未執行 |
 | 2.10 | 2026-09-14 | 依 SDD 合規稽核修正：(1) `MainMemberSettingViewModel`、`MainSearchViewModel` 不再依賴 Data 儲存協定，新增 Domain `AuthSessionProviding`、`SearchHistoryProviding`，`AccountProfileProviding` 補 `cachedProfile()` / `clearCachedProfile()`，新增 `RefreshAccountProfileUseCase`、`LogoutUseCase`、`ClearLocalDataUseCase`；`SearchHistoryStore` 改用共用 `AppPreferencesStorage`（抽至 `Feature/Data/Storage/`）以符合 `Sendable`；`AuthSession` 升格至 `Feature/Domain/Entity/`。(2) 16 處 DTO 的 `未命名` 類 fallback 改為空字串，文案移至 Presentation 與 App Intent entity。(3) `APIConfig` 的外部資源網址抽為 `Feature/Config/TMDBResourceURL`，`AppLocalization` 移至 `Feature/Config/`，4.2 補跨層共用設定規則。(4) `NetworkError.errorDescription` 改為英文除錯描述，App Intent 收藏失敗訊息改用 `errorMessage`。小項：`AuthSession` 補 `nonisolated`；刪除只轉呼叫 Repository 的 `LoadAccountCollectionPageUseCase`；5 個詳情 UseCase 的 `@escaping` log closure 改為注入 `AuxiliaryLoadFailureReporting`；`AppComposition` 移除 session 讀取，season / episode credential 與登入判斷改於使用時由 `AuthSessionProviding` 解析（不再於建立畫面時快照）；移除 `HomeCategory` 未使用的 `Codable`。simulator Debug clean build 無警告、稽核檢查無輸出；runtime 走查未執行 |

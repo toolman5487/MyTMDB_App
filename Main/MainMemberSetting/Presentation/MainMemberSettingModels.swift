@@ -43,7 +43,7 @@ nonisolated enum MainMemberSettingRowAccessory: Sendable, Equatable {
 nonisolated enum MainMemberSettingRowKind: Sendable, Equatable, Hashable {
     case profileSummary
     case guestPrompt
-    case accountId
+    case accountID
     case refreshProfile
     case clearProfileCache
     case clearImageCache

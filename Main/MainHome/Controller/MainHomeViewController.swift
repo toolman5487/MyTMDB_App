@@ -74,7 +74,10 @@ final class MainHomeViewController: MainBaseViewController {
     }
 
     override func bindViewModel() {
-        loadHome()
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
+        loadInitialContent()
     }
 
     // MARK: - Lifecycle
@@ -137,16 +140,11 @@ final class MainHomeViewController: MainBaseViewController {
 
     // MARK: - Data Loading
 
-    private func loadHome() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let viewModel = self?.viewModel else { return }
-
-            self?.render(state: .loading)
-            await viewModel.loadHome()
-
-            guard !Task.isCancelled, let self else { return }
-            render(state: viewModel.state)
+            await viewModel.loadInitialContent()
         }
     }
 
@@ -183,7 +181,7 @@ final class MainHomeViewController: MainBaseViewController {
             carouselItems = []
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadHome()
+                self?.loadInitialContent()
             }
         }
 

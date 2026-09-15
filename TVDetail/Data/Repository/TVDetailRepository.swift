@@ -30,7 +30,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func series(id: Int) async throws -> TVSeries {
         let dto: TVSeriesDTO = try await network.get(
-            path: APIConfig.TV.detail(seriesId: id),
+            path: APIConfig.TV.detail(seriesID: id),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
@@ -38,7 +38,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func aggregateCredits(seriesID: Int) async throws -> AggregateCredits {
         let dto: AggregateCreditsDTO = try await network.get(
-            path: APIConfig.TV.aggregateCredits(seriesId: seriesID),
+            path: APIConfig.TV.aggregateCredits(seriesID: seriesID),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
@@ -46,7 +46,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func videos(seriesID: Int) async throws -> [Video] {
         let dto: VideosDTO = try await network.get(
-            path: APIConfig.TV.videos(seriesId: seriesID),
+            path: APIConfig.TV.videos(seriesID: seriesID),
             queryItems: localizedQueryItems
         )
         return dto.mapped()
@@ -54,7 +54,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func images(seriesID: Int) async throws -> MediaImages {
         let dto: MediaImagesDTO = try await network.get(
-            path: APIConfig.TV.images(seriesId: seriesID),
+            path: APIConfig.TV.images(seriesID: seriesID),
             queryItems: imageQueryItems
         )
         return dto.mapped()
@@ -62,7 +62,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func recommendations(seriesID: Int, page: Int) async throws -> Page<MediaSummary> {
         let dto: MediaSummaryPageDTO = try await network.get(
-            path: APIConfig.TV.recommendations(seriesId: seriesID),
+            path: APIConfig.TV.recommendations(seriesID: seriesID),
             queryItems: pagedQueryItems(page: page)
         )
         return dto.mapped()
@@ -70,7 +70,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func similar(seriesID: Int, page: Int) async throws -> Page<MediaSummary> {
         let dto: MediaSummaryPageDTO = try await network.get(
-            path: APIConfig.TV.similar(seriesId: seriesID),
+            path: APIConfig.TV.similar(seriesID: seriesID),
             queryItems: pagedQueryItems(page: page)
         )
         return dto.mapped()
@@ -78,7 +78,7 @@ nonisolated final class TVDetailRepository: TVDetailProviding {
 
     func watchProviders(seriesID: Int) async throws -> WatchProviders {
         let dto: WatchProvidersDTO = try await network.get(
-            path: APIConfig.TV.watchProviders(seriesId: seriesID),
+            path: APIConfig.TV.watchProviders(seriesID: seriesID),
             queryItems: []
         )
         return dto.mapped()

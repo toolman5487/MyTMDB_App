@@ -70,7 +70,7 @@ nonisolated final class PersonDetailRepository: PersonDetailProviding {
 
     func externalIDs(personID: Int) async throws -> PersonExternalIDs {
         let dto: PersonExternalIDsDTO = try await network.get(
-            path: APIConfig.Person.externalIds(id: personID),
+            path: APIConfig.Person.externalIDs(id: personID),
             queryItems: []
         )
         return dto.mapped()

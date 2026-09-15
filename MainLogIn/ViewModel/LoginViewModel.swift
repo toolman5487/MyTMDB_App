@@ -12,8 +12,8 @@ import Foundation
 enum LoginState: Equatable {
     case idle
     case loading
-    case success(sessionId: String)
-    case guestSuccess(guestSessionId: String)
+    case success(sessionID: String)
+    case guestSuccess(guestSessionID: String)
     case failed(ErrorMessage, recoveryAction: LoginFailureRecoveryAction)
 }
 
@@ -98,9 +98,9 @@ final class LoginViewModel {
         state = .loading
 
         do {
-            let sessionId = try await authentication.createUserSession(username: username, password: password)
+            let sessionID = try await authentication.createUserSession(username: username, password: password)
             guard !Task.isCancelled else { return }
-            state = .success(sessionId: sessionId)
+            state = .success(sessionID: sessionID)
         } catch {
             guard !Task.isCancelled else { return }
             let recoveryAction = makeLoginFailureRecoveryAction(for: error)
@@ -115,9 +115,9 @@ final class LoginViewModel {
         state = .loading
 
         do {
-            let guestSessionId = try await authentication.createGuestSession()
+            let guestSessionID = try await authentication.createGuestSession()
             guard !Task.isCancelled else { return }
-            state = .guestSuccess(guestSessionId: guestSessionId)
+            state = .guestSuccess(guestSessionID: guestSessionID)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage, recoveryAction: .retry)

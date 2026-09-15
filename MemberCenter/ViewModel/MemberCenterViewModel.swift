@@ -57,10 +57,10 @@ final class MemberCenterViewModel {
 
     // MARK: - Public Methods
 
-    func loadContent() async {
+    func loadInitialContent() async {
         switch session {
-        case .user(let sessionId):
-            await loadUserContent(sessionId: sessionId)
+        case .user(let sessionID):
+            await loadUserContent(sessionID: sessionID)
 
         case .guest, .loggedOut:
             apply(state: .guest(MemberCenterPresentationBuilder.makeGuestContent()))
@@ -69,7 +69,7 @@ final class MemberCenterViewModel {
 
     func refreshContentFromTabSelection() async {
         guard canRefreshContentFromTabSelection else { return }
-        await loadContent()
+        await loadInitialContent()
     }
 
     var canRefreshContentFromTabSelection: Bool {
@@ -90,19 +90,19 @@ final class MemberCenterViewModel {
         guard let accountContext else { return nil }
         return MemberCenterListRoute(
             destination: destination,
-            accountId: accountContext.accountId,
-            sessionId: accountContext.sessionId
+            accountID: accountContext.accountID,
+            sessionID: accountContext.sessionID
         )
     }
 
     // MARK: - Private Methods
 
-    private func loadUserContent(sessionId: String) async {
+    private func loadUserContent(sessionID: String) async {
         let cancellationFallbackState = lastSettledState
         apply(state: .loading)
 
         do {
-            let overview = try await loadOverview(sessionID: sessionId)
+            let overview = try await loadOverview(sessionID: sessionID)
             guard !Task.isCancelled else {
                 apply(state: cancellationFallbackState)
                 return
@@ -184,11 +184,11 @@ final class MemberCenterViewModel {
     }
 
     private func makeAccountContext(profile: AccountProfile) -> MemberCenterAccountContext? {
-        guard case .user(let sessionId) = session else { return nil }
+        guard case .user(let sessionID) = session else { return nil }
 
         return MemberCenterAccountContext(
-            accountId: profile.id,
-            sessionId: sessionId
+            accountID: profile.id,
+            sessionID: sessionID
         )
     }
 }

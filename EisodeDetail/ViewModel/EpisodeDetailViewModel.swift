@@ -74,7 +74,7 @@ final class EpisodeDetailViewModel {
 
     // MARK: - Data Loading
 
-    func loadEpisodeDetail() async {
+    func loadInitialContent() async {
         state = .loading
         accountMediaController.prepareForLoading()
 

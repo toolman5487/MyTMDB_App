@@ -130,14 +130,14 @@ final class MemberCenterViewController: BaseListViewController {
     private func loadInitialContentIfNeeded() {
         guard !hasStartedInitialLoad else { return }
         hasStartedInitialLoad = true
-        loadContent()
+        loadInitialContent()
     }
 
-    private func loadContent() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadContent()
+            await viewModel.loadInitialContent()
         }
     }
 
@@ -162,7 +162,7 @@ final class MemberCenterViewController: BaseListViewController {
         case .failed(let message):
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadContent()
+                self?.loadInitialContent()
             }
         }
 

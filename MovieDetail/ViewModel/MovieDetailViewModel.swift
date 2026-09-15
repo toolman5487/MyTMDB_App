@@ -65,16 +65,16 @@ final class MovieDetailViewModel {
 
     // MARK: - Data Loading
 
-    func loadMovieDetail(id: Int) async {
+    func loadInitialContent(movieID: Int) async {
         state = .loading
         accountMediaController.prepareForLoading()
 
         do {
-            async let content = loadMovieDetailUseCase(movieID: id)
+            async let content = loadMovieDetailUseCase(movieID: movieID)
             await accountMediaController.loadAccountMediaState(
                 kind: .movie,
-                mediaID: id,
-                sourceDescription: "movie \(id)"
+                mediaID: movieID,
+                sourceDescription: "movie \(movieID)"
             )
             let loadedContent = try await content
             guard !Task.isCancelled else { return }

@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 protocol MainTabBarAvatarProviding: AnyObject {
-    func fetchAvatarImage(sessionId: String, displayScale: CGFloat) async -> UIImage?
+    func fetchAvatarImage(sessionID: String, displayScale: CGFloat) async -> UIImage?
 }
 
 // MARK: - MainTabBarAvatarImageProvider
@@ -35,9 +35,9 @@ final class MainTabBarAvatarImageProvider: MainTabBarAvatarProviding {
 
     // MARK: - MainTabBarAvatarProviding
 
-    func fetchAvatarImage(sessionId: String, displayScale: CGFloat) async -> UIImage? {
+    func fetchAvatarImage(sessionID: String, displayScale: CGFloat) async -> UIImage? {
         do {
-            guard let data = try await avatarProvider.avatarImageData(sessionID: sessionId),
+            guard let data = try await avatarProvider.avatarImageData(sessionID: sessionID),
                   let image = UIImage(data: data) else {
                 return nil
             }

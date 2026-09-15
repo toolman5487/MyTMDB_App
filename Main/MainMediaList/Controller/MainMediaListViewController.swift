@@ -43,19 +43,23 @@ final class MainMediaListViewController: MainBaseViewController {
 
     // MARK: - UI Components
 
-    private lazy var searchResultsViewController: SearchResultsViewController = {
-        let viewController = sceneBuilder.makeSearchResultsViewController(mediaKind: mediaKind)
-        viewController.onItemSelected = { [weak self] itemID in
-            self?.showSearchResultDetail(itemID: itemID)
-        }
-        viewController.onSortBarButtonVisibilityChanged = { [weak self] isVisible, selectedOption in
-            self?.updateSearchSortBarButtonVisibility(
-                isVisible: isVisible,
-                selectedSortOption: selectedOption
-            )
-        }
-        return viewController
-    }()
+    private lazy var searchResultsViewController: UIViewController = sceneBuilder
+        .makeSearchResultsViewController(
+            mediaKind: mediaKind,
+            onItemSelected: { [weak self] itemID in
+                self?.showSearchResultDetail(itemID: itemID)
+            },
+            onSortBarButtonVisibilityChanged: { [weak self] isVisible, selectedOption in
+                self?.updateSearchSortBarButtonVisibility(
+                    isVisible: isVisible,
+                    selectedSortOption: selectedOption
+                )
+            }
+        )
+
+    private var searchResultsHandler: (any SearchResultsHandling)? {
+        searchResultsViewController as? any SearchResultsHandling
+    }
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchResultsViewController)
@@ -123,7 +127,7 @@ final class MainMediaListViewController: MainBaseViewController {
         guard id > 0 else { return }
 
         searchController.searchBar.text = nil
-        searchResultsViewController.reset()
+        searchResultsHandler?.reset()
         searchController.isActive = false
         loadTask?.cancel()
         filterSelectionTask?.cancel()
@@ -132,7 +136,7 @@ final class MainMediaListViewController: MainBaseViewController {
 
         filterSelectionTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadContent(selectingGenreID: id)
+            await viewModel.loadInitialContent(selectingGenreID: id)
         }
     }
 
@@ -244,17 +248,17 @@ final class MainMediaListViewController: MainBaseViewController {
         let trimmedKeyword = (keyword ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmedKeyword.isEmpty else {
-            searchResultsViewController.reset()
+            searchResultsHandler?.reset()
             hideSortBarButtonItem()
             return
         }
 
-        searchResultsViewController.submitSearch(keyword: trimmedKeyword)
+        searchResultsHandler?.submitSearch(keyword: trimmedKeyword)
     }
 
     private func renderSearchTypingLoadingIfNeeded(keyword: String) {
         guard !keyword.isEmpty else { return }
-        searchResultsViewController.showTypingLoading()
+        searchResultsHandler?.showTypingLoading()
         hideSortBarButtonItem()
     }
 
@@ -301,7 +305,7 @@ final class MainMediaListViewController: MainBaseViewController {
         isSearchMode: Bool = false
     ) {
         if isSearchMode {
-            searchResultsViewController.selectSortOption(option)
+            searchResultsHandler?.selectSortOption(option)
             return
         }
 
@@ -396,7 +400,7 @@ extension MainMediaListViewController: UICollectionViewDelegateFlowLayout {
         let itemID = items[indexPath.item].id
 
         collectionView.deselectItem(at: indexPath, animated: true)
-        router.showDetail(itemID: itemID)
+        router.showMediaDetail(itemID: itemID)
     }
 
     func collectionView(
@@ -468,7 +472,7 @@ extension MainMediaListViewController: UISearchResultsUpdating {
         let keyword = (searchController.searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !keyword.isEmpty else {
-            searchResultsViewController.reset()
+            searchResultsHandler?.reset()
             hideSortBarButtonItem()
             return
         }
@@ -513,14 +517,14 @@ private extension MainMediaListViewController {
             itemCount: items.count
         ) else { return }
 
-        let currentMovieID = items[indexPath.item].id
+        let currentItemID = items[indexPath.item].id
 
         paginationTaskController.run { [weak self] in
             guard let self else { return }
 
             switch viewModel.state {
             case .loaded:
-                await viewModel.loadNextPageIfNeeded(currentMovieID: currentMovieID)
+                await viewModel.loadNextPageIfNeeded(currentItemID: currentItemID)
 
             case .idle, .loading, .refreshing, .empty, .failed:
                 break
@@ -550,19 +554,19 @@ private extension MainMediaListViewController {
     }
 
     func showSearchResultDetail(itemID: Int) {
-        router.showDetailFromSearch(
+        router.showMediaDetailFromSearch(
             itemID: itemID,
             searchController: searchController,
             onSearchDismissed: { [weak self] in
                 guard let self else { return }
-                searchResultsViewController.reset()
+                searchResultsHandler?.reset()
                 render(state: viewModel.state)
             }
         )
     }
 
     func restoreListAfterSearch() {
-        searchResultsViewController.reset()
+        searchResultsHandler?.reset()
         render(state: viewModel.state)
     }
 

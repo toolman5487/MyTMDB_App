@@ -66,7 +66,7 @@ final class TVDetailViewController: DetailActionBarViewController {
                 self?.updateRatingAction(with: ratingState)
             }
         )
-        loadTVDetail()
+        loadInitialContent()
     }
 
     // MARK: - Setup
@@ -277,11 +277,11 @@ final class TVDetailViewController: DetailActionBarViewController {
 
     // MARK: - Data Loading
 
-    private func loadTVDetail() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.loadTVDetail(seriesID: seriesID)
+            await viewModel.loadInitialContent(seriesID: seriesID)
         }
     }
 
@@ -307,7 +307,7 @@ final class TVDetailViewController: DetailActionBarViewController {
         case .failed(let message):
             sections = []
             renderDetailContent(
-                .failed(message: message) { [weak self] in self?.loadTVDetail() }
+                .failed(message: message) { [weak self] in self?.loadInitialContent() }
             )
             clearDetailUserActivity()
         }

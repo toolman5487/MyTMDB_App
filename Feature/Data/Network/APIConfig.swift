@@ -29,7 +29,7 @@ nonisolated enum APIConfig {
             return Movie.reviews(id: id)
 
         case .tv:
-            return TV.reviews(seriesId: id)
+            return TV.reviews(seriesID: id)
         }
     }
 
@@ -39,7 +39,7 @@ nonisolated enum APIConfig {
             return Movie.accountStates(id: id)
 
         case .tv:
-            return TV.accountStates(seriesId: id)
+            return TV.accountStates(seriesID: id)
         }
     }
 
@@ -77,17 +77,17 @@ nonisolated enum APIConfig {
 
     enum Account {
         static let me = "/account"
-        static func detail(accountId: Int) -> String { "/account/\(accountId)" }
-        static func favorite(accountId: Int) -> String { "/account/\(accountId)/favorite" }
-        static func favoriteMovies(accountId: Int) -> String { "/account/\(accountId)/favorite/movies" }
-        static func favoriteTv(accountId: Int) -> String { "/account/\(accountId)/favorite/tv" }
-        static func lists(accountId: Int) -> String { "/account/\(accountId)/lists" }
-        static func ratedMovies(accountId: Int) -> String { "/account/\(accountId)/rated/movies" }
-        static func ratedTv(accountId: Int) -> String { "/account/\(accountId)/rated/tv" }
-        static func ratedTvEpisodes(accountId: Int) -> String { "/account/\(accountId)/rated/tv/episodes" }
-        static func watchlist(accountId: Int) -> String { "/account/\(accountId)/watchlist" }
-        static func watchlistMovies(accountId: Int) -> String { "/account/\(accountId)/watchlist/movies" }
-        static func watchlistTv(accountId: Int) -> String { "/account/\(accountId)/watchlist/tv" }
+        static func detail(accountID: Int) -> String { "/account/\(accountID)" }
+        static func favorite(accountID: Int) -> String { "/account/\(accountID)/favorite" }
+        static func favoriteMovies(accountID: Int) -> String { "/account/\(accountID)/favorite/movies" }
+        static func favoriteTV(accountID: Int) -> String { "/account/\(accountID)/favorite/tv" }
+        static func lists(accountID: Int) -> String { "/account/\(accountID)/lists" }
+        static func ratedMovies(accountID: Int) -> String { "/account/\(accountID)/rated/movies" }
+        static func ratedTV(accountID: Int) -> String { "/account/\(accountID)/rated/tv" }
+        static func ratedTVEpisodes(accountID: Int) -> String { "/account/\(accountID)/rated/tv/episodes" }
+        static func watchlist(accountID: Int) -> String { "/account/\(accountID)/watchlist" }
+        static func watchlistMovies(accountID: Int) -> String { "/account/\(accountID)/watchlist/movies" }
+        static func watchlistTV(accountID: Int) -> String { "/account/\(accountID)/watchlist/tv" }
     }
 
     // MARK: - Authentication
@@ -144,7 +144,7 @@ nonisolated enum APIConfig {
     // MARK: - Find
 
     enum Find {
-        static func byExternalId(externalId: String) -> String { "/find/\(externalId)" }
+        static func byExternalID(externalID: String) -> String { "/find/\(externalID)" }
     }
 
     // MARK: - Genre
@@ -157,9 +157,9 @@ nonisolated enum APIConfig {
     // MARK: - GuestSession
 
     enum GuestSession {
-        static func ratedMovies(guestSessionId: String) -> String { "/guest_session/\(guestSessionId)/rated/movies" }
-        static func ratedTv(guestSessionId: String) -> String { "/guest_session/\(guestSessionId)/rated/tv" }
-        static func ratedTvEpisodes(guestSessionId: String) -> String { "/guest_session/\(guestSessionId)/rated/tv/episodes" }
+        static func ratedMovies(guestSessionID: String) -> String { "/guest_session/\(guestSessionID)/rated/movies" }
+        static func ratedTV(guestSessionID: String) -> String { "/guest_session/\(guestSessionID)/rated/tv" }
+        static func ratedTVEpisodes(guestSessionID: String) -> String { "/guest_session/\(guestSessionID)/rated/tv/episodes" }
     }
 
     // MARK: - Keyword
@@ -173,11 +173,11 @@ nonisolated enum APIConfig {
 
     enum List {
         static let create = "/list"
-        static func detail(listId: Int) -> String { "/list/\(listId)" }
-        static func addItem(listId: Int) -> String { "/list/\(listId)/add_item" }
-        static func clear(listId: Int) -> String { "/list/\(listId)/clear" }
-        static func itemStatus(listId: Int) -> String { "/list/\(listId)/item_status" }
-        static func removeItem(listId: Int) -> String { "/list/\(listId)/remove_item" }
+        static func detail(listID: Int) -> String { "/list/\(listID)" }
+        static func addItem(listID: Int) -> String { "/list/\(listID)/add_item" }
+        static func clear(listID: Int) -> String { "/list/\(listID)/clear" }
+        static func itemStatus(listID: Int) -> String { "/list/\(listID)/item_status" }
+        static func removeItem(listID: Int) -> String { "/list/\(listID)/remove_item" }
     }
 
     // MARK: - Movie
@@ -194,7 +194,7 @@ nonisolated enum APIConfig {
         static func alternativeTitles(id: Int) -> String { "/movie/\(id)/alternative_titles" }
         static func changes(id: Int) -> String { "/movie/\(id)/changes" }
         static func credits(id: Int) -> String { "/movie/\(id)/credits" }
-        static func externalIds(id: Int) -> String { "/movie/\(id)/external_ids" }
+        static func externalIDs(id: Int) -> String { "/movie/\(id)/external_ids" }
         static func images(id: Int) -> String { "/movie/\(id)/images" }
         static func keywords(id: Int) -> String { "/movie/\(id)/keywords" }
         static func lists(id: Int) -> String { "/movie/\(id)/lists" }
@@ -217,7 +217,7 @@ nonisolated enum APIConfig {
         static func detail(id: Int) -> String { "/person/\(id)" }
         static func changes(id: Int) -> String { "/person/\(id)/changes" }
         static func combinedCredits(id: Int) -> String { "/person/\(id)/combined_credits" }
-        static func externalIds(id: Int) -> String { "/person/\(id)/external_ids" }
+        static func externalIDs(id: Int) -> String { "/person/\(id)/external_ids" }
         static func images(id: Int) -> String { "/person/\(id)/images" }
         static func movieCredits(id: Int) -> String { "/person/\(id)/movie_credits" }
         static func taggedImages(id: Int) -> String { "/person/\(id)/tagged_images" }
@@ -228,7 +228,7 @@ nonisolated enum APIConfig {
     // MARK: - Review
 
     enum Review {
-        static func detail(reviewId: String) -> String { "/review/\(reviewId)" }
+        static func detail(reviewID: String) -> String { "/review/\(reviewID)" }
     }
 
     // MARK: - Search
@@ -257,50 +257,50 @@ nonisolated enum APIConfig {
     enum TV {
         static let airingToday = "/tv/airing_today"
         static let changes = "/tv/changes"
-        static func episodeChanges(episodeId: Int) -> String { "/tv/episode/\(episodeId)/changes" }
-        static func episodeGroupDetail(episodeGroupId: String) -> String { "/tv/episode_group/\(episodeGroupId)" }
+        static func episodeChanges(episodeID: Int) -> String { "/tv/episode/\(episodeID)/changes" }
+        static func episodeGroupDetail(episodeGroupID: String) -> String { "/tv/episode_group/\(episodeGroupID)" }
         static let latest = "/tv/latest"
         static let onTheAir = "/tv/on_the_air"
         static let popular = "/tv/popular"
-        static func seasonChanges(seasonId: Int) -> String { "/tv/season/\(seasonId)/changes" }
+        static func seasonChanges(seasonID: Int) -> String { "/tv/season/\(seasonID)/changes" }
         static let topRated = "/tv/top_rated"
-        static func detail(seriesId: Int) -> String { "/tv/\(seriesId)" }
-        static func accountStates(seriesId: Int) -> String { "/tv/\(seriesId)/account_states" }
-        static func aggregateCredits(seriesId: Int) -> String { "/tv/\(seriesId)/aggregate_credits" }
-        static func alternativeTitles(seriesId: Int) -> String { "/tv/\(seriesId)/alternative_titles" }
-        static func changes(seriesId: Int) -> String { "/tv/\(seriesId)/changes" }
-        static func contentRatings(seriesId: Int) -> String { "/tv/\(seriesId)/content_ratings" }
-        static func credits(seriesId: Int) -> String { "/tv/\(seriesId)/credits" }
-        static func episodeGroups(seriesId: Int) -> String { "/tv/\(seriesId)/episode_groups" }
-        static func externalIds(seriesId: Int) -> String { "/tv/\(seriesId)/external_ids" }
-        static func images(seriesId: Int) -> String { "/tv/\(seriesId)/images" }
-        static func keywords(seriesId: Int) -> String { "/tv/\(seriesId)/keywords" }
-        static func lists(seriesId: Int) -> String { "/tv/\(seriesId)/lists" }
-        static func rating(seriesId: Int) -> String { "/tv/\(seriesId)/rating" }
-        static func recommendations(seriesId: Int) -> String { "/tv/\(seriesId)/recommendations" }
-        static func reviews(seriesId: Int) -> String { "/tv/\(seriesId)/reviews" }
-        static func screenedTheatrically(seriesId: Int) -> String { "/tv/\(seriesId)/screened_theatrically" }
-        static func seasonDetail(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)" }
-        static func seasonAccountStates(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/account_states" }
-        static func seasonAggregateCredits(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/aggregate_credits" }
-        static func seasonCredits(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/credits" }
-        static func episodeDetail(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)" }
-        static func episodeAccountStates(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/account_states" }
-        static func episodeCredits(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/credits" }
-        static func episodeExternalIds(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/external_ids" }
-        static func episodeImages(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/images" }
-        static func episodeRating(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/rating" }
-        static func episodeTranslations(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/translations" }
-        static func episodeVideos(seriesId: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/episode/\(episodeNumber)/videos" }
-        static func seasonExternalIds(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/external_ids" }
-        static func seasonImages(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/images" }
-        static func seasonTranslations(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/translations" }
-        static func seasonVideos(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/videos" }
-        static func seasonWatchProviders(seriesId: Int, seasonNumber: Int) -> String { "/tv/\(seriesId)/season/\(seasonNumber)/watch/providers" }
-        static func similar(seriesId: Int) -> String { "/tv/\(seriesId)/similar" }
-        static func translations(seriesId: Int) -> String { "/tv/\(seriesId)/translations" }
-        static func videos(seriesId: Int) -> String { "/tv/\(seriesId)/videos" }
-        static func watchProviders(seriesId: Int) -> String { "/tv/\(seriesId)/watch/providers" }
+        static func detail(seriesID: Int) -> String { "/tv/\(seriesID)" }
+        static func accountStates(seriesID: Int) -> String { "/tv/\(seriesID)/account_states" }
+        static func aggregateCredits(seriesID: Int) -> String { "/tv/\(seriesID)/aggregate_credits" }
+        static func alternativeTitles(seriesID: Int) -> String { "/tv/\(seriesID)/alternative_titles" }
+        static func changes(seriesID: Int) -> String { "/tv/\(seriesID)/changes" }
+        static func contentRatings(seriesID: Int) -> String { "/tv/\(seriesID)/content_ratings" }
+        static func credits(seriesID: Int) -> String { "/tv/\(seriesID)/credits" }
+        static func episodeGroups(seriesID: Int) -> String { "/tv/\(seriesID)/episode_groups" }
+        static func externalIDs(seriesID: Int) -> String { "/tv/\(seriesID)/external_ids" }
+        static func images(seriesID: Int) -> String { "/tv/\(seriesID)/images" }
+        static func keywords(seriesID: Int) -> String { "/tv/\(seriesID)/keywords" }
+        static func lists(seriesID: Int) -> String { "/tv/\(seriesID)/lists" }
+        static func rating(seriesID: Int) -> String { "/tv/\(seriesID)/rating" }
+        static func recommendations(seriesID: Int) -> String { "/tv/\(seriesID)/recommendations" }
+        static func reviews(seriesID: Int) -> String { "/tv/\(seriesID)/reviews" }
+        static func screenedTheatrically(seriesID: Int) -> String { "/tv/\(seriesID)/screened_theatrically" }
+        static func seasonDetail(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)" }
+        static func seasonAccountStates(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/account_states" }
+        static func seasonAggregateCredits(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/aggregate_credits" }
+        static func seasonCredits(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/credits" }
+        static func episodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)" }
+        static func episodeAccountStates(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/account_states" }
+        static func episodeCredits(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/credits" }
+        static func episodeExternalIDs(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/external_ids" }
+        static func episodeImages(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/images" }
+        static func episodeRating(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/rating" }
+        static func episodeTranslations(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/translations" }
+        static func episodeVideos(seriesID: Int, seasonNumber: Int, episodeNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/episode/\(episodeNumber)/videos" }
+        static func seasonExternalIDs(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/external_ids" }
+        static func seasonImages(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/images" }
+        static func seasonTranslations(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/translations" }
+        static func seasonVideos(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/videos" }
+        static func seasonWatchProviders(seriesID: Int, seasonNumber: Int) -> String { "/tv/\(seriesID)/season/\(seasonNumber)/watch/providers" }
+        static func similar(seriesID: Int) -> String { "/tv/\(seriesID)/similar" }
+        static func translations(seriesID: Int) -> String { "/tv/\(seriesID)/translations" }
+        static func videos(seriesID: Int) -> String { "/tv/\(seriesID)/videos" }
+        static func watchProviders(seriesID: Int) -> String { "/tv/\(seriesID)/watch/providers" }
     }
 
     // MARK: - WatchProviders

@@ -35,16 +35,16 @@ nonisolated enum MemberCenterProfileAction: Sendable, Equatable {
 // MARK: - MemberCenterAccountContext
 
 nonisolated struct MemberCenterAccountContext: Sendable, Equatable {
-    let accountId: Int
-    let sessionId: String
+    let accountID: Int
+    let sessionID: String
 }
 
 // MARK: - MemberCenterListRoute
 
 nonisolated struct MemberCenterListRoute: Sendable, Equatable {
     let destination: MemberCenterDestination
-    let accountId: Int
-    let sessionId: String
+    let accountID: Int
+    let sessionID: String
 }
 
 // MARK: - MemberCenterGuestContent

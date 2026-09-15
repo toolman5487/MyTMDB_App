@@ -35,26 +35,26 @@ nonisolated struct AppIntentSessionResolver: AppIntentSessionResolving {
     }
 
     func resolveUserAccountContext() async throws -> MemberCenterAccountContext {
-        guard case .user(let sessionId) = sessionStore.load(),
-              !sessionId.isEmpty else {
+        guard case .user(let sessionID) = sessionStore.load(),
+              !sessionID.isEmpty else {
             throw AppIntentSessionResolutionError.requiresUserLogin
         }
 
         if let cachedAccountID = profileProvider.cachedProfile()?.id, cachedAccountID > 0 {
             return MemberCenterAccountContext(
-                accountId: cachedAccountID,
-                sessionId: sessionId
+                accountID: cachedAccountID,
+                sessionID: sessionID
             )
         }
 
-        let profile = try await profileProvider.profile(sessionID: sessionId)
+        let profile = try await profileProvider.profile(sessionID: sessionID)
         guard profile.id > 0 else {
             throw AppIntentSessionResolutionError.invalidAccount
         }
 
         return MemberCenterAccountContext(
-            accountId: profile.id,
-            sessionId: sessionId
+            accountID: profile.id,
+            sessionID: sessionID
         )
     }
 }

@@ -44,7 +44,7 @@ nonisolated final class AccountMediaStateRepository: AccountMediaStateProviding 
         isFavorite: Bool
     ) async throws -> AccountActionResult {
         let dto: AccountStatusResponseDTO = try await network.post(
-            path: APIConfig.Account.favorite(accountId: accountID),
+            path: APIConfig.Account.favorite(accountID: accountID),
             queryItems: Self.authenticatedQueryItems(sessionID: sessionID),
             body: AccountFavoriteRequestDTO(
                 mediaType: kind,
@@ -99,11 +99,11 @@ nonisolated final class AccountMediaStateRepository: AccountMediaStateProviding 
             return APIConfig.Movie.rating(id: id)
 
         case .tv(let seriesID):
-            return APIConfig.TV.rating(seriesId: seriesID)
+            return APIConfig.TV.rating(seriesID: seriesID)
 
         case .episode(let seriesID, let seasonNumber, let episodeNumber):
             return APIConfig.TV.episodeRating(
-                seriesId: seriesID,
+                seriesID: seriesID,
                 seasonNumber: seasonNumber,
                 episodeNumber: episodeNumber
             )

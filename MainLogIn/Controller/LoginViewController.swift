@@ -282,21 +282,21 @@ final class LoginViewController: BaseViewController {
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
 
-        case .success(let sessionId):
-            guard handledSuccessSessionID != sessionId else { return }
-            handledSuccessSessionID = sessionId
+        case .success(let sessionID):
+            guard handledSuccessSessionID != sessionID else { return }
+            handledSuccessSessionID = sessionID
             hideFailureState()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
-            finishUserLogin(sessionId: sessionId)
+            finishUserLogin(sessionID: sessionID)
 
-        case .guestSuccess(let guestSessionId):
-            guard handledSuccessSessionID != guestSessionId else { return }
-            handledSuccessSessionID = guestSessionId
+        case .guestSuccess(let guestSessionID):
+            guard handledSuccessSessionID != guestSessionID else { return }
+            handledSuccessSessionID = guestSessionID
             hideFailureState()
             setLoadingOverlayVisible(true)
             setActionButtonsEnabled(false)
-            finishGuestLogin(sessionId: guestSessionId)
+            finishGuestLogin(sessionID: guestSessionID)
 
         case .failed(let message, let recoveryAction):
             handledSuccessSessionID = nil
@@ -308,13 +308,13 @@ final class LoginViewController: BaseViewController {
 
     // MARK: - Helpers
 
-    private func finishUserLogin(sessionId: String) {
+    private func finishUserLogin(sessionID: String) {
         authFlowTask?.cancel()
         authFlowTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
             do {
-                try await authFlowHandler.finishUserLogin(sessionID: sessionId)
+                try await authFlowHandler.finishUserLogin(sessionID: sessionID)
             } catch {
                 guard !Task.isCancelled else { return }
                 handledSuccessSessionID = nil
@@ -323,9 +323,9 @@ final class LoginViewController: BaseViewController {
         }
     }
 
-    private func finishGuestLogin(sessionId: String) {
+    private func finishGuestLogin(sessionID: String) {
         authFlowTask?.cancel()
-        authFlowHandler.finishGuestLogin(sessionID: sessionId)
+        authFlowHandler.finishGuestLogin(sessionID: sessionID)
     }
 
     private func scrollToPage(_ page: AuthPage, animated: Bool) {

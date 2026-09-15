@@ -57,7 +57,7 @@ final class HomeSectionListViewModel {
 
     // MARK: - Public Methods
 
-    func loadInitial() async {
+    func loadInitialContent() async {
         state = .loading
 
         do {

@@ -103,11 +103,11 @@ final class MainSearchViewModel {
         }
     }
 
-    func loadNextDailyTrendingPageIfNeeded(currentResultID: String) async {
+    func loadNextDailyTrendingPageIfNeeded(currentItemID: String) async {
         guard case .dailyTrending(let content) = state,
               content.canLoadNextPage,
               !content.isLoadingNextPage,
-              shouldLoadNextPage(currentResultID: currentResultID, results: content.items) else {
+              shouldLoadNextPage(currentItemID: currentItemID, results: content.items) else {
             return
         }
 
@@ -196,11 +196,11 @@ final class MainSearchViewModel {
         }
     }
 
-    func loadNextPageIfNeeded(currentResultID: String) async {
+    func loadNextPageIfNeeded(currentItemID: String) async {
         guard case .results(let content) = state,
               content.canLoadNextPage,
               !content.isLoadingNextPage,
-              shouldLoadNextPage(currentResultID: currentResultID, results: content.results) else {
+              shouldLoadNextPage(currentItemID: currentItemID, results: content.results) else {
             return
         }
 
@@ -297,10 +297,10 @@ final class MainSearchViewModel {
     }
 
     private func shouldLoadNextPage(
-        currentResultID: String,
+        currentItemID: String,
         results: [MainSearchResultItem]
     ) -> Bool {
-        guard let currentIndex = results.firstIndex(where: { $0.id == currentResultID }) else {
+        guard let currentIndex = results.firstIndex(where: { $0.id == currentItemID }) else {
             return false
         }
 

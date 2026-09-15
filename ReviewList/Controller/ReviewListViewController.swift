@@ -70,7 +70,10 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
     }
 
     override func bindViewModel() {
-        loadReviews()
+        viewModel.bind { [weak self] state in
+            self?.render(state: state)
+        }
+        loadInitialContent()
     }
 
     // MARK: - Setup
@@ -106,17 +109,12 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     // MARK: - Data Loading
 
-    private func loadReviews() {
+    private func loadInitialContent() {
         loadTask?.cancel()
         paginationTaskController.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-
-            render(state: .loading)
-            await viewModel.loadReviews(mediaID: mediaID)
-
-            guard !Task.isCancelled else { return }
-            render(state: viewModel.state)
+            await viewModel.loadInitialContent(mediaID: mediaID)
         }
     }
 
@@ -167,7 +165,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
             isLoadingNextPage = false
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
-                self?.loadReviews()
+                self?.loadInitialContent()
             }
         }
 
@@ -192,13 +190,10 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         guard indexPath.item >= thresholdIndex else { return }
         guard viewModel.beginLoadingNextPage() else { return }
 
-        render(state: viewModel.state)
-
         paginationTaskController.run { [weak self] in
             guard let self else { return }
 
-            await viewModel.loadNextPage(mediaID: mediaID)
-            render(state: viewModel.state)
+            await viewModel.loadNextPage()
         }
     }
 
@@ -261,7 +256,6 @@ extension ReviewListViewController: UICollectionViewDataSource {
             headerView.configure(filters: filters)
             headerView.onFilterSelected = { [weak self] filter in
                 self?.viewModel.selectFilter(filter)
-                self?.render(state: self?.viewModel.state ?? .idle)
             }
         }
 

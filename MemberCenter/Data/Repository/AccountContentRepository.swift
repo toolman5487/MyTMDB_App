@@ -142,28 +142,28 @@ nonisolated final class AccountContentRepository: AccountContentProviding {
     ) -> String {
         switch destination {
         case .favoriteMovies:
-            return APIConfig.Account.favoriteMovies(accountId: accountID)
+            return APIConfig.Account.favoriteMovies(accountID: accountID)
 
         case .favoriteTV:
-            return APIConfig.Account.favoriteTv(accountId: accountID)
+            return APIConfig.Account.favoriteTV(accountID: accountID)
 
         case .watchlistMovies:
-            return APIConfig.Account.watchlistMovies(accountId: accountID)
+            return APIConfig.Account.watchlistMovies(accountID: accountID)
 
         case .watchlistTV:
-            return APIConfig.Account.watchlistTv(accountId: accountID)
+            return APIConfig.Account.watchlistTV(accountID: accountID)
 
         case .ratedMovies:
-            return APIConfig.Account.ratedMovies(accountId: accountID)
+            return APIConfig.Account.ratedMovies(accountID: accountID)
 
         case .ratedTV:
-            return APIConfig.Account.ratedTv(accountId: accountID)
+            return APIConfig.Account.ratedTV(accountID: accountID)
 
         case .ratedEpisodes:
-            return APIConfig.Account.ratedTvEpisodes(accountId: accountID)
+            return APIConfig.Account.ratedTVEpisodes(accountID: accountID)
 
         case .lists:
-            return APIConfig.Account.lists(accountId: accountID)
+            return APIConfig.Account.lists(accountID: accountID)
         }
     }
 }

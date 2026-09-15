@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/9/13.
 //
 
+import SnapKit
 import UIKit
 
 // MARK: - Scene Building
@@ -38,7 +39,11 @@ protocol HomeSceneBuilding: DetailSceneBuilding {
 
 @MainActor
 protocol MediaListSceneBuilding: DetailSceneBuilding {
-    func makeSearchResultsViewController(mediaKind: MediaKind) -> SearchResultsViewController
+    func makeSearchResultsViewController(
+        mediaKind: MediaKind,
+        onItemSelected: @escaping @MainActor (Int) -> Void,
+        onSortBarButtonVisibilityChanged: @escaping @MainActor (Bool, MediaSortOrder?) -> Void
+    ) -> UIViewController
 }
 
 @MainActor
@@ -260,14 +265,23 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
 
     // MARK: - Search
 
-    func makeSearchResultsViewController(mediaKind: MediaKind) -> SearchResultsViewController {
+    func makeSearchResultsViewController(
+        mediaKind: MediaKind,
+        onItemSelected: @escaping @MainActor (Int) -> Void,
+        onSortBarButtonVisibilityChanged: @escaping @MainActor (Bool, MediaSortOrder?) -> Void
+    ) -> UIViewController {
         let repository = MediaSearchRepository(network: network, localization: localization)
         let viewModel = SearchResultsViewModel(
             mediaKind: mediaKind,
             searchMedia: DefaultSearchMediaUseCase(repository: repository),
             sortMedia: DefaultSortMediaUseCase()
         )
-        return SearchResultsViewController(mediaKind: mediaKind, viewModel: viewModel)
+        return SearchResultsViewController(
+            mediaKind: mediaKind,
+            viewModel: viewModel,
+            onItemSelected: onItemSelected,
+            onSortBarButtonVisibilityChanged: onSortBarButtonVisibilityChanged
+        )
     }
 
     // MARK: - Details
@@ -412,8 +426,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     ) -> UIViewController {
         let viewModel = MemberCenterListViewModel(
             destination: destination,
-            accountId: accountID,
-            sessionId: sessionID,
+            accountID: accountID,
+            sessionID: sessionID,
             contentRepository: makeAccountContentRepository()
         )
         return MemberCenterListViewController(viewModel: viewModel, sceneBuilder: self)
@@ -505,7 +519,18 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
 // MARK: - RootLoadingViewController
 
 @MainActor
-private final class RootLoadingViewController: UIViewController {
+private final class RootLoadingViewController: BaseViewController {
+
+    // MARK: - Metrics
+
+    private enum Metrics {
+        static let animationCenterYOffset: CGFloat = -24
+        static let titleTopSpacing: CGFloat = 16
+        static let titleHorizontalInset: CGFloat = 24
+    }
+
+    // MARK: - UI Components
+
     private lazy var animationView = AppFactory.Animation.loadingAir(
         size: AppAnimationView.Metrics.rootSize
     )
@@ -516,23 +541,32 @@ private final class RootLoadingViewController: UIViewController {
         return label
     }()
 
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = ThemeColor.background
+        animationView.setAnimating(true)
+    }
+
+    // MARK: - BaseViewController
+
+    override func setupHierarchy() {
+        super.setupHierarchy()
         view.addSubview(animationView)
         view.addSubview(titleLabel)
+    }
 
-        animationView.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+    override func setupConstraints() {
+        super.setupConstraints()
 
-        NSLayoutConstraint.activate([
-            animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            animationView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -24),
-            titleLabel.topAnchor.constraint(equalTo: animationView.bottomAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-        ])
+        animationView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(Metrics.animationCenterYOffset)
+        }
 
-        animationView.setAnimating(true)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(animationView.snp.bottom).offset(Metrics.titleTopSpacing)
+            make.leading.trailing.equalToSuperview().inset(Metrics.titleHorizontalInset)
+        }
     }
 }

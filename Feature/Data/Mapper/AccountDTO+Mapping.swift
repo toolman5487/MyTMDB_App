@@ -33,10 +33,10 @@ extension Account {
 extension StoredUserProfile {
 
     func mapped() -> AccountProfile? {
-        guard let accountId else { return nil }
+        guard let accountID else { return nil }
 
         return AccountProfile(
-            id: accountId,
+            id: accountID,
             displayName: displayName,
             username: username,
             avatarURL: avatarURL,

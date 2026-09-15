@@ -190,8 +190,8 @@ final class MainTabBarController: UITabBarController {
         navigationController.pushViewController(
             sceneBuilder.makeMemberCenterListViewController(
                 destination: destination,
-                accountID: accountContext.accountId,
-                sessionID: accountContext.sessionId
+                accountID: accountContext.accountID,
+                sessionID: accountContext.sessionID
             ),
             animated: true
         )
@@ -329,13 +329,13 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func loadMemberTabAvatarIfNeeded() {
-        guard case .user(let sessionId) = session else { return }
+        guard case .user(let sessionID) = session else { return }
 
         avatarTask?.cancel()
         avatarTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             let image = await avatarProvider.fetchAvatarImage(
-                sessionId: sessionId,
+                sessionID: sessionID,
                 displayScale: traitCollection.displayScale
             )
             guard let image else { return }

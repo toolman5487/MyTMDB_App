@@ -74,8 +74,8 @@ final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
         show(
             sceneBuilder.makeMemberCenterListViewController(
                 destination: route.destination,
-                accountID: route.accountId,
-                sessionID: route.sessionId
+                accountID: route.accountID,
+                sessionID: route.sessionID
             ),
             using: .push
         )

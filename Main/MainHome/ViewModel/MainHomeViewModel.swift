@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - State
 
@@ -21,14 +20,19 @@ nonisolated enum MainHomeViewState: Equatable {
 // MARK: - MainHomeViewModel
 
 @MainActor
-@Observable
 final class MainHomeViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: MainHomeViewState = .idle
+    private(set) var state: MainHomeViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
 
     private let loadHomeSections: LoadHomeSectionsUseCase
+    private var onStateChange: (@MainActor (MainHomeViewState) -> Void)?
     private var loadGeneration = 0
 
     // MARK: - Initialization
@@ -37,9 +41,16 @@ final class MainHomeViewModel {
         self.loadHomeSections = loadHomeSections
     }
 
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (MainHomeViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
+    }
+
     // MARK: - Public Methods
 
-    func loadHome() async {
+    func loadInitialContent() async {
         loadGeneration += 1
         let currentGeneration = loadGeneration
         state = .loading

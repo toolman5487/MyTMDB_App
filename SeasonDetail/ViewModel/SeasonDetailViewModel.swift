@@ -55,7 +55,7 @@ final class SeasonDetailViewModel {
 
     // MARK: - Public Methods
 
-    func loadSeasonDetail(
+    func loadInitialContent(
         seriesID: Int,
         seasonNumber: Int
     ) async {

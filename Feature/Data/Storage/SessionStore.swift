@@ -99,16 +99,16 @@ final class SessionStore: SessionStoring {
 
     private func migrateLegacySession(from preferencesStore: UserDefaults) -> AuthSession {
         if preferencesStore.bool(forKey: LegacyKey.isGuest),
-           let guestSessionId = preferencesStore.string(forKey: LegacyKey.guestSession),
-           !guestSessionId.isEmpty {
-            let session = AuthSession.guest(sessionId: guestSessionId)
+           let guestSessionID = preferencesStore.string(forKey: LegacyKey.guestSession),
+           !guestSessionID.isEmpty {
+            let session = AuthSession.guest(sessionID: guestSessionID)
             save(session, to: preferencesStore)
             return session
         }
 
-        if let userSessionId = preferencesStore.string(forKey: LegacyKey.userSession),
-           !userSessionId.isEmpty {
-            let session = AuthSession.user(sessionId: userSessionId)
+        if let userSessionID = preferencesStore.string(forKey: LegacyKey.userSession),
+           !userSessionID.isEmpty {
+            let session = AuthSession.user(sessionID: userSessionID)
             save(session, to: preferencesStore)
             return session
         }

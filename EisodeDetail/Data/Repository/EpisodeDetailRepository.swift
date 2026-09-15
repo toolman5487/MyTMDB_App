@@ -31,7 +31,7 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
     func episode(input: EpisodeDetailInput) async throws -> Episode {
         let dto: EpisodeDetailDTO = try await network.get(
             path: APIConfig.TV.episodeDetail(
-                seriesId: input.seriesID,
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),
@@ -43,7 +43,7 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
     func credits(input: EpisodeDetailInput) async throws -> EpisodeCredits {
         let dto: EpisodeCreditsDTO = try await network.get(
             path: APIConfig.TV.episodeCredits(
-                seriesId: input.seriesID,
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),
@@ -55,7 +55,7 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
     func images(input: EpisodeDetailInput) async throws -> EpisodeImages {
         let dto: EpisodeImagesDTO = try await network.get(
             path: APIConfig.TV.episodeImages(
-                seriesId: input.seriesID,
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),
@@ -67,7 +67,7 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
     func videos(input: EpisodeDetailInput) async throws -> [Video] {
         let dto: VideosDTO = try await network.get(
             path: APIConfig.TV.episodeVideos(
-                seriesId: input.seriesID,
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),
@@ -78,8 +78,8 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
 
     func externalIDs(input: EpisodeDetailInput) async throws -> EpisodeExternalIDs {
         let dto: EpisodeExternalIDsDTO = try await network.get(
-            path: APIConfig.TV.episodeExternalIds(
-                seriesId: input.seriesID,
+            path: APIConfig.TV.episodeExternalIDs(
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),
@@ -91,7 +91,7 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
     func translations(input: EpisodeDetailInput) async throws -> EpisodeTranslations {
         let dto: EpisodeTranslationsDTO = try await network.get(
             path: APIConfig.TV.episodeTranslations(
-                seriesId: input.seriesID,
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),
@@ -106,7 +106,7 @@ nonisolated final class EpisodeDetailRepository: EpisodeDetailProviding {
     ) async throws -> EpisodeAccountState {
         let dto: EpisodeAccountStateDTO = try await network.get(
             path: APIConfig.TV.episodeAccountStates(
-                seriesId: input.seriesID,
+                seriesID: input.seriesID,
                 seasonNumber: input.seasonNumber,
                 episodeNumber: input.episodeNumber
             ),

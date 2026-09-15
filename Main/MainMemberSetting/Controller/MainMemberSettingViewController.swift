@@ -61,7 +61,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.reload()
+        viewModel.reloadContent()
         collectionView.reloadData()
     }
 
@@ -280,7 +280,7 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
         case .guestPrompt:
             reuseIdentifier = MainMemberSettingGuestPromptCollectionViewCell.reuseIdentifier
 
-        case .accountId,
+        case .accountID,
              .clearImageCache,
              .clearSearchHistory,
              .clearAllLocalData,

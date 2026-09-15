@@ -10,7 +10,7 @@ import Foundation
 // MARK: - StoredUserProfile
 
 nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
-    let accountId: Int?
+    let accountID: Int?
     let displayName: String
     let username: String
     let languageCode: String?
@@ -19,8 +19,19 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
     let avatarURL: URL?
     let avatarImageData: Data?
 
+    private enum CodingKeys: String, CodingKey {
+        case accountID = "accountId"
+        case displayName
+        case username
+        case languageCode
+        case regionCode
+        case includesAdultContent
+        case avatarURL
+        case avatarImageData
+    }
+
     init(
-        accountId: Int?,
+        accountID: Int?,
         displayName: String,
         username: String,
         languageCode: String? = nil,
@@ -29,7 +40,7 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
         avatarURL: URL?,
         avatarImageData: Data? = nil
     ) {
-        self.accountId = accountId
+        self.accountID = accountID
         self.displayName = displayName
         self.username = username
         self.languageCode = languageCode
@@ -40,7 +51,7 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
     }
 
     init(account: Account, avatarImageData: Data? = nil) {
-        self.accountId = account.id
+        self.accountID = account.id
         self.displayName = account.name?.isEmpty == false ? account.name ?? account.username : account.username
         self.username = account.username
         self.languageCode = account.iso_639_1
@@ -52,7 +63,7 @@ nonisolated struct StoredUserProfile: Codable, Sendable, Equatable {
 
     func updatingAvatarImageData(_ avatarImageData: Data?) -> StoredUserProfile {
         StoredUserProfile(
-            accountId: accountId,
+            accountID: accountID,
             displayName: displayName,
             username: username,
             languageCode: languageCode,

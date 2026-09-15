@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - ReviewListViewState
 
@@ -21,14 +20,19 @@ nonisolated enum ReviewListViewState: Equatable {
 // MARK: - ReviewListViewModel
 
 @MainActor
-@Observable
 final class ReviewListViewModel {
 
     // MARK: - Properties
 
-    private(set) var state: ReviewListViewState = .idle
+    private(set) var state: ReviewListViewState = .idle {
+        didSet {
+            guard oldValue != state else { return }
+            onStateChange?(state)
+        }
+    }
     private(set) var selectedFilter: ReviewFilter = .all
 
+    private var onStateChange: (@MainActor (ReviewListViewState) -> Void)?
     private let mediaKind: MediaKind
     private let loadReviewsUseCase: LoadReviewsUseCase
     private let filterReviewsUseCase: FilterReviewsUseCase
@@ -38,6 +42,7 @@ final class ReviewListViewModel {
     private var totalPages: Int = 1
     private var totalResults: Int = 0
     private var isLoadingNextPage = false
+    private var mediaID: Int?
 
     // MARK: - Initialization
 
@@ -51,9 +56,17 @@ final class ReviewListViewModel {
         self.filterReviewsUseCase = filterReviewsUseCase
     }
 
+    // MARK: - Output Binding
+
+    func bind(onStateChange: @escaping @MainActor (ReviewListViewState) -> Void) {
+        self.onStateChange = onStateChange
+        onStateChange(state)
+    }
+
     // MARK: - Public Methods
 
-    func loadReviews(mediaID: Int) async {
+    func loadInitialContent(mediaID: Int) async {
+        self.mediaID = mediaID
         state = .loading
         resetPagination()
 
@@ -77,7 +90,8 @@ final class ReviewListViewModel {
         return true
     }
 
-    func loadNextPage(mediaID: Int) async {
+    func loadNextPage() async {
+        guard let mediaID else { return }
         guard isLoadingNextPage || beginLoadingNextPage() else { return }
 
         let nextPage = currentPage + 1

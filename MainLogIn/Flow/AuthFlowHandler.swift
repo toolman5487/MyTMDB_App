@@ -51,7 +51,7 @@ nonisolated struct AuthSessionValidator: Sendable {
     private func validateUserSession(sessionID: String) async -> AuthSession {
         do {
             _ = try await profileProvider.profile(sessionID: sessionID)
-            return .user(sessionId: sessionID)
+            return .user(sessionID: sessionID)
         } catch let error as NetworkError where [401, 403].contains(error.statusCode ?? 0) {
             AppLogger.authentication.warning(
                 "Stored user session is unauthorized: \(error.statusCode ?? 0, privacy: .public)"
@@ -61,7 +61,7 @@ nonisolated struct AuthSessionValidator: Sendable {
             AppLogger.authentication.error(
                 "Stored user session validation failed: \(error.errorMessage.message, privacy: .public)"
             )
-            return .user(sessionId: sessionID)
+            return .user(sessionID: sessionID)
         }
     }
 }
@@ -96,14 +96,14 @@ final class AuthFlowHandler: AuthFlowHandling {
     }
 
     func finishUserLogin(sessionID: String) async throws {
-        let session = AuthSession.user(sessionId: sessionID)
+        let session = AuthSession.user(sessionID: sessionID)
         sessionStore.save(session)
         _ = try await profileProvider.profile(sessionID: sessionID)
         onFinish(session)
     }
 
     func finishGuestLogin(sessionID: String) {
-        let session = AuthSession.guest(sessionId: sessionID)
+        let session = AuthSession.guest(sessionID: sessionID)
         sessionStore.save(session)
         userProfileStore.clear()
         onFinish(session)

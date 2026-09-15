@@ -709,7 +709,7 @@ private extension MainSearchViewController {
             itemCount: items.count
         ) else { return }
 
-        let currentResultID = items[indexPath.item].id
+        let currentItemID = items[indexPath.item].id
         let loadsDailyTrending = isShowingDailyTrending
 
         paginationTaskController.run { [weak self] in
@@ -717,11 +717,11 @@ private extension MainSearchViewController {
 
             if loadsDailyTrending {
                 await viewModel.loadNextDailyTrendingPageIfNeeded(
-                    currentResultID: currentResultID
+                    currentItemID: currentItemID
                 )
             } else {
                 await viewModel.loadNextPageIfNeeded(
-                    currentResultID: currentResultID
+                    currentItemID: currentItemID
                 )
             }
         }
