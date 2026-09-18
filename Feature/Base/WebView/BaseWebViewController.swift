@@ -32,8 +32,6 @@ final class BaseWebViewController: BaseViewController {
     private let url: URL
     private let preferredTitle: String?
 
-    private var bottomTabBarBottomConstraint: Constraint?
-
     // MARK: - UI Components
 
     private lazy var webView: WKWebView = {
@@ -134,18 +132,6 @@ final class BaseWebViewController: BaseViewController {
         hidesBottomBarWhenPushed = true
     }
 
-    // MARK: - Lifecycle
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        registerKeyboardNotifications()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        unregisterKeyboardNotifications()
-    }
-
     // MARK: - BaseViewController
 
     override func configureView() {
@@ -211,28 +197,6 @@ final class BaseWebViewController: BaseViewController {
         webView.goForward()
     }
 
-    @objc private func handleKeyboardFrameChange(_ notification: Notification) {
-        guard
-            let userInfo = notification.userInfo,
-            let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-            let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
-            let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
-        else {
-            return
-        }
-
-        let keyboardFrameInView = view.convert(keyboardFrame, from: nil)
-        let overlap = max(0, view.bounds.maxY - keyboardFrameInView.minY)
-        bottomTabBarBottomConstraint?.update(offset: -overlap)
-
-        UIView.animate(
-            withDuration: duration,
-            delay: 0,
-            options: UIView.AnimationOptions(rawValue: curveValue << 16)
-        ) {
-            self.view.layoutIfNeeded()
-        }
-    }
 }
 
 // MARK: - Setup
@@ -249,7 +213,7 @@ private extension BaseWebViewController {
     func setupBottomTabBarConstraints() {
         bottomTabBarView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            bottomTabBarBottomConstraint = make.bottom.equalToSuperview().constraint
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
 
         bottomTabBarSeparatorView.snp.makeConstraints { make in
@@ -403,28 +367,6 @@ private extension BaseWebViewController {
         }
 
         return URL(string: "https://\(trimmed)")
-    }
-}
-
-// MARK: - Keyboard
-
-private extension BaseWebViewController {
-
-    func registerKeyboardNotifications() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardFrameChange),
-            name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
-        )
-    }
-
-    func unregisterKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
-        )
     }
 }
 

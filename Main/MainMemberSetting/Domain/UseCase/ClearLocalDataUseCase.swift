@@ -10,7 +10,13 @@ import Foundation
 // MARK: - ClearLocalDataUseCase
 
 nonisolated protocol ClearLocalDataUseCase: Sendable {
-    func callAsFunction() async
+    func callAsFunction(logoutScope: LogoutScope) async throws
+}
+
+extension ClearLocalDataUseCase {
+    func callAsFunction() async throws {
+        try await callAsFunction(logoutScope: .remoteAndLocal)
+    }
 }
 
 // MARK: - DefaultClearLocalDataUseCase
@@ -37,8 +43,8 @@ nonisolated struct DefaultClearLocalDataUseCase: ClearLocalDataUseCase {
 
     // MARK: - ClearLocalDataUseCase
 
-    func callAsFunction() async {
-        logout()
+    func callAsFunction(logoutScope: LogoutScope) async throws {
+        try await logout(scope: logoutScope)
         searchHistory.clear(scope: nil)
         await imageCache.clearImageCache()
     }

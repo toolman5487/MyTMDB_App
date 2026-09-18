@@ -325,7 +325,17 @@ final class LoginViewController: BaseViewController {
 
     private func finishGuestLogin(sessionID: String) {
         authFlowTask?.cancel()
-        authFlowHandler.finishGuestLogin(sessionID: sessionID)
+        authFlowTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            do {
+                try await authFlowHandler.finishGuestLogin(sessionID: sessionID)
+            } catch {
+                guard !Task.isCancelled else { return }
+                handledSuccessSessionID = nil
+                loginVM.reportFailure(error.errorMessage)
+            }
+        }
     }
 
     private func scrollToPage(_ page: AuthPage, animated: Bool) {

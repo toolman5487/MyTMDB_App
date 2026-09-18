@@ -194,6 +194,11 @@ nonisolated final class NetworkService: NetworkServicing {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
 
+        if containsSensitiveCredentials(path: path, queryItems: queryItems) {
+            urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
+            urlRequest.setValue("no-store", forHTTPHeaderField: "Cache-Control")
+        }
+
         if let body {
             do {
                 urlRequest.httpBody = try JSONEncoder().encode(AnyEncodable(body))
@@ -256,6 +261,15 @@ nonisolated final class NetworkService: NetworkServicing {
         }
 
         return url
+    }
+
+    private func containsSensitiveCredentials(
+        path: String,
+        queryItems: [URLQueryItem]
+    ) -> Bool {
+        let sensitiveQueryNames = Set(["session_id", "guest_session_id", "request_token"])
+        return path.hasPrefix("/authentication/")
+            || queryItems.contains(where: { sensitiveQueryNames.contains($0.name) })
     }
 
     private func makeHTTPError(statusCode: Int, data: Data) -> NetworkError {

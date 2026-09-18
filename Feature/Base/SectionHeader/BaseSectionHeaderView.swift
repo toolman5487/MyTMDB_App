@@ -35,7 +35,11 @@ class BaseSectionHeaderView: UICollectionReusableView {
         return view
     }()
 
-    private let titleLabel = AppFactory.Label.sectionTitle(color: ThemeColor.highlight)
+    private let titleLabel: UILabel = {
+        let label = AppFactory.Label.sectionTitle(color: ThemeColor.highlight)
+        label.font = BaseSectionHeaderView.sectionTitleFont
+        return label
+    }()
 
     // MARK: - Initialization
 
@@ -143,6 +147,12 @@ class BaseSectionHeaderView: UICollectionReusableView {
             withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
         )
     }
+
+    private static var sectionTitleFont: UIFont {
+        UIFontMetrics(forTextStyle: .title3).scaledFont(
+            for: .systemFont(ofSize: 20, weight: .bold)
+        )
+    }
 }
 
 // MARK: - SectionHeaderTitleRowView
@@ -150,51 +160,15 @@ class BaseSectionHeaderView: UICollectionReusableView {
 @MainActor
 private final class SectionHeaderTitleRowView: UIView {
 
-    // MARK: - Layout
-
-    private enum Layout {
-        static let highlightedAlpha: CGFloat = 0.72
-        static let highlightAnimationDuration: TimeInterval = 0.12
-    }
-
     // MARK: - Properties
 
     var onTap: (() -> Void)?
 
-    private var isHighlighted = false {
-        didSet {
-            guard isHighlighted != oldValue else { return }
-
-            let targetAlpha = isHighlighted ? Layout.highlightedAlpha : 1
-            UIView.animate(
-                withDuration: Layout.highlightAnimationDuration,
-                delay: 0,
-                options: [.beginFromCurrentState, .allowUserInteraction],
-                animations: { [weak self] in
-                    self?.alpha = targetAlpha
-                }
-            )
-        }
-    }
-
     // MARK: - Touch Handling
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isHighlighted = true
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isHighlighted = isTouchInside(touches)
-    }
-
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isHighlighted = false
         guard isTouchInside(touches) else { return }
         onTap?()
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isHighlighted = false
     }
 
     private func isTouchInside(_ touches: Set<UITouch>) -> Bool {

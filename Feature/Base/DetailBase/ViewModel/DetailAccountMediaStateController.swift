@@ -274,7 +274,9 @@ final class DetailAccountMediaStateController {
     // MARK: - Session
 
     private var isUserAuthenticated: Bool {
-        if case .user = sessionProvider.currentSession() {
+        guard let session = try? sessionProvider.currentSession() else { return false }
+
+        if case .user = session {
             return true
         }
         return false

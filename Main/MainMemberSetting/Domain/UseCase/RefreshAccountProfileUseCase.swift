@@ -35,7 +35,7 @@ nonisolated struct DefaultRefreshAccountProfileUseCase: RefreshAccountProfileUse
     // MARK: - RefreshAccountProfileUseCase
 
     func callAsFunction() async throws {
-        guard case .user(let sessionID) = sessionProvider.currentSession() else { return }
+        guard case .user(let sessionID) = try sessionProvider.currentSession() else { return }
         _ = try await profileProvider.profile(sessionID: sessionID)
     }
 }

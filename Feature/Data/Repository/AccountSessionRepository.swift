@@ -22,7 +22,7 @@ nonisolated final class AccountSessionRepository: AccountSessionProviding {
     }
 
     func currentUserSession() async throws -> AccountUserSession? {
-        guard case .user(let sessionID) = sessionStore.load(), !sessionID.isEmpty else {
+        guard case .user(let sessionID) = try sessionStore.load(), !sessionID.isEmpty else {
             return nil
         }
 

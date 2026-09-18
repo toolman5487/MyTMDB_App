@@ -162,7 +162,9 @@ nonisolated struct DefaultLoadSeasonDetailUseCase: LoadSeasonDetailUseCase {
     }
 
     private var accountCredential: SeasonAccountCredential? {
-        switch sessionProvider.currentSession() {
+        guard let session = try? sessionProvider.currentSession() else { return nil }
+
+        switch session {
         case .guest(let sessionID):
             return .guest(sessionID: sessionID)
 

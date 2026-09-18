@@ -13,4 +13,6 @@ nonisolated protocol AuthenticationProviding: Sendable {
     func createUserSession(username: String, password: String) async throws -> String
 
     func createGuestSession() async throws -> String
+
+    func deleteUserSession(sessionID: String) async throws
 }

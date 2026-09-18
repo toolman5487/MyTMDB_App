@@ -72,3 +72,19 @@ nonisolated struct UserSessionRequestDTO: Encodable, Sendable {
         case requestToken = "request_token"
     }
 }
+
+// MARK: - SessionDeletionRequestDTO
+
+nonisolated struct SessionDeletionRequestDTO: Encodable, Sendable {
+    let sessionID: String
+
+    enum CodingKeys: String, CodingKey {
+        case sessionID = "session_id"
+    }
+}
+
+// MARK: - SessionDeletionResponseDTO
+
+nonisolated struct SessionDeletionResponseDTO: Decodable, Sendable {
+    let success: Bool
+}

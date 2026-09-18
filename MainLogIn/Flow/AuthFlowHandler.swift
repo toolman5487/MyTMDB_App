@@ -24,15 +24,15 @@ nonisolated struct AuthSessionValidator: Sendable {
         self.userProfileStore = userProfileStore
     }
 
-    func validatedStoredSession() async -> AuthSession {
-        let storedSession = sessionStore.load()
+    func validatedStoredSession() async throws -> AuthSession {
+        let storedSession = try sessionStore.load()
         let validatedSession = await validatedSession(storedSession)
 
         if validatedSession == .loggedOut {
-            sessionStore.clear()
+            try sessionStore.clear()
             userProfileStore.clear()
         } else if validatedSession != storedSession {
-            sessionStore.save(validatedSession)
+            try sessionStore.save(validatedSession)
         }
 
         return validatedSession
@@ -71,7 +71,7 @@ nonisolated struct AuthSessionValidator: Sendable {
 @MainActor
 protocol AuthFlowHandling: AnyObject {
     func finishUserLogin(sessionID: String) async throws
-    func finishGuestLogin(sessionID: String)
+    func finishGuestLogin(sessionID: String) async throws
 }
 
 // MARK: - AuthFlowHandler
@@ -97,14 +97,20 @@ final class AuthFlowHandler: AuthFlowHandling {
 
     func finishUserLogin(sessionID: String) async throws {
         let session = AuthSession.user(sessionID: sessionID)
-        sessionStore.save(session)
-        _ = try await profileProvider.profile(sessionID: sessionID)
+        do {
+            _ = try await profileProvider.profile(sessionID: sessionID)
+            try Task.checkCancellation()
+            try sessionStore.save(session)
+        } catch {
+            userProfileStore.clear()
+            throw error
+        }
         onFinish(session)
     }
 
-    func finishGuestLogin(sessionID: String) {
+    func finishGuestLogin(sessionID: String) async throws {
         let session = AuthSession.guest(sessionID: sessionID)
-        sessionStore.save(session)
+        try sessionStore.save(session)
         userProfileStore.clear()
         onFinish(session)
     }

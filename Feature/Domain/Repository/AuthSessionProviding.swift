@@ -10,7 +10,14 @@ import Foundation
 // MARK: - AuthSessionProviding
 
 nonisolated protocol AuthSessionProviding: Sendable {
-    func currentSession() -> AuthSession
+    func currentSession() throws -> AuthSession
 
-    func clearSession()
+    func clearSession() throws
+}
+
+// MARK: - AuthSessionError
+
+nonisolated enum AuthSessionError: Error, Sendable, Equatable {
+    case secureStorageUnavailable
+    case invalidStoredSession
 }

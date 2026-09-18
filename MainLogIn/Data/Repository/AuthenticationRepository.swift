@@ -50,6 +50,17 @@ nonisolated final class AuthenticationRepository: AuthenticationProviding {
         return dto.guestSessionID
     }
 
+    func deleteUserSession(sessionID: String) async throws {
+        let dto: SessionDeletionResponseDTO = try await network.delete(
+            path: APIConfig.Authentication.session,
+            queryItems: [],
+            body: SessionDeletionRequestDTO(sessionID: sessionID)
+        )
+        guard dto.success else {
+            throw URLError(.userAuthenticationRequired)
+        }
+    }
+
     // MARK: - Helpers
 
     private func requestToken() async throws -> String {

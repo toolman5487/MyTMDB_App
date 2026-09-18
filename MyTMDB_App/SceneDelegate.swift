@@ -42,11 +42,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         sessionValidationTask?.cancel()
         sessionValidationTask = Task(priority: .userInitiated) { [weak self] in
-            let validatedSession = await sessionValidator.validatedStoredSession()
-            guard !Task.isCancelled, let self else { return }
-            replaceRoot(for: validatedSession)
-            await routePendingIntentDestinationIfNeeded()
+            do {
+                let validatedSession = try await sessionValidator.validatedStoredSession()
+                guard !Task.isCancelled, let self else { return }
+                replaceRoot(for: validatedSession)
+                await routePendingIntentDestinationIfNeeded()
+            } catch {
+                guard !Task.isCancelled, let self else { return }
+                AppLogger.security.error("Secure authentication session validation failed")
+                showSessionValidationFailure()
+            }
         }
+    }
+
+    @MainActor
+    private func showSessionValidationFailure() {
+        guard let rootViewController = window?.rootViewController,
+              rootViewController.presentedViewController == nil else {
+            return
+        }
+
+        let alert = UIAlertController(
+            title: "無法讀取登入狀態",
+            message: "無法安全讀取登入資料，請確認裝置已解鎖後再試一次。",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "重試", style: .default) { [weak self] _ in
+            self?.validateStoredSession()
+        })
+        rootViewController.present(alert, animated: true)
     }
 
     @MainActor

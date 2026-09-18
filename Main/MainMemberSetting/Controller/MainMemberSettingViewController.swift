@@ -34,6 +34,8 @@ final class MainMemberSettingViewController: MainBaseViewController {
     )
 
     private var profileRefreshTask: Task<Void, Never>?
+    private var sessionActionTask: Task<Void, Never>?
+    private var sessionActionID: UUID?
 
     // MARK: - Initialization
 
@@ -55,6 +57,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     deinit {
         profileRefreshTask?.cancel()
+        sessionActionTask?.cancel()
     }
 
     // MARK: - Life Cycle
@@ -186,11 +189,34 @@ final class MainMemberSettingViewController: MainBaseViewController {
         }
     }
 
-    private func clearAllLocalData() {
-        Task(priority: .userInitiated) { [weak self] in
+    private func clearAllLocalData(logoutScope: LogoutScope = .remoteAndLocal) {
+        sessionActionTask?.cancel()
+        let actionID = UUID()
+        sessionActionID = actionID
+        setLoadingVisible(true)
+        sessionActionTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await viewModel.clearAllLocalData()
-            router.showLoggedOut()
+            defer { finishSessionAction(actionID) }
+
+            do {
+                try await viewModel.clearAllLocalData(logoutScope: logoutScope)
+                router.showLoggedOut()
+            } catch LogoutError.secureSessionUnavailable {
+                guard !Task.isCancelled else { return }
+                router.showSecureSessionOperationFailed { [weak self] in
+                    self?.clearAllLocalData(logoutScope: logoutScope)
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+                router.showClearAllLocalDataFailed(
+                    onRetry: { [weak self] in
+                        self?.clearAllLocalData()
+                    },
+                    onClearLocalOnly: { [weak self] in
+                        self?.clearAllLocalData(logoutScope: .localOnly)
+                    }
+                )
+            }
         }
     }
 
@@ -205,9 +231,41 @@ final class MainMemberSettingViewController: MainBaseViewController {
         }
     }
 
-    private func logout() {
-        viewModel.logout()
-        router.showLoggedOut()
+    private func logout(scope: LogoutScope = .remoteAndLocal) {
+        sessionActionTask?.cancel()
+        let actionID = UUID()
+        sessionActionID = actionID
+        setLoadingVisible(true)
+        sessionActionTask = Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            defer { finishSessionAction(actionID) }
+
+            do {
+                try await viewModel.logout(scope: scope)
+                router.showLoggedOut()
+            } catch LogoutError.secureSessionUnavailable {
+                guard !Task.isCancelled else { return }
+                router.showSecureSessionOperationFailed { [weak self] in
+                    self?.logout(scope: scope)
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+                router.showLogoutFailed(
+                    onRetry: { [weak self] in
+                        self?.logout()
+                    },
+                    onClearLocalOnly: { [weak self] in
+                        self?.logout(scope: .localOnly)
+                    }
+                )
+            }
+        }
+    }
+
+    private func finishSessionAction(_ actionID: UUID) {
+        guard sessionActionID == actionID else { return }
+        sessionActionID = nil
+        setLoadingVisible(false)
     }
 
     private func showMemberCenter() {

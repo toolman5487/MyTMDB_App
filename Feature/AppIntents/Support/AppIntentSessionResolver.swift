@@ -35,7 +35,7 @@ nonisolated struct AppIntentSessionResolver: AppIntentSessionResolving {
     }
 
     func resolveUserAccountContext() async throws -> MemberCenterAccountContext {
-        guard case .user(let sessionID) = sessionStore.load(),
+        guard case .user(let sessionID) = try sessionStore.load(),
               !sessionID.isEmpty else {
             throw AppIntentSessionResolutionError.requiresUserLogin
         }

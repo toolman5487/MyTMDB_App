@@ -21,8 +21,17 @@ protocol MainMemberSettingRouting: AnyObject {
     func showClearSearchHistoryConfirmation(onConfirm: @escaping () -> Void)
     func showSearchHistoryCleared()
     func showClearAllLocalDataConfirmation(isMember: Bool, onConfirm: @escaping () -> Void)
+    func showClearAllLocalDataFailed(
+        onRetry: @escaping () -> Void,
+        onClearLocalOnly: @escaping () -> Void
+    )
+    func showSecureSessionOperationFailed(onRetry: @escaping () -> Void)
     func openTMDBAttribution(_ url: URL)
     func showLogoutConfirmation(onConfirm: @escaping () -> Void)
+    func showLogoutFailed(
+        onRetry: @escaping () -> Void,
+        onClearLocalOnly: @escaping () -> Void
+    )
     func showLoggedOut()
     func showLogin()
     func showRegister()
@@ -112,6 +121,29 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
         )
     }
 
+    func showClearAllLocalDataFailed(
+        onRetry: @escaping () -> Void,
+        onClearLocalOnly: @escaping () -> Void
+    ) {
+        showRemoteSessionFailureAlert(
+            title: "無法撤銷 TMDB Session",
+            localOnlyTitle: "仍清除本機資料",
+            onRetry: onRetry,
+            onLocalOnly: onClearLocalOnly
+        )
+    }
+
+    func showSecureSessionOperationFailed(onRetry: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: "無法清除登入資料",
+            message: "TMDB Session 可能已失效，但目前無法安全清除此裝置的登入資料。請確認裝置已解鎖後重試。",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
+        alert.addAction(UIAlertAction(title: "重試", style: .default) { _ in onRetry() })
+        show(alert, using: .present)
+    }
+
     func openTMDBAttribution(_ url: URL) {
         openSafari(url)
     }
@@ -122,6 +154,18 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
             message: "確定要登出並返回登入頁嗎？",
             actionTitle: "登出",
             onConfirm: onConfirm
+        )
+    }
+
+    func showLogoutFailed(
+        onRetry: @escaping () -> Void,
+        onClearLocalOnly: @escaping () -> Void
+    ) {
+        showRemoteSessionFailureAlert(
+            title: "登出失敗",
+            localOnlyTitle: "僅清除本機登入",
+            onRetry: onRetry,
+            onLocalOnly: onClearLocalOnly
         )
     }
 
@@ -136,5 +180,24 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
     func showRegister() {
         guard let url = TMDBResourceURL.signup else { return }
         openSafari(url)
+    }
+
+    private func showRemoteSessionFailureAlert(
+        title: String,
+        localOnlyTitle: String,
+        onRetry: @escaping () -> Void,
+        onLocalOnly: @escaping () -> Void
+    ) {
+        let alert = UIAlertController(
+            title: title,
+            message: "目前無法連線至 TMDB 撤銷 Session。若只清除本機資料，遠端 Session 可能仍然有效。",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
+        alert.addAction(UIAlertAction(title: "重試", style: .default) { _ in onRetry() })
+        alert.addAction(UIAlertAction(title: localOnlyTitle, style: .destructive) { _ in
+            onLocalOnly()
+        })
+        show(alert, using: .present)
     }
 }

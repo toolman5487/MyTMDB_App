@@ -95,7 +95,7 @@
 
 | 項目 | 規格 |
 |------|------|
-| 標題字型 | `AppFactory.Label.sectionTitle`（`.title3`） |
+| 標題字型 | `.title3` 粗體（`UIFontMetrics` + `.bold`，Dynamic Type） |
 | 標題顏色 | `ThemeColor.highlight`（不變） |
 | Disclosure 圖示 | SF Symbol `chevron.right`（原 `chevron.right.2`） |
 | Disclosure 顏色 | `ThemeColor.textSecondary`，即 `.secondaryLabel`（原與標題同色） |

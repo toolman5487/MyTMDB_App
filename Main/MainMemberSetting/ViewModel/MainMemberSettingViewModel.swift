@@ -85,7 +85,13 @@ final class MainMemberSettingViewModel {
     // MARK: - Public Methods
 
     func reloadContent() {
-        let session = sessionProvider.currentSession()
+        let session: AuthSession
+        do {
+            session = try sessionProvider.currentSession()
+        } catch {
+            AppLogger.security.error("Unable to read the secure authentication session")
+            session = .loggedOut
+        }
         let profile: AccountProfile? = if case .user = session {
             profileProvider.cachedProfile()
         } else {
@@ -134,12 +140,12 @@ final class MainMemberSettingViewModel {
         reloadContent()
     }
 
-    func clearAllLocalData() async {
-        await clearLocalData()
+    func clearAllLocalData(logoutScope: LogoutScope = .remoteAndLocal) async throws {
+        try await clearLocalData(logoutScope: logoutScope)
     }
 
-    func logout() {
-        logoutUseCase()
+    func logout(scope: LogoutScope = .remoteAndLocal) async throws {
+        try await logoutUseCase(scope: scope)
     }
 
     // MARK: - Private Methods

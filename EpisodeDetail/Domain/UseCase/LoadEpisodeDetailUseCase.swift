@@ -130,7 +130,9 @@ nonisolated struct DefaultLoadEpisodeDetailUseCase: LoadEpisodeDetailUseCase {
     }
 
     private var accountCredential: EpisodeAccountCredential? {
-        switch sessionProvider.currentSession() {
+        guard let session = try? sessionProvider.currentSession() else { return nil }
+
+        switch session {
         case .guest(let sessionID):
             return .guest(sessionID: sessionID)
 

@@ -210,9 +210,11 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
 
     func makeMainMemberSettingViewController() -> UIViewController {
         let profileProvider = makeAccountContentRepository()
+        let authentication = AuthenticationRepository(network: network)
         let logout = DefaultLogoutUseCase(
             sessionProvider: sessionStore,
-            profileProvider: profileProvider
+            profileProvider: profileProvider,
+            authentication: authentication
         )
         let imageCache = SDWebImageCacheStore()
         let viewModel = MainMemberSettingViewModel(
