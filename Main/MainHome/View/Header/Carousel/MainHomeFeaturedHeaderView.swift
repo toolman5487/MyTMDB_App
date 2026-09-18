@@ -87,12 +87,22 @@ final class MainHomeFeaturedHeaderView: MainHomeSectionHeaderView {
     // MARK: - Setup
 
     override func setupHierarchy() {
+        super.setupHierarchy()
         addSubview(stackView)
         stackView.addArrangedSubview(carouselView)
+    }
+
+    override func placeTitleRow() {
         stackView.addArrangedSubview(titleRowView)
+        titleRowView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalTo(Self.standardHeight)
+        }
     }
 
     override func setupConstraints() {
+        super.setupConstraints()
+
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -111,14 +121,10 @@ final class MainHomeFeaturedHeaderView: MainHomeSectionHeaderView {
             make.width.equalToSuperview().priority(.high)
             make.height.equalTo(carouselView.snp.width).multipliedBy(Layout.backdropAspectRatio)
         }
-
-        titleRowView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(Self.standardHeight)
-        }
     }
 
     override func resetForReuse() {
+        super.resetForReuse()
         carouselView.configure(items: [])
         onCarouselSelected = nil
     }

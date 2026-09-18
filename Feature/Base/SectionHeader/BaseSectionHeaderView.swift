@@ -36,9 +36,11 @@ class BaseSectionHeaderView: UICollectionReusableView {
 
     // MARK: - UI Components
 
-    let titleRowView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
+    private(set) lazy var titleRowView: UIView = {
+        let view = SectionHeaderTitleRowView()
+        view.onTap = { [weak self] in
+            self?.onTitleTap?()
+        }
         return view
     }()
 
@@ -51,6 +53,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
         setupTitleRow()
         configureView()
         setupHierarchy()
+        placeTitleRow()
         setupConstraints()
     }
 
@@ -59,6 +62,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
         setupTitleRow()
         configureView()
         setupHierarchy()
+        placeTitleRow()
         setupConstraints()
     }
 
@@ -76,15 +80,16 @@ class BaseSectionHeaderView: UICollectionReusableView {
         backgroundColor = .clear
     }
 
-    func setupHierarchy() {
-        addSubview(titleRowView)
-    }
+    func setupHierarchy() {}
 
-    func setupConstraints() {
+    func placeTitleRow() {
+        addSubview(titleRowView)
         titleRowView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
+
+    func setupConstraints() {}
 
     func resetForReuse() {}
 
@@ -95,19 +100,21 @@ class BaseSectionHeaderView: UICollectionReusableView {
     // MARK: - Configuration
 
     func configure(title: String?, onTitleTap: (() -> Void)? = nil) {
-        self.onTitleTap = onTitleTap
+        let displayTitle = BaseDisplayTextFormatter.nonEmptyText(title)
+        let titleTapHandler = displayTitle == nil ? nil : onTitleTap
+        let isTappable = titleTapHandler != nil
+        self.onTitleTap = titleTapHandler
 
-        let isTappable = onTitleTap != nil
         let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
         titleLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
-            title: title,
+            title: displayTitle,
             trailingImage: isTappable ? Self.makeDisclosureImage(font: font) : nil,
             font: font,
             textColor: ThemeColor.highlight,
             trailingImageColor: ThemeColor.textSecondary
         )
         titleRowView.isUserInteractionEnabled = isTappable
-        applyTitleAccessibility(title: title, isTappable: isTappable)
+        applyTitleAccessibility(title: displayTitle, isTappable: isTappable)
     }
 
     // MARK: - Private Methods
@@ -119,13 +126,10 @@ class BaseSectionHeaderView: UICollectionReusableView {
             make.top.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(titleHorizontalInset)
         }
-        titleRowView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(handleTitleTap))
-        )
     }
 
     private func applyTitleAccessibility(title: String?, isTappable: Bool) {
-        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
+        guard let title else {
             titleRowView.applyAccessibilityText(nil)
             titleRowView.accessibilityTraits.remove(.button)
             return
@@ -148,8 +152,62 @@ class BaseSectionHeaderView: UICollectionReusableView {
             withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
         )
     }
+}
 
-    @objc private func handleTitleTap() {
-        onTitleTap?()
+// MARK: - SectionHeaderTitleRowView
+
+@MainActor
+private final class SectionHeaderTitleRowView: UIView {
+
+    // MARK: - Layout
+
+    private enum Layout {
+        static let highlightedAlpha: CGFloat = 0.72
+        static let highlightAnimationDuration: TimeInterval = 0.12
+    }
+
+    // MARK: - Properties
+
+    var onTap: (() -> Void)?
+
+    private var isHighlighted = false {
+        didSet {
+            guard isHighlighted != oldValue else { return }
+
+            let targetAlpha = isHighlighted ? Layout.highlightedAlpha : 1
+            UIView.animate(
+                withDuration: Layout.highlightAnimationDuration,
+                delay: 0,
+                options: [.beginFromCurrentState, .allowUserInteraction],
+                animations: { [weak self] in
+                    self?.alpha = targetAlpha
+                }
+            )
+        }
+    }
+
+    // MARK: - Touch Handling
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isHighlighted = true
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isHighlighted = isTouchInside(touches)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isHighlighted = false
+        guard isTouchInside(touches) else { return }
+        onTap?()
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isHighlighted = false
+    }
+
+    private func isTouchInside(_ touches: Set<UITouch>) -> Bool {
+        guard let touch = touches.first else { return false }
+        return bounds.contains(touch.location(in: self))
     }
 }
