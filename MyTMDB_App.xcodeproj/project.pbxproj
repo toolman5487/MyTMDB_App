@@ -166,6 +166,7 @@
 		15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000122FF401000000012 /* BaseFilterHeaderCollectionViewCell.swift */; };
 		15E0001A2FF40100000001A /* BaseFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000132FF401000000013 /* BaseFilterHeaderView.swift */; };
 		15B5EC012FFA000000B5EC01 /* BaseSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B5EC022FFA000000B5EC02 /* BaseSectionHeaderView.swift */; };
+		15B5EC052FFA000000B5EC05 /* SectionHeaderLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B5EC042FFA000000B5EC04 /* SectionHeaderLayoutMetrics.swift */; };
 		15E000202FF401000000020 /* BaseShowAllFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000232FF401000000023 /* BaseShowAllFilterHeaderView.swift */; };
 		15E002122FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
 		15E002152FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
@@ -501,6 +502,7 @@
 		15E000122FF401000000012 /* BaseFilterHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		15E000132FF401000000013 /* BaseFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderView.swift; sourceTree = "<group>"; };
 		15B5EC022FFA000000B5EC02 /* BaseSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSectionHeaderView.swift; sourceTree = "<group>"; };
+		15B5EC042FFA000000B5EC04 /* SectionHeaderLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderLayoutMetrics.swift; sourceTree = "<group>"; };
 		15E000232FF401000000023 /* BaseShowAllFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseShowAllFilterHeaderView.swift; sourceTree = "<group>"; };
 		15E002112FF430000000001 /* AppFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFactory.swift; sourceTree = "<group>"; };
 		15E002182FF430010000001 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
@@ -2110,6 +2112,7 @@
 			isa = PBXGroup;
 			children = (
 				15B5EC022FFA000000B5EC02 /* BaseSectionHeaderView.swift */,
+				15B5EC042FFA000000B5EC04 /* SectionHeaderLayoutMetrics.swift */,
 			);
 			path = SectionHeader;
 			sourceTree = "<group>";
@@ -3646,6 +3649,7 @@
 				15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001A2FF40100000001A /* BaseFilterHeaderView.swift in Sources */,
 				15B5EC012FFA000000B5EC01 /* BaseSectionHeaderView.swift in Sources */,
+				15B5EC052FFA000000B5EC05 /* SectionHeaderLayoutMetrics.swift in Sources */,
 				15E000202FF401000000020 /* BaseShowAllFilterHeaderView.swift in Sources */,
 				150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15A951012FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */,

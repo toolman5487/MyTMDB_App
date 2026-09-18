@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - SessionStoring
 
-protocol SessionStoring: AuthSessionProviding {
+nonisolated protocol SessionStoring: AuthSessionProviding {
     func load() -> AuthSession
     func save(_ session: AuthSession)
     func clear()
@@ -30,7 +30,7 @@ extension SessionStoring {
 
 // MARK: - SessionStore
 
-final class SessionStore: SessionStoring {
+nonisolated final class SessionStore: SessionStoring {
 
     // MARK: - Properties
 

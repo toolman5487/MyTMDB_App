@@ -94,7 +94,7 @@ nonisolated protocol UserProfileStoring: Sendable {
 
 // MARK: - UserProfileStore
 
-final class UserProfileStore: UserProfileStoring {
+nonisolated final class UserProfileStore: UserProfileStoring {
 
     // MARK: - Properties
 

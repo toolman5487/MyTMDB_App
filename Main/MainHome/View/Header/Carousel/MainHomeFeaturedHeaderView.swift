@@ -23,7 +23,7 @@ final class MainHomeFeaturedHeaderView: MainHomeSectionHeaderView {
 
         return Layout.carouselHeight(for: width, platform: platform)
             + Layout.carouselTitleSpacing
-            + standardHeight
+            + SectionHeaderLayoutMetrics.height
     }
 
     private enum Platform {
@@ -96,7 +96,7 @@ final class MainHomeFeaturedHeaderView: MainHomeSectionHeaderView {
         stackView.addArrangedSubview(titleRowView)
         titleRowView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(Self.standardHeight)
+            make.height.equalTo(SectionHeaderLayoutMetrics.height)
         }
     }
 

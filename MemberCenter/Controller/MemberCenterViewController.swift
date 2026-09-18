@@ -13,10 +13,8 @@ final class MemberCenterViewController: BaseListViewController {
     // MARK: - Layout
 
     private enum Layout {
-        static let sectionHeaderHeight: CGFloat = 32
         static let contentItemHeight: CGFloat = 232
         static let guestLoginItemHeight: CGFloat = 220
-        static let sectionSpacing: CGFloat = 12
         static let bottomInset: CGFloat = 32
     }
 
@@ -90,7 +88,6 @@ final class MemberCenterViewController: BaseListViewController {
         collectionView.delegate = self
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
-        collectionViewFlowLayout.minimumLineSpacing = Layout.sectionSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = 0
         registerSectionCells()
         collectionView.register(
@@ -307,9 +304,9 @@ extension MemberCenterViewController: UICollectionViewDelegateFlowLayout {
     ) -> UIEdgeInsets {
         let isLastSection = section == viewModel.displaySections.count - 1
         return UIEdgeInsets(
-            top: 0,
+            top: hasSectionHeader(at: section) ? SectionHeaderLayoutMetrics.contentSpacing : 0,
             left: 0,
-            bottom: isLastSection ? Layout.bottomInset : Layout.sectionSpacing,
+            bottom: isLastSection ? Layout.bottomInset : SectionHeaderLayoutMetrics.sectionSpacing,
             right: 0
         )
     }
@@ -327,14 +324,22 @@ extension MemberCenterViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        guard viewModel.displaySections.indices.contains(section),
-              case .content = viewModel.displaySections[section] else {
+        guard hasSectionHeader(at: section) else {
             return .zero
         }
 
         return CGSize(
             width: collectionView.bounds.width,
-            height: Layout.sectionHeaderHeight
+            height: SectionHeaderLayoutMetrics.height
         )
+    }
+
+    private func hasSectionHeader(at section: Int) -> Bool {
+        guard viewModel.displaySections.indices.contains(section),
+              case .content = viewModel.displaySections[section] else {
+            return false
+        }
+
+        return true
     }
 }

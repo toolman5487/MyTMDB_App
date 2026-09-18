@@ -17,18 +17,9 @@ class BaseSectionHeaderView: UICollectionReusableView {
         String(describing: self)
     }
 
-    // MARK: - Layout
+    // MARK: - Constants
 
-    private enum Layout {
-        static let horizontalInset: CGFloat = 16
-        static let disclosureSymbolName = "chevron.right"
-    }
-
-    // MARK: - Override Points
-
-    var titleHorizontalInset: CGFloat {
-        Layout.horizontalInset
-    }
+    private static let disclosureSymbolName = "chevron.right"
 
     // MARK: - Properties
 
@@ -124,7 +115,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
         titleRowView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(titleHorizontalInset)
+            make.leading.trailing.equalToSuperview().inset(SectionHeaderLayoutMetrics.horizontalInset)
         }
     }
 
@@ -148,7 +139,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
 
     private static func makeDisclosureImage(font: UIFont) -> UIImage? {
         UIImage(
-            systemName: Layout.disclosureSymbolName,
+            systemName: disclosureSymbolName,
             withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
         )
     }

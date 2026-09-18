@@ -13,10 +13,10 @@ nonisolated enum DetailLayoutMetrics {
 
     // MARK: - Dimensions
 
-    static let sectionHeaderHeight: CGFloat = 28
+    static let sectionHeaderHeight: CGFloat = SectionHeaderLayoutMetrics.height
     static let factsSectionHeight: CGFloat = 96
-    static let headerContentSpacing: CGFloat = 8
-    static let sectionBottomInset: CGFloat = 8
+    static let headerContentSpacing: CGFloat = SectionHeaderLayoutMetrics.contentSpacing
+    static let sectionBottomInset: CGFloat = SectionHeaderLayoutMetrics.sectionSpacing
     static let estimatedHeroHeight: CGFloat = 360
     static let horizontalContentInset: CGFloat = 16
 

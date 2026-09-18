@@ -14,10 +14,6 @@ final class DetailSectionHeaderView: BaseSectionHeaderView {
 
     // MARK: - BaseSectionHeaderView
 
-    override var titleHorizontalInset: CGFloat {
-        DetailLayoutMetrics.horizontalContentInset
-    }
-
     override func titleAccessibilityText(for title: String, isTappable: Bool) -> AccessibilityText {
         AccessibilityText(
             label: "\(title) 區段",

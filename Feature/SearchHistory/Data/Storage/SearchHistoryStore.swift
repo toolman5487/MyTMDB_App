@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - SearchHistoryStore
 
-final class SearchHistoryStore: SearchHistoryProviding {
+nonisolated final class SearchHistoryStore: SearchHistoryProviding {
 
     // MARK: - Properties
 

@@ -13,9 +13,6 @@ final class MainHomeViewController: MainBaseViewController {
     // MARK: - Constants
 
     private enum Layout {
-        static let headerHeight: CGFloat = 32
-        static let headerContentSpacing: CGFloat = 8
-        static let sectionBottomSpacing: CGFloat = 16
         private static let posterHeight: CGFloat = 186
         private static let titleTopSpacing: CGFloat = 4
         private static let minimumItemHeight: CGFloat = 232
@@ -99,9 +96,9 @@ final class MainHomeViewController: MainBaseViewController {
         collectionView.dataSource = self
         collectionViewFlowLayout.minimumLineSpacing = 0
         collectionViewFlowLayout.sectionInset = UIEdgeInsets(
-            top: Layout.headerContentSpacing,
+            top: SectionHeaderLayoutMetrics.contentSpacing,
             left: 0,
-            bottom: Layout.sectionBottomSpacing,
+            bottom: SectionHeaderLayoutMetrics.sectionSpacing,
             right: 0
         )
         registerSectionCells()
@@ -319,7 +316,7 @@ extension MainHomeViewController: UICollectionViewDelegateFlowLayout {
                 for: collectionView.bounds.width,
                 userInterfaceIdiom: traitCollection.userInterfaceIdiom
             )
-            : Layout.headerHeight
+            : SectionHeaderLayoutMetrics.height
 
         return CGSize(
             width: collectionView.bounds.width,

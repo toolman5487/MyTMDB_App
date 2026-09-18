@@ -9,7 +9,7 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 功能範圍 | 首頁、會員中心，以及 Movie／TV／Season／Episode／Person 詳情頁的區段標題 header |
-| 狀態 | Implementation Done；Build Passed；Runtime Passed（iPhone、訪客模式）；會員中心、VoiceOver、iPad NotRun |
+| 狀態 | Implementation Done；Build Passed；Runtime：1.0／1.1 Passed（iPhone、訪客模式），1.2 間距統一 NotRun；會員中心、VoiceOver、iPad NotRun |
 | 日期 | 2026-09-18 |
 
 ---
@@ -22,7 +22,7 @@
 
 - 只收斂跨 feature 共用的 UI 行為；各 feature 的 VoiceOver 文案與版面差異留在子類別，不把 feature-only 邏輯放進 base class。
 - 沿用專案既有 base class 慣例：`BaseCollectionViewCell` 的 template method，以及 `BaseFilterHeaderView` → `BaseShowAllFilterHeaderView` 的繼承方式。
-- 除第 4 節明列的 disclosure 樣式與按壓回饋外，不改變 header 的高度、間距、點擊目的地與 VoiceOver 文案。
+- 除第 4 節明列的 disclosure 樣式、按壓回饋與間距統一外，不改變 header 的點擊目的地與 VoiceOver 文案。
 - 不新增 protocol、factory 或只為統一名稱而存在的抽象。
 
 本文件遵循：
@@ -43,11 +43,12 @@
 - `configure` 先正規化標題；空白標題不顯示 disclosure，也不可點。
 - 按下標題列時提供按壓回饋，且不影響從標題列開始的捲動。
 - 子類別覆寫 template method 時一律可以呼叫 `super`；標題列的擺放位置由專用覆寫點決定。
+- 首頁、會員中心與詳情頁的 header 高度與上下左右間距由 `SectionHeaderLayoutMetrics` 統一提供，以首頁的數值為基準。
 - 移除改用 base 後不再使用的 `MainHomeSectionTitleAttributedStringFactory`。
 
 ### 2.2 非目標
 
-- 不調整 header 高度（詳情頁 28、首頁與會員中心 32）與左右間距（16）。
+- 不調整未使用 `BaseSectionHeaderView` 的畫面間距（設定頁、評論列表、Genre page sheet 等）。
 - 不統一各 feature 的 VoiceOver 文案；詳情頁「區段」、首頁「分類」維持原樣。
 - 不修改 `DetailBaseViewController.dequeueDetailSectionHeader(at:title:onTap:)` 的對外介面；五個詳情頁 Controller 不變。
 - 不處理會員中心沿用首頁 `MainHomeSectionHeaderView` 的跨 feature 依賴（見第 11 節）。
@@ -101,10 +102,25 @@
 | Disclosure 尺寸 | `UIImage.SymbolConfiguration(font: 標題字型, scale: .small)`，以 text attachment 接在標題後方，垂直置中於 cap height |
 | 顯示條件 | 有非空白標題且有點擊 handler 時才顯示 |
 | 按壓回饋 | 按住標題列時整列（文字與 disclosure）alpha 降為 0.72，放開、移出或開始捲動時恢復；動畫 0.12 秒，數值沿用 `MemberCenterGuestLoginCollectionViewCell`、`DetailExternalLinkCollectionViewCell`；不做縮放，避免整列寬度的標題位移 |
-| 左右間距 | 16；詳情頁取 `DetailLayoutMetrics.horizontalContentInset` |
-| 高度 | 由使用端決定：詳情頁 28、首頁與會員中心 32 |
+| 高度與間距 | 見 4.1 |
 
 單一 `chevron.right` 搭配次要色是 iOS 常見的 disclosure 表現，可與品牌色標題區隔，避免圖示搶走標題的視覺重量。此調整由 base 一次套用到所有區段 header。
+
+### 4.1 間距
+
+所有使用 `BaseSectionHeaderView` 的畫面統一使用 `SectionHeaderLayoutMetrics`，以首頁為基準：
+
+| 位置 | 常數 | 值 | 改動前（首頁／會員中心／詳情頁） |
+|------|------|----|------------------------------------|
+| Header 高度，標題在其中垂直置中 | `height` | 32 | 32／32／28 |
+| 左右：標題與畫面邊緣 | `horizontalInset` | 16 | 16／16／16 |
+| 下：header 與該區段內容 | `contentSpacing` | 8 | 8／0／8 |
+| 上：上一區段內容與 header | `sectionSpacing` | 16 | 16／12／8 |
+
+- 輪播 header 的標題列同樣使用 `height`；輪播與標題列之間的 8 屬於輪播 header 內部版面，不變。
+- 會員中心最後一個區段的底部維持 32。
+- 詳情頁的區段底部間距（`DetailLayoutMetrics.sectionBottomInset`）同時是下一個 header 的上方間距，因此由 8 改為 16，詳情頁整體會變長。
+- 詳情頁 Hero 與簡介之間沿用 `DetailLayoutMetrics.headerContentSpacing`，值仍為 8。
 
 ---
 
@@ -120,7 +136,7 @@ UICollectionReusableView
         └── MainHomeFeaturedHeaderView  Main/MainHome/View/Header/Carousel/
 ```
 
-`MainHomeFeaturedHeaderView` 繼承 `MainHomeSectionHeaderView`，而非直接繼承 base：輪播 header 的標題列與首頁區段 header 相同（高度 `standardHeight`、VoiceOver 文案），差異只在上方多了輪播。繼承後，文案與高度只定義一次。
+`MainHomeFeaturedHeaderView` 繼承 `MainHomeSectionHeaderView`，而非直接繼承 base：輪播 header 的標題列與首頁區段 header 相同（VoiceOver 文案），差異只在上方多了輪播。繼承後，文案只定義一次；高度由 `SectionHeaderLayoutMetrics` 統一提供（4.1）。
 
 ### 5.2 `BaseSectionHeaderView` 職責
 
@@ -137,7 +153,7 @@ UICollectionReusableView
 
 - 各 feature 的 VoiceOver 文案。
 - 標題列以外的內容，例如輪播。
-- Header 高度，由各使用端的 layout 決定。
+- Header 在 collection view 中的尺寸與區段間距：由各使用端的 layout 設定，數值取自 `SectionHeaderLayoutMetrics`。
 
 ### 5.3 介面
 
@@ -146,8 +162,6 @@ UICollectionReusableView
 class BaseSectionHeaderView: UICollectionReusableView {
 
     class var reuseIdentifier: String { get }
-
-    var titleHorizontalInset: CGFloat { get }
 
     private(set) lazy var titleRowView: UIView
 
@@ -165,7 +179,6 @@ class BaseSectionHeaderView: UICollectionReusableView {
 | 成員 | 用途 | 預設 |
 |------|------|------|
 | `reuseIdentifier` | 依實際型別回傳名稱 | `String(describing: self)` |
-| `titleHorizontalInset` | 標題左右間距的 override point | `16` |
 | `titleRowView` | 標題列，實際型別為 private 的 `SectionHeaderTitleRowView`，對外只暴露 `UIView`；點擊、按壓回饋與無障礙掛在此 view | — |
 | `configureView`／`setupHierarchy`／`setupConstraints`／`resetForReuse` | Template methods，與 `BaseCollectionViewCell` 相同；子類別覆寫時一律呼叫 `super` | 透明背景；其餘為空 |
 | `placeTitleRow()` | 決定 `titleRowView` 擺放位置的專用覆寫點；覆寫即取代預設擺放，不呼叫 `super` | 將 `titleRowView` 加入 header 並填滿 |
@@ -208,9 +221,9 @@ class BaseSectionHeaderView: UICollectionReusableView {
 
 | 子類別 | Override 與新增 |
 |--------|-----------------|
-| `DetailSectionHeaderView` | `titleHorizontalInset` 回傳 `DetailLayoutMetrics.horizontalContentInset`；文案「X 區段」，可點時 hint「點兩下查看完整列表」 |
-| `MainHomeSectionHeaderView` | 改為可繼承的 `class`；保留 `standardHeight = 32`；文案「X 分類」，可點時 value「可查看更多」、hint「點兩下查看X完整列表」 |
-| `MainHomeFeaturedHeaderView` | `setupHierarchy` 呼叫 `super` 後加入 stack 與輪播；`placeTitleRow()` 將 `titleRowView` 加入 stack（輪播下方），寬度等於 header、高度 `standardHeight`；`setupConstraints`、`resetForReuse` 呼叫 `super`，後者另外清除輪播與 `onCarouselSelected`；新增 `configure(title:carouselItems:onTitleTap:)` |
+| `DetailSectionHeaderView` | 文案「X 區段」，可點時 hint「點兩下查看完整列表」；1.2 版移除 `titleHorizontalInset` 覆寫，左右間距由 base 統一 |
+| `MainHomeSectionHeaderView` | 改為可繼承的 `class`；文案「X 分類」，可點時 value「可查看更多」、hint「點兩下查看X完整列表」；1.2 版移除 `standardHeight` |
+| `MainHomeFeaturedHeaderView` | `setupHierarchy` 呼叫 `super` 後加入 stack 與輪播；`placeTitleRow()` 將 `titleRowView` 加入 stack（輪播下方），寬度等於 header、高度 `SectionHeaderLayoutMetrics.height`；`setupConstraints`、`resetForReuse` 呼叫 `super`，後者另外清除輪播與 `onCarouselSelected`；新增 `configure(title:carouselItems:onTitleTap:)` |
 
 1.0 版的 base 在 `setupHierarchy`／`setupConstraints` 預設將 `titleRowView` 加入 header 並填滿，`MainHomeFeaturedHeaderView` 只能整段覆寫、不呼叫 `super`；base 日後在這兩個方法新增的內容會被它靜默略過。1.1 版將擺放拆成 `placeTitleRow()`：其餘 template methods 的 base 實作只做共用設定或為空，子類別一律呼叫 `super`；`placeTitleRow()` 是唯一「覆寫即取代」的擴充點。標題列內部的 label 由 base 的私有方法在 init 時建立，不受子類別覆寫影響。
 
@@ -255,6 +268,20 @@ static func titleAttributedText(
 | `UIButton` | 同屬 `UIControl`，有相同的捲動問題；不可點時仍會帶 `.button` trait |
 | 自行處理 touch 的 `UIView`（採用） | 列表開始捲動時系統送出 `touchesCancelled`，捲動與高亮互不干擾；不需要 `@objc` |
 
+### 5.10 間距來源 `SectionHeaderLayoutMetrics`
+
+`Feature/Base/SectionHeader/SectionHeaderLayoutMetrics.swift` 為 `nonisolated enum`，只放 4.1 的四個常數，讓同為 `nonisolated` 的 `DetailLayoutMetrics` 也能引用。
+
+| 使用端 | 引用方式 |
+|--------|----------|
+| `BaseSectionHeaderView` | 標題左右 inset 使用 `horizontalInset`；移除 `titleHorizontalInset` 覆寫點 |
+| `MainHomeFeaturedHeaderView` | 標題列高度與 `featuredHeight` 使用 `height` |
+| `MainHomeViewController` | Header 高度 `height`；`sectionInset` 上 `contentSpacing`、下 `sectionSpacing` |
+| `MemberCenterViewController` | Header 高度 `height`；內容區段上方 `contentSpacing`；非最後區段下方 `sectionSpacing` |
+| `DetailLayoutMetrics` | `sectionHeaderHeight`、`headerContentSpacing`、`sectionBottomInset` 改為轉接上述常數，五個詳情頁不需修改 |
+
+`DetailLayoutMetrics.horizontalContentInset` 是詳情頁內容本身的對齊基準，維持獨立常數（值同為 16）。
+
 ---
 
 ## 6. 呼叫端 API
@@ -282,18 +309,20 @@ headerView.configure(title: section.title) { [weak self] in
 
 | 檔案 | 變更 |
 |------|------|
-| `Feature/Base/SectionHeader/BaseSectionHeaderView.swift` | 新增；1.1 版加入 `placeTitleRow()`、標題正規化與 `SectionHeaderTitleRowView` |
-| `Feature/Base/DetailBase/View/DetailSectionHeaderView.swift` | 改繼承 base，只保留 override |
-| `Main/MainHome/View/Header/Section/MainHomeSectionHeaderView.swift` | 改繼承 base，改為可繼承的 `class` |
-| `Main/MainHome/View/Header/Carousel/MainHomeFeaturedHeaderView.swift` | 改繼承 `MainHomeSectionHeaderView`，只保留輪播相關實作；1.1 版改以 `placeTitleRow()` 擺放標題列 |
+| `Feature/Base/SectionHeader/BaseSectionHeaderView.swift` | 新增；1.1 版加入 `placeTitleRow()`、標題正規化與 `SectionHeaderTitleRowView`；1.2 版移除 `titleHorizontalInset` |
+| `Feature/Base/SectionHeader/SectionHeaderLayoutMetrics.swift` | 1.2 版新增，統一 header 高度與間距 |
+| `Feature/Base/DetailBase/View/DetailSectionHeaderView.swift` | 改繼承 base，只保留文案 override；1.2 版移除左右間距覆寫 |
+| `Feature/Base/DetailBase/Layout/DetailLayoutMetrics.swift` | 1.2 版 header 高度與間距改為轉接 `SectionHeaderLayoutMetrics` |
+| `Main/MainHome/View/Header/Section/MainHomeSectionHeaderView.swift` | 改繼承 base，改為可繼承的 `class`；1.2 版移除 `standardHeight` |
+| `Main/MainHome/View/Header/Carousel/MainHomeFeaturedHeaderView.swift` | 改繼承 `MainHomeSectionHeaderView`，只保留輪播相關實作；1.1 版改以 `placeTitleRow()` 擺放標題列；1.2 版改用 `SectionHeaderLayoutMetrics.height` |
 | `Main/MainHome/View/Factory/MainHomeSectionTitleAttributedStringFactory.swift` | 刪除，連同空的 `Factory` 資料夾 |
 | `Feature/Formatter/BaseDisplayTextFormatter.swift` | `titleAttributedText` 新增 `trailingImageColor` |
 | `Feature/Base/DetailBase/Controller/DetailBaseViewController.swift` | 參數標籤改為 `onTitleTap` |
-| `Main/MainHome/Controller/MainHomeViewController.swift` | 改用新的 `configure` |
-| `MemberCenter/Controller/MemberCenterViewController.swift` | 改用新的 `configure` |
-| `MyTMDB_App.xcodeproj/project.pbxproj` | 新增 `Feature/Base/SectionHeader` group 與 target membership；移除 factory 與 `Factory` group |
+| `Main/MainHome/Controller/MainHomeViewController.swift` | 改用新的 `configure`；1.2 版 header 高度與區段間距改用 `SectionHeaderLayoutMetrics` |
+| `MemberCenter/Controller/MemberCenterViewController.swift` | 改用新的 `configure`；1.2 版 header 高度與區段間距改用 `SectionHeaderLayoutMetrics`，並移除被 delegate 覆蓋、沒有作用的 `minimumLineSpacing` 設定 |
+| `MyTMDB_App.xcodeproj/project.pbxproj` | 新增 `Feature/Base/SectionHeader` group 與 target membership；移除 factory 與 `Factory` group；1.2 版加入 `SectionHeaderLayoutMetrics.swift` |
 
-原三個 header 與 factory 共 478 行，改為 base（含標題列元件）與三個子類別共 413 行；disclosure 只在 `BaseSectionHeaderView` 定義一次。
+原三個 header 與 factory 共 478 行，改為 base（含標題列元件）與三個子類別共 396 行，另加 23 行的 `SectionHeaderLayoutMetrics`；disclosure 只在 `BaseSectionHeaderView` 定義一次。
 
 ---
 
@@ -311,6 +340,7 @@ headerView.configure(title: section.title) { [weak self] in
 | 按壓回饋 | 按住標題列時整列變暗（alpha 0.72），其他 header 不受影響；放開後恢復並觸發點擊 |
 | 從標題列開始捲動 | 快速滑動，或按住約 0.5 秒後拖曳，列表皆正常捲動，放開後不觸發點擊 |
 | 空白標題 + handler | 不顯示文字與 disclosure、不可點、不是 accessibility element |
+| 各畫面 header 間距 | 首頁、會員中心、詳情頁的 header 皆高 32、標題左右 16、header 到內容 8、上一區段到 header 16 |
 | 會員中心內容區段 | 同首頁一般區段 |
 
 ### 8.2 VoiceOver
@@ -337,12 +367,14 @@ rg -n "disclosureSymbolName" --glob '*.swift' .
 
 rg -n "@objc|UITapGestureRecognizer|UIControl" Feature/Base/SectionHeader
 
+rg -n "standardHeight|titleHorizontalInset" Feature/Base/SectionHeader Feature/Base/DetailBase Main/MainHome MemberCenter
+
 git diff --check
 ```
 
 預期：
 
-- 第一、二、四項無輸出。
+- 第一、二、四、五項無輸出。
 - `disclosureSymbolName` 只出現在 `BaseSectionHeaderView.swift`。
 - diff 無 whitespace error。
 
@@ -360,7 +392,7 @@ xcodebuild \
   build
 ```
 
-結果：1.0、1.1 版皆 BUILD SUCCEEDED，0 error、0 warning；改動前以相同命令建立的基準同為 0 warning。
+結果：1.0、1.1、1.2 版皆 BUILD SUCCEEDED，0 error、0 warning；改動前以相同命令建立的基準同為 0 warning。
 
 ### 9.3 Runtime
 
@@ -373,6 +405,7 @@ xcodebuild \
 - 會員中心內容區段需 TMDB 帳號登入才會出現，未驗證；其使用與首頁相同的 `MainHomeSectionHeaderView`，呼叫端改法相同。
 - 8.2 未以實際 VoiceOver 操作驗證；VoiceOver 雙擊由系統在 activation point 模擬點擊，與 1.0 版相同。
 - iPad 未驗證；輪播 header 的 iPad 寬度上限（720）程式碼未變更。
+- 1.2 間距統一依使用者指示未執行 Runtime 驗證；8.1「各畫面 header 間距」尚未實測。
 
 ---
 
@@ -384,6 +417,8 @@ xcodebuild \
 | 子類別覆寫 template method 未呼叫 `super` | Base 日後新增的共用設定被靜默略過 | 擺放拆成 `placeTitleRow()`，其餘 template methods 子類別一律呼叫 `super`（5.7） |
 | 以 `UIControl` 實作標題列 | 從標題列按住後拖曳，列表無法捲動 | 改用自行處理 touch 的 `UIView`（5.9），已以相同路徑實測 |
 | 自行處理 touch，未使用系統控制項 | 移出判定只看 bounds，沒有 `UIControl` 的擴大追蹤範圍 | 標題列為整列寬度；垂直移動時由列表捲動接手並取消高亮 |
+| 詳情頁區段間距由 8 增為 16 | 詳情頁內容整體變長 | 以首頁為基準的取捨；若需調整，只改 `SectionHeaderLayoutMetrics.sectionSpacing` |
+| 1.2 未執行 Runtime 驗證 | 間距調整後的實際畫面未確認 | 依使用者指示略過；8.1「各畫面 header 間距」待實測 |
 | Header 本身成為 accessibility element | 輪播內元素無法被 VoiceOver 存取 | 無障礙掛在 `titleRowView`（5.6） |
 | Feature 文案收進 base | Base 需要知道各 feature 語意 | 文案經 `titleAccessibilityText(for:isTappable:)` 由子類別提供 |
 | `onTitleTap` 強參考 Controller | 循環參考 | 呼叫端使用 `[weak self]`；reuse 時 base 清除 handler |
@@ -395,7 +430,6 @@ xcodebuild \
 ## 11. 後續事項
 
 - 會員中心沿用首頁的 `MainHomeSectionHeaderView`，屬跨 feature 依賴。可另建 `MemberCenterSectionHeaderView: BaseSectionHeaderView`，或將共用文案的 header 移至 `Feature/`。本次不處理。
-- `MainHomeViewController.Layout.headerHeight`、`MemberCenterViewController.Layout.sectionHeaderHeight` 與 `MainHomeSectionHeaderView.standardHeight` 皆為 32，屬重複定義，可另案收斂。
 
 ---
 
@@ -404,10 +438,11 @@ xcodebuild \
 截至 2026-09-18：
 
 - Design：Ready。
-- Source Implementation：Done（1.1，依第 7 節檔案範圍）。
+- Source Implementation：Done（1.2，依第 7 節檔案範圍）。
 - Static Verification：Passed（9.1）。
 - Xcode Build：Passed（9.2）。
-- Runtime／UI：Passed（9.3，iPhone 訪客模式；含按壓回饋與從標題列開始捲動）。
+- Runtime／UI：1.0／1.1 Passed（9.3，iPhone 訪客模式；含按壓回饋與從標題列開始捲動）。
+- 1.2 間距統一 Runtime：NotRun（依使用者指示略過）。
 - 會員中心 Runtime：NotRun。
 - VoiceOver：NotRun。
 - iPad：NotRun。
@@ -426,5 +461,6 @@ xcodebuild \
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 1.2 | 2026-09-18 | 新增 `SectionHeaderLayoutMetrics`，以首頁為基準統一 header 高度 32、左右 16、header 到內容 8、上一區段到 header 16：會員中心內容區段補上 8、區段間距 12 改 16；詳情頁 header 高度 28 改 32、區段底部 8 改 16；移除 `titleHorizontalInset`、`standardHeight` 與各畫面重複的常數；Build 通過，Runtime 依指示未執行 |
 | 1.1 | 2026-09-18 | 新增 `placeTitleRow()` 覆寫點，子類別一律呼叫 `super`；`configure` 先正規化標題，空白標題不顯示 disclosure 且不可點；標題列改為自行處理 touch 的 `SectionHeaderTitleRowView`，提供按壓回饋並移除 `@objc`；`UIControl` 版本實測會阻擋按住後拖曳的捲動，故不採用；Build 與 iPhone 訪客模式 Runtime 通過 |
 | 1.0 | 2026-09-18 | 建立 `BaseSectionHeaderView`，三個區段 header 改為繼承；disclosure 改為次要色 `chevron.right`；Build 與 iPhone 訪客模式 Runtime 通過，會員中心、VoiceOver、iPad NotRun |

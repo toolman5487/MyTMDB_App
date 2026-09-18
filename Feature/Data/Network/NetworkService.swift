@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - HTTPMethod
 
-enum HTTPMethod: String, Sendable {
+nonisolated enum HTTPMethod: String, Sendable {
     case get = "GET"
     case post = "POST"
     case put = "PUT"
@@ -19,7 +19,7 @@ enum HTTPMethod: String, Sendable {
 
 // MARK: - Protocol
 
-protocol NetworkServicing: Sendable {
+nonisolated protocol NetworkServicing: Sendable {
     func get<T: Decodable>(
         path: String,
         queryItems: [URLQueryItem]
@@ -89,7 +89,7 @@ extension NetworkServicing {
 
 // MARK: - NetworkService
 
-final class NetworkService: NetworkServicing {
+nonisolated final class NetworkService: NetworkServicing {
 
     // MARK: - Properties
 
@@ -280,11 +280,11 @@ final class NetworkService: NetworkServicing {
 
 // MARK: - Helpers
 
-private struct EmptyResponse: Decodable {
+nonisolated private struct EmptyResponse: Decodable, Sendable {
     init() {}
 }
 
-private struct TMDBErrorResponse: Decodable {
+nonisolated private struct TMDBErrorResponse: Decodable, Sendable {
     let success: Bool?
     let statusCode: Int?
     let statusMessage: String?
@@ -296,7 +296,7 @@ private struct TMDBErrorResponse: Decodable {
     }
 }
 
-private struct AnyEncodable: Encodable {
+nonisolated private struct AnyEncodable: Encodable {
     private let encodeValue: (Encoder) throws -> Void
 
     init(_ value: any Encodable) {

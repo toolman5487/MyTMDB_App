@@ -12,10 +12,6 @@ import UIKit
 @MainActor
 class MainHomeSectionHeaderView: BaseSectionHeaderView {
 
-    // MARK: - Constants
-
-    static let standardHeight: CGFloat = 32
-
     // MARK: - BaseSectionHeaderView
 
     override func titleAccessibilityText(for title: String, isTappable: Bool) -> AccessibilityText {

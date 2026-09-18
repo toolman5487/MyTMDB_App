@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Account: Codable, Sendable {
+nonisolated struct Account: Codable, Sendable {
     let id: Int
     let name: String?
     let username: String
@@ -15,16 +15,16 @@ struct Account: Codable, Sendable {
     let iso_639_1: String
     let iso_3166_1: String
     let avatar: Avatar
-    
-    struct Avatar: Codable, Sendable {
+
+    nonisolated struct Avatar: Codable, Sendable {
         let gravatar: Gravatar
         let tmdb: TMDBAvatar
-        
-        struct Gravatar: Codable, Sendable {
+
+        nonisolated struct Gravatar: Codable, Sendable {
             let hash: String
         }
-        
-        struct TMDBAvatar: Codable, Sendable {
+
+        nonisolated struct TMDBAvatar: Codable, Sendable {
             let avatar_path: String?
         }
     }
