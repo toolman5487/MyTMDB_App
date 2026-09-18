@@ -179,7 +179,8 @@ nonisolated enum BaseDisplayTextFormatter {
         title: String?,
         trailingImage: UIImage? = nil,
         font: UIFont,
-        textColor: UIColor = ThemeColor.highlight
+        textColor: UIColor = ThemeColor.highlight,
+        trailingImageColor: UIColor? = nil
     ) -> NSAttributedString? {
         guard let title else { return nil }
 
@@ -199,7 +200,7 @@ nonisolated enum BaseDisplayTextFormatter {
 
         let attachment = NSTextAttachment()
         attachment.image = trailingImage.withTintColor(
-            textColor,
+            trailingImageColor ?? textColor,
             renderingMode: .alwaysOriginal
         )
         attachment.bounds = CGRect(

@@ -165,6 +165,7 @@
 		15E000142FF401000000014 /* BaseFilterHeaderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000112FF401000000011 /* BaseFilterHeaderItem.swift */; };
 		15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000122FF401000000012 /* BaseFilterHeaderCollectionViewCell.swift */; };
 		15E0001A2FF40100000001A /* BaseFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000132FF401000000013 /* BaseFilterHeaderView.swift */; };
+		15B5EC012FFA000000B5EC01 /* BaseSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B5EC022FFA000000B5EC02 /* BaseSectionHeaderView.swift */; };
 		15E000202FF401000000020 /* BaseShowAllFilterHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E000232FF401000000023 /* BaseShowAllFilterHeaderView.swift */; };
 		15E002122FF430000000001 /* AppFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002112FF430000000001 /* AppFactory.swift */; };
 		15E002152FF430010000001 /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E002182FF430010000001 /* AppAppearance.swift */; };
@@ -174,7 +175,6 @@
 		15E100132FF7100000E10001 /* DetailCompositionalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */; };
 		15E100142FF7100000E10001 /* DetailLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100152FF7100000E10001 /* DetailLayoutMetrics.swift */; };
 		15E100162FF7000000E10001 /* DetailActionBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E100172FF7000000E10001 /* DetailActionBarViewController.swift */; };
-		15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */; };
 		15E401023014000000E40101 /* MainSearchIdleCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */; };
 		15E501013014100000E50101 /* PersonDetailCreditsPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */; };
 		15EB10023006400000EB1001 /* EpisodeDetailPresentationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */; };
@@ -500,6 +500,7 @@
 		15E000112FF401000000011 /* BaseFilterHeaderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderItem.swift; sourceTree = "<group>"; };
 		15E000122FF401000000012 /* BaseFilterHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		15E000132FF401000000013 /* BaseFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterHeaderView.swift; sourceTree = "<group>"; };
+		15B5EC022FFA000000B5EC02 /* BaseSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSectionHeaderView.swift; sourceTree = "<group>"; };
 		15E000232FF401000000023 /* BaseShowAllFilterHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseShowAllFilterHeaderView.swift; sourceTree = "<group>"; };
 		15E002112FF430000000001 /* AppFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFactory.swift; sourceTree = "<group>"; };
 		15E002182FF430010000001 /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
@@ -509,7 +510,6 @@
 		15E100112FF7100000E10001 /* DetailCompositionalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCompositionalLayout.swift; sourceTree = "<group>"; };
 		15E100152FF7100000E10001 /* DetailLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailLayoutMetrics.swift; sourceTree = "<group>"; };
 		15E100172FF7000000E10001 /* DetailActionBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailActionBarViewController.swift; sourceTree = "<group>"; };
-		15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHomeSectionTitleAttributedStringFactory.swift; sourceTree = "<group>"; };
 		15E400013014000000E40001 /* MainSearchIdleCollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSearchIdleCollectionViewCells.swift; sourceTree = "<group>"; };
 		15E500013014100000E50001 /* PersonDetailCreditsPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailCreditsPresentationBuilder.swift; sourceTree = "<group>"; };
 		15EB10013006400000EB1001 /* EpisodeDetailPresentationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailPresentationBuilder.swift; sourceTree = "<group>"; };
@@ -1421,6 +1421,7 @@
 				15A94F4A2FF26D7900FCBB0F /* Root */,
 				15CF99EE2FF623100041F4CC /* Router */,
 				15E000052FF400000000001 /* ScrollTrackingBase */,
+				15B5EC032FFA000000B5EC03 /* SectionHeader */,
 				15CF99E22FF621000041F4CC /* WebView */,
 			);
 			path = Base;
@@ -1479,7 +1480,6 @@
 			isa = PBXGroup;
 			children = (
 				15BAEB7F2FF66152006B0E15 /* Cell */,
-				15E1A0102FF9100000FCBB0F /* Factory */,
 				15BAEB802FF6615A006B0E15 /* Header */,
 			);
 			path = View;
@@ -2106,6 +2106,14 @@
 			path = FilterHeader;
 			sourceTree = "<group>";
 		};
+		15B5EC032FFA000000B5EC03 /* SectionHeader */ = {
+			isa = PBXGroup;
+			children = (
+				15B5EC022FFA000000B5EC02 /* BaseSectionHeaderView.swift */,
+			);
+			path = SectionHeader;
+			sourceTree = "<group>";
+		};
 		15E001102FF410000000001 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -2161,14 +2169,6 @@
 				15E100152FF7100000E10001 /* DetailLayoutMetrics.swift */,
 			);
 			path = Layout;
-			sourceTree = "<group>";
-		};
-		15E1A0102FF9100000FCBB0F /* Factory */ = {
-			isa = PBXGroup;
-			children = (
-				15E1A0042FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift */,
-			);
-			path = Factory;
 			sourceTree = "<group>";
 		};
 		15E1A0112FF9100000FCBB0F /* Section */ = {
@@ -3645,6 +3645,7 @@
 				15E000142FF401000000014 /* BaseFilterHeaderItem.swift in Sources */,
 				15E000172FF401000000017 /* BaseFilterHeaderCollectionViewCell.swift in Sources */,
 				15E0001A2FF40100000001A /* BaseFilterHeaderView.swift in Sources */,
+				15B5EC012FFA000000B5EC01 /* BaseSectionHeaderView.swift in Sources */,
 				15E000202FF401000000020 /* BaseShowAllFilterHeaderView.swift in Sources */,
 				150337122FF60000003125EC /* ImageTitleBaseCollectionViewCell.swift in Sources */,
 				15A951012FF3C00000FCBB0F /* BaseHorizontalStripCollectionViewCell.swift in Sources */,
@@ -3739,7 +3740,6 @@
 				1588090D3000D1850081E4E9 /* MemberCenterViewModel.swift in Sources */,
 				15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */,
 				15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */,
-				15E1A0012FF9000000FCBB0F /* MainHomeSectionTitleAttributedStringFactory.swift in Sources */,
 				15A950232FF2B00000FCBB0F /* MainHomeSectionHeaderView.swift in Sources */,
 				15A9503B2FF7000000FCBB0F /* MainHomeCarouselView.swift in Sources */,
 				15A9503E2FF7000000FCBB0F /* MainHomeCarouselCollectionViewCell.swift in Sources */,

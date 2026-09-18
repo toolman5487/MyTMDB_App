@@ -253,8 +253,7 @@ extension MemberCenterViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainHomeSectionHeaderView {
-            headerView.configure(title: contentSection.title)
-            headerView.onTitleTapped = { [weak self] in
+            headerView.configure(title: contentSection.title) { [weak self] in
                 self?.showList(for: contentSection.id)
             }
         }

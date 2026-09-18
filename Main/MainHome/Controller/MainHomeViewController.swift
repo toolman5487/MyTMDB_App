@@ -253,13 +253,13 @@ extension MainHomeViewController: UICollectionViewDataSource {
             if let headerView = reusableView as? MainHomeFeaturedHeaderView {
                 headerView.configure(
                     title: section.title,
-                    carouselItems: carouselItems
+                    carouselItems: carouselItems,
+                    onTitleTap: { [weak self] in
+                        self?.showSectionList(for: section.category)
+                    }
                 )
                 headerView.onCarouselSelected = { [weak self] item in
                     self?.showDetail(for: item)
-                }
-                headerView.onTitleTapped = { [weak self] in
-                    self?.showSectionList(for: section.category)
                 }
             }
 
@@ -273,8 +273,7 @@ extension MainHomeViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainHomeSectionHeaderView {
-            headerView.configure(title: section.title)
-            headerView.onTitleTapped = { [weak self] in
+            headerView.configure(title: section.title) { [weak self] in
                 self?.showSectionList(for: section.category)
             }
         }

@@ -11,11 +11,9 @@ import UIKit
 // MARK: - MainHomeFeaturedHeaderView
 
 @MainActor
-final class MainHomeFeaturedHeaderView: UICollectionReusableView {
+final class MainHomeFeaturedHeaderView: MainHomeSectionHeaderView {
 
     // MARK: - Constants
-
-    static let reuseIdentifier = String(describing: MainHomeFeaturedHeaderView.self)
 
     static func featuredHeight(
         for width: CGFloat,
@@ -25,7 +23,7 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
         return Layout.carouselHeight(for: width, platform: platform)
             + Layout.carouselTitleSpacing
-            + MainHomeSectionHeaderView.standardHeight
+            + standardHeight
     }
 
     private enum Platform {
@@ -58,12 +56,10 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     }
 
     private enum Layout {
-        static let horizontalInset: CGFloat = 16
         static let maximumCarouselWidthForPad: CGFloat = 720
         static let fallbackCarouselHeight: CGFloat = 224
         static let backdropAspectRatio: CGFloat = 9.0 / 16.0
         static let carouselTitleSpacing: CGFloat = 8
-        static let titleTrailingSymbolName = "chevron.right.2"
 
         static func carouselHeight(for width: CGFloat, platform: Platform) -> CGFloat {
             guard width > 0 else { return fallbackCarouselHeight }
@@ -75,7 +71,6 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
     // MARK: - Properties
 
     var onCarouselSelected: ((HomeContentItem) -> Void)?
-    var onTitleTapped: (() -> Void)?
 
     // MARK: - UI Components
 
@@ -89,70 +84,15 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
 
     private let carouselView = MainHomeCarouselView()
 
-    private let titleLabel = AppFactory.Label.sectionTitle(color: ThemeColor.highlight)
-
-    private let titleRowStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: Layout.horizontalInset,
-            bottom: 0,
-            trailing: Layout.horizontalInset
-        )
-        return stackView
-    }()
-
-    // MARK: - Initialization
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureView()
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        configureView()
-        setupHierarchy()
-        setupConstraints()
-    }
-
-    // MARK: - Lifecycle
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        titleLabel.text = nil
-        titleLabel.attributedText = nil
-        carouselView.configure(items: [])
-        titleRowStackView.applyAccessibilityText(nil)
-        titleRowStackView.accessibilityTraits.remove(.button)
-        onCarouselSelected = nil
-        onTitleTapped = nil
-    }
-
     // MARK: - Setup
 
-    private func configureView() {
-        backgroundColor = .clear
-        titleLabel.isAccessibilityElement = false
-        titleRowStackView.isUserInteractionEnabled = true
-        titleRowStackView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(handleTitleTap))
-        )
-    }
-
-    private func setupHierarchy() {
+    override func setupHierarchy() {
         addSubview(stackView)
         stackView.addArrangedSubview(carouselView)
-        stackView.addArrangedSubview(titleRowStackView)
-        titleRowStackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(titleRowView)
     }
 
-    private func setupConstraints() {
+    override func setupConstraints() {
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -172,52 +112,28 @@ final class MainHomeFeaturedHeaderView: UICollectionReusableView {
             make.height.equalTo(carouselView.snp.width).multipliedBy(Layout.backdropAspectRatio)
         }
 
-        titleRowStackView.snp.makeConstraints { make in
+        titleRowView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(MainHomeSectionHeaderView.standardHeight)
+            make.height.equalTo(Self.standardHeight)
         }
+    }
+
+    override func resetForReuse() {
+        carouselView.configure(items: [])
+        onCarouselSelected = nil
     }
 
     // MARK: - Configuration
 
-    func configure(title: String?, carouselItems: [HomeContentItem] = []) {
-        let font = titleLabel.font ?? .preferredFont(forTextStyle: .title3)
-        let trailingImage = UIImage(
-            systemName: Layout.titleTrailingSymbolName,
-            withConfiguration: UIImage.SymbolConfiguration(font: font, scale: .small)
-        )
-
-        titleLabel.attributedText = MainHomeSectionTitleAttributedStringFactory.make(
-            title: title,
-            trailingImage: trailingImage,
-            font: font,
-            textColor: ThemeColor.highlight
-        )
+    func configure(
+        title: String?,
+        carouselItems: [HomeContentItem],
+        onTitleTap: (() -> Void)?
+    ) {
+        configure(title: title, onTitleTap: onTitleTap)
         carouselView.configure(items: carouselItems)
-        applyTitleAccessibility(title: title)
         carouselView.onItemSelected = { [weak self] item in
             self?.onCarouselSelected?(item)
         }
-    }
-
-    private func applyTitleAccessibility(title: String?) {
-        guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
-            titleRowStackView.applyAccessibilityText(nil)
-            titleRowStackView.accessibilityTraits.remove(.button)
-            return
-        }
-
-        titleRowStackView.applyAccessibilityText(
-            AccessibilityText(
-                label: "\(title) 分類",
-                value: "可查看更多",
-                hint: "點兩下查看\(title)完整列表"
-            )
-        )
-        titleRowStackView.accessibilityTraits.insert(.button)
-    }
-
-    @objc private func handleTitleTap() {
-        onTitleTapped?()
     }
 }

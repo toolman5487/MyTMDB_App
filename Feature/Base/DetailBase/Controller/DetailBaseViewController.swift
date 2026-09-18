@@ -99,7 +99,7 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
             withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        (reusableView as? DetailSectionHeaderView)?.configure(title: title, onTap: onTap)
+        (reusableView as? DetailSectionHeaderView)?.configure(title: title, onTitleTap: onTap)
         return reusableView
     }
 
