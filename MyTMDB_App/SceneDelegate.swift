@@ -132,7 +132,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 continue
             }
 
-            Task { @MainActor in
+            Task(priority: .userInitiated) { @MainActor in
                 _ = await AppIntentNavigator.open(
                     destination,
                     in: window,

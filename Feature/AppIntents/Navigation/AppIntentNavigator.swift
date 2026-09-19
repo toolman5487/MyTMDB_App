@@ -69,7 +69,7 @@ enum AppIntentNavigator {
     @MainActor
     static func open(_ url: URL, in window: UIWindow) {
         guard let destination = AppIntentDestination(url: url) else { return }
-        Task {
+        Task(priority: .userInitiated) {
             _ = await open(destination, in: window)
         }
     }
