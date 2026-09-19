@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A11A10013019000000A11001 /* AppInterfaceLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A20013019000000A12001 /* AppInterfaceLanguage.swift */; };
+		A11A10023019000000A11002 /* AppInterfaceLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A20023019000000A12002 /* AppInterfaceLocalization.swift */; };
+		A11A10033019000000A11003 /* AppInterfaceLanguageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A20033019000000A12003 /* AppInterfaceLanguageStore.swift */; };
 		00E81B6BA58153B316D95E96 /* MainSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7032F8791A536CB4AE3DF5 /* MainSearchResult.swift */; };
 		01A376B53F5E0A72E64D1EB2 /* AccountProfileProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D77738E5A564BEEAAC4D19 /* AccountProfileProviding.swift */; };
 		043F3B22A7296FFDE933AC30 /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C6536CD7E53A481732085B /* Page.swift */; };
@@ -353,6 +356,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A11A20013019000000A12001 /* AppInterfaceLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInterfaceLanguage.swift; sourceTree = "<group>"; };
+		A11A20023019000000A12002 /* AppInterfaceLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInterfaceLocalization.swift; sourceTree = "<group>"; };
+		A11A20033019000000A12003 /* AppInterfaceLanguageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInterfaceLanguageStore.swift; sourceTree = "<group>"; };
 		02C55B4149C4284303539940 /* TVDetailDTO.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVDetailDTO.swift; sourceTree = "<group>"; };
 		04C6536CD7E53A481732085B /* Page.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		0A41068CA6BBBD4148CCAACE /* WatchProviders.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchProviders.swift; sourceTree = "<group>"; };
@@ -1298,6 +1304,8 @@
 		1598AA982DC4C29C005E972C /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				A11A20013019000000A12001 /* AppInterfaceLanguage.swift */,
+				A11A20023019000000A12002 /* AppInterfaceLocalization.swift */,
 				15D196E72FF3900000545A85 /* AppLocalization.swift */,
 				15D1972E2FF1683D00545A85 /* ThemeColor.swift */,
 				17C15B409159E96F7920003B /* TMDBResourceURL.swift */,
@@ -2928,6 +2936,7 @@
 		B4B0B4B2DFDD45F70C9B33AB /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				A11A20033019000000A12003 /* AppInterfaceLanguageStore.swift */,
 				A1395CA794DB2ADC6BF92B04 /* AppPreferencesStorage.swift */,
 				15D198122FF2201000545A85 /* SessionStore.swift */,
 				15A6A09A3005700000AD5E46 /* UserProfileStore.swift */,
@@ -3543,6 +3552,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				"zh-Hant",
 				Base,
 			);
 			mainGroup = 1598AA402DC4B69F005E972C;
@@ -3583,6 +3593,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A11A10013019000000A11001 /* AppInterfaceLanguage.swift in Sources */,
+				A11A10023019000000A11002 /* AppInterfaceLocalization.swift in Sources */,
+				A11A10033019000000A11003 /* AppInterfaceLanguageStore.swift in Sources */,
 				1598AA902DC4B93E005E972C /* LoginViewController.swift in Sources */,
 				15AF10013015000000AF0001 /* MovieEntity.swift in Sources */,
 				15AF10023015000000AF0002 /* TVSeriesEntity.swift in Sources */,

@@ -26,6 +26,7 @@ final class MemberCenterViewModel {
     private var onStateChange: (@MainActor (MemberCenterViewState) -> Void)?
     private let session: AuthSession
     private let loadOverview: LoadMemberCenterOverviewUseCase
+    private let localization: AppInterfaceLocalization
     private var cachedHeaderContent: MemberCenterProfileHeaderContent?
     private var accountContext: MemberCenterAccountContext?
     private var lastSettledState: MemberCenterViewState = .idle
@@ -35,15 +36,17 @@ final class MemberCenterViewModel {
     init(
         session: AuthSession,
         loadOverview: LoadMemberCenterOverviewUseCase,
-        contentRepository: AccountContentProviding
+        contentRepository: AccountContentProviding,
+        localization: AppInterfaceLocalization
     ) {
         self.session = session
         self.loadOverview = loadOverview
+        self.localization = localization
 
         if case .user = session {
             self.cachedHeaderContent = contentRepository
                 .cachedProfile()
-                .map(MemberCenterProfileHeaderContent.init(profile:))
+                .map { MemberCenterProfileHeaderContent(profile: $0, localization: localization) }
         }
         self.headerContent = cachedHeaderContent
     }
@@ -63,7 +66,9 @@ final class MemberCenterViewModel {
             await loadUserContent(sessionID: sessionID)
 
         case .guest, .loggedOut:
-            apply(state: .guest(MemberCenterPresentationBuilder.makeGuestContent()))
+            apply(state: .guest(MemberCenterPresentationBuilder.makeGuestContent(
+                localization: localization
+            )))
         }
     }
 
@@ -108,8 +113,14 @@ final class MemberCenterViewModel {
                 return
             }
 
-            let content = MemberCenterPresentationBuilder.makeContent(from: overview)
-            cachedHeaderContent = MemberCenterProfileHeaderContent(profile: content.profile)
+            let content = MemberCenterPresentationBuilder.makeContent(
+                from: overview,
+                localization: localization
+            )
+            cachedHeaderContent = MemberCenterProfileHeaderContent(
+                profile: content.profile,
+                localization: localization
+            )
             apply(state: content.contentSections.isEmpty ? .empty(content) : .loaded(content))
         } catch is CancellationError {
             apply(state: cancellationFallbackState)
@@ -119,7 +130,7 @@ final class MemberCenterViewModel {
                 return
             }
 
-            apply(state: .failed(error.errorMessage))
+            apply(state: .failed(error.errorMessage(localization: localization)))
         }
     }
 
@@ -166,14 +177,14 @@ final class MemberCenterViewModel {
 
         case .empty(let content):
             return (
-                MemberCenterProfileHeaderContent(profile: content.profile),
+                MemberCenterProfileHeaderContent(profile: content.profile, localization: localization),
                 [],
                 makeAccountContext(profile: content.profile)
             )
 
         case .loaded(let content):
             return (
-                MemberCenterProfileHeaderContent(profile: content.profile),
+                MemberCenterProfileHeaderContent(profile: content.profile, localization: localization),
                 content.contentSections.map(MemberCenterDisplaySection.content),
                 makeAccountContext(profile: content.profile)
             )

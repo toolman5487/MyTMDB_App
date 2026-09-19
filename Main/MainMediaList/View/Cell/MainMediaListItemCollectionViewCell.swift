@@ -16,14 +16,19 @@ final class MainMediaListItemCollectionViewCell: ImageTitleBaseCollectionViewCel
 
     func configure(
         with item: MediaGridItem,
-        imageHeight: CGFloat
+        imageHeight: CGFloat,
+        mediaKind: MediaKind,
+        localization: AppInterfaceLocalization
     ) {
         configure(with: ImageTitleCellContent(
             imageURL: item.posterURL,
             title: item.title,
-            subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+            subtitle: item.ratingText(localization: localization),
             imageHeight: imageHeight,
-            accessibilityText: item.mainMovieListAccessibilityText
+            accessibilityText: item.mainMediaListAccessibilityText(
+                mediaKind: mediaKind,
+                localization: localization
+            )
         ))
     }
 }
@@ -32,14 +37,21 @@ final class MainMediaListItemCollectionViewCell: ImageTitleBaseCollectionViewCel
 
 private extension MediaGridItem {
 
-    var mainMovieListAccessibilityText: AccessibilityText {
+    func mainMediaListAccessibilityText(
+        mediaKind: MediaKind,
+        localization: AppInterfaceLocalization
+    ) -> AccessibilityText {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.metadata([
-                BaseDisplayTextFormatter.ratingText(scoreText),
-                "上映日期 \(dateText)"
+                ratingText(localization: localization),
+                localization.formatted(
+                    "common.release_date.value_format",
+                    defaultValue: "Release date %@",
+                    dateText
+                )
             ]),
-            hint: "點兩下開啟電影詳細資料"
+            hint: mediaKind.detailAccessibilityHint(localization: localization)
         )
     }
 }

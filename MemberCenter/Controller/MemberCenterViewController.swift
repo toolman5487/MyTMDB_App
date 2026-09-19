@@ -24,7 +24,8 @@ final class MemberCenterViewController: BaseListViewController {
     private let sceneBuilder: MemberCenterSceneBuilding
     private lazy var router: MemberCenterRouting = MemberCenterRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var hasStartedInitialLoad = false
@@ -35,11 +36,13 @@ final class MemberCenterViewController: BaseListViewController {
 
     init(
         viewModel: MemberCenterViewModel,
-        sceneBuilder: MemberCenterSceneBuilding
+        sceneBuilder: MemberCenterSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -56,7 +59,10 @@ final class MemberCenterViewController: BaseListViewController {
     override func configureView() {
         super.configureView()
         configureNavigationBarAppearance()
-        navigationItem.title = "會員中心"
+        navigationItem.title = interfaceLocalization.string(
+            "member_center.navigation.title",
+            defaultValue: "Member Center"
+        )
         configureCollectionView()
     }
 
@@ -154,11 +160,17 @@ final class MemberCenterViewController: BaseListViewController {
 
         case .empty:
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: .emptyMemberCenterContent)
+            collectionView.backgroundView = ErrorMessageView(
+                message: .emptyMemberCenterContent(localization: interfaceLocalization),
+                localization: interfaceLocalization
+            )
 
         case .failed(let message):
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
+            collectionView.backgroundView = ErrorMessageView(
+                message: message,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.loadInitialContent()
             }
         }
@@ -250,7 +262,10 @@ extension MemberCenterViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainHomeSectionHeaderView {
-            headerView.configure(title: contentSection.title) { [weak self] in
+            headerView.configure(
+                title: contentSection.title,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.showList(for: contentSection.id)
             }
         }

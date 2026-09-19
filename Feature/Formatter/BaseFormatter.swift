@@ -31,6 +31,20 @@ nonisolated enum BaseFormatter {
             jobText(job) ?? departmentText(department)
         }
 
+        static func displayText(
+            job: String?,
+            department: String?,
+            localization: AppInterfaceLocalization
+        ) -> String? {
+            switch localization.language {
+            case .traditionalChinese:
+                return displayText(job: job, department: department)
+
+            case .english:
+                return normalizedDisplayText(job) ?? normalizedDisplayText(department)
+            }
+        }
+
         static func displayText(job: String, department: String) -> String? {
             displayText(job: Optional(job), department: Optional(department))
         }
@@ -43,6 +57,19 @@ nonisolated enum BaseFormatter {
         static func departmentText(_ department: String?) -> String? {
             guard let department = normalizedDisplayText(department) else { return nil }
             return departmentTranslations[normalizedKey(department)] ?? fallbackText(department)
+        }
+
+        static func departmentText(
+            _ department: String?,
+            localization: AppInterfaceLocalization
+        ) -> String? {
+            switch localization.language {
+            case .traditionalChinese:
+                return departmentText(department)
+
+            case .english:
+                return normalizedDisplayText(department)
+            }
         }
 
         private static func normalizedDisplayText(_ text: String?) -> String? {

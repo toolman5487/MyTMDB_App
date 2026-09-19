@@ -17,7 +17,8 @@ final class PersonDetailViewController: DetailBaseViewController {
     private let sceneBuilder: DetailSceneBuilding
     private lazy var router: DetailRouting = DetailRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var sections: [PersonDetailSectionItem] = []
@@ -30,12 +31,14 @@ final class PersonDetailViewController: DetailBaseViewController {
     init(
         personID: Int,
         viewModel: PersonDetailViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.personID = personID
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -215,7 +218,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailBiographyCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailBiographyCollectionViewCell)?.configure(biography: item.biography ?? "")
+            (cell as? PersonDetailBiographyCollectionViewCell)?.configure(
+                biography: item.biography ?? "",
+                localization: interfaceLocalization
+            )
             return cell
 
         case .facts(let facts):
@@ -231,7 +237,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailMovieCreditsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailMovieCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
+            (cell as? PersonDetailMovieCreditsCollectionViewCell)?.configure(
+                items: items,
+                localization: interfaceLocalization
+            ) { [weak self] item in
                 guard let kind = item.mediaKind else { return }
                 self?.router.showMediaDetail(kind: kind, id: item.sourceID)
             }
@@ -242,7 +251,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailTVCreditsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailTVCreditsCollectionViewCell)?.configure(items: items) { [weak self] item in
+            (cell as? PersonDetailTVCreditsCollectionViewCell)?.configure(
+                items: items,
+                localization: interfaceLocalization
+            ) { [weak self] item in
                 guard let kind = item.mediaKind else { return }
                 self?.router.showMediaDetail(kind: kind, id: item.sourceID)
             }
@@ -253,7 +265,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailProfileImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailProfileImagesCollectionViewCell)?.configure(items: items) { [weak self] imageURL in
+            (cell as? PersonDetailProfileImagesCollectionViewCell)?.configure(
+                items: items,
+                localization: interfaceLocalization
+            ) { [weak self] imageURL in
                 self?.showImagePreview(selectedImageURL: imageURL)
             }
             return cell
@@ -263,7 +278,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailAliasesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailAliasesCollectionViewCell)?.configure(items: items)
+            (cell as? PersonDetailAliasesCollectionViewCell)?.configure(
+                items: items,
+                localization: interfaceLocalization
+            )
             return cell
 
         case .externalLinks(let items):
@@ -271,7 +289,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: PersonDetailExternalLinksCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? PersonDetailExternalLinksCollectionViewCell)?.configure(items: items) { [weak self] url in
+            (cell as? PersonDetailExternalLinksCollectionViewCell)?.configure(
+                items: items,
+                localization: interfaceLocalization
+            ) { [weak self] url in
                 self?.router.openExternalURL(url)
             }
             return cell
@@ -295,7 +316,10 @@ extension PersonDetailViewController: UICollectionViewDataSource {
             )
 
             if let headerView = reusableView as? PersonDetailHeroHeaderView {
-                headerView.configure(with: item.hero) { [weak self] imageURL in
+                headerView.configure(
+                    with: item.hero,
+                    localization: interfaceLocalization
+                ) { [weak self] imageURL in
                     self?.showImagePreview(selectedImageURL: imageURL)
                 }
             }
@@ -314,7 +338,11 @@ extension PersonDetailViewController: UICollectionViewDataSource {
         } else {
             onTap = nil
         }
-        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
+        return dequeueDetailSectionHeader(
+            at: indexPath,
+            title: section.title(localization: interfaceLocalization),
+            onTap: onTap
+        )
     }
 
     private func showImagePreview(selectedImageURL: URL) {
@@ -372,7 +400,7 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        guard sections[section].title != nil else {
+        guard sections[section].title(localization: interfaceLocalization) != nil else {
             return .zero
         }
 
@@ -410,7 +438,9 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        let topInset = sections[section].title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
+        let topInset = sections[section].title(localization: interfaceLocalization) == nil
+            ? 0
+            : DetailLayoutMetrics.headerContentSpacing
 
         return DetailLayoutMetrics.sectionInsets(top: topInset)
     }
@@ -422,7 +452,8 @@ extension PersonDetailViewController: UICollectionViewDelegateFlowLayout {
 
             return PersonDetailBiographyCollectionViewCell.fittingHeight(
                 for: biography,
-                width: width
+                width: width,
+                localization: interfaceLocalization
             )
 
         case .facts:

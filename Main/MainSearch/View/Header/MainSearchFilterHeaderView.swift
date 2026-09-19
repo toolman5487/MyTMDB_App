@@ -21,13 +21,19 @@ final class MainSearchFilterHeaderView: BaseFilterHeaderView {
         onFilterSelected = nil
     }
 
-    func configure(filters: [MainSearchFilterItem]) {
+    func configure(
+        filters: [MainSearchFilterItem],
+        localization: AppInterfaceLocalization
+    ) {
         onBaseFilterSelected = { [weak self] item in
             guard let filter = MainSearchFilter(rawValue: item.id) else { return }
             self?.onFilterSelected?(filter)
         }
 
-        configure(filters: filters.map(BaseFilterHeaderItem.init(searchFilter:)))
+        configure(
+            filters: filters.map(BaseFilterHeaderItem.init(searchFilter:)),
+            localization: localization
+        )
     }
 }
 

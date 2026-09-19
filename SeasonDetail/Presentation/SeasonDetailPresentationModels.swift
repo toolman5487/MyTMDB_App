@@ -20,45 +20,47 @@ nonisolated enum SeasonDetailSectionItem: Sendable, Equatable {
     case watchProviders([SeasonWatchProviderItem])
     case accountState(SeasonAccountStateItem)
 
-    var title: String? {
+    func title(localization: AppInterfaceLocalization) -> String? {
         switch self {
         case .overview:
             return nil
 
         case .facts:
-            return "季數資訊"
+            return localization.string("season_detail.section.information", defaultValue: "Season Information")
 
         case .episodes:
-            return "劇集"
+            return localization.string("season_detail.section.episodes", defaultValue: "Episodes")
 
         case .videos:
-            return "預告與影片"
+            return localization.string("detail.section.videos", defaultValue: "Trailers and Videos")
 
         case .cast:
-            return "主要演員"
+            return localization.string("detail.section.cast", defaultValue: "Cast")
 
         case .crew:
-            return "幕後人員"
+            return localization.string("detail.section.crew", defaultValue: "Crew")
 
         case .images:
-            return "劇照與海報"
+            return localization.string("season_detail.section.images", defaultValue: "Images and Posters")
 
         case .watchProviders:
-            return "觀看平台"
+            return localization.string("detail.section.watch_providers", defaultValue: "Where to Watch")
 
         case .accountState:
-            return "我的評分"
+            return localization.string("common.rating.my_rating", defaultValue: "My Rating")
         }
     }
 
     func contentListConfiguration(
         seriesID: Int,
-        seasonNumber: Int
+        seasonNumber: Int,
+        localization: AppInterfaceLocalization
     ) -> DetailContentListConfiguration? {
         guard case .episodes(let items) = self else { return nil }
 
         return DetailContentListConfiguration(
-            title: title ?? "劇集",
+            title: title(localization: localization)
+                ?? localization.string("season_detail.section.episodes", defaultValue: "Episodes"),
             thumbnailStyle: .landscape,
             items: items.map { item in
                 DetailContentListItem(
@@ -94,18 +96,37 @@ nonisolated struct SeasonDetailItem: Sendable, Equatable, Identifiable {
     let episodeCountText: String
     let seasonNumberText: String
     let scoreText: String
+    let ratingText: String
     let posterURL: URL?
 
-    init(detail: Season) {
+    init(detail: Season, localization: AppInterfaceLocalization) {
         self.id = detail.id
-        self.title = BaseDisplayTextFormatter.text(detail.name, fallback: "未命名季數")
-        self.overview = BaseDisplayTextFormatter.overview(detail.overview)
-        self.airDateText = BaseDisplayTextFormatter.announcedText(
-            BaseDisplayTextFormatter.isoDayText(from: detail.airDate)
+        self.title = BaseDisplayTextFormatter.text(
+            detail.name,
+            fallback: localization.string("common.fallback.untitled_season", defaultValue: "Untitled Season")
         )
-        self.episodeCountText = BaseDisplayTextFormatter.countText(detail.episodes.count, unit: "集")
-        self.seasonNumberText = BaseDisplayTextFormatter.seasonNumberText(detail.seasonNumber)
+        self.overview = BaseDisplayTextFormatter.overview(
+            detail.overview,
+            localization: localization
+        )
+        self.airDateText = BaseDisplayTextFormatter.announcedText(
+            BaseDisplayTextFormatter.isoDayText(from: detail.airDate),
+            localization: localization
+        )
+        self.episodeCountText = BaseDisplayTextFormatter.countText(
+            detail.episodes.count,
+            unit: .episodes,
+            localization: localization
+        )
+        self.seasonNumberText = BaseDisplayTextFormatter.seasonNumberText(
+            detail.seasonNumber,
+            localization: localization
+        )
         self.scoreText = BaseDisplayTextFormatter.decimal(detail.voteAverage)
+        self.ratingText = BaseDisplayTextFormatter.ratingText(
+            scoreText,
+            localization: localization
+        ) as String
         self.posterURL = detail.posterPath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w500)
         }
@@ -121,26 +142,36 @@ nonisolated struct SeasonEpisodeItem: Sendable, Equatable, Identifiable {
     let stillURL: URL?
     let scoreText: String
 
-    init(episode: SeasonEpisode) {
+    init(episode: SeasonEpisode, localization: AppInterfaceLocalization) {
         self.id = episode.id
         self.episodeNumber = episode.episodeNumber
         self.title = BaseDisplayTextFormatter.episodeTitle(
-            BaseDisplayTextFormatter.text(episode.name, fallback: "未命名集數"),
-            episodeNumber: episode.episodeNumber
+            BaseDisplayTextFormatter.text(
+                episode.name,
+                fallback: localization.string("common.fallback.untitled_episode", defaultValue: "Untitled Episode")
+            ),
+            episodeNumber: episode.episodeNumber,
+            localization: localization
         )
-        self.subtitle = Self.makeSubtitle(episode: episode)
-        self.overview = BaseDisplayTextFormatter.overview(episode.overview)
+        self.subtitle = Self.makeSubtitle(episode: episode, localization: localization)
+        self.overview = BaseDisplayTextFormatter.overview(
+            episode.overview,
+            localization: localization
+        )
         self.stillURL = episode.stillPath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.scoreText = BaseDisplayTextFormatter.decimal(episode.voteAverage)
     }
 
-    private static func makeSubtitle(episode: SeasonEpisode) -> String {
+    private static func makeSubtitle(
+        episode: SeasonEpisode,
+        localization: AppInterfaceLocalization
+    ) -> String {
         BaseDisplayTextFormatter.metadata([
             BaseDisplayTextFormatter.isoDayText(from: episode.airDate),
-            BaseDisplayTextFormatter.runtime(episode.runtime)
-        ]) ?? BaseDisplayTextFormatter.announcedText(nil)
+            BaseDisplayTextFormatter.runtime(episode.runtime, localization: localization)
+        ]) ?? BaseDisplayTextFormatter.announcedText(nil, localization: localization)
     }
 }
 
@@ -161,9 +192,12 @@ nonisolated struct SeasonVideoItem: Sendable, Equatable, Identifiable {
     let youtubeVideoKey: String?
     let videoURL: URL?
 
-    init(video: Video) {
+    init(video: Video, localization: AppInterfaceLocalization) {
         self.id = video.id
-        self.title = BaseDisplayTextFormatter.text(video.name, fallback: "未命名影片")
+        self.title = BaseDisplayTextFormatter.text(
+            video.name,
+            fallback: localization.string("common.fallback.untitled_video", defaultValue: "Untitled Video")
+        )
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
         if video.site.lowercased() == "youtube", !video.key.isEmpty {
@@ -184,18 +218,24 @@ nonisolated struct SeasonCastItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let profileURL: URL?
 
-    init(aggregateCast: AggregateCastMember) {
+    init(aggregateCast: AggregateCastMember, localization: AppInterfaceLocalization) {
         self.id = aggregateCast.id
-        self.title = BaseDisplayTextFormatter.text(aggregateCast.name, fallback: "未命名")
+        self.title = BaseDisplayTextFormatter.text(
+            aggregateCast.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
         self.subtitle = aggregateCast.characters.first
         self.profileURL = aggregateCast.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
-    init(creditCast: SeasonCreditCast) {
+    init(creditCast: SeasonCreditCast, localization: AppInterfaceLocalization) {
         self.id = creditCast.id
-        self.title = BaseDisplayTextFormatter.text(creditCast.name, fallback: "未命名")
+        self.title = BaseDisplayTextFormatter.text(
+            creditCast.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
         self.subtitle = BaseDisplayTextFormatter.nonEmptyText(creditCast.character)
         self.profileURL = creditCast.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
@@ -210,26 +250,34 @@ nonisolated struct SeasonCrewItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let profileURL: URL?
 
-    init(aggregateCrew: AggregateCrewMember) {
+    init(aggregateCrew: AggregateCrewMember, localization: AppInterfaceLocalization) {
         self.id = "\(aggregateCrew.id)-\(aggregateCrew.department)"
         self.personID = aggregateCrew.id
-        self.title = BaseDisplayTextFormatter.text(aggregateCrew.name, fallback: "未命名")
+        self.title = BaseDisplayTextFormatter.text(
+            aggregateCrew.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
         self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
             job: aggregateCrew.jobs.first,
-            department: aggregateCrew.department
+            department: aggregateCrew.department,
+            localization: localization
         )
         self.profileURL = aggregateCrew.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
-    init(creditCrew: SeasonCreditCrew) {
+    init(creditCrew: SeasonCreditCrew, localization: AppInterfaceLocalization) {
         self.id = creditCrew.creditID
         self.personID = creditCrew.id
-        self.title = BaseDisplayTextFormatter.text(creditCrew.name, fallback: "未命名")
+        self.title = BaseDisplayTextFormatter.text(
+            creditCrew.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
         self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
             job: creditCrew.job,
-            department: creditCrew.department
+            department: creditCrew.department,
+            localization: localization
         )
         self.profileURL = creditCrew.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
@@ -279,11 +327,15 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
         countryCode: String,
         provider: WatchProvider,
         category: String,
-        link: String
+        link: String,
+        localization: AppInterfaceLocalization
     ) {
         self.countryCode = countryCode
         self.providerID = provider.id
-        self.title = BaseDisplayTextFormatter.text(provider.name, fallback: "未命名平台")
+        self.title = BaseDisplayTextFormatter.text(
+            provider.name,
+            fallback: localization.string("common.fallback.unnamed_provider", defaultValue: "Unnamed Provider")
+        )
         self.category = category
         self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
@@ -295,10 +347,15 @@ nonisolated struct SeasonWatchProviderItem: Sendable, Equatable, Identifiable {
 nonisolated struct SeasonAccountStateItem: Sendable, Equatable {
     let ratingText: String
 
-    init(accountState: SeasonAccountState) {
+    init(
+        accountState: SeasonAccountState,
+        localization: AppInterfaceLocalization
+    ) {
         switch accountState.rating {
         case .unrated:
-            self.ratingText = BaseDisplayTextFormatter.unratedText
+            self.ratingText = BaseDisplayTextFormatter.unratedText(
+                localization: localization
+            )
 
         case .rated(let value):
             self.ratingText = BaseDisplayTextFormatter.decimal(value)

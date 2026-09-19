@@ -26,14 +26,19 @@ final class MemberCenterRouter: BaseRouter, MemberCenterRouting {
 
     init(
         sourceViewController: UIViewController,
-        sceneBuilder: MemberCenterSceneBuilding
+        sceneBuilder: MemberCenterSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.sceneBuilder = sceneBuilder
         self.detailRouter = DetailRouter(
             sourceViewController: sourceViewController,
-            sceneBuilder: sceneBuilder
+            sceneBuilder: sceneBuilder,
+            interfaceLocalization: interfaceLocalization
         )
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func showDetail(for item: MemberCenterListItem) {

@@ -30,9 +30,15 @@ nonisolated struct HomeSectionListGenreItem: Sendable, Equatable, Identifiable {
         self.isSelected = isSelected
     }
 
-    static func all(isSelected: Bool) -> HomeSectionListGenreItem {
+    static func all(
+        isSelected: Bool,
+        localization: AppInterfaceLocalization
+    ) -> HomeSectionListGenreItem {
         HomeSectionListGenreItem(
-            genre: MediaGenre(id: HomeGenreFilterID.all, name: "全部"),
+            genre: MediaGenre(
+                id: HomeGenreFilterID.all,
+                name: localization.string("common.filter.all", defaultValue: "All")
+            ),
             isSelected: isSelected
         )
     }

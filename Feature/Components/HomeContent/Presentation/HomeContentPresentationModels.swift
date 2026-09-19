@@ -18,21 +18,42 @@ nonisolated struct HomeContentItem: Sendable, Equatable, Identifiable {
     let backdropURL: URL?
     let dateText: String
     let scoreText: String
+    let ratingText: String
+    let featuredStatusText: String
     let accessibilityText: AccessibilityText
     let featuredAccessibilityText: AccessibilityText
 
-    init(summary: MediaSummary, mediaType: MediaKind) {
+    init(
+        summary: MediaSummary,
+        mediaType: MediaKind,
+        localization: AppInterfaceLocalization
+    ) {
         let dateText = BaseDisplayTextFormatter.announcedText(
-            BaseDisplayTextFormatter.isoDayText(from: summary.releaseDate)
+            BaseDisplayTextFormatter.isoDayText(from: summary.releaseDate),
+            localization: localization
         )
         let scoreText = BaseDisplayTextFormatter.decimal(summary.voteAverage)
+        let ratingText: String = BaseDisplayTextFormatter.ratingText(
+            scoreText,
+            localization: localization
+        )
         let accessibilityValue = BaseDisplayTextFormatter.metadata([
-            mediaType.accessibilityName,
+            mediaType.accessibilityName(localization: localization),
             dateText,
-            BaseDisplayTextFormatter.ratingText(scoreText)
+            ratingText
         ])
 
-        let title = BaseDisplayTextFormatter.text(summary.title, fallback: "未命名")
+        let title = BaseDisplayTextFormatter.text(
+            summary.title,
+            fallback: localization.string(
+                "common.fallback.untitled",
+                defaultValue: "Untitled"
+            )
+        )
+        let featuredStatusText = localization.string(
+            "home.featured.now_playing",
+            defaultValue: "Now Playing"
+        )
 
         self.id = summary.id
         self.title = title
@@ -46,15 +67,21 @@ nonisolated struct HomeContentItem: Sendable, Equatable, Identifiable {
         }
         self.dateText = dateText
         self.scoreText = scoreText
+        self.ratingText = ratingText
+        self.featuredStatusText = featuredStatusText
         self.accessibilityText = AccessibilityText(
             label: title,
             value: accessibilityValue,
-            hint: mediaType.accessibilityDetailHint
+            hint: mediaType.accessibilityDetailHint(localization: localization)
         )
         self.featuredAccessibilityText = AccessibilityText(
-            label: "現正熱映，\(title)",
+            label: localization.formatted(
+                "home.featured.accessibility_label_format",
+                defaultValue: "Now playing, %@",
+                title
+            ),
             value: accessibilityValue,
-            hint: mediaType.accessibilityDetailHint
+            hint: mediaType.accessibilityDetailHint(localization: localization)
         )
     }
 }
@@ -63,60 +90,66 @@ nonisolated struct HomeContentItem: Sendable, Equatable, Identifiable {
 
 extension HomeCategory {
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .trendingMovies:
-            return "今日趨勢電影"
+            return localization.string("home.category.trending_movies", defaultValue: "Trending Movies Today")
 
         case .trendingTV:
-            return "今日趨勢影集"
+            return localization.string("home.category.trending_tv", defaultValue: "Trending TV Today")
 
         case .popularMovies:
-            return "熱門電影"
+            return localization.string("home.category.popular_movies", defaultValue: "Popular Movies")
 
         case .popularTV:
-            return "熱門影集"
+            return localization.string("home.category.popular_tv", defaultValue: "Popular TV Shows")
 
         case .nowPlayingMovies:
-            return "現正熱映"
+            return localization.string("home.category.now_playing_movies", defaultValue: "Now Playing")
 
         case .onTheAirTV:
-            return "播出中影集"
+            return localization.string("home.category.on_the_air_tv", defaultValue: "TV Shows on the Air")
 
         case .upcomingMovies:
-            return "即將上映"
+            return localization.string("home.category.upcoming_movies", defaultValue: "Upcoming Movies")
 
         case .airingTodayTV:
-            return "今日播出影集"
+            return localization.string("home.category.airing_today_tv", defaultValue: "TV Airing Today")
 
         case .topRatedMovies:
-            return "高分電影"
+            return localization.string("home.category.top_rated_movies", defaultValue: "Top Rated Movies")
 
         case .topRatedTV:
-            return "高分影集"
+            return localization.string("home.category.top_rated_tv", defaultValue: "Top Rated TV Shows")
         }
     }
 }
 
 private extension MediaKind {
 
-    var accessibilityName: String {
+    func accessibilityName(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .movie:
-            return "電影"
+            return localization.string("common.media.movie", defaultValue: "Movie")
 
         case .tv:
-            return "影集"
+            return localization.string("common.media.tv_series", defaultValue: "TV Show")
         }
     }
 
-    var accessibilityDetailHint: String {
+    func accessibilityDetailHint(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .movie:
-            return "點兩下開啟電影詳細資料"
+            return localization.string(
+                "common.accessibility.open_movie_detail.hint",
+                defaultValue: "Double-tap to open movie details"
+            )
 
         case .tv:
-            return "點兩下開啟劇集詳細資料"
+            return localization.string(
+                "common.accessibility.open_tv_detail.hint",
+                defaultValue: "Double-tap to open TV show details"
+            )
         }
     }
 }

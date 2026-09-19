@@ -100,10 +100,16 @@ final class ReviewCollectionViewCell: BaseCollectionViewCell {
 
     // MARK: - Configuration
 
-    func configure(with item: ReviewItem) {
-        let authorText = item.authorText.isEmpty ? "匿名使用者" : item.authorText
-        authorLabel.text = authorText
-        ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
+    func configure(
+        with item: ReviewItem,
+        localization: AppInterfaceLocalization
+    ) {
+        let ratingText = BaseDisplayTextFormatter.ratingText(
+            item.ratingText,
+            localization: localization
+        )
+        authorLabel.text = item.authorText
+        ratingLabel.text = ratingText
         ratingLabel.isHidden = item.ratingText == nil
         dateLabel.text = item.updatedDateText
         dateLabel.isHidden = item.updatedDateText == nil
@@ -111,13 +117,20 @@ final class ReviewCollectionViewCell: BaseCollectionViewCell {
         contentLabel.text = item.content
         applyAccessibility(
             AccessibilityText(
-                label: "\(authorText) 的評論",
+                label: localization.formatted(
+                    "review_list.review.accessibility_label_format",
+                    defaultValue: "Review by %@",
+                    item.authorText
+                ),
                 value: BaseDisplayTextFormatter.metadata([
-                    BaseDisplayTextFormatter.ratingText(item.ratingText),
+                    ratingText,
                     item.updatedDateText,
                     item.content
                 ]),
-                hint: "點兩下查看完整評論"
+                hint: localization.string(
+                    "review_list.review.accessibility_hint",
+                    defaultValue: "Double-tap to read the full review"
+                )
             )
         )
         accessibilityTraits = .button

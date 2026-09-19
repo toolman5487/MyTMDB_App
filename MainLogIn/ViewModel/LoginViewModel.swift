@@ -42,12 +42,17 @@ final class LoginViewModel {
 
     private var onStateChange: (@MainActor (LoginState) -> Void)?
     private let authentication: AuthenticationProviding
+    private let localization: AppInterfaceLocalization
     private var authenticationTask: Task<Void, Never>?
 
     // MARK: - Initialization
 
-    init(authentication: AuthenticationProviding) {
+    init(
+        authentication: AuthenticationProviding,
+        localization: AppInterfaceLocalization
+    ) {
         self.authentication = authentication
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -120,7 +125,7 @@ final class LoginViewModel {
             state = .guestSuccess(guestSessionID: guestSessionID)
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage, recoveryAction: .retry)
+            state = .failed(error.errorMessage(localization: localization), recoveryAction: .retry)
         }
     }
 
@@ -145,14 +150,23 @@ final class LoginViewModel {
         switch recoveryAction {
         case .editCredentials:
             return ErrorMessage(
-                title: "帳號或密碼錯誤",
-                message: "請確認 TMDB 帳號與密碼後再試。",
+                title: localization.string(
+                    "login.error.invalid_credentials.title",
+                    defaultValue: "Incorrect Username or Password"
+                ),
+                message: localization.string(
+                    "login.error.invalid_credentials.message",
+                    defaultValue: "Check your TMDB username and password, then try again."
+                ),
                 systemImageName: "person.crop.circle.badge.exclamationmark",
-                actionTitle: "返回修改"
+                actionTitle: localization.string(
+                    "login.action.edit_credentials",
+                    defaultValue: "Edit Credentials"
+                )
             )
 
         case .retry:
-            return error.errorMessage
+            return error.errorMessage(localization: localization)
         }
     }
 
@@ -164,30 +178,57 @@ final class LoginViewModel {
         case (true, true):
             return .invalid(
                 ErrorMessage(
-                    title: "請輸入帳號與密碼",
-                    message: "登入前需要填寫 TMDB 帳號與密碼。",
+                    title: localization.string(
+                        "login.validation.missing_credentials.title",
+                        defaultValue: "Enter Username and Password"
+                    ),
+                    message: localization.string(
+                        "login.validation.missing_credentials.message",
+                        defaultValue: "Enter your TMDB username and password before signing in."
+                    ),
                     systemImageName: "person.text.rectangle",
-                    actionTitle: "返回修改"
+                    actionTitle: localization.string(
+                        "login.action.edit_credentials",
+                        defaultValue: "Edit Credentials"
+                    )
                 )
             )
 
         case (true, false):
             return .invalid(
                 ErrorMessage(
-                    title: "請輸入帳號",
-                    message: "登入前需要填寫 TMDB 帳號。",
+                    title: localization.string(
+                        "login.validation.missing_username.title",
+                        defaultValue: "Enter Username"
+                    ),
+                    message: localization.string(
+                        "login.validation.missing_username.message",
+                        defaultValue: "Enter your TMDB username before signing in."
+                    ),
                     systemImageName: "person.crop.circle",
-                    actionTitle: "返回修改"
+                    actionTitle: localization.string(
+                        "login.action.edit_credentials",
+                        defaultValue: "Edit Credentials"
+                    )
                 )
             )
 
         case (false, true):
             return .invalid(
                 ErrorMessage(
-                    title: "請輸入密碼",
-                    message: "登入前需要填寫 TMDB 密碼。",
+                    title: localization.string(
+                        "login.validation.missing_password.title",
+                        defaultValue: "Enter Password"
+                    ),
+                    message: localization.string(
+                        "login.validation.missing_password.message",
+                        defaultValue: "Enter your TMDB password before signing in."
+                    ),
                     systemImageName: "lock",
-                    actionTitle: "返回修改"
+                    actionTitle: localization.string(
+                        "login.action.edit_credentials",
+                        defaultValue: "Edit Credentials"
+                    )
                 )
             )
 

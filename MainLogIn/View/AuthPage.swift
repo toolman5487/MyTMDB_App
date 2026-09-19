@@ -14,11 +14,16 @@ enum AuthPage: Int, CaseIterable {
     case guest
     case register
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
-        case .login: return "登入"
-        case .guest: return "訪客"
-        case .register: return "註冊"
+        case .login:
+            return localization.string("common.action.sign_in", defaultValue: "Sign In")
+
+        case .guest:
+            return localization.string("common.account.guest", defaultValue: "Guest")
+
+        case .register:
+            return localization.string("common.action.register", defaultValue: "Register")
         }
     }
 }

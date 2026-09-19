@@ -14,10 +14,14 @@ final class ReviewFilterCollectionViewCell: BaseFilterHeaderCollectionViewCell {
 
     // MARK: - Configuration
 
-    func configure(with item: ReviewFilterItem) {
+    func configure(
+        with item: ReviewFilterItem,
+        localization: AppInterfaceLocalization
+    ) {
         configure(
             title: item.title,
-            isSelected: item.isSelected
+            isSelected: item.isSelected,
+            localization: localization
         )
     }
 }

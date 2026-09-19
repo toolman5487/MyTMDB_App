@@ -13,13 +13,15 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
 
     static func makePreviewItems(
         credits: PersonCredits,
-        mediaType: PersonCreditMediaType
+        mediaType: PersonCreditMediaType,
+        localization: AppInterfaceLocalization
     ) -> [PersonDetailCreditItem] {
         Array(
             makeItems(
                 credits: credits,
                 mediaType: mediaType,
-                allowsUnknownMediaType: false
+                allowsUnknownMediaType: false,
+                localization: localization
             )
                 .prefix(DetailSectionPreviewLimit.itemCount)
         )
@@ -27,13 +29,15 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
 
     static func makeContentListConfiguration(
         credits: PersonCredits,
-        mediaType: PersonCreditMediaType
+        mediaType: PersonCreditMediaType,
+        localization: AppInterfaceLocalization
     ) -> DetailContentListConfiguration {
-        let title = mediaType.listTitle
+        let title = mediaType.creditsTitle(localization: localization)
         let items = makeItems(
             credits: credits,
             mediaType: mediaType,
-            allowsUnknownMediaType: true
+            allowsUnknownMediaType: true,
+            localization: localization
         )
 
         return DetailContentListConfiguration(
@@ -46,8 +50,8 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
                     title: item.title,
                     subtitle: BaseDisplayTextFormatter.metadata([
                         item.dateText,
-                        roleText(for: item),
-                        BaseDisplayTextFormatter.ratingText(item.scoreText)
+                        roleText(for: item, localization: localization),
+                        BaseDisplayTextFormatter.ratingText(item.scoreText, localization: localization)
                     ]),
                     destination: destination(for: item)
                 )
@@ -58,7 +62,8 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
     private static func makeItems(
         credits: PersonCredits,
         mediaType: PersonCreditMediaType,
-        allowsUnknownMediaType: Bool
+        allowsUnknownMediaType: Bool,
+        localization: AppInterfaceLocalization
     ) -> [PersonDetailCreditItem] {
         let castCandidates = credits.cast
             .filter {
@@ -70,7 +75,11 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
             }
             .map {
                 CreditCandidate(
-                    item: PersonDetailCreditItem(cast: $0, mediaType: mediaType),
+                    item: PersonDetailCreditItem(
+                        cast: $0,
+                        mediaType: mediaType,
+                        localization: localization
+                    ),
                     priority: creditPriority($0)
                 )
             }
@@ -84,7 +93,11 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
             }
             .map {
                 CreditCandidate(
-                    item: PersonDetailCreditItem(crew: $0, mediaType: mediaType),
+                    item: PersonDetailCreditItem(
+                        crew: $0,
+                        mediaType: mediaType,
+                        localization: localization
+                    ),
                     priority: creditPriority($0)
                 )
             }
@@ -137,8 +150,11 @@ nonisolated enum PersonDetailCreditsPresentationBuilder {
         }
     }
 
-    private static func roleText(for item: PersonDetailCreditItem) -> String? {
-        guard item.subtitle != item.mediaType.displayText else {
+    private static func roleText(
+        for item: PersonDetailCreditItem,
+        localization: AppInterfaceLocalization
+    ) -> String? {
+        guard item.subtitle != item.mediaType.displayText(localization: localization) else {
             return nil
         }
 
@@ -153,23 +169,5 @@ private extension PersonDetailCreditsPresentationBuilder {
     struct CreditCandidate {
         let item: PersonDetailCreditItem
         let priority: Double
-    }
-}
-
-// MARK: - PersonCreditMediaType
-
-private extension PersonCreditMediaType {
-
-    var listTitle: String {
-        switch self {
-        case .movie:
-            return "電影作品"
-
-        case .tv:
-            return "劇集作品"
-
-        case .unknown:
-            return "作品"
-        }
     }
 }

@@ -55,6 +55,7 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
     private let filters: [Item]
     private let onFilterSelected: (Int) -> Void
     private let onDismiss: () -> Void
+    private let interfaceLocalization: AppInterfaceLocalization
 
     // MARK: - UI Components
 
@@ -70,11 +71,13 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
     init(
         title: String,
         filters: [Item],
+        interfaceLocalization: AppInterfaceLocalization,
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
         self.pageTitle = title
         self.filters = filters
+        self.interfaceLocalization = interfaceLocalization
         self.onFilterSelected = onFilterSelected
         self.onDismiss = onDismiss
         super.init(collectionViewLayout: BaseGenrePageSheetLayout.makeCollectionViewLayout())
@@ -85,6 +88,7 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
         self.filters = []
         self.onFilterSelected = { _ in }
         self.onDismiss = {}
+        self.interfaceLocalization = .traditionalChinese
         super.init(coder: coder)
     }
 
@@ -135,8 +139,14 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
                 self?.dismiss(animated: true)
             }
         )
-        closeButtonItem.accessibilityLabel = "關閉"
-        closeButtonItem.accessibilityHint = "點兩下關閉篩選選單"
+        closeButtonItem.accessibilityLabel = interfaceLocalization.string(
+            "common.action.close",
+            defaultValue: "Close"
+        )
+        closeButtonItem.accessibilityHint = interfaceLocalization.string(
+            "genre_sheet.close.accessibility_hint",
+            defaultValue: "Double-tap to close the filter menu"
+        )
         navigationItem.rightBarButtonItem = closeButtonItem
     }
 
@@ -154,7 +164,10 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
             withReuseIdentifier: BaseGenrePageSheetLayout.cellReuseIdentifier,
             for: indexPath
         )
-        (cell as? BaseGenrePageSheetCell)?.configure(with: filters[indexPath.item])
+        (cell as? BaseGenrePageSheetCell)?.configure(
+            with: filters[indexPath.item],
+            localization: interfaceLocalization
+        )
         return cell
     }
 
@@ -196,10 +209,14 @@ private final class BaseGenrePageSheetCell: BaseFilterHeaderCollectionViewCell {
 
     // MARK: - Configuration
 
-    func configure<Item: GenrePageSheetItemRepresentable>(with item: Item) {
+    func configure<Item: GenrePageSheetItemRepresentable>(
+        with item: Item,
+        localization: AppInterfaceLocalization
+    ) {
         configure(
             title: BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: item.name),
-            isSelected: item.isSelected
+            isSelected: item.isSelected,
+            localization: localization
         )
     }
 }

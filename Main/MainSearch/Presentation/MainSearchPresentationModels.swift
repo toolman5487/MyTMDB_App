@@ -11,16 +11,16 @@ import Foundation
 
 extension MainSearchMediaType {
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .movie:
-            return "電影"
+            return localization.string("common.media.movie", defaultValue: "Movie")
 
         case .tv:
-            return "劇集"
+            return localization.string("common.media.tv_series", defaultValue: "TV Show")
 
         case .person:
-            return "人物"
+            return localization.string("common.media.person", defaultValue: "Person")
         }
     }
 }
@@ -37,19 +37,35 @@ nonisolated enum MainSearchFilter: String, CaseIterable, Sendable, Equatable, Id
         rawValue
     }
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .all:
-            return "全部"
+            return localization.string("common.filter.all", defaultValue: "All")
 
         case .movie:
-            return MainSearchMediaType.movie.title
+            return MainSearchMediaType.movie.title(localization: localization)
 
         case .tv:
-            return MainSearchMediaType.tv.title
+            return MainSearchMediaType.tv.title(localization: localization)
 
         case .person:
-            return MainSearchMediaType.person.title
+            return MainSearchMediaType.person.title(localization: localization)
+        }
+    }
+
+    func emptyResultsTitle(localization: AppInterfaceLocalization) -> String {
+        switch self {
+        case .all:
+            return localization.string("main_search.filtered_empty.all.title", defaultValue: "No Results")
+
+        case .movie:
+            return localization.string("main_search.filtered_empty.movie.title", defaultValue: "No Movie Results")
+
+        case .tv:
+            return localization.string("main_search.filtered_empty.tv.title", defaultValue: "No TV Show Results")
+
+        case .person:
+            return localization.string("main_search.filtered_empty.person.title", defaultValue: "No People Results")
         }
     }
 
@@ -97,10 +113,13 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: Page<MainSearchResult>) -> MainSearchDailyTrendingContent {
+    func appending(
+        page: Page<MainSearchResult>,
+        localization: AppInterfaceLocalization
+    ) -> MainSearchDailyTrendingContent {
         let existingIDs = Set(items.map(\.id))
         let newItems = MainSearchContent.uniqueResults(
-            page.items.map(MainSearchResultItem.init(result:))
+            page.items.map { MainSearchResultItem(result: $0, localization: localization) }
         )
         .filter { !existingIDs.contains($0.id) }
         .shuffled()
@@ -148,9 +167,13 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
         return allResults.filter { $0.mediaType == mediaType }
     }
 
-    var filters: [MainSearchFilterItem] {
+    func filters(localization: AppInterfaceLocalization) -> [MainSearchFilterItem] {
         MainSearchFilter.allCases.map { filter in
-            MainSearchFilterItem(filter: filter, isSelected: filter == selectedFilter)
+            MainSearchFilterItem(
+                filter: filter,
+                isSelected: filter == selectedFilter,
+                localization: localization
+            )
         }
     }
 
@@ -170,10 +193,17 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
         )
     }
 
-    func appending(page: Page<MainSearchResult>) -> MainSearchContent {
+    func appending(
+        page: Page<MainSearchResult>,
+        localization: AppInterfaceLocalization
+    ) -> MainSearchContent {
         MainSearchContent(
             keyword: keyword,
-            allResults: Self.uniqueResults(allResults + page.items.map(MainSearchResultItem.init(result:))),
+            allResults: Self.uniqueResults(
+                allResults + page.items.map {
+                    MainSearchResultItem(result: $0, localization: localization)
+                }
+            ),
             selectedFilter: selectedFilter,
             currentPage: page.number,
             totalPages: page.totalPages,
@@ -206,15 +236,23 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
 
 nonisolated struct MainSearchFilterItem: Sendable, Equatable, Identifiable {
     let filter: MainSearchFilter
+    let title: String
     let isSelected: Bool
+
+    init(
+        filter: MainSearchFilter,
+        isSelected: Bool,
+        localization: AppInterfaceLocalization
+    ) {
+        self.filter = filter
+        self.title = filter.title(localization: localization)
+        self.isSelected = isSelected
+    }
 
     var id: String {
         filter.id
     }
 
-    var title: String {
-        filter.title
-    }
 }
 
 // MARK: - MainSearchResultItem
@@ -227,43 +265,75 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
     let subtitle: String?
     let imageURL: URL?
     let popularity: Double
+    let accessibilityText: AccessibilityText
 
-    init(result: MainSearchResult) {
+    init(
+        result: MainSearchResult,
+        localization: AppInterfaceLocalization
+    ) {
+        let title = Self.makeTitle(result.title, localization: localization)
+        let subtitle = Self.makeSubtitle(for: result, localization: localization)
         self.id = "\(result.mediaType.rawValue)-\(result.id)"
         self.sourceID = result.id
         self.mediaType = result.mediaType
-        self.title = Self.makeTitle(result.title)
-        self.subtitle = Self.makeSubtitle(for: result)
+        self.title = title
+        self.subtitle = subtitle
         self.imageURL = Self.makeImageURL(for: result)
         self.popularity = result.popularity
+        self.accessibilityText = Self.makeAccessibilityText(
+            title: title,
+            subtitle: subtitle,
+            mediaType: result.mediaType,
+            localization: localization
+        )
     }
 
-    init(person: MainSearchPopularPerson) {
+    init(
+        person: MainSearchPopularPerson,
+        localization: AppInterfaceLocalization
+    ) {
+        let title = Self.makeTitle(person.name, localization: localization)
+        let subtitle = BaseDisplayTextFormatter.nonEmptyText(person.knownForDepartment)
         self.id = "\(MainSearchMediaType.person.rawValue)-\(person.id)"
         self.sourceID = person.id
         self.mediaType = .person
-        self.title = Self.makeTitle(person.name)
-        self.subtitle = BaseDisplayTextFormatter.nonEmptyText(person.knownForDepartment)
+        self.title = title
+        self.subtitle = subtitle
         self.imageURL = person.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
         }
         self.popularity = person.popularity
+        self.accessibilityText = Self.makeAccessibilityText(
+            title: title,
+            subtitle: subtitle,
+            mediaType: .person,
+            localization: localization
+        )
     }
 
-    private static func makeTitle(_ title: String) -> String {
+    private static func makeTitle(
+        _ title: String,
+        localization: AppInterfaceLocalization
+    ) -> String {
         guard let title = BaseDisplayTextFormatter.nonEmptyText(title) else {
-            return "未命名"
+            return localization.string("common.fallback.untitled", defaultValue: "Untitled")
         }
 
         return BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: title)
     }
 
-    private static func makeSubtitle(for result: MainSearchResult) -> String? {
+    private static func makeSubtitle(
+        for result: MainSearchResult,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         switch result.mediaType {
         case .movie, .tv:
             return BaseDisplayTextFormatter.metadata([
                 result.primaryDate.map { String($0.year) },
-                BaseDisplayTextFormatter.ratingText(result.voteAverage)
+                BaseDisplayTextFormatter.ratingText(
+                    result.voteAverage,
+                    localization: localization
+                )
             ])
 
         case .person:
@@ -284,33 +354,48 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
             }
         }
     }
-}
 
-// MARK: - Accessibility
-
-extension MainSearchResultItem {
-
-    var accessibilityText: AccessibilityText {
+    private static func makeAccessibilityText(
+        title: String,
+        subtitle: String?,
+        mediaType: MainSearchMediaType,
+        localization: AppInterfaceLocalization
+    ) -> AccessibilityText {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.metadata([
-                mediaType.title,
+                mediaType.title(localization: localization),
                 subtitle
             ]),
-            hint: accessibilityHint
+            hint: accessibilityHint(
+                for: mediaType,
+                localization: localization
+            )
         )
     }
 
-    private var accessibilityHint: String {
+    private static func accessibilityHint(
+        for mediaType: MainSearchMediaType,
+        localization: AppInterfaceLocalization
+    ) -> String {
         switch mediaType {
         case .movie:
-            return "點兩下開啟電影詳細資料"
+            return localization.string(
+                "common.accessibility.open_movie_detail.hint",
+                defaultValue: "Double-tap to open movie details"
+            )
 
         case .tv:
-            return "點兩下開啟劇集詳細資料"
+            return localization.string(
+                "common.accessibility.open_tv_detail.hint",
+                defaultValue: "Double-tap to open TV show details"
+            )
 
         case .person:
-            return "點兩下開啟人物詳細資料"
+            return localization.string(
+                "common.accessibility.open_person_detail.hint",
+                defaultValue: "Double-tap to open person details"
+            )
         }
     }
 }

@@ -55,17 +55,28 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(overview: String) {
-        overviewLabel.attributedText = Self.makeOverviewAttributedText(overview: overview)
+    func configure(
+        overview: String,
+        localization: AppInterfaceLocalization
+    ) {
+        let sectionTitle = localization.string("detail.overview.title", defaultValue: "Overview")
+        overviewLabel.attributedText = Self.makeOverviewAttributedText(
+            overview: overview,
+            sectionTitle: sectionTitle
+        )
         applyAccessibility(
             AccessibilityText(
-                label: "劇情簡介",
+                label: sectionTitle,
                 value: overview
             )
         )
     }
 
-    static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
+    static func fittingHeight(
+        for overview: String,
+        width: CGFloat,
+        localization: AppInterfaceLocalization
+    ) -> CGFloat {
         let contentWidth = DetailLayoutMetrics.contentWidth(
             for: width,
             horizontalInsetLevelCount: 2
@@ -74,7 +85,10 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let attributedText = makeOverviewAttributedText(overview: overview)
+        let attributedText = makeOverviewAttributedText(
+            overview: overview,
+            sectionTitle: localization.string("detail.overview.title", defaultValue: "Overview")
+        )
         let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -87,7 +101,10 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         )
     }
 
-    private static func makeOverviewAttributedText(overview: String) -> NSAttributedString {
+    private static func makeOverviewAttributedText(
+        overview: String,
+        sectionTitle: String
+    ) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
 
@@ -95,7 +112,7 @@ final class TVDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         bodyParagraphStyle.lineSpacing = 4
 
         let attributedText = NSMutableAttributedString(
-            string: "劇情簡介\n",
+            string: "\(sectionTitle)\n",
             attributes: [
                 .font: UIFont.preferredFont(forTextStyle: .headline),
                 .foregroundColor: ThemeColor.textPrimary,
@@ -158,10 +175,11 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     private var networks: [TVDetailAttributeItem] = []
     private var productionCompanies: [TVDetailAttributeItem] = []
     private var onAttributeSelected: ((TVDetailAttributeItem) -> Void)?
+    private var interfaceLocalization: AppInterfaceLocalization = .traditionalChinese
 
-    private let genresTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "種類")
-    private let networksTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "電視網")
-    private let productionCompaniesTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "製作公司")
+    private let genresTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "")
+    private let networksTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "")
+    private let productionCompaniesTitleLabel = TVDetailCellStyle.makeGroupTitleLabel(text: "")
 
     private let genresCollectionViewFlowLayout = TVDetailCellStyle.makeFlowLayout()
     private let networksCollectionViewFlowLayout = TVDetailCellStyle.makeFlowLayout()
@@ -241,8 +259,16 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         with item: TVDetailAttributeSectionItem,
+        localization: AppInterfaceLocalization,
         onAttributeSelected: ((TVDetailAttributeItem) -> Void)? = nil
     ) {
+        interfaceLocalization = localization
+        genresTitleLabel.text = localization.string("detail.attribute.genres", defaultValue: "Genres")
+        networksTitleLabel.text = localization.string("tv_detail.attribute.networks", defaultValue: "Networks")
+        productionCompaniesTitleLabel.text = localization.string(
+            "detail.attribute.production_companies",
+            defaultValue: "Production Companies"
+        )
         genres = item.genres
         networks = item.networks
         productionCompanies = item.productionCompanies
@@ -358,7 +384,10 @@ extension TVDetailAttributesCollectionViewCell: UICollectionViewDataSource, UICo
         let items = items(for: group(for: collectionView))
 
         if let cell = cell as? TVDetailAttributePillCollectionViewCell {
-            cell.configure(with: items[indexPath.item])
+            cell.configure(
+                with: items[indexPath.item],
+                localization: interfaceLocalization
+            )
         }
 
         return cell
@@ -441,12 +470,20 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
         titleLabel.text = nil
     }
 
-    func configure(with item: TVDetailAttributeItem) {
+    func configure(
+        with item: TVDetailAttributeItem,
+        localization: AppInterfaceLocalization
+    ) {
         titleLabel.text = item.title
         applyAccessibility(
             AccessibilityText(
                 label: item.title,
-                hint: item.kind == .genre ? "點兩下查看此類型劇集" : nil
+                hint: item.kind == .genre
+                    ? localization.string(
+                        "tv_detail.genre.accessibility_hint",
+                        defaultValue: "Double-tap to view TV shows in this genre"
+                    )
+                    : nil
             )
         )
         accessibilityTraits = item.kind == .genre ? .button : .staticText
@@ -480,6 +517,7 @@ final class TVDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewC
 
     func configure(
         items: [TVDetailCastItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -492,7 +530,8 @@ final class TVDetailCastCollectionViewCell: DetailImageTitleStripCollectionViewC
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = Int(item.id) else { return }
             onPersonSelected(personID)
@@ -519,6 +558,7 @@ final class TVDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewC
 
     func configure(
         items: [TVDetailCrewItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -531,7 +571,8 @@ final class TVDetailCrewCollectionViewCell: DetailImageTitleStripCollectionViewC
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = Int(item.id) else { return }
             onPersonSelected(personID)
@@ -558,6 +599,7 @@ final class TVDetailVideosCollectionViewCell: DetailImageTitleStripCollectionVie
 
     func configure(
         items: [TVDetailVideoItem],
+        localization: AppInterfaceLocalization,
         onVideoSelected: @escaping (TVDetailVideoItem) -> Void
     ) {
         configure(
@@ -570,7 +612,8 @@ final class TVDetailVideosCollectionViewCell: DetailImageTitleStripCollectionVie
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let video = items.first(where: { $0.id == item.id }) else { return }
             onVideoSelected(video)
@@ -592,6 +635,7 @@ final class TVDetailImagesCollectionViewCell: DetailImageTitleStripCollectionVie
 
     func configure(
         items: [TVDetailImageItem],
+        localization: AppInterfaceLocalization,
         onImageSelected: @escaping (TVDetailImageItem) -> Void
     ) {
         let imageItemsByID = items.reduce(into: [String: TVDetailImageItem]()) { result, item in
@@ -607,7 +651,8 @@ final class TVDetailImagesCollectionViewCell: DetailImageTitleStripCollectionVie
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let imageItem = imageItemsByID[item.id] else { return }
             onImageSelected(imageItem)
@@ -627,6 +672,7 @@ final class TVDetailSeasonsCollectionViewCell: DetailImageTitleStripCollectionVi
 
     func configure(
         items: [TVDetailSeasonItem],
+        localization: AppInterfaceLocalization,
         onSeasonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -639,7 +685,8 @@ final class TVDetailSeasonsCollectionViewCell: DetailImageTitleStripCollectionVi
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let seasonNumber = Int(item.id) else { return }
             onSeasonSelected(seasonNumber)
@@ -659,6 +706,7 @@ final class TVDetailRecommendationsCollectionViewCell: DetailImageTitleStripColl
 
     func configure(
         items: [TVDetailRecommendationItem],
+        localization: AppInterfaceLocalization,
         onRecommendationSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -667,11 +715,15 @@ final class TVDetailRecommendationsCollectionViewCell: DetailImageTitleStripColl
                     id: String($0.id),
                     imageURL: $0.posterURL,
                     title: $0.title,
-                    subtitle: BaseDisplayTextFormatter.ratingText($0.scoreText)
+                    subtitle: BaseDisplayTextFormatter.ratingText(
+                        $0.scoreText,
+                        localization: localization
+                    )
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let recommendationID = Int(item.id) else { return }
             onRecommendationSelected(recommendationID)
@@ -691,6 +743,7 @@ final class TVDetailWatchProvidersCollectionViewCell: DetailImageTitleStripColle
 
     func configure(
         providers: [TVWatchProviderItem],
+        localization: AppInterfaceLocalization,
         onProviderSelected: @escaping (TVWatchProviderItem) -> Void
     ) {
         configure(
@@ -704,7 +757,8 @@ final class TVDetailWatchProvidersCollectionViewCell: DetailImageTitleStripColle
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
-            imageBackgroundColor: .clear
+            imageBackgroundColor: .clear,
+            localization: localization
         ) { item in
             guard let provider = providers.first(where: { $0.id == item.id }) else { return }
             onProviderSelected(provider)

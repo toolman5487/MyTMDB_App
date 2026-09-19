@@ -22,48 +22,50 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
     case recommendations([MovieDetailRecommendationItem])
     case similar([MovieDetailSimilarItem])
 
-    var title: String? {
+    func title(localization: AppInterfaceLocalization) -> String? {
         switch self {
         case .overview:
             return nil
 
         case .facts:
-            return "電影資訊"
+            return localization.string("movie_detail.section.information", defaultValue: "Movie Information")
 
         case .attributes:
-            return "類型與製作公司"
+            return localization.string("movie_detail.section.attributes", defaultValue: "Genres and Production Companies")
 
         case .cast:
-            return "主要演員"
+            return localization.string("detail.section.cast", defaultValue: "Cast")
 
         case .crew:
-            return "幕後人員"
+            return localization.string("detail.section.crew", defaultValue: "Crew")
 
         case .videos:
-            return "預告與影片"
+            return localization.string("detail.section.videos", defaultValue: "Trailers and Videos")
 
         case .images:
-            return "劇照"
+            return localization.string("detail.section.images", defaultValue: "Images")
 
         case .collection(let item):
             return item.title
 
         case .watchProviders:
-            return "觀看平台"
+            return localization.string("detail.section.watch_providers", defaultValue: "Where to Watch")
 
         case .recommendations:
-            return "推薦電影"
+            return localization.string("movie_detail.section.recommendations", defaultValue: "Recommended Movies")
 
         case .similar:
-            return "相似電影"
+            return localization.string("movie_detail.section.similar", defaultValue: "Similar Movies")
         }
     }
 
-    var contentListConfiguration: DetailContentListConfiguration? {
+    func contentListConfiguration(
+        localization: AppInterfaceLocalization
+    ) -> DetailContentListConfiguration? {
         switch self {
         case .cast(let items):
             return DetailContentListConfiguration(
-                title: title ?? "主要演員",
+                title: title(localization: localization) ?? localization.string("detail.section.cast", defaultValue: "Cast"),
                 thumbnailStyle: .portrait,
                 items: items.map { item in
                     DetailContentListItem(
@@ -78,7 +80,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .crew(let items):
             return DetailContentListConfiguration(
-                title: title ?? "幕後人員",
+                title: title(localization: localization) ?? localization.string("detail.section.crew", defaultValue: "Crew"),
                 thumbnailStyle: .portrait,
                 items: items.map { item in
                     DetailContentListItem(
@@ -93,7 +95,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .videos(let items):
             return DetailContentListConfiguration(
-                title: title ?? "預告與影片",
+                title: title(localization: localization) ?? localization.string("detail.section.videos", defaultValue: "Trailers and Videos"),
                 thumbnailStyle: .landscape,
                 items: items.map { item in
                     let destination: DetailContentListDestination
@@ -117,7 +119,7 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .images(let items):
             return DetailContentListConfiguration(
-                title: title ?? "劇照",
+                title: title(localization: localization) ?? localization.string("detail.section.images", defaultValue: "Images"),
                 thumbnailStyle: .gallery,
                 items: items.map { item in
                     DetailContentListItem(
@@ -147,14 +149,17 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .recommendations(let items):
             return DetailContentListConfiguration(
-                title: title ?? "推薦電影",
+                title: title(localization: localization) ?? localization.string("movie_detail.section.recommendations", defaultValue: "Recommended Movies"),
                 thumbnailStyle: .portrait,
                 items: items.map { item in
                     DetailContentListItem(
                         id: String(item.id),
                         imageURL: item.posterURL,
                         title: item.title,
-                        subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+                        subtitle: BaseDisplayTextFormatter.ratingText(
+                            item.scoreText,
+                            localization: localization
+                        ),
                         destination: .movie(id: item.id)
                     )
                 }
@@ -162,14 +167,17 @@ nonisolated enum MovieDetailSectionItem: Sendable, Equatable {
 
         case .similar(let items):
             return DetailContentListConfiguration(
-                title: title ?? "相似電影",
+                title: title(localization: localization) ?? localization.string("movie_detail.section.similar", defaultValue: "Similar Movies"),
                 thumbnailStyle: .portrait,
                 items: items.map { item in
                     DetailContentListItem(
                         id: String(item.id),
                         imageURL: item.posterURL,
                         title: item.title,
-                        subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+                        subtitle: BaseDisplayTextFormatter.ratingText(
+                            item.scoreText,
+                            localization: localization
+                        ),
                         destination: .movie(id: item.id)
                     )
                 }
@@ -208,9 +216,12 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
     let homepageURL: URL?
     let imdbURL: URL?
 
-    init(movie: Movie) {
+    init(movie: Movie, localization: AppInterfaceLocalization) {
         self.id = movie.id
-        self.title = BaseDisplayTextFormatter.text(movie.title, fallback: "未命名")
+        self.title = BaseDisplayTextFormatter.text(
+            movie.title,
+            fallback: localization.string("common.fallback.untitled", defaultValue: "Untitled")
+        )
         self.originalTitle = movie.originalTitle
         self.tagline = BaseDisplayTextFormatter.nonEmptyText(movie.tagline)
         self.overview = BaseDisplayTextFormatter.nonEmptyText(movie.overview)
@@ -221,12 +232,21 @@ nonisolated struct MovieDetailItem: Sendable, Equatable, Identifiable {
             TMDBResourceURL.image(path: $0, size: .w500)
         }
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: movie.releaseDate)
-        self.runtimeText = BaseDisplayTextFormatter.runtime(movie.runtime)
+        self.runtimeText = BaseDisplayTextFormatter.runtime(
+            movie.runtime,
+            localization: localization
+        )
         self.scoreText = BaseDisplayTextFormatter.score(movie.voteAverage, voteCount: movie.voteCount)
         self.voteCountText = BaseDisplayTextFormatter.voteCount(movie.voteCount)
         self.statusText = BaseDisplayTextFormatter.nonEmptyText(movie.status.rawText)
-        self.budgetText = BaseDisplayTextFormatter.currencyUSD(movie.budget)
-        self.revenueText = BaseDisplayTextFormatter.currencyUSD(movie.revenue)
+        self.budgetText = BaseDisplayTextFormatter.currencyUSD(
+            movie.budget,
+            localization: localization
+        )
+        self.revenueText = BaseDisplayTextFormatter.currencyUSD(
+            movie.revenue,
+            localization: localization
+        )
         self.homepageURL = movie.homepage
         self.imdbURL = Self.makeIMDbURL(from: movie.imdbID)
     }
@@ -248,9 +268,10 @@ nonisolated struct MovieDetailHeroItem: Sendable, Equatable, Identifiable {
     let backdropURL: URL?
     let scoreText: String?
     let voteCountText: String?
+    let scoreDisplayText: String?
     let metadataText: String?
 
-    init(detail: MovieDetailItem) {
+    init(detail: MovieDetailItem, localization: AppInterfaceLocalization) {
         self.id = detail.id
         self.title = detail.title
         self.originalTitle = detail.originalTitle
@@ -259,6 +280,11 @@ nonisolated struct MovieDetailHeroItem: Sendable, Equatable, Identifiable {
         self.backdropURL = detail.backdropURL
         self.scoreText = detail.scoreText
         self.voteCountText = detail.voteCountText
+        self.scoreDisplayText = BaseDisplayTextFormatter.ratingText(
+            scoreText: detail.scoreText,
+            voteCountText: detail.voteCountText,
+            localization: localization
+        )
         self.metadataText = BaseDisplayTextFormatter.metadata([
             detail.releaseDateText,
             detail.runtimeText
@@ -328,9 +354,12 @@ nonisolated struct MovieDetailCastItem: Sendable, Equatable, Identifiable {
     let characterText: String
     let profileURL: URL?
 
-    init(cast: CastMember) {
+    init(cast: CastMember, localization: AppInterfaceLocalization) {
         self.id = cast.id
-        self.name = BaseDisplayTextFormatter.text(cast.name, fallback: "未命名")
+        self.name = BaseDisplayTextFormatter.text(
+            cast.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
         self.characterText = BaseDisplayTextFormatter.nonEmptyText(cast.character) ?? ""
         self.profileURL = cast.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
@@ -347,20 +376,27 @@ nonisolated struct MovieDetailCrewItem: Sendable, Equatable, Identifiable {
     let jobText: String
     let profileURL: URL?
 
-    init(crew: CrewMember) {
+    init(crew: CrewMember, localization: AppInterfaceLocalization) {
         self.id = crew.creditID.isEmpty ? "\(crew.id)-\(crew.department)-\(crew.job)" : crew.creditID
         self.personID = crew.id
-        self.name = BaseDisplayTextFormatter.text(crew.name, fallback: "未命名")
-        self.jobText = Self.makeJobText(crew: crew)
+        self.name = BaseDisplayTextFormatter.text(
+            crew.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
+        self.jobText = Self.makeJobText(crew: crew, localization: localization)
         self.profileURL = crew.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
         }
     }
 
-    private static func makeJobText(crew: CrewMember) -> String {
+    private static func makeJobText(
+        crew: CrewMember,
+        localization: AppInterfaceLocalization
+    ) -> String {
         BaseFormatter.CrewJobDisplayMapper.displayText(
             job: crew.job,
-            department: crew.department
+            department: crew.department,
+            localization: localization
         ) ?? ""
     }
 }
@@ -375,9 +411,12 @@ nonisolated struct MovieDetailVideoItem: Sendable, Equatable, Identifiable {
     let youtubeVideoKey: String?
     let videoURL: URL?
 
-    init(video: Video) {
+    init(video: Video, localization: AppInterfaceLocalization) {
         self.id = video.id
-        self.title = BaseDisplayTextFormatter.text(video.name, fallback: "未命名影片")
+        self.title = BaseDisplayTextFormatter.text(
+            video.name,
+            fallback: localization.string("common.fallback.untitled_video", defaultValue: "Untitled Video")
+        )
         self.subtitle = video.type.isEmpty ? video.site : "\(video.type) · \(video.site)"
 
         if video.site.lowercased() == "youtube", !video.key.isEmpty {
@@ -400,13 +439,21 @@ nonisolated struct MovieDetailImageItem: Sendable, Equatable, Identifiable {
     let resolutionText: String?
     let imageURL: URL
 
-    init?(image: MediaImage, index: Int) {
+    init?(
+        image: MediaImage,
+        index: Int,
+        localization: AppInterfaceLocalization
+    ) {
         guard let imageURL = TMDBResourceURL.image(path: image.filePath, size: .w500) else {
             return nil
         }
 
         self.id = image.filePath
-        self.title = "劇照 \(index + 1)"
+        self.title = localization.formatted(
+            "detail.image.title_format",
+            defaultValue: "Image %lld",
+            index + 1
+        )
         self.resolutionText = BaseDisplayTextFormatter.resolution(
             width: image.width,
             height: image.height
@@ -433,11 +480,15 @@ nonisolated struct MovieWatchProviderItem: Sendable, Equatable, Identifiable {
         countryCode: String,
         provider: WatchProvider,
         category: String,
-        link: String
+        link: String,
+        localization: AppInterfaceLocalization
     ) {
         self.countryCode = countryCode
         self.providerID = provider.id
-        self.title = BaseDisplayTextFormatter.text(provider.name, fallback: "未命名平台")
+        self.title = BaseDisplayTextFormatter.text(
+            provider.name,
+            fallback: localization.string("common.fallback.unnamed_provider", defaultValue: "Unnamed Provider")
+        )
         self.category = category
         self.linkURL = URL(string: link)
         self.logoURL = provider.logoPath.flatMap {
@@ -458,13 +509,22 @@ nonisolated struct MovieDetailCollectionSectionItem: Sendable, Equatable, Identi
         parts.isEmpty
     }
 
-    init(collection: MovieCollection, currentMovieID: Int) {
+    init(
+        collection: MovieCollection,
+        currentMovieID: Int,
+        localization: AppInterfaceLocalization
+    ) {
         self.id = collection.id
-        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: BaseDisplayTextFormatter.text(collection.name, fallback: "未命名系列"))
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(
+            from: BaseDisplayTextFormatter.text(
+                collection.name,
+                fallback: localization.string("common.fallback.untitled_collection", defaultValue: "Untitled Collection")
+            )
+        )
         self.overview = BaseDisplayTextFormatter.nonEmptyText(collection.overview)
         self.parts = collection
             .partsExcluding(movieID: currentMovieID)
-            .map(MovieDetailCollectionPartItem.init(part:))
+            .map { MovieDetailCollectionPartItem(part: $0, localization: localization) }
     }
 }
 
@@ -478,15 +538,23 @@ nonisolated struct MovieDetailCollectionPartItem: Sendable, Equatable, Identifia
     let subtitle: String?
     let posterURL: URL?
 
-    init(part: MovieCollectionPart) {
+    init(part: MovieCollectionPart, localization: AppInterfaceLocalization) {
         self.id = part.id
-        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(from: BaseDisplayTextFormatter.text(part.title, fallback: "未命名"))
+        self.title = BaseFormatter.SimplifiedChineseTextMapper.traditionalChinese(
+            from: BaseDisplayTextFormatter.text(
+                part.title,
+                fallback: localization.string("common.fallback.untitled", defaultValue: "Untitled")
+            )
+        )
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: part.releaseDate)
         self.scoreText = BaseDisplayTextFormatter.score(
             part.voteAverage,
             voteCount: part.voteCount
         )
-        self.subtitle = BaseDisplayTextFormatter.ratingText(scoreText)
+        self.subtitle = BaseDisplayTextFormatter.ratingText(
+            scoreText,
+            localization: localization
+        )
         self.posterURL = part.posterPath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
         }
@@ -502,9 +570,12 @@ nonisolated struct MovieDetailRecommendationItem: Sendable, Equatable, Identifia
     let scoreText: String?
     let posterURL: URL?
 
-    init(recommendation: MediaSummary) {
+    init(recommendation: MediaSummary, localization: AppInterfaceLocalization) {
         self.id = recommendation.id
-        self.title = BaseDisplayTextFormatter.text(recommendation.title, fallback: "未命名")
+        self.title = BaseDisplayTextFormatter.text(
+            recommendation.title,
+            fallback: localization.string("common.fallback.untitled", defaultValue: "Untitled")
+        )
         self.releaseDateText = BaseDisplayTextFormatter.isoDayText(from: recommendation.releaseDate) ?? ""
         self.scoreText = BaseDisplayTextFormatter.score(
             recommendation.voteAverage,

@@ -18,7 +18,8 @@ final class MovieDetailViewController: DetailActionBarViewController {
     private lazy var router: MovieDetailRouting = MovieDetailRouter(
         sourceViewController: self,
         movieID: movieID,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
     private lazy var shareBarButtonItem = UIBarButtonItem(
         image: UIImage(systemName: "square.and.arrow.up"),
@@ -40,12 +41,14 @@ final class MovieDetailViewController: DetailActionBarViewController {
     init(
         movieID: Int,
         viewModel: MovieDetailViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.movieID = movieID
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -222,7 +225,9 @@ final class MovieDetailViewController: DetailActionBarViewController {
             return .estimatedHero
 
         default:
-            return section.title == nil ? .none : .sectionTitle
+            return section.title(localization: interfaceLocalization) == nil
+                ? .none
+                : .sectionTitle
         }
     }
 
@@ -231,7 +236,9 @@ final class MovieDetailViewController: DetailActionBarViewController {
             return item.overview == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
         }
 
-        return section.title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
+        return section.title(localization: interfaceLocalization) == nil
+            ? 0
+            : DetailLayoutMetrics.headerContentSpacing
     }
 
     private func itemHeightDimension(
@@ -247,7 +254,8 @@ final class MovieDetailViewController: DetailActionBarViewController {
             return .absolute(
                 MovieDetailOverviewCollectionViewCell.fittingHeight(
                     for: overview,
-                    width: width
+                    width: width,
+                    localization: interfaceLocalization
                 )
             )
 
@@ -365,7 +373,10 @@ final class MovieDetailViewController: DetailActionBarViewController {
 
     private func presentRatingSheet() {
         router.showRatingPageSheet(
-            title: "為這部電影評分",
+            title: interfaceLocalization.string(
+                "movie_detail.rating.title",
+                defaultValue: "Rate This Movie"
+            ),
             currentValue: viewModel.ratingState.value,
             defaultValue: viewModel.ratingDefaultValue,
             onSubmit: { [weak self] value in
@@ -452,7 +463,10 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: MovieDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            (cell as? MovieDetailOverviewCollectionViewCell)?.configure(
+                overview: item.overview ?? "",
+                localization: interfaceLocalization
+            )
             return cell
 
         case .facts(let facts):
@@ -469,7 +483,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailAttributesCollectionViewCell)?.configure(
-                with: item
+                with: item,
+                localization: interfaceLocalization
             ) { [weak self] attribute in
                 guard attribute.kind == .genre else { return }
                 self?.router.showGenreList(genreID: attribute.sourceID)
@@ -482,7 +497,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailCastCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
@@ -494,7 +510,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailCrewCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
@@ -506,7 +523,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailVideosCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] item in
                 guard let self else { return }
 
@@ -524,13 +542,18 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             let previewItems = Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            let previewTitle = interfaceLocalization.string(
+                "detail.section.images",
+                defaultValue: "Images"
+            )
             (cell as? MovieDetailImagesCollectionViewCell)?.configure(
-                items: previewItems
+                items: previewItems,
+                localization: interfaceLocalization
             ) { [weak self] imageItem in
                 self?.router.showImagePreview(
                     imageURLs: items.map(\.imageURL),
                     selectedImageURL: imageItem.imageURL,
-                    title: "劇照"
+                    title: previewTitle
                 )
             }
             return cell
@@ -541,7 +564,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailCollectionPartsCollectionViewCell)?.configure(
-                item: item
+                item: item,
+                localization: interfaceLocalization
             ) { [weak self] movieID in
                 self?.router.showMovieDetail(movieID: movieID)
             }
@@ -553,7 +577,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailWatchProvidersCollectionViewCell)?.configure(
-                providers: providers
+                providers: providers,
+                localization: interfaceLocalization
             ) { [weak self] provider in
                 guard let linkURL = provider.linkURL else { return }
                 self?.router.showWatchProvider(url: linkURL, title: provider.title)
@@ -566,7 +591,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] movieID in
                 self?.router.showMovieDetail(movieID: movieID)
             }
@@ -578,7 +604,8 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? MovieDetailRecommendationsCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] movieID in
                 self?.router.showMovieDetail(movieID: movieID)
             }
@@ -611,14 +638,20 @@ extension MovieDetailViewController: UICollectionViewDataSource {
 
         let section = sections[indexPath.section]
         let onTap: (() -> Void)?
-        if let configuration = section.contentListConfiguration {
+        if let configuration = section.contentListConfiguration(
+            localization: interfaceLocalization
+        ) {
             onTap = { [weak self] in
                 self?.router.showContentList(configuration)
             }
         } else {
             onTap = nil
         }
-        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
+        return dequeueDetailSectionHeader(
+            at: indexPath,
+            title: section.title(localization: interfaceLocalization),
+            onTap: onTap
+        )
     }
 }
 

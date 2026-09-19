@@ -11,22 +11,22 @@ import Foundation
 
 extension ReviewFilter {
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .all:
-            return "全部"
+            return localization.string("common.filter.all", defaultValue: "All")
 
         case .rated:
-            return "有評分"
+            return localization.string("review.filter.rated", defaultValue: "Rated")
 
         case .unrated:
-            return "無評分"
+            return localization.string("review.filter.unrated", defaultValue: "Unrated")
 
         case .latest:
-            return "最新評論"
+            return localization.string("review.filter.latest", defaultValue: "Newest Reviews")
 
         case .oldest:
-            return "最舊評論"
+            return localization.string("review.filter.oldest", defaultValue: "Oldest Reviews")
         }
     }
 }
@@ -53,9 +53,13 @@ nonisolated struct ReviewFilterItem: Sendable, Equatable, Identifiable {
     let title: String
     let isSelected: Bool
 
-    init(filter: ReviewFilter, selectedFilter: ReviewFilter) {
+    init(
+        filter: ReviewFilter,
+        selectedFilter: ReviewFilter,
+        localization: AppInterfaceLocalization
+    ) {
         self.id = filter
-        self.title = filter.title
+        self.title = filter.title(localization: localization)
         self.isSelected = filter == selectedFilter
     }
 }
@@ -70,11 +74,20 @@ nonisolated struct ReviewItem: Sendable, Equatable, Identifiable {
     let content: String
     let avatarURL: URL?
 
-    init(review: Review) {
+    init(review: Review, localization: AppInterfaceLocalization) {
         self.id = review.id
-        self.authorText = review.authorName
+        self.authorText = BaseDisplayTextFormatter.text(
+            review.authorName,
+            fallback: localization.string(
+                "review.author.anonymous",
+                defaultValue: "Anonymous User"
+            )
+        )
         self.ratingText = BaseDisplayTextFormatter.score(review.rating)
-        self.updatedDateText = BaseDisplayTextFormatter.displayDate(from: review.updatedAt)
+        self.updatedDateText = BaseDisplayTextFormatter.displayDate(
+            from: review.updatedAt,
+            localization: localization
+        )
         self.content = review.content
         self.avatarURL = Self.makeAvatarURL(from: review.avatarPath)
     }

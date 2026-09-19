@@ -32,13 +32,18 @@ final class MainHomeViewModel {
     }
 
     private let loadHomeSections: LoadHomeSectionsUseCase
+    private let localization: AppInterfaceLocalization
     private var onStateChange: (@MainActor (MainHomeViewState) -> Void)?
     private var loadGeneration = 0
 
     // MARK: - Initialization
 
-    init(loadHomeSections: LoadHomeSectionsUseCase) {
+    init(
+        loadHomeSections: LoadHomeSectionsUseCase,
+        localization: AppInterfaceLocalization
+    ) {
         self.loadHomeSections = loadHomeSections
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -59,13 +64,16 @@ final class MainHomeViewModel {
             let sections = try await loadHomeSections()
             guard isCurrentLoad(generation: currentGeneration) else { return }
 
-            let visibleSections = MainHomePresentationBuilder.makeSections(from: sections)
+            let visibleSections = MainHomePresentationBuilder.makeSections(
+                from: sections,
+                localization: localization
+            )
             state = visibleSections.isEmpty ? .empty : .loaded(visibleSections)
         } catch is CancellationError {
             return
         } catch {
             guard isCurrentLoad(generation: currentGeneration) else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 

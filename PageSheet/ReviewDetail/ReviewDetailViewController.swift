@@ -48,10 +48,15 @@ final class ReviewDetailViewController: GlassBaseViewController {
 
     // MARK: - Initialization
 
-    init(review: ReviewItem, title: String = "評論") {
+    init(
+        review: ReviewItem,
+        title: String,
+        interfaceLocalization: AppInterfaceLocalization
+    ) {
         self.review = review
         self.navigationTitle = title
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     required init?(coder: NSCoder) {
@@ -71,8 +76,14 @@ final class ReviewDetailViewController: GlassBaseViewController {
             target: self,
             action: #selector(handleCloseButtonTapped)
         )
-        closeButtonItem.accessibilityLabel = "關閉"
-        closeButtonItem.accessibilityHint = "點兩下關閉評論詳情"
+        closeButtonItem.accessibilityLabel = interfaceLocalization.string(
+            "common.action.close",
+            defaultValue: "Close"
+        )
+        closeButtonItem.accessibilityHint = interfaceLocalization.string(
+            "review_detail.close.accessibility_hint",
+            defaultValue: "Double-tap to close the review"
+        )
         navigationItem.rightBarButtonItem = closeButtonItem
     }
 
@@ -102,7 +113,7 @@ final class ReviewDetailViewController: GlassBaseViewController {
 
     private func applyNavigationTitle(compact: Bool) {
         if compact {
-            compactTitleView.configure(with: review)
+            compactTitleView.configure(with: review, localization: interfaceLocalization)
             navigationItem.titleView = compactTitleView
             navigationItem.title = nil
         } else {
@@ -363,7 +374,7 @@ private final class ReviewDetailAuthorView: UIView {
     // MARK: - Configuration
 
     func configure(with item: ReviewItem) {
-        authorLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
+        authorLabel.text = item.authorText
         dateLabel.text = item.updatedDateText
         dateLabel.isHidden = item.updatedDateText == nil
 
@@ -519,9 +530,15 @@ private final class ReviewDetailNavigationTitleView: UIView {
 
     // MARK: - Configuration
 
-    func configure(with item: ReviewItem) {
-        nameLabel.text = item.authorText.isEmpty ? "匿名使用者" : item.authorText
-        ratingLabel.text = BaseDisplayTextFormatter.ratingText(item.ratingText)
+    func configure(
+        with item: ReviewItem,
+        localization: AppInterfaceLocalization
+    ) {
+        nameLabel.text = item.authorText
+        ratingLabel.text = BaseDisplayTextFormatter.ratingText(
+            item.ratingText,
+            localization: localization
+        )
         ratingLabel.isHidden = item.ratingText == nil
 
         if let avatarURL = item.avatarURL {

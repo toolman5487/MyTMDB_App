@@ -45,7 +45,10 @@ final class MainMemberSettingProfileSummaryCollectionViewCell: UICollectionViewL
 
     // MARK: - Configuration
 
-    func configure(with item: MainMemberSettingProfileSummaryItem) {
+    func configure(
+        with item: MainMemberSettingProfileSummaryItem,
+        localization: AppInterfaceLocalization
+    ) {
         representedAvatarURL = item.avatarURL
         contentConfiguration = makeContentConfiguration(
             for: item,
@@ -53,7 +56,7 @@ final class MainMemberSettingProfileSummaryCollectionViewCell: UICollectionViewL
         )
         backgroundConfiguration = makeBackgroundConfiguration()
         accessories = [.disclosureIndicator()]
-        applyAccessibilityText(item.accessibilityText)
+        applyAccessibilityText(item.accessibilityText(localization: localization))
         accessibilityTraits = .button
         loadAvatarImageIfNeeded(from: item.avatarURL)
     }

@@ -16,6 +16,7 @@ class BaseViewController: UIViewController {
     // MARK: - Properties
 
     private var keyboardDismissTapGesture: UITapGestureRecognizer?
+    private(set) var interfaceLocalization: AppInterfaceLocalization = .traditionalChinese
 
     // MARK: - UI Components
 
@@ -30,7 +31,10 @@ class BaseViewController: UIViewController {
     private lazy var baseLoadingView = {
         AppFactory.Animation.popcornLoading(
             size: AppAnimationView.Metrics.overlaySize,
-            message: "正在載入...",
+            message: interfaceLocalization.string(
+                "common.state.loading",
+                defaultValue: "Loading..."
+            ),
             startsAnimating: false
         )
     }()
@@ -68,6 +72,11 @@ class BaseViewController: UIViewController {
 
     func contentSizeCategoryDidChange() {}
 
+    func setInterfaceLocalization(_ localization: AppInterfaceLocalization) {
+        precondition(!isViewLoaded, "Interface localization must be injected before loading the view.")
+        interfaceLocalization = localization
+    }
+
     // MARK: - Loading
 
     func setLoadingVisible(_ isVisible: Bool, animated: Bool = true) {
@@ -103,9 +112,15 @@ class BaseViewController: UIViewController {
 
     // MARK: - Alert
 
-    func presentAlert(title: String, message: String, actionTitle: String = "OK") {
+    func presentAlert(title: String, message: String, actionTitle: String? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: actionTitle, style: .default))
+        alert.addAction(UIAlertAction(
+            title: actionTitle ?? interfaceLocalization.string(
+                "common.action.ok",
+                defaultValue: "OK"
+            ),
+            style: .default
+        ))
         present(alert, animated: true)
     }
 

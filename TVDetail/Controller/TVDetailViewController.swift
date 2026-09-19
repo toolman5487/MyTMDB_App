@@ -19,7 +19,8 @@ final class TVDetailViewController: DetailActionBarViewController {
     private lazy var router: TVDetailRouting = TVDetailRouter(
         sourceViewController: self,
         seriesID: seriesID,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
     private lazy var shareBarButtonItem = UIBarButtonItem(
         image: UIImage(systemName: "square.and.arrow.up"),
@@ -41,12 +42,14 @@ final class TVDetailViewController: DetailActionBarViewController {
     init(
         seriesID: Int,
         viewModel: TVDetailViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.seriesID = seriesID
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -233,7 +236,9 @@ final class TVDetailViewController: DetailActionBarViewController {
             return .estimatedHero
 
         default:
-            return section.title == nil ? .none : .sectionTitle
+            return section.title(localization: interfaceLocalization) == nil
+                ? .none
+                : .sectionTitle
         }
     }
 
@@ -242,7 +247,9 @@ final class TVDetailViewController: DetailActionBarViewController {
             return item.overview == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
         }
 
-        return section.title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
+        return section.title(localization: interfaceLocalization) == nil
+            ? 0
+            : DetailLayoutMetrics.headerContentSpacing
     }
 
     private func itemHeightDimension(
@@ -258,7 +265,8 @@ final class TVDetailViewController: DetailActionBarViewController {
             return .absolute(
                 TVDetailOverviewCollectionViewCell.fittingHeight(
                     for: overview,
-                    width: width
+                    width: width,
+                    localization: interfaceLocalization
                 )
             )
 
@@ -379,7 +387,10 @@ final class TVDetailViewController: DetailActionBarViewController {
 
     private func presentRatingSheet() {
         router.showRatingPageSheet(
-            title: "為這部影集評分",
+            title: interfaceLocalization.string(
+                "tv_detail.rating.title",
+                defaultValue: "Rate This TV Show"
+            ),
             currentValue: viewModel.ratingState.value,
             defaultValue: viewModel.ratingDefaultValue,
             onSubmit: { [weak self] value in
@@ -466,7 +477,10 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? TVDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            (cell as? TVDetailOverviewCollectionViewCell)?.configure(
+                overview: item.overview ?? "",
+                localization: interfaceLocalization
+            )
             return cell
 
         case .facts(let facts):
@@ -483,7 +497,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailVideosCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] item in
                 guard let self else { return }
 
@@ -501,7 +516,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailAttributesCollectionViewCell)?.configure(
-                with: item
+                with: item,
+                localization: interfaceLocalization
             ) { [weak self] attribute in
                 guard attribute.kind == .genre else { return }
                 self?.router.showGenreList(genreID: attribute.sourceID)
@@ -514,7 +530,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailCastCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
@@ -526,7 +543,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailCrewCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
@@ -537,7 +555,10 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: TVDetailSeasonsCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? TVDetailSeasonsCollectionViewCell)?.configure(items: items) { [weak self] seasonNumber in
+            (cell as? TVDetailSeasonsCollectionViewCell)?.configure(
+                items: items,
+                localization: interfaceLocalization
+            ) { [weak self] seasonNumber in
                 self?.router.showSeasonDetail(seasonNumber: seasonNumber)
             }
             return cell
@@ -548,13 +569,18 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             let previewItems = Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+            let previewTitle = interfaceLocalization.string(
+                "detail.section.images",
+                defaultValue: "Images"
+            )
             (cell as? TVDetailImagesCollectionViewCell)?.configure(
-                items: previewItems
+                items: previewItems,
+                localization: interfaceLocalization
             ) { [weak self] imageItem in
                 self?.router.showImagePreview(
                     imageURLs: items.map(\.imageURL),
                     selectedImageURL: imageItem.imageURL,
-                    title: "劇照"
+                    title: previewTitle
                 )
             }
             return cell
@@ -565,7 +591,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailRecommendationsCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] seriesID in
                 self?.router.showTVDetail(seriesID: seriesID)
             }
@@ -577,7 +604,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailRecommendationsCollectionViewCell)?.configure(
-                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount))
+                items: Array(items.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] seriesID in
                 self?.router.showTVDetail(seriesID: seriesID)
             }
@@ -589,7 +617,8 @@ extension TVDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? TVDetailWatchProvidersCollectionViewCell)?.configure(
-                providers: providers
+                providers: providers,
+                localization: interfaceLocalization
             ) { [weak self] provider in
                 guard let linkURL = provider.linkURL else { return }
                 self?.router.showWatchProvider(url: linkURL, title: provider.title)
@@ -623,14 +652,20 @@ extension TVDetailViewController: UICollectionViewDataSource {
 
         let section = sections[indexPath.section]
         let onTap: (() -> Void)?
-        if let configuration = section.contentListConfiguration {
+        if let configuration = section.contentListConfiguration(
+            localization: interfaceLocalization
+        ) {
             onTap = { [weak self] in
                 self?.router.showContentList(configuration)
             }
         } else {
             onTap = nil
         }
-        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
+        return dequeueDetailSectionHeader(
+            at: indexPath,
+            title: section.title(localization: interfaceLocalization),
+            onTap: onTap
+        )
     }
 }
 

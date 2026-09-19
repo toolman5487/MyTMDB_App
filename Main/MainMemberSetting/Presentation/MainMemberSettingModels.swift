@@ -53,6 +53,7 @@ nonisolated enum MainMemberSettingRowKind: Sendable, Equatable, Hashable {
     case apiDataLanguage
     case loginStatus
     case tmdbAttribution
+    case appInterfaceLanguage
     case defaultSort
     case defaultContentType
     case logout
@@ -148,15 +149,15 @@ nonisolated struct MainMemberSettingSectionItem: Sendable, Equatable, Identifiab
 
 extension MainMemberSettingRowItem {
 
-    var accessibilityText: AccessibilityText {
+    func accessibilityText(localization: AppInterfaceLocalization) -> AccessibilityText {
         AccessibilityText(
             label: title,
-            value: accessibilityValue,
-            hint: accessibilityHint
+            value: accessibilityValue(localization: localization),
+            hint: accessibilityHint(localization: localization)
         )
     }
 
-    private var accessibilityValue: String? {
+    private func accessibilityValue(localization: AppInterfaceLocalization) -> String? {
         switch accessory {
         case .none, .disclosure:
             return BaseDisplayTextFormatter.nonEmptyText(subtitle)
@@ -167,29 +168,40 @@ extension MainMemberSettingRowItem {
         case .toggle(let isOn):
             return BaseDisplayTextFormatter.metadata([
                 subtitle,
-                isOn ? "開啟" : "關閉"
+                isOn
+                    ? localization.string("common.state.on", defaultValue: "On")
+                    : localization.string("common.state.off", defaultValue: "Off")
             ])
         }
     }
 
-    private var accessibilityHint: String? {
+    private func accessibilityHint(localization: AppInterfaceLocalization) -> String? {
         guard action != nil else { return nil }
 
         if role == .destructive {
-            return "點兩下執行，可能造成無法復原的變更"
+            return localization.string(
+                "common.accessibility.destructive_action.hint",
+                defaultValue: "Double-tap to perform this action. This change may be irreversible."
+            )
         }
 
-        return "點兩下執行"
+        return localization.string(
+            "common.accessibility.action.hint",
+            defaultValue: "Double-tap to perform this action"
+        )
     }
 }
 
 extension MainMemberSettingProfileSummaryItem {
 
-    var accessibilityText: AccessibilityText {
+    func accessibilityText(localization: AppInterfaceLocalization) -> AccessibilityText {
         AccessibilityText(
             label: displayName,
             value: BaseDisplayTextFormatter.nonEmptyText(usernameText),
-            hint: "點兩下開啟會員中心"
+            hint: localization.string(
+                "main_member_setting.profile.accessibility.hint",
+                defaultValue: "Double-tap to open Member Center"
+            )
         )
     }
 }

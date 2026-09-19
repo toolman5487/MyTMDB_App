@@ -55,10 +55,14 @@ final class DetailRouter: BaseRouter, DetailRouting {
 
     init(
         sourceViewController: UIViewController,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.sceneBuilder = sceneBuilder
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - Push
@@ -120,11 +124,24 @@ final class DetailRouter: BaseRouter, DetailRouting {
     }
 
     func showWebVideo(url: URL, title: String?) {
-        show(BaseWebViewController(url: url, title: title), using: .push)
+        show(
+            BaseWebViewController(
+                url: url,
+                title: title,
+                interfaceLocalization: interfaceLocalization
+            ),
+            using: .push
+        )
     }
 
     func openExternalURL(_ url: URL) {
-        show(BaseWebViewController(url: url), using: .push)
+        show(
+            BaseWebViewController(
+                url: url,
+                interfaceLocalization: interfaceLocalization
+            ),
+            using: .push
+        )
     }
 
     func showLogin() {
@@ -137,7 +154,8 @@ final class DetailRouter: BaseRouter, DetailRouting {
         let viewController = DetailImagePreviewViewController(
             imageURLs: previewImageURLs,
             selectedIndex: selectedIndex,
-            title: title
+            title: title,
+            interfaceLocalization: interfaceLocalization
         )
         show(viewController, using: .fullScreen)
     }
@@ -155,6 +173,7 @@ final class DetailRouter: BaseRouter, DetailRouting {
             title: title,
             currentValue: currentValue,
             defaultValue: defaultValue,
+            interfaceLocalization: interfaceLocalization,
             onSubmit: onSubmit,
             onDelete: onDelete
         )
@@ -167,7 +186,11 @@ final class DetailRouter: BaseRouter, DetailRouting {
     func showYouTubeVideo(videoKey: String, title: String?) {
         guard !videoKey.isEmpty else { return }
 
-        let viewController = YouTubePlayerViewController(videoKey: videoKey, title: title)
+        let viewController = YouTubePlayerViewController(
+            videoKey: videoKey,
+            title: title,
+            interfaceLocalization: interfaceLocalization
+        )
         show(viewController, using: .pageSheet(.medium))
     }
 

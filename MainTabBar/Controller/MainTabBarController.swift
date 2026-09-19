@@ -303,7 +303,9 @@ final class MainTabBarController: UITabBarController {
         guard let viewControllers else { return }
 
         for (index, viewController) in viewControllers.enumerated() {
-            let accessibilityValue = index == selectedIndex ? "已選取" : "未選取"
+            let accessibilityValue = viewModel.accessibilitySelectionValue(
+                isSelected: index == selectedIndex
+            )
             viewController.tabBarItem.accessibilityValue = accessibilityValue
         }
     }

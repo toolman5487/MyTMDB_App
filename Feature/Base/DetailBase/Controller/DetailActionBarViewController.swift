@@ -20,7 +20,7 @@ class DetailActionBarViewController: DetailBaseViewController {
 
     // MARK: - UI Components
 
-    private let actionBarView = DetailBottomActionBarView()
+    private lazy var actionBarView = DetailBottomActionBarView(localization: interfaceLocalization)
 
     // MARK: - Lifecycle
 
@@ -133,7 +133,7 @@ class DetailActionBarViewController: DetailBaseViewController {
         presentAlert(
             title: message.title,
             message: message.message,
-            actionTitle: message.actionTitle ?? "OK"
+            actionTitle: message.actionTitle
         )
     }
 }

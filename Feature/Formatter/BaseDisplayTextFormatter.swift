@@ -32,12 +32,30 @@ nonisolated enum BaseDisplayTextFormatter {
         nonEmptyText(text) ?? fallback
     }
 
-    static func overview(_ text: String?) -> String {
-        self.text(text, fallback: "目前沒有簡介。")
+    static func overview(
+        _ text: String?,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        self.text(
+            text,
+            fallback: localization.string(
+                "common.fallback.no_overview",
+                defaultValue: "No overview is available."
+            )
+        )
     }
 
-    static func announcedText(_ text: String?) -> String {
-        self.text(text, fallback: "尚未公布")
+    static func announcedText(
+        _ text: String?,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        self.text(
+            text,
+            fallback: localization.string(
+                "common.fallback.not_announced",
+                defaultValue: "Not announced"
+            )
+        )
     }
 
     // MARK: - Score & Vote Count
@@ -64,39 +82,74 @@ nonisolated enum BaseDisplayTextFormatter {
         return decimal(value)
     }
 
-    static func ratingText(_ value: Double) -> String {
-        ratingText(decimal(value))
+    static func ratingText(
+        _ value: Double,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        ratingText(decimal(value), localization: localization)
     }
 
-    static func ratingText(_ scoreText: String) -> String {
-        prefixedText("評分", value: scoreText)
+    static func ratingText(
+        _ scoreText: String,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        localization.formatted(
+            "common.rating.value_format",
+            defaultValue: "Rating %@",
+            scoreText
+        )
     }
 
-    static func ratingText(_ scoreText: String?) -> String? {
-        nonEmptyText(scoreText).map(ratingText)
+    static func ratingText(
+        _ scoreText: String?,
+        localization: AppInterfaceLocalization
+    ) -> String? {
+        nonEmptyText(scoreText).map {
+            ratingText($0, localization: localization)
+        }
     }
 
     static func ratingText(
         scoreText: String?,
-        voteCountText: String?
+        voteCountText: String?,
+        localization: AppInterfaceLocalization
     ) -> String? {
         guard let scoreText = nonEmptyText(scoreText) else {
             return nil
         }
 
+        let ratingText: String = ratingText(scoreText, localization: localization)
+
         guard let voteCountText = nonEmptyText(voteCountText) else {
-            return ratingText(scoreText)
+            return ratingText
         }
 
-        return "\(ratingText(scoreText)) (\(voteCountText))"
+        return localization.formatted(
+            "common.rating.with_vote_count_format",
+            defaultValue: "%@ (%@)",
+            ratingText,
+            voteCountText
+        )
     }
 
-    static func userRatingText(_ value: Double) -> String {
-        prefixedText("我的評分", value: decimal(value))
+    static func userRatingText(
+        _ value: Double,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        localization.formatted(
+            "common.rating.user_value_format",
+            defaultValue: "My Rating %@",
+            decimal(value)
+        )
     }
 
-    static var unratedText: String {
-        "尚未評分"
+    static func unratedText(
+        localization: AppInterfaceLocalization
+    ) -> String {
+        localization.string(
+            "common.rating.not_rated",
+            defaultValue: "Not rated"
+        )
     }
 
     static func voteCount(_ value: Int) -> String? {
@@ -105,64 +158,166 @@ nonisolated enum BaseDisplayTextFormatter {
 
     // MARK: - Runtime & Minutes
 
-    static func runtime(minutes: Int?) -> String? {
+    static func runtime(
+        minutes: Int?,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         guard let minutes, minutes > 0 else { return nil }
 
         let hours = minutes / 60
         let remainingMinutes = minutes % 60
 
         if hours == 0 {
-            return "\(remainingMinutes) 分鐘"
+            return localization.formatted(
+                "common.duration.minutes_format",
+                defaultValue: "%lld min",
+                remainingMinutes
+            )
         }
 
         if remainingMinutes == 0 {
-            return "\(hours) 小時"
+            return localization.formatted(
+                "common.duration.hours_format",
+                defaultValue: "%lld hr",
+                hours
+            )
         }
 
-        return "\(hours) 小時 \(remainingMinutes) 分鐘"
+        return localization.formatted(
+            "common.duration.hours_minutes_format",
+            defaultValue: "%1$lld hr %2$lld min",
+            hours,
+            remainingMinutes
+        )
     }
 
-    static func minutes(_ value: Int?) -> String? {
+    static func minutes(
+        _ value: Int?,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         guard let value, value > 0 else { return nil }
-        return "\(value) 分鐘"
+        return localization.formatted(
+            "common.duration.minutes_format",
+            defaultValue: "%lld min",
+            value
+        )
     }
 
-    static func firstMinutes(values: [Int]) -> String? {
-        minutes(values.first { $0 > 0 })
+    static func firstMinutes(
+        values: [Int],
+        localization: AppInterfaceLocalization
+    ) -> String? {
+        minutes(values.first { $0 > 0 }, localization: localization)
     }
 
-    static func firstRuntime(_ durations: [Duration]) -> String? {
-        firstMinutes(values: durations.map { Int($0.components.seconds / 60) })
+    static func firstRuntime(
+        _ durations: [Duration],
+        localization: AppInterfaceLocalization
+    ) -> String? {
+        firstMinutes(
+            values: durations.map { Int($0.components.seconds / 60) },
+            localization: localization
+        )
     }
 
     // MARK: - Count
 
-    static func count(_ value: Int, unit: String) -> String? {
-        value > 0 ? countText(value, unit: unit) : nil
+    enum CountUnit: Sendable {
+        case episodes
+        case seasons
+        case votes
+        case items
     }
 
-    static func countText(_ value: Int, unit: String) -> String {
-        "\(value) \(unit)"
+    static func count(
+        _ value: Int,
+        unit: CountUnit,
+        localization: AppInterfaceLocalization
+    ) -> String? {
+        value > 0 ? countText(value, unit: unit, localization: localization) : nil
     }
 
-    static func seasonNumberText(_ value: Int) -> String {
-        "第 \(value) 季"
+    static func countText(
+        _ value: Int,
+        unit: CountUnit,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        switch unit {
+        case .episodes:
+            return localization.formatted(
+                "common.count.episodes_format",
+                defaultValue: "%lld episodes",
+                value
+            )
+
+        case .seasons:
+            return localization.formatted(
+                "common.count.seasons_format",
+                defaultValue: "%lld seasons",
+                value
+            )
+
+        case .votes:
+            return localization.formatted(
+                "common.count.votes_format",
+                defaultValue: "%lld votes",
+                value
+            )
+
+        case .items:
+            return localization.formatted(
+                "common.count.items_format",
+                defaultValue: "%lld items",
+                value
+            )
+        }
     }
 
-    static func episodeNumberText(_ value: Int) -> String {
-        "第 \(value) 集"
+    static func seasonNumberText(
+        _ value: Int,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        localization.formatted(
+            "common.season.number_format",
+            defaultValue: "Season %lld",
+            value
+        )
     }
 
-    static func episodeTitle(_ name: String?, episodeNumber: Int) -> String {
-        let title = nonEmptyText(name) ?? episodeNumberText(episodeNumber)
+    static func episodeNumberText(
+        _ value: Int,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        localization.formatted(
+            "common.episode.number_format",
+            defaultValue: "Episode %lld",
+            value
+        )
+    }
+
+    static func episodeTitle(
+        _ name: String?,
+        episodeNumber: Int,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        let title = nonEmptyText(name) ?? episodeNumberText(
+            episodeNumber,
+            localization: localization
+        )
         return "\(episodeNumber). \(title)"
     }
 
     static func seasonEpisodeNumberText(
         seasonNumber: Int,
-        episodeNumber: Int
+        episodeNumber: Int,
+        localization: AppInterfaceLocalization
     ) -> String {
-        "\(seasonNumberText(seasonNumber))\(episodeNumberText(episodeNumber))"
+        localization.formatted(
+            "common.season_episode.number_format",
+            defaultValue: "S%1$lld E%2$lld",
+            seasonNumber,
+            episodeNumber
+        )
     }
 
     // MARK: - Metadata
@@ -227,19 +382,17 @@ nonisolated enum BaseDisplayTextFormatter {
         ) ?? NSAttributedString()
     }
 
-    // MARK: - Private Helpers
-
-    private static func prefixedText(_ prefix: String, value: String) -> String {
-        "\(prefix) \(value)"
-    }
-
     // MARK: - Currency
 
-    static func currencyUSD(_ value: Int) -> String? {
+    static func currencyUSD(
+        _ value: Int,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         guard value > 0 else { return nil }
 
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
+        formatter.locale = localization.language.locale
         formatter.currencyCode = "USD"
         formatter.maximumFractionDigits = 0
 
@@ -263,12 +416,21 @@ nonisolated enum BaseDisplayTextFormatter {
         return String(format: "%04d-%02d-%02d", day.year, day.month, day.day)
     }
 
-    static func runtime(_ duration: Duration?) -> String? {
+    static func runtime(
+        _ duration: Duration?,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         guard let duration else { return nil }
-        return runtime(minutes: Int(duration.components.seconds / 60))
+        return runtime(
+            minutes: Int(duration.components.seconds / 60),
+            localization: localization
+        )
     }
 
-    static func displayDate(from date: Date?) -> String? {
+    static func displayDate(
+        from date: Date?,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         guard let date else { return nil }
 
         return date.formatted(
@@ -276,6 +438,7 @@ nonisolated enum BaseDisplayTextFormatter {
                 .year()
                 .month(.twoDigits)
                 .day(.twoDigits)
+                .locale(localization.language.locale)
         )
     }
 

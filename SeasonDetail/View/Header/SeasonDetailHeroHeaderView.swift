@@ -96,7 +96,7 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
             item.airDateText,
             item.episodeCountText
         ])
-        scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
+        scoreLabel.text = item.ratingText
         applyAccessibilityText(
             AccessibilityText(
                 label: item.title,

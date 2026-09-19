@@ -37,15 +37,18 @@ final class TVDetailViewModel {
     private var onAccountStateChange: (@MainActor (AccountMediaFavoriteState, AccountMediaRatingState) -> Void)?
     private let loadTVDetailUseCase: LoadTVDetailUseCase
     private let accountMediaController: DetailAccountMediaStateController
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Initialization
 
     init(
         loadTVDetailUseCase: LoadTVDetailUseCase,
-        accountMediaController: DetailAccountMediaStateController
+        accountMediaController: DetailAccountMediaStateController,
+        localization: AppInterfaceLocalization
     ) {
         self.loadTVDetailUseCase = loadTVDetailUseCase
         self.accountMediaController = accountMediaController
+        self.localization = localization
         self.accountMediaController.stateDidChange = { [weak self] in
             self?.notifyAccountStateChange()
         }
@@ -84,14 +87,17 @@ final class TVDetailViewModel {
                     ? loadedContent.series.voteAverage
                     : nil
             )
-            state = .loaded(TVDetailSectionBuilder.makeSections(content: loadedContent))
+            state = .loaded(TVDetailSectionBuilder.makeSections(
+                content: loadedContent,
+                interfaceLocalization: localization
+            ))
         } catch let error as DomainError {
             guard !Task.isCancelled else { return }
-            state = .failed(Self.errorMessage(for: error))
+            state = .failed(errorMessage(for: error))
             accountMediaController.markUnavailable()
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
             accountMediaController.markUnavailable()
         }
     }
@@ -103,8 +109,8 @@ final class TVDetailViewModel {
             mediaID: seriesID,
             mediaType: .tv,
             invalidMessage: ErrorMessage(
-                title: "無法收藏",
-                message: "影集 ID 不正確，請返回上一頁後再試。"
+                title: localization.string("detail.error.favorite.title", defaultValue: "Unable to Favorite"),
+                message: MediaKind.tv.invalidIdentifierMessage(localization: localization)
             )
         )
     }
@@ -116,8 +122,8 @@ final class TVDetailViewModel {
             target: .tv(seriesID: seriesID),
             value: value,
             invalidMessage: ErrorMessage(
-                title: "無法評分",
-                message: "影集 ID 不正確，請返回上一頁後再試。"
+                title: localization.string("detail.error.rating.title", defaultValue: "Unable to Rate"),
+                message: MediaKind.tv.invalidIdentifierMessage(localization: localization)
             )
         )
     }
@@ -126,20 +132,25 @@ final class TVDetailViewModel {
         await accountMediaController.deleteRating(
             target: .tv(seriesID: seriesID),
             invalidMessage: ErrorMessage(
-                title: "無法刪除評分",
-                message: "影集 ID 不正確，請返回上一頁後再試。"
+                title: localization.string("detail.error.delete_rating.title", defaultValue: "Unable to Delete Rating"),
+                message: MediaKind.tv.invalidIdentifierMessage(localization: localization)
             )
         )
     }
 
     // MARK: - Private Helpers
 
-    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+    private func errorMessage(for error: DomainError) -> ErrorMessage {
         switch error {
         case .invalidIdentifier(let kind):
+            let mediaName = kind.displayName(localization: localization)
             return ErrorMessage(
-                title: "找不到\(kind.displayName)",
-                message: "\(kind.displayName) ID 不正確，請返回上一頁後再試。",
+                title: localization.formatted(
+                    "detail.error.not_found.title_format",
+                    defaultValue: "%@ Not Found",
+                    mediaName
+                ),
+                message: kind.invalidIdentifierMessage(localization: localization),
                 actionTitle: nil
             )
         }

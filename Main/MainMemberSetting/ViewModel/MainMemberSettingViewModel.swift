@@ -23,11 +23,19 @@ final class MainMemberSettingViewModel {
     private let logoutUseCase: LogoutUseCase
     private let clearLocalData: ClearLocalDataUseCase
     private let localization: AppLocalization
+    let interfaceLocalization: AppInterfaceLocalization
     private let bundle: Bundle
 
     private(set) var sections: [MainMemberSettingSectionItem] = []
     private(set) var currentSession: AuthSession = .loggedOut
-    private(set) var profileSummary = MainMemberSettingViewModel.placeholderProfileSummary
+    private(set) var profileSummary: MainMemberSettingProfileSummaryItem
+
+    var navigationTitle: String {
+        interfaceLocalization.string(
+            "main_member_setting.navigation.title",
+            defaultValue: "Settings"
+        )
+    }
 
     var isMember: Bool {
         if case .user = currentSession {
@@ -38,24 +46,29 @@ final class MainMemberSettingViewModel {
 
     var guestPrompt: MainMemberSettingGuestPromptItem {
         MainMemberSettingGuestPromptItem(
-            title: "目前以訪客身分瀏覽",
-            message: "登入 TMDB 帳號後即可同步收藏、片單與評分。",
+            title: interfaceLocalization.string(
+                "main_member_setting.guest.title",
+                defaultValue: "Browsing as a Guest"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.guest.message",
+                defaultValue: "Sign in to your TMDB account to sync favorites, lists, and ratings."
+            ),
             systemImageName: "person.crop.circle.badge.plus",
-            loginTitle: "登入",
-            registerTitle: "註冊"
+            loginTitle: interfaceLocalization.string(
+                "common.action.sign_in",
+                defaultValue: "Sign In"
+            ),
+            registerTitle: interfaceLocalization.string(
+                "common.action.register",
+                defaultValue: "Register"
+            )
         )
     }
 
     var tmdbAttributionURL: URL? {
         URL(string: TMDBResourceURL.websiteBaseURL)
     }
-
-    private static let placeholderProfileSummary = MainMemberSettingProfileSummaryItem(
-        displayName: "TMDB 會員",
-        usernameText: "尚未同步 username",
-        avatarURL: nil,
-        avatarImageData: nil
-    )
 
     // MARK: - Initialization
 
@@ -68,6 +81,7 @@ final class MainMemberSettingViewModel {
         logout: LogoutUseCase,
         clearLocalData: ClearLocalDataUseCase,
         localization: AppLocalization = .current,
+        interfaceLocalization: AppInterfaceLocalization,
         bundle: Bundle = .main
     ) {
         self.sessionProvider = sessionProvider
@@ -78,7 +92,20 @@ final class MainMemberSettingViewModel {
         self.logoutUseCase = logout
         self.clearLocalData = clearLocalData
         self.localization = localization
+        self.interfaceLocalization = interfaceLocalization
         self.bundle = bundle
+        self.profileSummary = MainMemberSettingProfileSummaryItem(
+            displayName: interfaceLocalization.string(
+                "main_member_setting.profile.placeholder_name",
+                defaultValue: "TMDB Member"
+            ),
+            usernameText: interfaceLocalization.string(
+                "main_member_setting.profile.username_not_synced",
+                defaultValue: "Username not synced"
+            ),
+            avatarURL: nil,
+            avatarImageData: nil
+        )
         reloadContent()
     }
 
@@ -119,6 +146,12 @@ final class MainMemberSettingViewModel {
 
     func action(at indexPath: IndexPath) -> MainMemberSettingAction? {
         row(at: indexPath)?.action
+    }
+
+    func interfaceLanguage(isEnglishEnabled: Bool) -> AppInterfaceLanguage? {
+        let language = AppInterfaceLanguage(isEnglish: isEnglishEnabled)
+        guard language != interfaceLocalization.language else { return nil }
+        return language
     }
 
     func refreshProfile() async throws {
@@ -175,7 +208,18 @@ final class MainMemberSettingViewModel {
 
     private func makeProfileSummary(profile: AccountProfile?) -> MainMemberSettingProfileSummaryItem {
         guard let profile else {
-            return Self.placeholderProfileSummary
+            return MainMemberSettingProfileSummaryItem(
+                displayName: interfaceLocalization.string(
+                    "main_member_setting.profile.placeholder_name",
+                    defaultValue: "TMDB Member"
+                ),
+                usernameText: interfaceLocalization.string(
+                    "main_member_setting.profile.username_not_synced",
+                    defaultValue: "Username not synced"
+                ),
+                avatarURL: nil,
+                avatarImageData: nil
+            )
         }
 
         return MainMemberSettingProfileSummaryItem(
@@ -192,7 +236,10 @@ final class MainMemberSettingViewModel {
             rows: [
                 MainMemberSettingRowItem(
                     kind: .profileSummary,
-                    title: "會員資料",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.profile.row.title",
+                        defaultValue: "Profile"
+                    ),
                     systemImageName: "person.crop.circle",
                     action: .showMemberCenter
                 )
@@ -206,7 +253,10 @@ final class MainMemberSettingViewModel {
             rows: [
                 MainMemberSettingRowItem(
                     kind: .guestPrompt,
-                    title: "訪客",
+                    title: interfaceLocalization.string(
+                        "common.account.guest",
+                        defaultValue: "Guest"
+                    ),
                     systemImageName: "person.crop.circle.badge.plus"
                 )
             ]
@@ -216,7 +266,10 @@ final class MainMemberSettingViewModel {
     private func accountSection(profile: AccountProfile?) -> MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
             kind: .account,
-            title: "帳號",
+            title: interfaceLocalization.string(
+                "main_member_setting.account.section_title",
+                defaultValue: "Account"
+            ),
             rows: [
                 MainMemberSettingRowItem(
                     kind: .accountID,
@@ -226,14 +279,20 @@ final class MainMemberSettingViewModel {
                 ),
                 MainMemberSettingRowItem(
                     kind: .refreshProfile,
-                    title: "重新整理會員資料",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.account.refresh_profile",
+                        defaultValue: "Refresh Profile"
+                    ),
                     systemImageName: "arrow.clockwise",
                     accessory: .disclosure,
                     action: .refreshProfile
                 ),
                 MainMemberSettingRowItem(
                     kind: .clearProfileCache,
-                    title: "清除會員資料快取",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.account.clear_profile_cache",
+                        defaultValue: "Clear Profile Cache"
+                    ),
                     systemImageName: "person.crop.circle.badge.xmark",
                     accessory: .disclosure,
                     action: .clearProfileCache
@@ -245,25 +304,37 @@ final class MainMemberSettingViewModel {
     private var dataSection: MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
             kind: .data,
-            title: "快取與資料",
+            title: interfaceLocalization.string(
+                "main_member_setting.data.section_title",
+                defaultValue: "Cache and Data"
+            ),
             rows: [
                 MainMemberSettingRowItem(
                     kind: .clearImageCache,
-                    title: "清除圖片快取",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.data.clear_image_cache",
+                        defaultValue: "Clear Image Cache"
+                    ),
                     systemImageName: "photo.badge.arrow.down",
                     accessory: .disclosure,
                     action: .clearImageCache
                 ),
                 MainMemberSettingRowItem(
                     kind: .clearSearchHistory,
-                    title: "清除搜尋紀錄",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.data.clear_search_history",
+                        defaultValue: "Clear Search History"
+                    ),
                     systemImageName: "magnifyingglass.circle",
                     accessory: .disclosure,
                     action: .clearSearchHistory
                 ),
                 MainMemberSettingRowItem(
                     kind: .clearAllLocalData,
-                    title: "清除所有本機資料",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.data.clear_all_local_data",
+                        defaultValue: "Clear All Local Data"
+                    ),
                     systemImageName: "trash",
                     role: .destructive,
                     accessory: .disclosure,
@@ -276,19 +347,47 @@ final class MainMemberSettingViewModel {
     private var preferencesSection: MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
             kind: .preferences,
-            title: "偏好設定",
+            title: interfaceLocalization.string(
+                "main_member_setting.preferences.section_title",
+                defaultValue: "Preferences"
+            ),
             rows: [
                 MainMemberSettingRowItem(
+                    kind: .appInterfaceLanguage,
+                    title: interfaceLocalization.string(
+                        "main_member_setting.language.title",
+                        defaultValue: "Use English Interface"
+                    ),
+                    subtitle: interfaceLocalization.string(
+                        "main_member_setting.language.subtitle",
+                        defaultValue: "Turn off to use Traditional Chinese"
+                    ),
+                    systemImageName: "globe",
+                    accessory: .toggle(isOn: interfaceLocalization.language.isEnglish)
+                ),
+                MainMemberSettingRowItem(
                     kind: .defaultSort,
-                    title: "預設列表排序",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.preferences.default_sort",
+                        defaultValue: "Default List Sort"
+                    ),
                     systemImageName: "arrow.up.arrow.down",
-                    accessory: .value("熱門度")
+                    accessory: .value(interfaceLocalization.string(
+                        "common.sort.popularity",
+                        defaultValue: "Popularity"
+                    ))
                 ),
                 MainMemberSettingRowItem(
                     kind: .defaultContentType,
-                    title: "預設內容類型",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.preferences.default_content_type",
+                        defaultValue: "Default Content Type"
+                    ),
                     systemImageName: "rectangle.stack",
-                    accessory: .value("電影與影集")
+                    accessory: .value(interfaceLocalization.string(
+                        "common.media.movies_and_tv",
+                        defaultValue: "Movies and TV Shows"
+                    ))
                 )
             ]
         )
@@ -297,29 +396,44 @@ final class MainMemberSettingViewModel {
     private func aboutSection(session: AuthSession) -> MainMemberSettingSectionItem {
         MainMemberSettingSectionItem(
             kind: .about,
-            title: "關於",
+            title: interfaceLocalization.string(
+                "main_member_setting.about.section_title",
+                defaultValue: "About"
+            ),
             rows: [
                 MainMemberSettingRowItem(
                     kind: .appVersion,
-                    title: "App 版本",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.about.app_version",
+                        defaultValue: "App Version"
+                    ),
                     systemImageName: "info.circle",
                     accessory: .value(appVersionText)
                 ),
                 MainMemberSettingRowItem(
                     kind: .apiDataLanguage,
-                    title: "API 資料語言",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.about.api_data_language",
+                        defaultValue: "API Data Language"
+                    ),
                     systemImageName: "textformat",
                     accessory: .value(localization.languageParameter)
                 ),
                 MainMemberSettingRowItem(
                     kind: .loginStatus,
-                    title: "目前登入狀態",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.about.login_status",
+                        defaultValue: "Current Sign-in Status"
+                    ),
                     systemImageName: "person.crop.circle.badge.checkmark",
                     accessory: .value(loginStatusText(session: session))
                 ),
                 MainMemberSettingRowItem(
                     kind: .tmdbAttribution,
-                    title: "TMDB 資料來源",
+                    title: interfaceLocalization.string(
+                        "main_member_setting.about.tmdb_attribution",
+                        defaultValue: "TMDB Data Source"
+                    ),
                     systemImageName: "film.stack",
                     accessory: .disclosure,
                     action: .tmdbAttribution
@@ -334,7 +448,10 @@ final class MainMemberSettingViewModel {
             rows: [
                 MainMemberSettingRowItem(
                     kind: .logout,
-                    title: "登出",
+                    title: interfaceLocalization.string(
+                        "common.action.sign_out",
+                        defaultValue: "Sign Out"
+                    ),
                     systemImageName: "rectangle.portrait.and.arrow.right",
                     role: .destructive,
                     action: .logout
@@ -358,13 +475,19 @@ final class MainMemberSettingViewModel {
             return build
 
         case (.none, .none):
-            return "未知"
+            return interfaceLocalization.string(
+                "common.value.unknown",
+                defaultValue: "Unknown"
+            )
         }
     }
 
     private func accountIDText(profile: AccountProfile?) -> String {
         guard let accountID = profile?.id else {
-            return "尚未同步"
+            return interfaceLocalization.string(
+                "common.value.not_synced",
+                defaultValue: "Not Synced"
+            )
         }
 
         return String(accountID)
@@ -373,13 +496,22 @@ final class MainMemberSettingViewModel {
     private func loginStatusText(session: AuthSession) -> String {
         switch session {
         case .loggedOut:
-            return "未登入"
+            return interfaceLocalization.string(
+                "common.account.signed_out",
+                defaultValue: "Signed Out"
+            )
 
         case .guest:
-            return "訪客"
+            return interfaceLocalization.string(
+                "common.account.guest",
+                defaultValue: "Guest"
+            )
 
         case .user:
-            return "會員"
+            return interfaceLocalization.string(
+                "common.account.member",
+                defaultValue: "Member"
+            )
         }
     }
 

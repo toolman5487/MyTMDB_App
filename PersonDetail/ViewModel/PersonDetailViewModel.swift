@@ -40,15 +40,18 @@ final class PersonDetailViewModel {
     private var onStateChange: (@MainActor (PersonDetailViewState) -> Void)?
     private let loadPersonDetailUseCase: LoadPersonDetailUseCase
     private let loadPersonCreditsUseCase: LoadPersonCreditsUseCase
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Initialization
 
     init(
         loadPersonDetailUseCase: LoadPersonDetailUseCase,
-        loadPersonCreditsUseCase: LoadPersonCreditsUseCase
+        loadPersonCreditsUseCase: LoadPersonCreditsUseCase,
+        localization: AppInterfaceLocalization
     ) {
         self.loadPersonDetailUseCase = loadPersonDetailUseCase
         self.loadPersonCreditsUseCase = loadPersonCreditsUseCase
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -66,13 +69,16 @@ final class PersonDetailViewModel {
         do {
             let content = try await loadPersonDetailUseCase(personID: personID)
             guard !Task.isCancelled else { return }
-            state = .loaded(PersonDetailSectionBuilder.makeSections(content: content))
+            state = .loaded(PersonDetailSectionBuilder.makeSections(
+                content: content,
+                localization: localization
+            ))
         } catch let error as PersonDetailError {
             guard !Task.isCancelled else { return }
-            state = .failed(Self.detailErrorMessage(for: error))
+            state = .failed(detailErrorMessage(for: error))
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -88,14 +94,18 @@ final class PersonDetailViewModel {
 
             let configuration = PersonDetailCreditsPresentationBuilder.makeContentListConfiguration(
                 credits: credits,
-                mediaType: mediaType
+                mediaType: mediaType,
+                localization: localization
             )
 
             guard !configuration.items.isEmpty else {
                 return .failed(
                     ErrorMessage(
-                        title: "目前沒有作品",
-                        message: "TMDB 尚未提供這位人物的\(configuration.title)資料。",
+                        title: localization.string(
+                            "person_detail.credits.empty.title",
+                            defaultValue: "No Credits Yet"
+                        ),
+                        message: emptyCreditsMessage(for: mediaType),
                         actionTitle: nil
                     )
                 )
@@ -103,38 +113,80 @@ final class PersonDetailViewModel {
 
             return .loaded(configuration)
         } catch let error as PersonDetailError {
-            return .failed(Self.creditsErrorMessage(for: error))
+            return .failed(creditsErrorMessage(for: error))
         } catch {
-            return .failed(error.errorMessage)
+            return .failed(error.errorMessage(localization: localization))
         }
     }
 
     // MARK: - Private Helpers
 
-    private static func detailErrorMessage(for error: PersonDetailError) -> ErrorMessage {
+    private var invalidPersonIDMessage: String {
+        localization.string(
+            "person_detail.error.invalid_id.message",
+            defaultValue: "The person ID is invalid. Go back and try again."
+        )
+    }
+
+    private var creditsLoadFailedTitle: String {
+        localization.string(
+            "person_detail.credits.error.title",
+            defaultValue: "Unable to Load Credits"
+        )
+    }
+
+    private func emptyCreditsMessage(for mediaType: PersonCreditMediaType) -> String {
+        switch mediaType {
+        case .movie:
+            return localization.string(
+                "person_detail.credits.empty.movie.message",
+                defaultValue: "TMDB doesn't have movie credits for this person yet."
+            )
+
+        case .tv:
+            return localization.string(
+                "person_detail.credits.empty.tv.message",
+                defaultValue: "TMDB doesn't have TV credits for this person yet."
+            )
+
+        case .unknown:
+            return localization.string(
+                "person_detail.credits.empty.other.message",
+                defaultValue: "TMDB doesn't have credits for this person yet."
+            )
+        }
+    }
+
+    private func detailErrorMessage(for error: PersonDetailError) -> ErrorMessage {
         switch error {
         case .invalidIdentifier, .unsupportedCreditMediaType:
             return ErrorMessage(
-                title: "找不到人物",
-                message: "人物 ID 不正確，請返回上一頁後再試。",
+                title: localization.string(
+                    "person_detail.error.not_found.title",
+                    defaultValue: "Person Not Found"
+                ),
+                message: invalidPersonIDMessage,
                 actionTitle: nil
             )
         }
     }
 
-    private static func creditsErrorMessage(for error: PersonDetailError) -> ErrorMessage {
+    private func creditsErrorMessage(for error: PersonDetailError) -> ErrorMessage {
         switch error {
         case .invalidIdentifier:
             return ErrorMessage(
-                title: "無法載入作品",
-                message: "人物 ID 不正確，請返回上一頁後再試。",
+                title: creditsLoadFailedTitle,
+                message: invalidPersonIDMessage,
                 actionTitle: nil
             )
 
         case .unsupportedCreditMediaType:
             return ErrorMessage(
-                title: "無法載入作品",
-                message: "不支援這個作品類型。",
+                title: creditsLoadFailedTitle,
+                message: localization.string(
+                    "person_detail.credits.error.unsupported_type.message",
+                    defaultValue: "This credit type isn't supported."
+                ),
                 actionTitle: nil
             )
         }

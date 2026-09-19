@@ -498,11 +498,12 @@ enum AppFactory {
 
         static func makeMenu<Option: AppSortMenuOption>(
             selectedOption: Option?,
+            localization: AppInterfaceLocalization,
             onSelect: @escaping (Option) -> Void
         ) -> UIMenu {
             let actions = Option.allCases.map { option in
                 UIAction(
-                    title: option.title,
+                    title: option.title(localization: localization),
                     state: selectedOption == option ? .on : .off
                 ) { _ in
                     Task(priority: .userInitiated) { @MainActor in
@@ -512,7 +513,7 @@ enum AppFactory {
             }
 
             return UIMenu(
-                title: "排序",
+                title: localization.string("common.action.sort", defaultValue: "Sort"),
                 options: .singleSelection,
                 children: Array(actions)
             )
@@ -520,11 +521,16 @@ enum AppFactory {
 
         static func makeBarButtonItem<Option: AppSortMenuOption>(
             selectedOption: Option?,
+            localization: AppInterfaceLocalization,
             onSelect: @escaping (Option) -> Void
         ) -> UIBarButtonItem {
             let barButtonItem = UIBarButtonItem(
                 image: UIImage(systemName: "line.3.horizontal.decrease"),
-                menu: makeMenu(selectedOption: selectedOption, onSelect: onSelect)
+                menu: makeMenu(
+                    selectedOption: selectedOption,
+                    localization: localization,
+                    onSelect: onSelect
+                )
             )
             barButtonItem.tintColor = ThemeColor.textPrimary
             return barButtonItem
@@ -535,5 +541,5 @@ enum AppFactory {
 // MARK: - AppSortMenuOption
 
 protocol AppSortMenuOption: Hashable, CaseIterable {
-    var title: String { get }
+    func title(localization: AppInterfaceLocalization) -> String
 }

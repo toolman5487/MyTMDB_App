@@ -65,13 +65,19 @@ final class BaseWebViewController: BaseViewController {
 
     private lazy var backButton = makeTabBarButton(
         symbolName: "chevron.backward",
-        accessibilityLabel: "上一頁",
+        accessibilityLabel: interfaceLocalization.string(
+            "web_view.back.accessibility_label",
+            defaultValue: "Back"
+        ),
         action: #selector(handleBackButtonTapped)
     )
 
     private lazy var forwardButton = makeTabBarButton(
         symbolName: "chevron.forward",
-        accessibilityLabel: "下一頁",
+        accessibilityLabel: interfaceLocalization.string(
+            "web_view.forward.accessibility_label",
+            defaultValue: "Forward"
+        ),
         action: #selector(handleForwardButtonTapped)
     )
 
@@ -107,10 +113,19 @@ final class BaseWebViewController: BaseViewController {
         textField.keyboardType = .URL
         textField.clearButtonMode = .whileEditing
         textField.delegate = self
-        textField.accessibilityLabel = "網址"
-        textField.accessibilityHint = "輸入網址後按前往開啟頁面"
+        textField.accessibilityLabel = interfaceLocalization.string(
+            "web_view.url_field.accessibility_label",
+            defaultValue: "Address"
+        )
+        textField.accessibilityHint = interfaceLocalization.string(
+            "web_view.url_field.accessibility_hint",
+            defaultValue: "Enter a web address, then tap Go to open the page"
+        )
         textField.attributedPlaceholder = NSAttributedString(
-            string: "搜尋或輸入網址",
+            string: interfaceLocalization.string(
+                "web_view.url_field.placeholder",
+                defaultValue: "Search or enter website address"
+            ),
             attributes: [.foregroundColor: ThemeColor.textTertiary]
         )
         return textField
@@ -118,10 +133,15 @@ final class BaseWebViewController: BaseViewController {
 
     // MARK: - Initialization
 
-    init(url: URL, title: String? = nil) {
+    init(
+        url: URL,
+        title: String? = nil,
+        interfaceLocalization: AppInterfaceLocalization
+    ) {
         self.url = url
         self.preferredTitle = title
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
         hidesBottomBarWhenPushed = true
     }
 
@@ -145,8 +165,14 @@ final class BaseWebViewController: BaseViewController {
             target: self,
             action: #selector(handleReloadButtonTapped)
         )
-        reloadButtonItem.accessibilityLabel = "重新整理"
-        reloadButtonItem.accessibilityHint = "點兩下重新載入目前頁面"
+        reloadButtonItem.accessibilityLabel = interfaceLocalization.string(
+            "web_view.reload.accessibility_label",
+            defaultValue: "Reload"
+        )
+        reloadButtonItem.accessibilityHint = interfaceLocalization.string(
+            "web_view.reload.accessibility_hint",
+            defaultValue: "Double-tap to reload the current page"
+        )
         navigationItem.rightBarButtonItem = reloadButtonItem
 
         urlFieldContainerView.layer.cornerRadius = Layout.urlFieldHeight / 2
@@ -307,10 +333,24 @@ private extension BaseWebViewController {
     }
 
     func updateNavigationButtonAccessibility() {
-        backButton.accessibilityValue = webView.canGoBack ? "可返回" : "無法返回"
-        backButton.accessibilityHint = webView.canGoBack ? "點兩下返回上一頁" : nil
-        forwardButton.accessibilityValue = webView.canGoForward ? "可前進" : "無法前進"
-        forwardButton.accessibilityHint = webView.canGoForward ? "點兩下前往下一頁" : nil
+        backButton.accessibilityValue = webView.canGoBack
+            ? interfaceLocalization.string("web_view.back.available", defaultValue: "Available")
+            : interfaceLocalization.string("web_view.back.unavailable", defaultValue: "Unavailable")
+        backButton.accessibilityHint = webView.canGoBack
+            ? interfaceLocalization.string(
+                "web_view.back.accessibility_hint",
+                defaultValue: "Double-tap to go to the previous page"
+            )
+            : nil
+        forwardButton.accessibilityValue = webView.canGoForward
+            ? interfaceLocalization.string("web_view.forward.available", defaultValue: "Available")
+            : interfaceLocalization.string("web_view.forward.unavailable", defaultValue: "Unavailable")
+        forwardButton.accessibilityHint = webView.canGoForward
+            ? interfaceLocalization.string(
+                "web_view.forward.accessibility_hint",
+                defaultValue: "Double-tap to go to the next page"
+            )
+            : nil
     }
 
     func updateSecurityIcon(for url: URL) {
@@ -429,7 +469,10 @@ extension BaseWebViewController: WKNavigationDelegate {
         setLoadingVisible(false)
         updateNavigationState()
         presentAlert(
-            title: "無法開啟連結",
+            title: interfaceLocalization.string(
+                "web_view.error.title",
+                defaultValue: "Unable to Open Link"
+            ),
             message: error.localizedDescription
         )
     }

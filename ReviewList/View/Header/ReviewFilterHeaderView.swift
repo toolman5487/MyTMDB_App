@@ -21,7 +21,10 @@ final class ReviewFilterHeaderView: BaseFilterHeaderView {
         onFilterSelected = nil
     }
 
-    func configure(filters: [ReviewFilterItem]) {
+    func configure(
+        filters: [ReviewFilterItem],
+        localization: AppInterfaceLocalization
+    ) {
         filtersByBaseID = Dictionary(
             uniqueKeysWithValues: filters.map { ($0.id.baseFilterID, $0.id) }
         )
@@ -30,7 +33,10 @@ final class ReviewFilterHeaderView: BaseFilterHeaderView {
             self?.onFilterSelected?(filter)
         }
 
-        configure(filters: filters.map(BaseFilterHeaderItem.init(movieReviewFilter:)))
+        configure(
+            filters: filters.map(BaseFilterHeaderItem.init(movieReviewFilter:)),
+            localization: localization
+        )
     }
 }
 

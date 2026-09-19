@@ -72,13 +72,15 @@ final class SearchResultsViewController: BaseViewController, SearchResultsHandli
         mediaKind: MediaKind,
         viewModel: SearchResultsViewModel,
         onItemSelected: @escaping @MainActor (Int) -> Void,
-        onSortBarButtonVisibilityChanged: @escaping @MainActor (Bool, MediaSortOrder?) -> Void
+        onSortBarButtonVisibilityChanged: @escaping @MainActor (Bool, MediaSortOrder?) -> Void,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.mediaKind = mediaKind
         self.viewModel = viewModel
         self.onItemSelected = onItemSelected
         self.onSortBarButtonVisibilityChanged = onSortBarButtonVisibilityChanged
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -164,13 +166,18 @@ final class SearchResultsViewController: BaseViewController, SearchResultsHandli
             items = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = SearchTypingLoadingView()
+            collectionView.backgroundView = SearchTypingLoadingView(
+                localization: interfaceLocalization
+            )
 
         case .searching(let keyword):
             items = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = SearchSubmittedLoadingView(keyword: keyword)
+            collectionView.backgroundView = SearchSubmittedLoadingView(
+                keyword: keyword,
+                localization: interfaceLocalization
+            )
 
         case .results(let content):
             items = content.items
@@ -184,17 +191,25 @@ final class SearchResultsViewController: BaseViewController, SearchResultsHandli
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "找不到\(mediaKind.displayName)",
-                    message: "沒有符合「\(keyword)」的搜尋結果",
+                    title: mediaKind.searchEmptyTitle(localization: interfaceLocalization),
+                    message: interfaceLocalization.formatted(
+                        "search.empty.message_format",
+                        defaultValue: "No results matched “%@.”",
+                        keyword
+                    ),
                     systemImageName: "magnifyingglass"
-                )
+                ),
+                localization: interfaceLocalization
             )
 
         case .failed(let errorMessage):
             items = []
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = ErrorMessageView(message: errorMessage)
+            collectionView.backgroundView = ErrorMessageView(
+                message: errorMessage,
+                localization: interfaceLocalization
+            )
         }
 
         collectionView.reloadData()
@@ -227,7 +242,8 @@ extension SearchResultsViewController: UICollectionViewDataSource {
             cell.configure(
                 with: items[indexPath.item],
                 kind: mediaKind,
-                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
+                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width),
+                localization: interfaceLocalization
             )
         }
 
@@ -327,6 +343,21 @@ private extension SearchResultsViewController {
 
         case .idle, .typing, .searching, .empty, .failed:
             onSortBarButtonVisibilityChanged(false, nil)
+        }
+    }
+}
+
+// MARK: - MediaKind Search Text
+
+private extension MediaKind {
+
+    func searchEmptyTitle(localization: AppInterfaceLocalization) -> String {
+        switch self {
+        case .movie:
+            return localization.string("search.empty.movie.title", defaultValue: "No Movies Found")
+
+        case .tv:
+            return localization.string("search.empty.tv.title", defaultValue: "No TV Shows Found")
         }
     }
 }

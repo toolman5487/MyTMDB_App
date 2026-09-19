@@ -72,14 +72,24 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
     let metadataText: String
     let imageURL: URL?
     let detailTarget: MemberCenterListItemDetailTarget
+    let accessibilityText: AccessibilityText
 
-    init(item: AccountCollectionItem, destination: MemberCenterDestination) {
+    init(
+        item: AccountCollectionItem,
+        destination: MemberCenterDestination,
+        localization: AppInterfaceLocalization
+    ) {
+        let untitledText = localization.string("common.fallback.untitled", defaultValue: "Untitled")
+
         switch item {
         case .media(let summary, let kind):
             self.id = Self.identifier(destination: destination, kind: kind, mediaID: summary.id)
-            self.title = BaseDisplayTextFormatter.text(summary.title, fallback: "未命名")
-            self.subtitle = Self.dateText(summary.releaseDate)
-            self.metadataText = BaseDisplayTextFormatter.ratingText(summary.voteAverage)
+            self.title = BaseDisplayTextFormatter.text(summary.title, fallback: untitledText)
+            self.subtitle = Self.dateText(summary.releaseDate, localization: localization)
+            self.metadataText = BaseDisplayTextFormatter.ratingText(
+                summary.voteAverage,
+                localization: localization
+            )
             self.imageURL = Self.posterURL(path: summary.posterPath)
             self.detailTarget = Self.detailTarget(kind: kind, mediaID: summary.id)
 
@@ -89,9 +99,12 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
                 kind: ratedMedia.kind,
                 mediaID: ratedMedia.summary.id
             )
-            self.title = BaseDisplayTextFormatter.text(ratedMedia.summary.title, fallback: "未命名")
-            self.subtitle = Self.dateText(ratedMedia.summary.releaseDate)
-            self.metadataText = BaseDisplayTextFormatter.userRatingText(ratedMedia.rating)
+            self.title = BaseDisplayTextFormatter.text(ratedMedia.summary.title, fallback: untitledText)
+            self.subtitle = Self.dateText(ratedMedia.summary.releaseDate, localization: localization)
+            self.metadataText = BaseDisplayTextFormatter.userRatingText(
+                ratedMedia.rating,
+                localization: localization
+            )
             self.imageURL = Self.posterURL(path: ratedMedia.summary.posterPath)
             self.detailTarget = Self.detailTarget(
                 kind: ratedMedia.kind,
@@ -100,9 +113,12 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
 
         case .ratedEpisode(let episode):
             self.id = "\(destination.rawValue)-episode-\(episode.seriesID)-\(episode.seasonNumber)-\(episode.episodeNumber)-\(episode.id)"
-            self.title = BaseDisplayTextFormatter.text(episode.name, fallback: "未命名")
-            self.subtitle = Self.episodeSubtitle(episode)
-            self.metadataText = BaseDisplayTextFormatter.userRatingText(episode.rating)
+            self.title = BaseDisplayTextFormatter.text(episode.name, fallback: untitledText)
+            self.subtitle = Self.episodeSubtitle(episode, localization: localization)
+            self.metadataText = BaseDisplayTextFormatter.userRatingText(
+                episode.rating,
+                localization: localization
+            )
             self.imageURL = Self.posterURL(path: episode.stillPath)
             self.detailTarget = .episode(
                 seriesID: episode.seriesID,
@@ -112,12 +128,30 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
 
         case .list(let list):
             self.id = "\(destination.rawValue)-list-\(list.id)"
-            self.title = BaseDisplayTextFormatter.text(list.name, fallback: "未命名片單")
-            self.subtitle = list.description.isEmpty ? "沒有描述" : list.description
-            self.metadataText = BaseDisplayTextFormatter.countText(list.itemCount, unit: "個項目")
+            self.title = BaseDisplayTextFormatter.text(
+                list.name,
+                fallback: localization.string("member_center.list.untitled", defaultValue: "Untitled List")
+            )
+            self.subtitle = list.description.isEmpty
+                ? localization.string("member_center.list.no_description", defaultValue: "No description")
+                : list.description
+            self.metadataText = BaseDisplayTextFormatter.countText(
+                list.itemCount,
+                unit: .items,
+                localization: localization
+            )
             self.imageURL = Self.posterURL(path: list.posterPath)
             self.detailTarget = .list(id: list.id)
         }
+
+        self.accessibilityText = AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.metadata([
+                subtitle,
+                metadataText
+            ]),
+            hint: Self.accessibilityHint(for: detailTarget, localization: localization)
+        )
     }
 
     // MARK: - Private Methods
@@ -143,9 +177,13 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         }
     }
 
-    private static func dateText(_ day: CalendarDay?) -> String {
+    private static func dateText(
+        _ day: CalendarDay?,
+        localization: AppInterfaceLocalization
+    ) -> String {
         BaseDisplayTextFormatter.announcedText(
-            BaseDisplayTextFormatter.isoDayText(from: day)
+            BaseDisplayTextFormatter.isoDayText(from: day),
+            localization: localization
         )
     }
 
@@ -155,45 +193,42 @@ nonisolated struct MemberCenterListItem: Sendable, Equatable, Identifiable {
         }
     }
 
-    private static func episodeSubtitle(_ episode: RatedEpisode) -> String {
+    private static func episodeSubtitle(
+        _ episode: RatedEpisode,
+        localization: AppInterfaceLocalization
+    ) -> String {
         BaseDisplayTextFormatter.metadata([
             BaseDisplayTextFormatter.seasonEpisodeNumberText(
                 seasonNumber: episode.seasonNumber,
-                episodeNumber: episode.episodeNumber
+                episodeNumber: episode.episodeNumber,
+                localization: localization
             ),
             BaseDisplayTextFormatter.isoDayText(from: episode.airDate)
         ]) ?? ""
     }
-}
 
-// MARK: - Accessibility
-
-extension MemberCenterListItem {
-
-    var accessibilityText: AccessibilityText {
-        AccessibilityText(
-            label: title,
-            value: BaseDisplayTextFormatter.metadata([
-                subtitle,
-                metadataText
-            ]),
-            hint: accessibilityHint
-        )
-    }
-
-    private var accessibilityHint: String {
+    private static func accessibilityHint(
+        for detailTarget: MemberCenterListItemDetailTarget,
+        localization: AppInterfaceLocalization
+    ) -> String {
         switch detailTarget {
         case .movie:
-            return "點兩下開啟電影詳細資料"
+            return MediaKind.movie.detailAccessibilityHint(localization: localization)
 
         case .tv:
-            return "點兩下開啟劇集詳細資料"
+            return MediaKind.tv.detailAccessibilityHint(localization: localization)
 
         case .episode:
-            return "點兩下開啟單集詳細資料"
+            return localization.string(
+                "common.accessibility.open_episode_detail.hint",
+                defaultValue: "Double-tap to open episode details"
+            )
 
         case .list:
-            return "點兩下開啟片單"
+            return localization.string(
+                "member_center.list.accessibility_hint",
+                defaultValue: "Double-tap to open the list"
+            )
         }
     }
 }

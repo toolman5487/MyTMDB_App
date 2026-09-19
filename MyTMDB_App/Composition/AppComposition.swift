@@ -70,6 +70,10 @@ protocol MainTabSceneBuilding: HomeSceneBuilding, MediaListSceneBuilding, Member
 @MainActor
 protocol AppFlowRouting: AnyObject {
     func showLoggedOutRoot()
+    func applyInterfaceLanguage(
+        _ language: AppInterfaceLanguage,
+        session: AuthSession
+    )
 }
 
 // MARK: - AppComposition
@@ -83,10 +87,17 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     private let sessionStore: SessionStoring
     private let userProfileStore: UserProfileStoring
     private let searchHistoryStore: SearchHistoryProviding
+    private let interfaceLanguageStore: AppInterfaceLanguageStoring
     private let localization: AppLocalization
+    private var interfaceLocalization: AppInterfaceLocalization
     private let urlSession: URLSession
     private let bundle: Bundle
     private let onSessionChanged: @MainActor (AuthSession) -> Void
+    private let onInterfaceLanguageChanged: @MainActor (AuthSession) -> Void
+
+    var currentInterfaceLocalization: AppInterfaceLocalization {
+        interfaceLocalization
+    }
 
     // MARK: - Initialization
 
@@ -95,19 +106,26 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         sessionStore: SessionStoring = SessionStore(),
         userProfileStore: UserProfileStoring = UserProfileStore(),
         searchHistoryStore: SearchHistoryProviding = SearchHistoryStore(),
+        interfaceLanguageStore: AppInterfaceLanguageStoring = AppInterfaceLanguageStore(),
         localization: AppLocalization = .current,
         urlSession: URLSession = .shared,
         bundle: Bundle = .main,
-        onSessionChanged: @escaping @MainActor (AuthSession) -> Void = { _ in }
+        onSessionChanged: @escaping @MainActor (AuthSession) -> Void = { _ in },
+        onInterfaceLanguageChanged: @escaping @MainActor (AuthSession) -> Void = { _ in }
     ) {
         self.network = network
         self.sessionStore = sessionStore
         self.userProfileStore = userProfileStore
         self.searchHistoryStore = searchHistoryStore
+        self.interfaceLanguageStore = interfaceLanguageStore
         self.localization = localization
+        self.interfaceLocalization = AppInterfaceLocalization(
+            language: interfaceLanguageStore.load()
+        )
         self.urlSession = urlSession
         self.bundle = bundle
         self.onSessionChanged = onSessionChanged
+        self.onInterfaceLanguageChanged = onInterfaceLanguageChanged
     }
 
     // MARK: - App Flow
@@ -130,14 +148,18 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     }
 
     func makeRootLoadingViewController() -> UIViewController {
-        RootLoadingViewController()
+        RootLoadingViewController(localization: interfaceLocalization)
     }
 
     func makeLoginNavigationController(context: LoginEntryContext) -> UIViewController {
         let viewController = LoginViewController(
-            loginViewModel: LoginViewModel(authentication: AuthenticationRepository(network: network)),
+            loginViewModel: LoginViewModel(
+                authentication: AuthenticationRepository(network: network),
+                localization: interfaceLocalization
+            ),
             authFlowHandler: makeAuthFlowHandler(),
-            entryContext: context
+            entryContext: context,
+            localization: interfaceLocalization
         )
         return UINavigationController(rootViewController: viewController)
     }
@@ -148,7 +170,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     ) -> MainTabBarController {
         MainTabBarController(
             session: session,
-            viewModel: MainTabBarViewModel(),
+            viewModel: MainTabBarViewModel(localization: interfaceLocalization),
             avatarProvider: MainTabBarAvatarImageProvider(
                 avatarProvider: AccountAvatarRepository(
                     profileProvider: makeAccountContentRepository(),
@@ -165,14 +187,29 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         onSessionChanged(.loggedOut)
     }
 
+    func applyInterfaceLanguage(
+        _ language: AppInterfaceLanguage,
+        session: AuthSession
+    ) {
+        guard interfaceLocalization.language != language else { return }
+        interfaceLanguageStore.save(language)
+        interfaceLocalization = AppInterfaceLocalization(language: language)
+        onInterfaceLanguageChanged(session)
+    }
+
     // MARK: - Main Tabs
 
     func makeMainHomeViewController() -> UIViewController {
         let repository = HomeContentRepository(network: network, localization: localization)
         let viewModel = MainHomeViewModel(
-            loadHomeSections: DefaultLoadHomeSectionsUseCase(repository: repository)
+            loadHomeSections: DefaultLoadHomeSectionsUseCase(repository: repository),
+            localization: interfaceLocalization
         )
-        return MainHomeViewController(viewModel: viewModel, sceneBuilder: self)
+        return MainHomeViewController(
+            viewModel: viewModel,
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func makeMainSearchViewController() -> UIViewController {
@@ -180,9 +217,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = MainSearchViewModel(
             loadDiscovery: DefaultLoadMainSearchDiscoveryUseCase(repository: repository),
             repository: repository,
-            searchHistory: searchHistoryStore
+            searchHistory: searchHistoryStore,
+            localization: interfaceLocalization
         )
-        return MainSearchViewController(viewModel: viewModel, sceneBuilder: self)
+        return MainSearchViewController(
+            viewModel: viewModel,
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func makeMainMediaListViewController(
@@ -199,12 +241,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             mediaKind: mediaKind,
             loadMediaList: DefaultLoadMediaListUseCase(repository: repository),
             repository: repository,
-            initialGenreID: initialGenreID
+            initialGenreID: initialGenreID,
+            localization: interfaceLocalization
         )
         return MainMediaListViewController(
             mediaKind: mediaKind,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -233,6 +277,7 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 imageCache: imageCache
             ),
             localization: localization,
+            interfaceLocalization: interfaceLocalization,
             bundle: bundle
         )
         return MainMemberSettingViewController(
@@ -256,12 +301,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 genreRepository: genreRepository
             ),
             filterByGenre: DefaultFilterMediaByGenreUseCase(),
-            contentRepository: contentRepository
+            contentRepository: contentRepository,
+            localization: interfaceLocalization
         )
         return HomeSectionListViewController(
             category: category,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -276,13 +323,15 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = SearchResultsViewModel(
             mediaKind: mediaKind,
             searchMedia: DefaultSearchMediaUseCase(repository: repository),
-            sortMedia: DefaultSortMediaUseCase()
+            sortMedia: DefaultSortMediaUseCase(),
+            localization: interfaceLocalization
         )
         return SearchResultsViewController(
             mediaKind: mediaKind,
             viewModel: viewModel,
             onItemSelected: onItemSelected,
-            onSortBarButtonVisibilityChanged: onSortBarButtonVisibilityChanged
+            onSortBarButtonVisibilityChanged: onSortBarButtonVisibilityChanged,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -297,12 +346,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 repository: repository,
                 failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
-            accountMediaController: makeDetailAccountMediaStateController()
+            accountMediaController: makeDetailAccountMediaStateController(),
+            localization: interfaceLocalization
         )
         return MovieDetailViewController(
             movieID: movieID,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -315,12 +366,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 repository: repository,
                 failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
-            accountMediaController: makeDetailAccountMediaStateController()
+            accountMediaController: makeDetailAccountMediaStateController(),
+            localization: interfaceLocalization
         )
         return TVDetailViewController(
             seriesID: seriesID,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -334,13 +387,15 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 repository: repository,
                 sessionProvider: sessionStore,
                 failureReporter: AppLoggerAuxiliaryFailureReporter()
-            )
+            ),
+            localization: interfaceLocalization
         )
         return SeasonDetailViewController(
             seriesID: seriesID,
             seasonNumber: seasonNumber,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -362,12 +417,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 sessionProvider: sessionStore,
                 failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
-            accountMediaController: makeDetailAccountMediaStateController()
+            accountMediaController: makeDetailAccountMediaStateController(),
+            localization: interfaceLocalization
         )
         return EpisodeDetailViewController(
             input: input,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -380,12 +437,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
                 repository: repository,
                 failureReporter: AppLoggerAuxiliaryFailureReporter()
             ),
-            loadPersonCreditsUseCase: DefaultLoadPersonCreditsUseCase(repository: repository)
+            loadPersonCreditsUseCase: DefaultLoadPersonCreditsUseCase(repository: repository),
+            localization: interfaceLocalization
         )
         return PersonDetailViewController(
             personID: personID,
             viewModel: viewModel,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -397,9 +456,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = ReviewListViewModel(
             mediaKind: mediaKind,
             loadReviewsUseCase: DefaultLoadReviewsUseCase(repository: repository),
-            filterReviewsUseCase: DefaultFilterReviewsUseCase()
+            filterReviewsUseCase: DefaultFilterReviewsUseCase(),
+            localization: interfaceLocalization
         )
-        return ReviewListViewController(mediaID: mediaID, viewModel: viewModel)
+        return ReviewListViewController(
+            mediaID: mediaID,
+            viewModel: viewModel,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func makeDetailContentListViewController(
@@ -407,7 +471,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     ) -> UIViewController {
         DetailContentListViewController(
             configuration: configuration,
-            sceneBuilder: self
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -420,9 +485,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         let viewModel = MemberCenterViewModel(
             session: session,
             loadOverview: DefaultLoadMemberCenterOverviewUseCase(repository: repository),
-            contentRepository: repository
+            contentRepository: repository,
+            localization: interfaceLocalization
         )
-        return MemberCenterViewController(viewModel: viewModel, sceneBuilder: self)
+        return MemberCenterViewController(
+            viewModel: viewModel,
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func makeMemberCenterListViewController(
@@ -434,9 +504,14 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             destination: destination,
             accountID: accountID,
             sessionID: sessionID,
-            contentRepository: makeAccountContentRepository()
+            contentRepository: makeAccountContentRepository(),
+            localization: interfaceLocalization
         )
-        return MemberCenterListViewController(viewModel: viewModel, sceneBuilder: self)
+        return MemberCenterListViewController(
+            viewModel: viewModel,
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - App Intents
@@ -516,7 +591,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
             deleteRatingUseCase: DefaultDeleteRatingUseCase(
                 sessionRepository: sessionRepository,
                 mediaRepository: mediaRepository
-            )
+            ),
+            localization: interfaceLocalization
         )
     }
 
@@ -526,6 +602,8 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
 
 @MainActor
 private final class RootLoadingViewController: BaseViewController {
+
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Metrics
 
@@ -543,9 +621,25 @@ private final class RootLoadingViewController: BaseViewController {
 
     private lazy var titleLabel: UILabel = {
         let label = AppFactory.Label.body(alignment: .center)
-        label.text = "正在檢查登入狀態"
+        label.text = localization.string(
+            "root_loading.session_validation.title",
+            defaultValue: "Checking Sign-in Status"
+        )
         return label
     }()
+
+    // MARK: - Initialization
+
+    init(localization: AppInterfaceLocalization) {
+        self.localization = localization
+        super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(localization)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Lifecycle
 

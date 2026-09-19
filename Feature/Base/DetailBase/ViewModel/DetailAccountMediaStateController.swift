@@ -42,6 +42,7 @@ final class DetailAccountMediaStateController {
     private let toggleFavoriteUseCase: ToggleFavoriteUseCase
     private let submitRatingUseCase: SubmitRatingUseCase
     private let deleteRatingUseCase: DeleteRatingUseCase
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Initialization
 
@@ -50,13 +51,15 @@ final class DetailAccountMediaStateController {
         loadAccountMediaStateUseCase: LoadAccountMediaStateUseCase,
         toggleFavoriteUseCase: ToggleFavoriteUseCase,
         submitRatingUseCase: SubmitRatingUseCase,
-        deleteRatingUseCase: DeleteRatingUseCase
+        deleteRatingUseCase: DeleteRatingUseCase,
+        localization: AppInterfaceLocalization
     ) {
         self.sessionProvider = sessionProvider
         self.loadAccountMediaStateUseCase = loadAccountMediaStateUseCase
         self.toggleFavoriteUseCase = toggleFavoriteUseCase
         self.submitRatingUseCase = submitRatingUseCase
         self.deleteRatingUseCase = deleteRatingUseCase
+        self.localization = localization
     }
 
     // MARK: - State Lifecycle
@@ -135,12 +138,18 @@ final class DetailAccountMediaStateController {
 
         switch favoriteState {
         case .requiresUserLogin:
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
+            return favoriteSignInRequiredMessage
 
         case .unavailable:
             return ErrorMessage(
-                title: "暫時無法收藏",
-                message: "目前無法取得收藏狀態，請稍後再試。"
+                title: localization.string(
+                    "detail.account_state.favorite_unavailable.title",
+                    defaultValue: "Favorites Unavailable"
+                ),
+                message: localization.string(
+                    "detail.account_state.favorite_unavailable.message",
+                    defaultValue: "Favorite status cannot be loaded right now. Please try again later."
+                )
             )
 
         case .updating:
@@ -159,7 +168,7 @@ final class DetailAccountMediaStateController {
 
                 guard result.isSuccess else {
                     favoriteState = .ready(isFavorite: currentFavoriteStatus)
-                    return ErrorMessage(title: "收藏失敗", message: result.message)
+                    return ErrorMessage(title: favoriteFailedTitle, message: result.message)
                 }
 
                 favoriteState = .ready(isFavorite: updatedFavoriteStatus)
@@ -169,7 +178,7 @@ final class DetailAccountMediaStateController {
                 return favoriteErrorMessage(for: error, invalidMessage: invalidMessage)
             } catch {
                 favoriteState = .ready(isFavorite: currentFavoriteStatus)
-                return error.errorMessage
+                return error.errorMessage(localization: localization)
             }
         }
     }
@@ -185,17 +194,20 @@ final class DetailAccountMediaStateController {
 
         let normalizedValue = AccountMediaRatingValue.normalized(value)
         guard AccountMediaRatingValue.isValid(normalizedValue) else {
-            return ErrorMessage(title: "無法評分", message: "評分需介於 0.5 到 10 分之間。")
+            return invalidRatingValueMessage
         }
 
         switch ratingState {
         case .requiresUserLogin:
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            return ratingSignInRequiredMessage
 
         case .unavailable:
             return ErrorMessage(
-                title: "暫時無法評分",
-                message: "目前無法取得評分狀態，請稍後再試。"
+                title: localization.string(
+                    "detail.account_state.rating_unavailable.title",
+                    defaultValue: "Ratings Unavailable"
+                ),
+                message: ratingStateUnavailableMessage
             )
 
         case .updating:
@@ -212,7 +224,13 @@ final class DetailAccountMediaStateController {
 
                 guard result.isSuccess else {
                     ratingState = .ready(value: currentValue)
-                    return ErrorMessage(title: "評分失敗", message: result.message)
+                    return ErrorMessage(
+                        title: localization.string(
+                            "detail.account_state.rating_failed.title",
+                            defaultValue: "Rating Failed"
+                        ),
+                        message: result.message
+                    )
                 }
 
                 ratingState = .ready(value: normalizedValue)
@@ -222,7 +240,7 @@ final class DetailAccountMediaStateController {
                 return ratingErrorMessage(for: error, invalidMessage: invalidMessage)
             } catch {
                 ratingState = .ready(value: currentValue)
-                return error.errorMessage
+                return error.errorMessage(localization: localization)
             }
         }
     }
@@ -235,12 +253,15 @@ final class DetailAccountMediaStateController {
 
         switch ratingState {
         case .requiresUserLogin:
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            return ratingSignInRequiredMessage
 
         case .unavailable:
             return ErrorMessage(
-                title: "暫時無法刪除評分",
-                message: "目前無法取得評分狀態，請稍後再試。"
+                title: localization.string(
+                    "detail.account_state.delete_rating_unavailable.title",
+                    defaultValue: "Rating Deletion Unavailable"
+                ),
+                message: ratingStateUnavailableMessage
             )
 
         case .updating:
@@ -256,7 +277,13 @@ final class DetailAccountMediaStateController {
 
                 guard result.isSuccess else {
                     ratingState = .ready(value: currentValue)
-                    return ErrorMessage(title: "刪除評分失敗", message: result.message)
+                    return ErrorMessage(
+                        title: localization.string(
+                            "detail.account_state.delete_rating_failed.title",
+                            defaultValue: "Unable to Delete Rating"
+                        ),
+                        message: result.message
+                    )
                 }
 
                 ratingState = .ready(value: nil)
@@ -266,7 +293,7 @@ final class DetailAccountMediaStateController {
                 return ratingErrorMessage(for: error, invalidMessage: invalidMessage)
             } catch {
                 ratingState = .ready(value: currentValue)
-                return error.errorMessage
+                return error.errorMessage(localization: localization)
             }
         }
     }
@@ -294,10 +321,16 @@ final class DetailAccountMediaStateController {
 
         case .requiresUserLogin:
             favoriteState = .requiresUserLogin
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用收藏功能。")
+            return favoriteSignInRequiredMessage
 
         case .invalidRatingValue:
-            return ErrorMessage(title: "收藏失敗", message: "收藏資料不正確，請稍後再試。")
+            return ErrorMessage(
+                title: favoriteFailedTitle,
+                message: localization.string(
+                    "detail.account_state.favorite_invalid_data.message",
+                    defaultValue: "The favorite data is invalid. Please try again later."
+                )
+            )
         }
     }
 
@@ -310,12 +343,65 @@ final class DetailAccountMediaStateController {
             return invalidMessage
 
         case .invalidRatingValue:
-            return ErrorMessage(title: "無法評分", message: "評分需介於 0.5 到 10 分之間。")
+            return invalidRatingValueMessage
 
         case .requiresUserLogin:
             ratingState = .requiresUserLogin
-            return ErrorMessage(title: "需要登入", message: "請登入 TMDB 帳號後再使用評分功能。")
+            return ratingSignInRequiredMessage
         }
+    }
+
+    // MARK: - Localized Messages
+
+    private var signInRequiredTitle: String {
+        localization.string(
+            "detail.account_state.sign_in_required.title",
+            defaultValue: "Sign-in Required"
+        )
+    }
+
+    private var favoriteSignInRequiredMessage: ErrorMessage {
+        ErrorMessage(
+            title: signInRequiredTitle,
+            message: localization.string(
+                "detail.account_state.favorite_sign_in_required.message",
+                defaultValue: "Sign in to your TMDB account to use favorites."
+            )
+        )
+    }
+
+    private var ratingSignInRequiredMessage: ErrorMessage {
+        ErrorMessage(
+            title: signInRequiredTitle,
+            message: localization.string(
+                "detail.account_state.rating_sign_in_required.message",
+                defaultValue: "Sign in to your TMDB account to use ratings."
+            )
+        )
+    }
+
+    private var favoriteFailedTitle: String {
+        localization.string(
+            "detail.account_state.favorite_failed.title",
+            defaultValue: "Favorite Update Failed"
+        )
+    }
+
+    private var ratingStateUnavailableMessage: String {
+        localization.string(
+            "detail.account_state.rating_unavailable.message",
+            defaultValue: "Rating status cannot be loaded right now. Please try again later."
+        )
+    }
+
+    private var invalidRatingValueMessage: ErrorMessage {
+        ErrorMessage(
+            title: localization.string("detail.error.rating.title", defaultValue: "Unable to Rate"),
+            message: localization.string(
+                "detail.account_state.invalid_rating_value.message",
+                defaultValue: "Ratings must be between 0.5 and 10."
+            )
+        )
     }
 
 }

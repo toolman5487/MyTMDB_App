@@ -18,15 +18,20 @@ final class SearchTypingLoadingView: UIView {
     }
 
     private let animationView = AppFactory.Animation.searchLoading(size: Layout.animationSize)
+    private let localization: AppInterfaceLocalization
 
-    override init(frame: CGRect) {
+    init(
+        localization: AppInterfaceLocalization,
+        frame: CGRect = .zero
+    ) {
+        self.localization = localization
         super.init(frame: frame)
         setupUI()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func setupUI() {
@@ -37,8 +42,11 @@ final class SearchTypingLoadingView: UIView {
         animationView.isAccessibilityElement = false
         applyAccessibilityText(
             AccessibilityText(
-                label: "搜尋中",
-                value: "正在輸入關鍵字"
+                label: localization.string("search.typing.label", defaultValue: "Searching"),
+                value: localization.string(
+                    "search.typing.value",
+                    defaultValue: "Entering a keyword"
+                )
             )
         )
         accessibilityTraits.insert(.updatesFrequently)

@@ -108,11 +108,11 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
             backdropImageView.sd_setImage(with: posterURL)
         }
 
-        statusLabel.text = "現正熱映"
+        statusLabel.text = item.featuredStatusText
         titleLabel.text = item.title
         metadataLabel.text = BaseDisplayTextFormatter.metadata([
             item.dateText,
-            BaseDisplayTextFormatter.ratingText(item.scoreText)
+            item.ratingText
         ])
         applyAccessibility(item.featuredAccessibilityText)
     }

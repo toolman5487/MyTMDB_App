@@ -11,18 +11,32 @@ import Foundation
 
 nonisolated enum SeasonDetailSectionBuilder {
 
-    static func makeContent(content: SeasonDetailContent) -> SeasonDetailViewContent {
-        let detail = SeasonDetailItem(detail: content.detail)
+    static func makeContent(
+        content: SeasonDetailContent,
+        apiLocalization: AppLocalization = .current,
+        interfaceLocalization: AppInterfaceLocalization
+    ) -> SeasonDetailViewContent {
+        let detail = SeasonDetailItem(
+            detail: content.detail,
+            localization: interfaceLocalization
+        )
 
         return SeasonDetailViewContent(
-            sections: makeSections(content: content, detail: detail),
+            sections: makeSections(
+                content: content,
+                detail: detail,
+                apiLocalization: apiLocalization,
+                interfaceLocalization: interfaceLocalization
+            ),
             navigationTitle: detail.title
         )
     }
 
     private static func makeSections(
         content: SeasonDetailContent,
-        detail: SeasonDetailItem
+        detail: SeasonDetailItem,
+        apiLocalization: AppLocalization,
+        interfaceLocalization: AppInterfaceLocalization
     ) -> [SeasonDetailSectionItem] {
         var sections: [SeasonDetailSectionItem] = [
             .overview(
@@ -33,14 +47,18 @@ nonisolated enum SeasonDetailSectionBuilder {
             )
         ]
 
-        let facts = makeFacts(detail: content.detail, detailItem: detail)
+        let facts = makeFacts(
+            detail: content.detail,
+            detailItem: detail,
+            localization: interfaceLocalization
+        )
         if !facts.isEmpty {
             sections.append(.facts(facts))
         }
 
         let episodes = content.detail.episodes
             .sorted { $0.episodeNumber < $1.episodeNumber }
-            .map(SeasonEpisodeItem.init(episode:))
+            .map { SeasonEpisodeItem(episode: $0, localization: interfaceLocalization) }
         if !episodes.isEmpty {
             sections.append(.episodes(episodes))
         }
@@ -49,17 +67,17 @@ nonisolated enum SeasonDetailSectionBuilder {
             .filter { !$0.key.isEmpty }
             .sorted { videoPriority($0) < videoPriority($1) }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(SeasonVideoItem.init(video:))
+            .map { SeasonVideoItem(video: $0, localization: interfaceLocalization) }
         if !videos.isEmpty {
             sections.append(.videos(Array(videos)))
         }
 
-        let cast = makeCastItems(content: content)
+        let cast = makeCastItems(content: content, localization: interfaceLocalization)
         if !cast.isEmpty {
             sections.append(.cast(cast))
         }
 
-        let crew = makeCrewItems(content: content)
+        let crew = makeCrewItems(content: content, localization: interfaceLocalization)
         if !crew.isEmpty {
             sections.append(.crew(crew))
         }
@@ -69,10 +87,17 @@ nonisolated enum SeasonDetailSectionBuilder {
         }
 
         if case .rated = content.accountState.rating {
-            sections.append(.accountState(SeasonAccountStateItem(accountState: content.accountState)))
+            sections.append(.accountState(SeasonAccountStateItem(
+                accountState: content.accountState,
+                localization: interfaceLocalization
+            )))
         }
 
-        let watchProviders = makeWatchProviderItems(response: content.watchProviders)
+        let watchProviders = makeWatchProviderItems(
+            response: content.watchProviders,
+            apiLocalization: apiLocalization,
+            interfaceLocalization: interfaceLocalization
+        )
         if !watchProviders.isEmpty {
             sections.append(.watchProviders(watchProviders))
         }
@@ -82,16 +107,17 @@ nonisolated enum SeasonDetailSectionBuilder {
 
     private static func makeFacts(
         detail: Season,
-        detailItem: SeasonDetailItem
+        detailItem: SeasonDetailItem,
+        localization: AppInterfaceLocalization
     ) -> [SeasonDetailFactItem] {
         [
-            makeFact(title: "季數", value: detailItem.seasonNumberText),
-            makeFact(title: "集數", value: detailItem.episodeCountText),
+            makeFact(title: localization.string("season_detail.fact.season", defaultValue: "Season"), value: detailItem.seasonNumberText),
+            makeFact(title: localization.string("season_detail.fact.episodes", defaultValue: "Episodes"), value: detailItem.episodeCountText),
             makeFact(
-                title: "首播日期",
+                title: localization.string("season_detail.fact.air_date", defaultValue: "Air Date"),
                 value: BaseDisplayTextFormatter.isoDayText(from: detail.airDate)
             ),
-            makeFact(title: "評分", value: detail.voteAverage > 0 ? detailItem.scoreText : nil)
+            makeFact(title: localization.string("common.rating.label", defaultValue: "Rating"), value: detail.voteAverage > 0 ? detailItem.scoreText : nil)
         ].compactMap { $0 }
     }
 
@@ -100,11 +126,14 @@ nonisolated enum SeasonDetailSectionBuilder {
         return SeasonDetailFactItem(title: title, value: value)
     }
 
-    private static func makeCastItems(content: SeasonDetailContent) -> [SeasonCastItem] {
+    private static func makeCastItems(
+        content: SeasonDetailContent,
+        localization: AppInterfaceLocalization
+    ) -> [SeasonCastItem] {
         let aggregateCast = content.aggregateCredits.cast
             .sorted { $0.order < $1.order }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(SeasonCastItem.init(aggregateCast:))
+            .map { SeasonCastItem(aggregateCast: $0, localization: localization) }
 
         if !aggregateCast.isEmpty {
             return Array(aggregateCast)
@@ -114,11 +143,14 @@ nonisolated enum SeasonDetailSectionBuilder {
             content.credits.cast
                 .sorted { $0.order < $1.order }
                 .prefix(DetailSectionPreviewLimit.itemCount)
-                .map(SeasonCastItem.init(creditCast:))
+                .map { SeasonCastItem(creditCast: $0, localization: localization) }
         )
     }
 
-    private static func makeCrewItems(content: SeasonDetailContent) -> [SeasonCrewItem] {
+    private static func makeCrewItems(
+        content: SeasonDetailContent,
+        localization: AppInterfaceLocalization
+    ) -> [SeasonCrewItem] {
         let aggregateCrew = content.aggregateCredits.crew
             .sorted { lhs, rhs in
                 if lhs.department != rhs.department {
@@ -128,7 +160,7 @@ nonisolated enum SeasonDetailSectionBuilder {
                 return lhs.name < rhs.name
             }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(SeasonCrewItem.init(aggregateCrew:))
+            .map { SeasonCrewItem(aggregateCrew: $0, localization: localization) }
 
         if !aggregateCrew.isEmpty {
             return Array(aggregateCrew)
@@ -144,7 +176,7 @@ nonisolated enum SeasonDetailSectionBuilder {
                     return lhs.name < rhs.name
                 }
                 .prefix(DetailSectionPreviewLimit.itemCount)
-                .map(SeasonCrewItem.init(creditCrew:))
+                .map { SeasonCrewItem(creditCrew: $0, localization: localization) }
         )
     }
 
@@ -173,9 +205,10 @@ nonisolated enum SeasonDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         response: WatchProviders,
-        localization: AppLocalization = .current
+        apiLocalization: AppLocalization,
+        interfaceLocalization: AppInterfaceLocalization
     ) -> [SeasonWatchProviderItem] {
-        let preferredRegionCode = localization.regionCode.uppercased()
+        let preferredRegionCode = apiLocalization.regionCode.uppercased()
         let preferredCountry = response.countries[preferredRegionCode]
         let countries: [(key: String, value: WatchProviderCountry)]
 
@@ -187,7 +220,11 @@ nonisolated enum SeasonDetailSectionBuilder {
 
         return countries
             .flatMap { countryCode, country in
-                makeWatchProviderItems(countryCode: countryCode, country: country)
+                makeWatchProviderItems(
+                    countryCode: countryCode,
+                    country: country,
+                    localization: interfaceLocalization
+                )
             }
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map { $0 }
@@ -195,38 +232,44 @@ nonisolated enum SeasonDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         countryCode: String,
-        country: WatchProviderCountry
+        country: WatchProviderCountry,
+        localization: AppInterfaceLocalization
     ) -> [SeasonWatchProviderItem] {
         [
             makeWatchProviderItems(
                 providers: country.flatrate,
                 countryCode: countryCode,
-                category: "串流",
-                link: country.link
+                category: localization.string("watch_provider.category.stream", defaultValue: "Stream"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.rent,
                 countryCode: countryCode,
-                category: "租借",
-                link: country.link
+                category: localization.string("watch_provider.category.rent", defaultValue: "Rent"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.buy,
                 countryCode: countryCode,
-                category: "購買",
-                link: country.link
+                category: localization.string("watch_provider.category.buy", defaultValue: "Buy"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.free,
                 countryCode: countryCode,
-                category: "免費",
-                link: country.link
+                category: localization.string("watch_provider.category.free", defaultValue: "Free"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.ads,
                 countryCode: countryCode,
-                category: "廣告",
-                link: country.link
+                category: localization.string("watch_provider.category.ads", defaultValue: "With Ads"),
+                link: country.link,
+                localization: localization
             )
         ].flatMap { $0 }
     }
@@ -235,7 +278,8 @@ nonisolated enum SeasonDetailSectionBuilder {
         providers: [WatchProvider],
         countryCode: String,
         category: String,
-        link: String
+        link: String,
+        localization: AppInterfaceLocalization
     ) -> [SeasonWatchProviderItem] {
         providers
             .sorted { lhs, rhs in
@@ -250,7 +294,8 @@ nonisolated enum SeasonDetailSectionBuilder {
                     countryCode: countryCode,
                     provider: $0,
                     category: category,
-                    link: link
+                    link: link,
+                    localization: localization
                 )
             }
     }

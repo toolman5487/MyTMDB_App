@@ -17,17 +17,31 @@ nonisolated struct MediaGridItem: Sendable, Equatable, Identifiable {
     let dateText: String
     let scoreText: String
 
-    init(summary: MediaSummary) {
+    init(
+        summary: MediaSummary,
+        localization: AppInterfaceLocalization
+    ) {
         self.id = summary.id
-        self.title = BaseDisplayTextFormatter.text(summary.title, fallback: "未命名")
-        self.overview = BaseDisplayTextFormatter.overview(summary.overview)
+        self.title = BaseDisplayTextFormatter.text(
+            summary.title,
+            fallback: localization.string("common.fallback.untitled", defaultValue: "Untitled")
+        )
+        self.overview = BaseDisplayTextFormatter.overview(
+            summary.overview,
+            localization: localization
+        )
         self.posterURL = summary.posterPath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w185)
         }
         self.dateText = BaseDisplayTextFormatter.announcedText(
-            BaseDisplayTextFormatter.isoDayText(from: summary.releaseDate)
+            BaseDisplayTextFormatter.isoDayText(from: summary.releaseDate),
+            localization: localization
         )
         self.scoreText = BaseDisplayTextFormatter.decimal(summary.voteAverage)
+    }
+
+    func ratingText(localization: AppInterfaceLocalization) -> String {
+        BaseDisplayTextFormatter.ratingText(scoreText, localization: localization) as String
     }
 }
 
@@ -39,28 +53,28 @@ extension MediaSortOrder: Identifiable, AppSortMenuOption {
         self
     }
 
-    public var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .popularity:
-            return "人氣最高"
+            return localization.string("sort.popularity", defaultValue: "Most Popular")
 
         case .ratingHighToLow:
-            return "評分最高"
+            return localization.string("sort.rating_high_to_low", defaultValue: "Highest Rated")
 
         case .ratingLowToHigh:
-            return "評分最低"
+            return localization.string("sort.rating_low_to_high", defaultValue: "Lowest Rated")
 
         case .newestDate:
-            return "最新發布"
+            return localization.string("sort.newest", defaultValue: "Newest")
 
         case .oldestDate:
-            return "最早發布"
+            return localization.string("sort.oldest", defaultValue: "Oldest")
 
         case .titleAscending:
-            return "名稱 (A → Z)"
+            return localization.string("sort.title_ascending", defaultValue: "Title (A → Z)")
 
         case .titleDescending:
-            return "名稱 (Z → A)"
+            return localization.string("sort.title_descending", defaultValue: "Title (Z → A)")
         }
     }
 }

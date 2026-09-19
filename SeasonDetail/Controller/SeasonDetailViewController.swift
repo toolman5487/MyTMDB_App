@@ -20,7 +20,8 @@ final class SeasonDetailViewController: DetailBaseViewController {
         sourceViewController: self,
         seriesID: seriesID,
         seasonNumber: seasonNumber,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
     private lazy var shareBarButtonItem = UIBarButtonItem(
         image: UIImage(systemName: "square.and.arrow.up"),
@@ -43,13 +44,15 @@ final class SeasonDetailViewController: DetailBaseViewController {
         seriesID: Int,
         seasonNumber: Int,
         viewModel: SeasonDetailViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.seriesID = seriesID
         self.seasonNumber = seasonNumber
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -225,7 +228,10 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            (cell as? SeasonDetailOverviewCollectionViewCell)?.configure(
+                overview: item.overview ?? "",
+                localization: interfaceLocalization
+            )
             return cell
 
         case .facts(let facts):
@@ -242,7 +248,8 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? SeasonDetailEpisodesCollectionViewCell)?.configure(
-                episodes: Array(episodes.prefix(DetailSectionPreviewLimit.itemCount))
+                episodes: Array(episodes.prefix(DetailSectionPreviewLimit.itemCount)),
+                localization: interfaceLocalization
             ) { [weak self] episodeNumber in
                 self?.router.showEpisodeDetail(episodeNumber: episodeNumber)
             }
@@ -253,7 +260,10 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailVideosCollectionViewCell)?.configure(videos: videos) { [weak self] video in
+            (cell as? SeasonDetailVideosCollectionViewCell)?.configure(
+                videos: videos,
+                localization: interfaceLocalization
+            ) { [weak self] video in
                 guard let self else { return }
                 if let youtubeVideoKey = video.youtubeVideoKey {
                     router.showYouTubeVideo(videoKey: youtubeVideoKey, title: video.title)
@@ -268,7 +278,10 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailCastCollectionViewCell)?.configure(cast: cast) { [weak self] personID in
+            (cell as? SeasonDetailCastCollectionViewCell)?.configure(
+                cast: cast,
+                localization: interfaceLocalization
+            ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
@@ -278,7 +291,10 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailCrewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailCrewCollectionViewCell)?.configure(crew: crew) { [weak self] personID in
+            (cell as? SeasonDetailCrewCollectionViewCell)?.configure(
+                crew: crew,
+                localization: interfaceLocalization
+            ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
@@ -288,7 +304,10 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: SeasonDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? SeasonDetailImagesCollectionViewCell)?.configure(gallery: item)
+            (cell as? SeasonDetailImagesCollectionViewCell)?.configure(
+                gallery: item,
+                localization: interfaceLocalization
+            )
             return cell
 
         case .watchProviders(let providers):
@@ -297,7 +316,8 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? SeasonDetailWatchProvidersCollectionViewCell)?.configure(
-                providers: providers
+                providers: providers,
+                localization: interfaceLocalization
             ) { [weak self] provider in
                 guard let linkURL = provider.linkURL else { return }
                 self?.router.showWatchProvider(url: linkURL, title: provider.title)
@@ -340,7 +360,8 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
         let section = sections[indexPath.section]
         let configuration = section.contentListConfiguration(
             seriesID: seriesID,
-            seasonNumber: seasonNumber
+            seasonNumber: seasonNumber,
+            localization: interfaceLocalization
         )
         let onTap: (() -> Void)?
         if let configuration {
@@ -350,7 +371,11 @@ extension SeasonDetailViewController: UICollectionViewDataSource {
         } else {
             onTap = nil
         }
-        return dequeueDetailSectionHeader(at: indexPath, title: section.title, onTap: onTap)
+        return dequeueDetailSectionHeader(
+            at: indexPath,
+            title: section.title(localization: interfaceLocalization),
+            onTap: onTap
+        )
     }
 }
 
@@ -374,7 +399,7 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        guard sections[section].title != nil else {
+        guard sections[section].title(localization: interfaceLocalization) != nil else {
             return .zero
         }
 
@@ -410,7 +435,9 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        let topInset = sections[section].title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
+        let topInset = sections[section].title(localization: interfaceLocalization) == nil
+            ? 0
+            : DetailLayoutMetrics.headerContentSpacing
 
         return DetailLayoutMetrics.sectionInsets(top: topInset)
     }
@@ -425,7 +452,8 @@ extension SeasonDetailViewController: UICollectionViewDelegateFlowLayout {
 
             return SeasonDetailOverviewCollectionViewCell.fittingHeight(
                 for: overview,
-                width: width
+                width: width,
+                localization: interfaceLocalization
             )
 
         case .facts:
@@ -460,7 +488,10 @@ private extension SeasonDetailViewController {
         [
             SeasonDetailTextListItem(
                 id: "rating",
-                title: "你的評分",
+                title: interfaceLocalization.string(
+                    "detail.account_state.your_rating",
+                    defaultValue: "Your Rating"
+                ),
                 subtitle: accountState.ratingText
             )
         ]

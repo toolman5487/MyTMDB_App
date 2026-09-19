@@ -30,7 +30,8 @@ final class MainMemberSettingViewController: MainBaseViewController {
     private lazy var router: MainMemberSettingRouting = MainMemberSettingRouter(
         sourceViewController: self,
         sceneBuilder: sceneBuilder,
-        appFlowRouter: appFlowRouter
+        appFlowRouter: appFlowRouter,
+        interfaceLocalization: viewModel.interfaceLocalization
     )
 
     private var profileRefreshTask: Task<Void, Never>?
@@ -48,6 +49,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
         self.sceneBuilder = sceneBuilder
         self.appFlowRouter = appFlowRouter
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(viewModel.interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -72,7 +74,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
 
     override func configureView() {
         super.configureView()
-        navigationItem.title = "設定"
+        navigationItem.title = viewModel.navigationTitle
         view.backgroundColor = .systemGroupedBackground
         configureCollectionView()
     }
@@ -313,7 +315,10 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
         }
 
         if let profileCell = cell as? MainMemberSettingProfileSummaryCollectionViewCell {
-            profileCell.configure(with: viewModel.profileSummary)
+            profileCell.configure(
+                with: viewModel.profileSummary,
+                localization: viewModel.interfaceLocalization
+            )
             return profileCell
         }
 
@@ -344,6 +349,7 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
              .clearAllLocalData,
              .apiDataLanguage,
              .loginStatus,
+             .appInterfaceLanguage,
              .defaultSort,
              .defaultContentType:
             reuseIdentifier = MainMemberSettingDefaultCollectionViewCell.reuseIdentifier
@@ -379,7 +385,13 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
         cell.configure(
             with: row,
             isFirstInSection: indexPath.item == 0,
-            isLastInSection: indexPath.item == section.rows.count - 1
+            isLastInSection: indexPath.item == section.rows.count - 1,
+            localization: viewModel.interfaceLocalization,
+            onToggleValueChanged: row.kind == .appInterfaceLanguage
+                ? { [weak self] isEnglishEnabled in
+                    self?.applyInterfaceLanguage(isEnglishEnabled: isEnglishEnabled)
+                }
+                : nil
         )
     }
 
@@ -399,7 +411,10 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainMemberSettingSectionHeaderView {
-            headerView.configure(title: viewModel.section(at: indexPath.section)?.title)
+            headerView.configure(
+                title: viewModel.section(at: indexPath.section)?.title,
+                localization: viewModel.interfaceLocalization
+            )
         }
 
         return reusableView
@@ -483,6 +498,19 @@ extension MainMemberSettingViewController: UICollectionViewDelegateFlowLayout {
         case nil:
             return
         }
+    }
+
+    private func applyInterfaceLanguage(isEnglishEnabled: Bool) {
+        guard let language = viewModel.interfaceLanguage(
+            isEnglishEnabled: isEnglishEnabled
+        ) else {
+            return
+        }
+
+        appFlowRouter.applyInterfaceLanguage(
+            language,
+            session: viewModel.currentSession
+        )
     }
 
     func collectionView(

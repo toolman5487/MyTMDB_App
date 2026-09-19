@@ -23,27 +23,13 @@ nonisolated struct ImageTitleCellContent: Sendable, Equatable {
         title: String,
         subtitle: String?,
         imageHeight: CGFloat,
-        accessibilityText: AccessibilityText? = nil
+        accessibilityText: AccessibilityText
     ) {
         self.imageURL = imageURL
         self.title = title
         self.subtitle = subtitle
         self.imageHeight = imageHeight
-        self.accessibilityText = accessibilityText ?? Self.defaultAccessibilityText(
-            title: title,
-            subtitle: subtitle
-        )
-    }
-
-    private static func defaultAccessibilityText(
-        title: String,
-        subtitle: String?
-    ) -> AccessibilityText {
-        AccessibilityText(
-            label: title,
-            value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
-            hint: "點兩下開啟詳細資料"
-        )
+        self.accessibilityText = accessibilityText
     }
 }
 

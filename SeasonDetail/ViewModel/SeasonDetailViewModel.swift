@@ -39,11 +39,16 @@ final class SeasonDetailViewModel {
 
     private var onStateChange: (@MainActor (SeasonDetailViewState) -> Void)?
     private let loadSeasonDetailUseCase: LoadSeasonDetailUseCase
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Initialization
 
-    init(loadSeasonDetailUseCase: LoadSeasonDetailUseCase) {
+    init(
+        loadSeasonDetailUseCase: LoadSeasonDetailUseCase,
+        localization: AppInterfaceLocalization
+    ) {
         self.loadSeasonDetailUseCase = loadSeasonDetailUseCase
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -68,24 +73,30 @@ final class SeasonDetailViewModel {
             )
             guard !Task.isCancelled else { return }
 
-            state = .loaded(SeasonDetailSectionBuilder.makeContent(content: content))
+            state = .loaded(SeasonDetailSectionBuilder.makeContent(
+                content: content,
+                interfaceLocalization: localization
+            ))
         } catch let error as DomainError {
             guard !Task.isCancelled else { return }
-            state = .failed(Self.errorMessage(for: error))
+            state = .failed(errorMessage(for: error))
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
     // MARK: - Private Helpers
 
-    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+    private func errorMessage(for error: DomainError) -> ErrorMessage {
         switch error {
         case .invalidIdentifier:
             return ErrorMessage(
-                title: "資料錯誤",
-                message: "缺少有效的劇集或季數資訊。"
+                title: localization.string("detail.error.invalid_data.title", defaultValue: "Invalid Data"),
+                message: localization.string(
+                    "season_detail.error.invalid_input.message",
+                    defaultValue: "Valid TV show and season information is required."
+                )
             )
         }
     }

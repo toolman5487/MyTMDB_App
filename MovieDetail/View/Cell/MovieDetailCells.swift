@@ -55,17 +55,28 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(overview: String) {
-        overviewLabel.attributedText = Self.makeOverviewAttributedText(overview: overview)
+    func configure(
+        overview: String,
+        localization: AppInterfaceLocalization
+    ) {
+        let sectionTitle = localization.string("detail.overview.title", defaultValue: "Overview")
+        overviewLabel.attributedText = Self.makeOverviewAttributedText(
+            overview: overview,
+            sectionTitle: sectionTitle
+        )
         applyAccessibility(
             AccessibilityText(
-                label: "劇情簡介",
+                label: sectionTitle,
                 value: overview
             )
         )
     }
 
-    static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
+    static func fittingHeight(
+        for overview: String,
+        width: CGFloat,
+        localization: AppInterfaceLocalization
+    ) -> CGFloat {
         let contentWidth = DetailLayoutMetrics.contentWidth(
             for: width,
             horizontalInsetLevelCount: 2
@@ -74,7 +85,10 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let attributedText = makeOverviewAttributedText(overview: overview)
+        let attributedText = makeOverviewAttributedText(
+            overview: overview,
+            sectionTitle: localization.string("detail.overview.title", defaultValue: "Overview")
+        )
         let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -87,7 +101,10 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         )
     }
 
-    private static func makeOverviewAttributedText(overview: String) -> NSAttributedString {
+    private static func makeOverviewAttributedText(
+        overview: String,
+        sectionTitle: String
+    ) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
 
@@ -95,7 +112,7 @@ final class MovieDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         bodyParagraphStyle.lineSpacing = 4
 
         let attributedText = NSMutableAttributedString(
-            string: "劇情簡介\n",
+            string: "\(sectionTitle)\n",
             attributes: [
                 .font: UIFont.preferredFont(forTextStyle: .headline),
                 .foregroundColor: ThemeColor.textPrimary,
@@ -156,10 +173,10 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     private var genres: [MovieDetailAttributeItem] = []
     private var productionCompanies: [MovieDetailAttributeItem] = []
     private var onAttributeSelected: ((MovieDetailAttributeItem) -> Void)?
+    private var interfaceLocalization: AppInterfaceLocalization = .traditionalChinese
 
     private let genresTitleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
-        label.text = "種類"
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         return label
@@ -167,7 +184,6 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     private let productionCompaniesTitleLabel: UILabel = {
         let label = AppFactory.Label.captionPrimary(color: ThemeColor.textSecondary, lines: 1)
-        label.text = "製作公司"
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         return label
@@ -280,8 +296,15 @@ final class MovieDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         with item: MovieDetailAttributeSectionItem,
+        localization: AppInterfaceLocalization,
         onAttributeSelected: ((MovieDetailAttributeItem) -> Void)? = nil
     ) {
+        interfaceLocalization = localization
+        genresTitleLabel.text = localization.string("detail.attribute.genres", defaultValue: "Genres")
+        productionCompaniesTitleLabel.text = localization.string(
+            "detail.attribute.production_companies",
+            defaultValue: "Production Companies"
+        )
         genres = item.genres
         productionCompanies = item.productionCompanies
         self.onAttributeSelected = onAttributeSelected
@@ -364,7 +387,10 @@ extension MovieDetailAttributesCollectionViewCell: UICollectionViewDataSource, U
         let items = items(for: group(for: collectionView))
 
         if let cell = cell as? MovieDetailAttributePillCollectionViewCell {
-            cell.configure(with: items[indexPath.item])
+            cell.configure(
+                with: items[indexPath.item],
+                localization: interfaceLocalization
+            )
         }
 
         return cell
@@ -447,12 +473,20 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
         titleLabel.text = nil
     }
 
-    func configure(with item: MovieDetailAttributeItem) {
+    func configure(
+        with item: MovieDetailAttributeItem,
+        localization: AppInterfaceLocalization
+    ) {
         titleLabel.text = item.title
         applyAccessibility(
             AccessibilityText(
                 label: item.title,
-                hint: item.kind == .genre ? "點兩下查看此類型電影" : nil
+                hint: item.kind == .genre
+                    ? localization.string(
+                        "movie_detail.genre.accessibility_hint",
+                        defaultValue: "Double-tap to view movies in this genre"
+                    )
+                    : nil
             )
         )
         accessibilityTraits = item.kind == .genre ? .button : .staticText
@@ -486,6 +520,7 @@ final class MovieDetailCastCollectionViewCell: DetailImageTitleStripCollectionVi
 
     func configure(
         items: [MovieDetailCastItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -498,7 +533,8 @@ final class MovieDetailCastCollectionViewCell: DetailImageTitleStripCollectionVi
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = Int(item.id) else { return }
             onPersonSelected(personID)
@@ -520,6 +556,7 @@ final class MovieDetailCrewCollectionViewCell: DetailImageTitleStripCollectionVi
 
     func configure(
         items: [MovieDetailCrewItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -532,7 +569,8 @@ final class MovieDetailCrewCollectionViewCell: DetailImageTitleStripCollectionVi
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = Int(item.id) else { return }
             onPersonSelected(personID)
@@ -554,6 +592,7 @@ final class MovieDetailVideosCollectionViewCell: DetailImageTitleStripCollection
 
     func configure(
         items: [MovieDetailVideoItem],
+        localization: AppInterfaceLocalization,
         onVideoSelected: @escaping (MovieDetailVideoItem) -> Void
     ) {
         configure(
@@ -566,7 +605,8 @@ final class MovieDetailVideosCollectionViewCell: DetailImageTitleStripCollection
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let video = items.first(where: { $0.id == item.id }) else { return }
             onVideoSelected(video)
@@ -588,6 +628,7 @@ final class MovieDetailImagesCollectionViewCell: DetailImageTitleStripCollection
 
     func configure(
         items: [MovieDetailImageItem],
+        localization: AppInterfaceLocalization,
         onImageSelected: @escaping (MovieDetailImageItem) -> Void
     ) {
         let imageItemsByID = items.reduce(into: [String: MovieDetailImageItem]()) { result, item in
@@ -603,7 +644,8 @@ final class MovieDetailImagesCollectionViewCell: DetailImageTitleStripCollection
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let imageItem = imageItemsByID[item.id] else { return }
             onImageSelected(imageItem)
@@ -625,6 +667,7 @@ final class MovieDetailCollectionPartsCollectionViewCell: DetailImageTitleStripC
 
     func configure(
         item: MovieDetailCollectionSectionItem,
+        localization: AppInterfaceLocalization,
         onMovieSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -637,7 +680,8 @@ final class MovieDetailCollectionPartsCollectionViewCell: DetailImageTitleStripC
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let movieID = Int(item.id) else { return }
             onMovieSelected(movieID)
@@ -659,6 +703,7 @@ final class MovieDetailWatchProvidersCollectionViewCell: DetailImageTitleStripCo
 
     func configure(
         providers: [MovieWatchProviderItem],
+        localization: AppInterfaceLocalization,
         onProviderSelected: @escaping (MovieWatchProviderItem) -> Void
     ) {
         configure(
@@ -672,7 +717,8 @@ final class MovieDetailWatchProvidersCollectionViewCell: DetailImageTitleStripCo
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
-            imageBackgroundColor: .clear
+            imageBackgroundColor: .clear,
+            localization: localization
         ) { item in
             guard let provider = providers.first(where: { $0.id == item.id }) else { return }
             onProviderSelected(provider)
@@ -694,6 +740,7 @@ final class MovieDetailRecommendationsCollectionViewCell: DetailImageTitleStripC
 
     func configure(
         items: [MovieDetailRecommendationItem],
+        localization: AppInterfaceLocalization,
         onRecommendationSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -702,11 +749,15 @@ final class MovieDetailRecommendationsCollectionViewCell: DetailImageTitleStripC
                     id: String($0.id),
                     imageURL: $0.posterURL,
                     title: $0.title,
-                    subtitle: BaseDisplayTextFormatter.ratingText($0.scoreText)
+                    subtitle: BaseDisplayTextFormatter.ratingText(
+                        $0.scoreText,
+                        localization: localization
+                    )
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let recommendationID = Int(item.id) else { return }
             onRecommendationSelected(recommendationID)

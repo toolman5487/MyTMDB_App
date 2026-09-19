@@ -27,10 +27,14 @@ final class MainSearchRouter: BaseRouter, MainSearchRouting {
 
     init(
         sourceViewController: UIViewController,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.sceneBuilder = sceneBuilder
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - Public Methods
@@ -40,7 +44,8 @@ final class MainSearchRouter: BaseRouter, MainSearchRouting {
 
         let detailRouter = DetailRouter(
             sourceViewController: sourceViewController,
-            sceneBuilder: sceneBuilder
+            sceneBuilder: sceneBuilder,
+            interfaceLocalization: interfaceLocalization
         )
 
         switch item.mediaType {

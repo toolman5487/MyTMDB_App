@@ -38,6 +38,7 @@ final class SeasonDetailEpisodesCollectionViewCell: DetailImageTitleStripCollect
 
     func configure(
         episodes: [SeasonEpisodeItem],
+        localization: AppInterfaceLocalization,
         onEpisodeSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -50,7 +51,8 @@ final class SeasonDetailEpisodesCollectionViewCell: DetailImageTitleStripCollect
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let episodeNumber = Int(item.id) else { return }
             onEpisodeSelected(episodeNumber)
@@ -72,6 +74,7 @@ final class SeasonDetailVideosCollectionViewCell: DetailImageTitleStripCollectio
 
     func configure(
         videos: [SeasonVideoItem],
+        localization: AppInterfaceLocalization,
         onVideoSelected: @escaping (SeasonVideoItem) -> Void
     ) {
         configure(
@@ -84,7 +87,8 @@ final class SeasonDetailVideosCollectionViewCell: DetailImageTitleStripCollectio
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let video = videos.first(where: { $0.id == item.id }) else { return }
             onVideoSelected(video)
@@ -106,6 +110,7 @@ final class SeasonDetailCastCollectionViewCell: DetailImageTitleStripCollectionV
 
     func configure(
         cast: [SeasonCastItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -118,7 +123,8 @@ final class SeasonDetailCastCollectionViewCell: DetailImageTitleStripCollectionV
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = Int(item.id) else { return }
             onPersonSelected(personID)
@@ -140,6 +146,7 @@ final class SeasonDetailCrewCollectionViewCell: DetailImageTitleStripCollectionV
 
     func configure(
         crew: [SeasonCrewItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -152,7 +159,8 @@ final class SeasonDetailCrewCollectionViewCell: DetailImageTitleStripCollectionV
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = crew.first(where: { $0.id == item.id })?.personID else { return }
             onPersonSelected(personID)
@@ -172,34 +180,44 @@ final class SeasonDetailImagesCollectionViewCell: DetailImageTitleStripCollectio
         static let imageHeight: CGFloat = 168
     }
 
-    func configure(gallery: SeasonImageGalleryItem) {
+    func configure(
+        gallery: SeasonImageGalleryItem,
+        localization: AppInterfaceLocalization
+    ) {
         configure(
-            items: detailItems(from: gallery),
+            items: detailItems(from: gallery, localization: localization),
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         )
     }
 
-    private func detailItems(from gallery: SeasonImageGalleryItem) -> [DetailImageTitleItem] {
+    private func detailItems(
+        from gallery: SeasonImageGalleryItem,
+        localization: AppInterfaceLocalization
+    ) -> [DetailImageTitleItem] {
+        let posterTitle = localization.string("detail.image.poster", defaultValue: "Poster")
+        let backdropTitle = localization.string("detail.image.backdrop", defaultValue: "Backdrop")
+        let logoTitle = localization.string("detail.image.logo", defaultValue: "Logo")
         let items = gallery.posters.map {
             DetailImageTitleItem(
                 id: "poster-\($0.id)",
                 imageURL: $0.imageURL,
-                title: "海報",
+                title: posterTitle,
                 subtitle: nil
             )
         } + gallery.backdrops.map {
             DetailImageTitleItem(
                 id: "backdrop-\($0.id)",
                 imageURL: $0.imageURL,
-                title: "劇照",
+                title: backdropTitle,
                 subtitle: nil
             )
         } + gallery.logos.map {
             DetailImageTitleItem(
                 id: "logo-\($0.id)",
                 imageURL: $0.imageURL,
-                title: "Logo",
+                title: logoTitle,
                 subtitle: nil
             )
         }
@@ -222,6 +240,7 @@ final class SeasonDetailWatchProvidersCollectionViewCell: DetailImageTitleStripC
 
     func configure(
         providers: [SeasonWatchProviderItem],
+        localization: AppInterfaceLocalization,
         onProviderSelected: @escaping (SeasonWatchProviderItem) -> Void
     ) {
         configure(
@@ -235,7 +254,8 @@ final class SeasonDetailWatchProvidersCollectionViewCell: DetailImageTitleStripC
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
-            imageBackgroundColor: .clear
+            imageBackgroundColor: .clear,
+            localization: localization
         ) { item in
             guard let provider = providers.first(where: { $0.id == item.id }) else { return }
             onProviderSelected(provider)
@@ -448,17 +468,28 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(overview: String) {
-        overviewLabel.attributedText = Self.overviewAttributedText(overview: overview)
+    func configure(
+        overview: String,
+        localization: AppInterfaceLocalization
+    ) {
+        let sectionTitle = Self.sectionTitle(localization: localization)
+        overviewLabel.attributedText = Self.overviewAttributedText(
+            overview: overview,
+            sectionTitle: sectionTitle
+        )
         applyAccessibility(
             AccessibilityText(
-                label: "季數簡介",
+                label: sectionTitle,
                 value: overview
             )
         )
     }
 
-    static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
+    static func fittingHeight(
+        for overview: String,
+        width: CGFloat,
+        localization: AppInterfaceLocalization
+    ) -> CGFloat {
         let contentWidth = DetailLayoutMetrics.contentWidth(
             for: width,
             horizontalInsetLevelCount: 2
@@ -467,7 +498,10 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let attributedText = overviewAttributedText(overview: overview)
+        let attributedText = overviewAttributedText(
+            overview: overview,
+            sectionTitle: sectionTitle(localization: localization)
+        )
         let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -480,7 +514,17 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         )
     }
 
-    private static func overviewAttributedText(overview: String) -> NSAttributedString {
+    private static func sectionTitle(localization: AppInterfaceLocalization) -> String {
+        localization.string(
+            "season_detail.overview.title",
+            defaultValue: "Season Overview"
+        )
+    }
+
+    private static func overviewAttributedText(
+        overview: String,
+        sectionTitle: String
+    ) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
 
@@ -488,7 +532,7 @@ final class SeasonDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         bodyParagraphStyle.lineSpacing = Layout.bodyLineSpacing
 
         let attributedText = NSMutableAttributedString(
-            string: "季數簡介\n",
+            string: "\(sectionTitle)\n",
             attributes: [
                 .font: UIFont.preferredFont(forTextStyle: .headline),
                 .foregroundColor: ThemeColor.textPrimary,

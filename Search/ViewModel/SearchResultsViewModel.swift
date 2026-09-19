@@ -37,6 +37,7 @@ final class SearchResultsViewModel {
     private let mediaKind: MediaKind
     private let searchMedia: SearchMediaUseCase
     private let sortMedia: SortMediaUseCase
+    private let localization: AppInterfaceLocalization
 
     private var keyword = ""
     private var summaries: [MediaSummary] = []
@@ -49,11 +50,13 @@ final class SearchResultsViewModel {
     init(
         mediaKind: MediaKind,
         searchMedia: SearchMediaUseCase,
-        sortMedia: SortMediaUseCase
+        sortMedia: SortMediaUseCase,
+        localization: AppInterfaceLocalization
     ) {
         self.mediaKind = mediaKind
         self.searchMedia = searchMedia
         self.sortMedia = sortMedia
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -102,7 +105,7 @@ final class SearchResultsViewModel {
             state = content.items.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -162,7 +165,7 @@ final class SearchResultsViewModel {
 
         return SearchContent(
             keyword: keyword,
-            items: ordered.map(MediaGridItem.init(summary:)),
+            items: ordered.map { MediaGridItem(summary: $0, localization: localization) },
             currentPage: currentPage,
             totalPages: totalPages,
             totalResults: totalResults,

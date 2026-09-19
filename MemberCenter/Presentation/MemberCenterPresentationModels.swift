@@ -61,6 +61,7 @@ nonisolated struct MemberCenterGuestLoginPrompt: Sendable, Equatable {
     let message: String
     let systemImageName: String
     let actionTitle: String
+    let accessibilityHint: String
 }
 
 // MARK: - MemberCenterContent
@@ -87,10 +88,11 @@ nonisolated struct MemberCenterSection: Sendable, Equatable, Identifiable {
 
     init(
         destination: MemberCenterDestination,
-        items: [MemberCenterListItem]
+        items: [MemberCenterListItem],
+        localization: AppInterfaceLocalization
     ) {
         self.id = destination
-        self.title = destination.title
+        self.title = destination.title(localization: localization)
         self.items = items
     }
 }
@@ -102,44 +104,48 @@ nonisolated struct MemberCenterProfileHeaderContent: Sendable, Equatable {
     let subtitle: String
     let avatarURL: URL?
     let avatarImageData: Data?
+    let accessibilityText: AccessibilityText
 
     init(
         displayName: String,
         subtitle: String,
         avatarURL: URL?,
-        avatarImageData: Data? = nil
+        avatarImageData: Data? = nil,
+        localization: AppInterfaceLocalization
     ) {
         self.displayName = displayName
         self.subtitle = subtitle
         self.avatarURL = avatarURL
         self.avatarImageData = avatarImageData
+        self.accessibilityText = AccessibilityText(
+            label: displayName,
+            value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
+            hint: localization.string(
+                "member_center.profile.accessibility_hint",
+                defaultValue: "Double-tap to open Settings or sign in"
+            )
+        )
     }
 
-    init(profile: AccountProfile) {
+    init(profile: AccountProfile, localization: AppInterfaceLocalization) {
         self.init(
             displayName: profile.displayName,
             subtitle: "@\(profile.username)",
             avatarURL: profile.avatarURL,
-            avatarImageData: profile.avatarImageData
+            avatarImageData: profile.avatarImageData,
+            localization: localization
         )
     }
 
-    static let guest = MemberCenterProfileHeaderContent(
-        displayName: "訪客",
-        subtitle: "登入後同步收藏、待看與評分",
-        avatarURL: nil
-    )
-}
-
-// MARK: - MemberCenterProfileHeaderContent Accessibility
-
-extension MemberCenterProfileHeaderContent {
-
-    var accessibilityText: AccessibilityText {
-        AccessibilityText(
-            label: displayName,
-            value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
-            hint: "點兩下開啟設定或登入"
+    static func guest(localization: AppInterfaceLocalization) -> MemberCenterProfileHeaderContent {
+        MemberCenterProfileHeaderContent(
+            displayName: localization.string("common.account.guest", defaultValue: "Guest"),
+            subtitle: localization.string(
+                "member_center.guest.subtitle",
+                defaultValue: "Sign in to sync favorites, watchlists, and ratings"
+            ),
+            avatarURL: nil,
+            localization: localization
         )
     }
 }
@@ -152,7 +158,7 @@ extension MemberCenterGuestLoginPrompt {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.nonEmptyText(message),
-            hint: "點兩下\(actionTitle)"
+            hint: accessibilityHint
         )
     }
 }
@@ -161,31 +167,59 @@ extension MemberCenterGuestLoginPrompt {
 
 extension MemberCenterDestination {
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .favoriteMovies:
-            return "收藏電影"
+            return localization.string("member_center.destination.favorite_movies", defaultValue: "Favorite Movies")
 
         case .favoriteTV:
-            return "收藏影集"
+            return localization.string("member_center.destination.favorite_tv", defaultValue: "Favorite TV Shows")
 
         case .watchlistMovies:
-            return "待看電影"
+            return localization.string("member_center.destination.watchlist_movies", defaultValue: "Movie Watchlist")
 
         case .watchlistTV:
-            return "待看影集"
+            return localization.string("member_center.destination.watchlist_tv", defaultValue: "TV Watchlist")
 
         case .ratedMovies:
-            return "評分電影"
+            return localization.string("member_center.destination.rated_movies", defaultValue: "Rated Movies")
 
         case .ratedTV:
-            return "評分影集"
+            return localization.string("member_center.destination.rated_tv", defaultValue: "Rated TV Shows")
 
         case .ratedEpisodes:
-            return "評分集數"
+            return localization.string("member_center.destination.rated_episodes", defaultValue: "Rated Episodes")
 
         case .lists:
-            return "我的片單"
+            return localization.string("member_center.destination.lists", defaultValue: "My Lists")
+        }
+    }
+
+    func emptyTitle(localization: AppInterfaceLocalization) -> String {
+        switch self {
+        case .favoriteMovies:
+            return localization.string("member_center.empty.favorite_movies", defaultValue: "No Favorite Movies")
+
+        case .favoriteTV:
+            return localization.string("member_center.empty.favorite_tv", defaultValue: "No Favorite TV Shows")
+
+        case .watchlistMovies:
+            return localization.string("member_center.empty.watchlist_movies", defaultValue: "No Movies in Watchlist")
+
+        case .watchlistTV:
+            return localization.string("member_center.empty.watchlist_tv", defaultValue: "No TV Shows in Watchlist")
+
+        case .ratedMovies:
+            return localization.string("member_center.empty.rated_movies", defaultValue: "No Rated Movies")
+
+        case .ratedTV:
+            return localization.string("member_center.empty.rated_tv", defaultValue: "No Rated TV Shows")
+
+        case .ratedEpisodes:
+            return localization.string("member_center.empty.rated_episodes", defaultValue: "No Rated Episodes")
+
+        case .lists:
+            return localization.string("member_center.empty.lists", defaultValue: "No Lists")
         }
     }
 
@@ -214,29 +248,50 @@ nonisolated enum MemberCenterPresentationBuilder {
         static let previewItemLimit = 10
     }
 
-    static func makeContent(from overview: MemberCenterOverview) -> MemberCenterContent {
+    static func makeContent(
+        from overview: MemberCenterOverview,
+        localization: AppInterfaceLocalization
+    ) -> MemberCenterContent {
         MemberCenterContent(
             profile: overview.profile,
-            contentSections: overview.collections.compactMap(makeSection)
+            contentSections: overview.collections.compactMap {
+                makeSection(from: $0, localization: localization)
+            }
         )
     }
 
-    static func makeGuestContent() -> MemberCenterGuestContent {
+    static func makeGuestContent(localization: AppInterfaceLocalization) -> MemberCenterGuestContent {
         MemberCenterGuestContent(
-            headerContent: .guest,
+            headerContent: .guest(localization: localization),
             loginPrompt: MemberCenterGuestLoginPrompt(
-                title: "登入帳號",
-                message: "登入後同步收藏、電影清單、評分內容。",
+                title: localization.string(
+                    "member_center.guest_prompt.title",
+                    defaultValue: "Sign In to Your Account"
+                ),
+                message: localization.string(
+                    "member_center.guest_prompt.message",
+                    defaultValue: "Sign in to sync favorites, movie lists, and ratings."
+                ),
                 systemImageName: "person.crop.circle.badge.plus",
-                actionTitle: "前往登入"
+                actionTitle: localization.string(
+                    "member_center.guest_prompt.action",
+                    defaultValue: "Go to Sign In"
+                ),
+                accessibilityHint: localization.string(
+                    "member_center.guest_prompt.accessibility_hint",
+                    defaultValue: "Double-tap to sign in"
+                )
             )
         )
     }
 
-    static func makeListContent(from collection: AccountCollection) -> MemberCenterListContent {
+    static func makeListContent(
+        from collection: AccountCollection,
+        localization: AppInterfaceLocalization
+    ) -> MemberCenterListContent {
         MemberCenterListContent(
             destination: collection.destination,
-            items: makeItems(from: collection),
+            items: makeItems(from: collection, localization: localization),
             currentPage: collection.page.number,
             totalPages: collection.page.totalPages,
             totalResults: collection.page.totalResults,
@@ -246,22 +301,37 @@ nonisolated enum MemberCenterPresentationBuilder {
 
     static func makeItems(
         from collection: AccountCollection,
-        limit: Int = .max
+        limit: Int = .max,
+        localization: AppInterfaceLocalization
     ) -> [MemberCenterListItem] {
         collection.page.items
             .prefix(max(limit, 0))
-            .map { MemberCenterListItem(item: $0, destination: collection.destination) }
+            .map {
+                MemberCenterListItem(
+                    item: $0,
+                    destination: collection.destination,
+                    localization: localization
+                )
+            }
     }
 
     // MARK: - Private Methods
 
-    private static func makeSection(from collection: AccountCollection) -> MemberCenterSection? {
-        let items = makeItems(from: collection, limit: Configuration.previewItemLimit)
+    private static func makeSection(
+        from collection: AccountCollection,
+        localization: AppInterfaceLocalization
+    ) -> MemberCenterSection? {
+        let items = makeItems(
+            from: collection,
+            limit: Configuration.previewItemLimit,
+            localization: localization
+        )
         guard !items.isEmpty else { return nil }
 
         return MemberCenterSection(
             destination: collection.destination,
-            items: items
+            items: items,
+            localization: localization
         )
     }
 }

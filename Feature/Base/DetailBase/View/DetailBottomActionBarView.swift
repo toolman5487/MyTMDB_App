@@ -33,6 +33,7 @@ final class DetailBottomActionBarView: UIView {
     private var favoriteAction: (@MainActor () -> Void)?
     private var ratingAction: (@MainActor () -> Void)?
     private var reviewAction: (@MainActor () -> Void)?
+    private let localization: AppInterfaceLocalization
 
     // MARK: - UI Components
 
@@ -69,18 +70,20 @@ final class DetailBottomActionBarView: UIView {
 
     // MARK: - Initialization
 
-    override init(frame: CGRect) {
+    init(
+        localization: AppInterfaceLocalization,
+        frame: CGRect = .zero
+    ) {
+        self.localization = localization
         super.init(frame: frame)
         configureView()
         setupHierarchy()
         setupConstraints()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        configureView()
-        setupHierarchy()
-        setupConstraints()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Configuration
@@ -88,25 +91,13 @@ final class DetailBottomActionBarView: UIView {
     private func configureFavorite(isFavorite: Bool, isEnabled: Bool) {
         favoriteButton.configuration = favoriteButtonConfiguration(isFavorite: isFavorite)
         favoriteButton.isEnabled = isEnabled
-        favoriteButton.applyAccessibilityText(
-            AccessibilityText(
-                label: "收藏",
-                value: isFavorite ? "已收藏" : "未收藏",
-                hint: "點兩下切換收藏狀態"
-            )
-        )
+        favoriteButton.applyAccessibilityText(favoriteAccessibilityText(isFavorite: isFavorite))
     }
 
     private func configureRating(value: Double?, isEnabled: Bool) {
         ratingButton.configuration = ratingButtonConfiguration(value: value)
         ratingButton.isEnabled = isEnabled
-        ratingButton.applyAccessibilityText(
-            AccessibilityText(
-                label: "評分",
-                value: value.map { "目前 \(BaseDisplayTextFormatter.decimal($0)) 分" } ?? "尚未評分",
-                hint: "點兩下開啟評分"
-            )
-        )
+        ratingButton.applyAccessibilityText(ratingAccessibilityText(value: value))
     }
 
     func configureFavorite(with state: AccountMediaFavoriteState) {
@@ -160,24 +151,15 @@ final class DetailBottomActionBarView: UIView {
     private func configureView() {
         backgroundColor = ThemeColor.backgroundSecondary
         separatorView.isAccessibilityElement = false
-        favoriteButton.applyAccessibilityText(
-            AccessibilityText(
-                label: "收藏",
-                value: "未收藏",
-                hint: "點兩下切換收藏狀態"
-            )
-        )
-        ratingButton.applyAccessibilityText(
-            AccessibilityText(
-                label: "評分",
-                value: "尚未評分",
-                hint: "點兩下開啟評分"
-            )
-        )
+        favoriteButton.applyAccessibilityText(favoriteAccessibilityText(isFavorite: false))
+        ratingButton.applyAccessibilityText(ratingAccessibilityText(value: nil))
         reviewButton.applyAccessibilityText(
             AccessibilityText(
-                label: "評論",
-                hint: "點兩下查看評論"
+                label: reviewTitle,
+                hint: localization.string(
+                    "detail.action.review.accessibility_hint",
+                    defaultValue: "Double-tap to view reviews"
+                )
             )
         )
         favoriteButton.addTarget(self, action: #selector(handleFavoriteAction), for: .touchUpInside)
@@ -267,7 +249,7 @@ final class DetailBottomActionBarView: UIView {
 
     private func reviewButtonConfiguration() -> UIButton.Configuration {
         var configuration = UIButton.Configuration.filled()
-        configuration.attributedTitle = attributedTitle("評論", textStyle: .headline)
+        configuration.attributedTitle = attributedTitle(reviewTitle, textStyle: .headline)
         configuration.image = UIImage(systemName: "text.bubble")
         configuration.imagePlacement = .leading
         configuration.imagePadding = 8
@@ -284,8 +266,51 @@ final class DetailBottomActionBarView: UIView {
     }
 
     private func ratingButtonTitle(value: Double?) -> String {
-        guard let value else { return "評分" }
+        guard let value else { return ratingTitle }
         return BaseDisplayTextFormatter.decimal(value)
+    }
+
+    // MARK: - Localized Text
+
+    private var ratingTitle: String {
+        localization.string("detail.action.rating.title", defaultValue: "Rate")
+    }
+
+    private var reviewTitle: String {
+        localization.string("detail.action.review.title", defaultValue: "Reviews")
+    }
+
+    private func favoriteAccessibilityText(isFavorite: Bool) -> AccessibilityText {
+        AccessibilityText(
+            label: localization.string(
+                "detail.action.favorite.accessibility_label",
+                defaultValue: "Favorite"
+            ),
+            value: isFavorite
+                ? localization.string("detail.action.favorite.added", defaultValue: "Added to Favorites")
+                : localization.string("detail.action.favorite.not_added", defaultValue: "Not in Favorites"),
+            hint: localization.string(
+                "detail.action.favorite.accessibility_hint",
+                defaultValue: "Double-tap to change favorite status"
+            )
+        )
+    }
+
+    private func ratingAccessibilityText(value: Double?) -> AccessibilityText {
+        AccessibilityText(
+            label: ratingTitle,
+            value: value.map {
+                localization.formatted(
+                    "detail.action.rating.current_value_format",
+                    defaultValue: "Current rating: %@",
+                    BaseDisplayTextFormatter.decimal($0)
+                )
+            } ?? BaseDisplayTextFormatter.unratedText(localization: localization),
+            hint: localization.string(
+                "detail.action.rating.accessibility_hint",
+                defaultValue: "Double-tap to rate"
+            )
+        )
     }
 
     // MARK: - Actions

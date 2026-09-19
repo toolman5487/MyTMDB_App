@@ -13,19 +13,26 @@ nonisolated enum TVDetailSectionBuilder {
 
     static func makeSections(
         content: TVDetailContent,
-        localization: AppLocalization = .current
+        apiLocalization: AppLocalization = .current,
+        interfaceLocalization: AppInterfaceLocalization
     ) -> [TVDetailSectionItem] {
-        let detailItem = TVDetailItem(series: content.series)
+        let detailItem = TVDetailItem(
+            series: content.series,
+            localization: interfaceLocalization
+        )
         var sections: [TVDetailSectionItem] = [
             .overview(
                 TVDetailOverviewSectionItem(
-                    hero: TVDetailHeroItem(detail: detailItem),
+                    hero: TVDetailHeroItem(
+                        detail: detailItem,
+                        localization: interfaceLocalization
+                    ),
                     overview: detailItem.overview
                 )
             )
         ]
 
-        let facts = makeFacts(detail: detailItem)
+        let facts = makeFacts(detail: detailItem, localization: interfaceLocalization)
         if !facts.isEmpty {
             sections.append(.facts(facts))
         }
@@ -35,7 +42,7 @@ nonisolated enum TVDetailSectionBuilder {
             .sorted { lhs, rhs in
                 videoPriority(lhs) < videoPriority(rhs)
             }
-            .map(TVDetailVideoItem.init(video:))
+            .map { TVDetailVideoItem(video: $0, localization: interfaceLocalization) }
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
         }
@@ -46,7 +53,7 @@ nonisolated enum TVDetailSectionBuilder {
 
         let castItems = content.aggregateCredits.cast
             .sorted { $0.order < $1.order }
-            .map(TVDetailCastItem.init(cast:))
+            .map { TVDetailCastItem(cast: $0, localization: interfaceLocalization) }
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
         }
@@ -65,7 +72,7 @@ nonisolated enum TVDetailSectionBuilder {
 
                 return lhs.name < rhs.name
             }
-            .map(TVDetailCrewItem.init(crew:))
+            .map { TVDetailCrewItem(crew: $0, localization: interfaceLocalization) }
         if !crewItems.isEmpty {
             sections.append(.crew(Array(crewItems)))
         }
@@ -73,33 +80,48 @@ nonisolated enum TVDetailSectionBuilder {
         let seasonItems = content.series.seasons
             .sorted { $0.seasonNumber < $1.seasonNumber }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(TVDetailSeasonItem.init(season:))
+            .map { TVDetailSeasonItem(season: $0, localization: interfaceLocalization) }
         if !seasonItems.isEmpty {
             sections.append(.seasons(Array(seasonItems)))
         }
 
         let imageItems = content.images.backdrops.enumerated().compactMap { index, image in
-            TVDetailImageItem(image: image, index: index)
+            TVDetailImageItem(
+                image: image,
+                index: index,
+                localization: interfaceLocalization
+            )
         }
         if !imageItems.isEmpty {
             sections.append(.images(imageItems))
         }
 
         let recommendationItems = content.recommendations.items
-            .map(TVDetailRecommendationItem.init(recommendation:))
+            .map {
+                TVDetailRecommendationItem(
+                    recommendation: $0,
+                    localization: interfaceLocalization
+                )
+            }
         if !recommendationItems.isEmpty {
             sections.append(.recommendations(Array(recommendationItems)))
         }
 
         let similarItems = content.similar.items
-            .map(TVDetailSimilarItem.init(recommendation:))
+            .map {
+                TVDetailSimilarItem(
+                    recommendation: $0,
+                    localization: interfaceLocalization
+                )
+            }
         if !similarItems.isEmpty {
             sections.append(.similar(Array(similarItems)))
         }
 
         let watchProviders = makeWatchProviderItems(
             providers: content.watchProviders,
-            localization: localization
+            apiLocalization: apiLocalization,
+            interfaceLocalization: interfaceLocalization
         )
         if !watchProviders.isEmpty {
             sections.append(.watchProviders(watchProviders))
@@ -108,15 +130,18 @@ nonisolated enum TVDetailSectionBuilder {
         return sections
     }
 
-    private static func makeFacts(detail: TVDetailItem) -> [TVDetailFactItem] {
+    private static func makeFacts(
+        detail: TVDetailItem,
+        localization: AppInterfaceLocalization
+    ) -> [TVDetailFactItem] {
         [
-            makeFact(title: "首播日", value: detail.firstAirDateText),
-            makeFact(title: "最後播出", value: detail.lastAirDateText),
-            makeFact(title: "季數", value: detail.seasonCountText),
-            makeFact(title: "集數", value: detail.episodeCountText),
-            makeFact(title: "單集長度", value: detail.episodeRunTimeText),
-            makeFact(title: "狀態", value: detail.statusText),
-            makeFact(title: "類型", value: detail.typeText)
+            makeFact(title: localization.string("tv_detail.fact.first_air_date", defaultValue: "First Air Date"), value: detail.firstAirDateText),
+            makeFact(title: localization.string("tv_detail.fact.last_air_date", defaultValue: "Last Air Date"), value: detail.lastAirDateText),
+            makeFact(title: localization.string("tv_detail.fact.seasons", defaultValue: "Seasons"), value: detail.seasonCountText),
+            makeFact(title: localization.string("tv_detail.fact.episodes", defaultValue: "Episodes"), value: detail.episodeCountText),
+            makeFact(title: localization.string("tv_detail.fact.episode_runtime", defaultValue: "Episode Runtime"), value: detail.episodeRunTimeText),
+            makeFact(title: localization.string("detail.fact.status", defaultValue: "Status"), value: detail.statusText),
+            makeFact(title: localization.string("tv_detail.fact.type", defaultValue: "Type"), value: detail.typeText)
         ].compactMap { $0 }
     }
 
@@ -144,9 +169,10 @@ nonisolated enum TVDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         providers: WatchProviders,
-        localization: AppLocalization = .current
+        apiLocalization: AppLocalization,
+        interfaceLocalization: AppInterfaceLocalization
     ) -> [TVWatchProviderItem] {
-        let preferredRegionCode = localization.regionCode.uppercased()
+        let preferredRegionCode = apiLocalization.regionCode.uppercased()
         let preferredCountry = providers.countries[preferredRegionCode]
         let countries: [(key: String, value: WatchProviderCountry)]
 
@@ -158,7 +184,11 @@ nonisolated enum TVDetailSectionBuilder {
 
         return countries
             .flatMap { countryCode, country in
-                makeWatchProviderItems(countryCode: countryCode, country: country)
+                makeWatchProviderItems(
+                    countryCode: countryCode,
+                    country: country,
+                    localization: interfaceLocalization
+                )
             }
             .prefix(DetailSectionPreviewLimit.itemCount)
             .map { $0 }
@@ -166,38 +196,44 @@ nonisolated enum TVDetailSectionBuilder {
 
     private static func makeWatchProviderItems(
         countryCode: String,
-        country: WatchProviderCountry
+        country: WatchProviderCountry,
+        localization: AppInterfaceLocalization
     ) -> [TVWatchProviderItem] {
         [
             makeWatchProviderItems(
                 providers: country.flatrate,
                 countryCode: countryCode,
-                category: "串流",
-                link: country.link
+                category: localization.string("watch_provider.category.stream", defaultValue: "Stream"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.rent,
                 countryCode: countryCode,
-                category: "租借",
-                link: country.link
+                category: localization.string("watch_provider.category.rent", defaultValue: "Rent"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.buy,
                 countryCode: countryCode,
-                category: "購買",
-                link: country.link
+                category: localization.string("watch_provider.category.buy", defaultValue: "Buy"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.free,
                 countryCode: countryCode,
-                category: "免費",
-                link: country.link
+                category: localization.string("watch_provider.category.free", defaultValue: "Free"),
+                link: country.link,
+                localization: localization
             ),
             makeWatchProviderItems(
                 providers: country.ads,
                 countryCode: countryCode,
-                category: "廣告",
-                link: country.link
+                category: localization.string("watch_provider.category.ads", defaultValue: "With Ads"),
+                link: country.link,
+                localization: localization
             )
         ].flatMap { $0 }
     }
@@ -206,7 +242,8 @@ nonisolated enum TVDetailSectionBuilder {
         providers: [WatchProvider],
         countryCode: String,
         category: String,
-        link: String
+        link: String,
+        localization: AppInterfaceLocalization
     ) -> [TVWatchProviderItem] {
         providers
             .sorted { lhs, rhs in
@@ -221,7 +258,8 @@ nonisolated enum TVDetailSectionBuilder {
                     countryCode: countryCode,
                     provider: $0,
                     category: category,
-                    link: link
+                    link: link,
+                    localization: localization
                 )
             }
     }

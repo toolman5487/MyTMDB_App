@@ -124,7 +124,8 @@ final class DetailContentListRowCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         with item: DetailContentListItem,
-        thumbnailStyle: DetailContentListThumbnailStyle
+        thumbnailStyle: DetailContentListThumbnailStyle,
+        localization: AppInterfaceLocalization
     ) {
         thumbnailImageView.sd_setImage(with: item.imageURL)
         titleLabel.text = item.title
@@ -143,7 +144,7 @@ final class DetailContentListRowCollectionViewCell: BaseCollectionViewCell {
             break
         }
 
-        applyAccessibility(item.accessibilityText)
+        applyAccessibility(item.accessibilityText(localization: localization))
         accessibilityTraits = item.destination == .none ? .staticText : .button
     }
 }
@@ -199,9 +200,12 @@ final class DetailContentListGalleryCollectionViewCell: BaseCollectionViewCell {
         galleryImageView.image = nil
     }
 
-    func configure(with item: DetailContentListItem) {
+    func configure(
+        with item: DetailContentListItem,
+        localization: AppInterfaceLocalization
+    ) {
         galleryImageView.sd_setImage(with: item.imageURL)
-        applyAccessibility(item.accessibilityText)
+        applyAccessibility(item.accessibilityText(localization: localization))
         accessibilityTraits = [.image, .button]
     }
 }

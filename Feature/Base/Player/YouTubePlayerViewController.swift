@@ -30,10 +30,15 @@ final class YouTubePlayerViewController: BaseViewController {
 
     // MARK: - Initialization
 
-    init(videoKey: String, title: String? = nil) {
+    init(
+        videoKey: String,
+        title: String? = nil,
+        interfaceLocalization: AppInterfaceLocalization
+    ) {
         self.videoKey = videoKey
         self.preferredTitle = title
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     required init?(coder: NSCoder) {
@@ -56,7 +61,10 @@ final class YouTubePlayerViewController: BaseViewController {
 
     override func configureView() {
         super.configureView()
-        title = preferredTitle ?? "預告片"
+        title = preferredTitle ?? interfaceLocalization.string(
+            "player.fallback_title",
+            defaultValue: "Trailer"
+        )
         view.accessibilityViewIsModal = true
         navigationItem.largeTitleDisplayMode = .never
         let closeButtonItem = UIBarButtonItem(
@@ -65,13 +73,25 @@ final class YouTubePlayerViewController: BaseViewController {
             target: self,
             action: #selector(handleCloseButtonTapped)
         )
-        closeButtonItem.accessibilityLabel = "關閉"
-        closeButtonItem.accessibilityHint = "點兩下關閉影片播放器"
+        closeButtonItem.accessibilityLabel = interfaceLocalization.string(
+            "common.action.close",
+            defaultValue: "Close"
+        )
+        closeButtonItem.accessibilityHint = interfaceLocalization.string(
+            "player.close.accessibility_hint",
+            defaultValue: "Double-tap to close the video player"
+        )
         navigationItem.rightBarButtonItem = closeButtonItem
 
         playerView.isAccessibilityElement = false
-        playerView.accessibilityLabel = "影片播放器"
-        playerView.accessibilityHint = "使用播放器內的控制項播放、暫停或調整影片"
+        playerView.accessibilityLabel = interfaceLocalization.string(
+            "player.accessibility_label",
+            defaultValue: "Video Player"
+        )
+        playerView.accessibilityHint = interfaceLocalization.string(
+            "player.accessibility_hint",
+            defaultValue: "Use the player controls to play, pause, or adjust the video"
+        )
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -124,8 +144,14 @@ extension YouTubePlayerViewController: YTPlayerViewDelegate {
 
     private func handlePlayerError() {
         presentAlert(
-            title: "無法播放影片",
-            message: "請稍後再試，或改用其他預告片。"
+            title: interfaceLocalization.string(
+                "player.error.title",
+                defaultValue: "Unable to Play Video"
+            ),
+            message: interfaceLocalization.string(
+                "player.error.message",
+                defaultValue: "Try again later, or choose another trailer."
+            )
         )
     }
 }

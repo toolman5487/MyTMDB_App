@@ -21,12 +21,18 @@ final class MainMediaGenrePageSheetViewController: BaseGenrePageSheetViewControl
     init(
         kind: MediaKind,
         filters: [MainMediaGenreItem],
+        interfaceLocalization: AppInterfaceLocalization,
         onFilterSelected: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
         super.init(
-            title: "\(kind.displayName)種類",
+            title: interfaceLocalization.formatted(
+                "genre_sheet.title_format",
+                defaultValue: "%@ Genres",
+                kind.displayName(localization: interfaceLocalization)
+            ),
             filters: filters,
+            interfaceLocalization: interfaceLocalization,
             onFilterSelected: onFilterSelected,
             onDismiss: onDismiss
         )

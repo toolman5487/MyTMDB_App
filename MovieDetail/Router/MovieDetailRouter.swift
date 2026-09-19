@@ -47,15 +47,20 @@ final class MovieDetailRouter: BaseRouter, MovieDetailRouting {
     init(
         sourceViewController: UIViewController,
         movieID: Int,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.movieID = movieID
         self.sceneBuilder = sceneBuilder
         self.detailRouter = DetailRouter(
             sourceViewController: sourceViewController,
-            sceneBuilder: sceneBuilder
+            sceneBuilder: sceneBuilder,
+            interfaceLocalization: interfaceLocalization
         )
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - Push

@@ -28,10 +28,14 @@ final class MainHomeRouter: BaseRouter, MainHomeRouting {
 
     init(
         sourceViewController: UIViewController,
-        sceneBuilder: HomeSceneBuilding
+        sceneBuilder: HomeSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.sceneBuilder = sceneBuilder
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - MainHomeRouting

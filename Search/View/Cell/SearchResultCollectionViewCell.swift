@@ -17,14 +17,18 @@ final class SearchResultCollectionViewCell: ImageTitleBaseCollectionViewCell {
     func configure(
         with item: MediaGridItem,
         kind: MediaKind,
-        imageHeight: CGFloat
+        imageHeight: CGFloat,
+        localization: AppInterfaceLocalization
     ) {
         configure(with: ImageTitleCellContent(
             imageURL: item.posterURL,
             title: item.title,
-            subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+            subtitle: item.ratingText(localization: localization),
             imageHeight: imageHeight,
-            accessibilityText: item.searchAccessibilityText(kind: kind)
+            accessibilityText: item.searchAccessibilityText(
+                kind: kind,
+                localization: localization
+            )
         ))
     }
 }
@@ -33,15 +37,22 @@ final class SearchResultCollectionViewCell: ImageTitleBaseCollectionViewCell {
 
 private extension MediaGridItem {
 
-    func searchAccessibilityText(kind: MediaKind) -> AccessibilityText {
+    func searchAccessibilityText(
+        kind: MediaKind,
+        localization: AppInterfaceLocalization
+    ) -> AccessibilityText {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.metadata([
-                kind.displayName,
-                BaseDisplayTextFormatter.ratingText(scoreText),
-                "上映日期 \(dateText)"
+                kind.displayName(localization: localization),
+                ratingText(localization: localization),
+                localization.formatted(
+                    "common.release_date.value_format",
+                    defaultValue: "Release date %@",
+                    dateText
+                )
             ]),
-            hint: "點兩下開啟\(kind.displayName)詳細資料"
+            hint: kind.detailAccessibilityHint(localization: localization)
         )
     }
 }

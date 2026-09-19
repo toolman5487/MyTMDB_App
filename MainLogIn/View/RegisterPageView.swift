@@ -24,20 +24,33 @@ final class RegisterPageView: UIView, AuthPageView {
     weak var delegate: RegisterPageViewDelegate?
 
     let page: AuthPage = .register
+    private let localization: AppInterfaceLocalization
 
     // MARK: - UI Components
 
     private let cardView = UIView()
 
-    private let descriptionLabel = AuthPageStyle.makeDescriptionLabel(
-        "前往 TMDB 官網建立帳號，即可使用收藏、待看清單等功能。"
+    private lazy var descriptionLabel = AuthPageStyle.makeDescriptionLabel(
+        localization.string(
+            "login.register.description",
+            defaultValue: "Create an account on the TMDB website to use favorites, watchlists, and more."
+        )
     )
 
-    private let registerButton = AuthPageStyle.makeFilledButton(title: "前往註冊")
+    private lazy var registerButton = AuthPageStyle.makeFilledButton(
+        title: localization.string(
+            "login.register.open_website",
+            defaultValue: "Go to Registration"
+        )
+    )
 
     // MARK: - Initialization
 
-    override init(frame: CGRect) {
+    init(
+        localization: AppInterfaceLocalization,
+        frame: CGRect = .zero
+    ) {
+        self.localization = localization
         super.init(frame: frame)
         setup()
     }

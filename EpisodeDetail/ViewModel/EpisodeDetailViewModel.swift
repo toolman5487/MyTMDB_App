@@ -44,17 +44,20 @@ final class EpisodeDetailViewModel {
     private let input: EpisodeDetailInput
     private let loadEpisodeDetailUseCase: LoadEpisodeDetailUseCase
     private let accountMediaController: DetailAccountMediaStateController
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Initialization
 
     init(
         input: EpisodeDetailInput,
         loadEpisodeDetailUseCase: LoadEpisodeDetailUseCase,
-        accountMediaController: DetailAccountMediaStateController
+        accountMediaController: DetailAccountMediaStateController,
+        localization: AppInterfaceLocalization
     ) {
         self.input = input
         self.loadEpisodeDetailUseCase = loadEpisodeDetailUseCase
         self.accountMediaController = accountMediaController
+        self.localization = localization
         self.accountMediaController.stateDidChange = { [weak self] in
             self?.notifyRatingStateChange()
         }
@@ -92,14 +95,17 @@ final class EpisodeDetailViewModel {
             } else {
                 accountMediaController.markRatingUnavailable()
             }
-            state = .loaded(EpisodeDetailPresentationBuilder.makeContent(content: content))
+            state = .loaded(EpisodeDetailPresentationBuilder.makeContent(
+                content: content,
+                localization: localization
+            ))
         } catch let error as DomainError {
             guard !Task.isCancelled else { return }
-            state = .failed(Self.errorMessage(for: error))
+            state = .failed(errorMessage(for: error))
             accountMediaController.markUnavailable()
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
             accountMediaController.markUnavailable()
         }
     }
@@ -115,8 +121,8 @@ final class EpisodeDetailViewModel {
             ),
             value: value,
             invalidMessage: ErrorMessage(
-                title: "無法評分",
-                message: "缺少有效的影集、季數或集數資訊。"
+                title: localization.string("detail.error.rating.title", defaultValue: "Unable to Rate"),
+                message: invalidInputMessage
             )
         )
         updateAccountStateSectionAfterRatingMutation(errorMessage: errorMessage)
@@ -131,8 +137,11 @@ final class EpisodeDetailViewModel {
                 episodeNumber: input.episodeNumber
             ),
             invalidMessage: ErrorMessage(
-                title: "無法刪除評分",
-                message: "缺少有效的影集、季數或集數資訊。"
+                title: localization.string(
+                    "detail.error.delete_rating.title",
+                    defaultValue: "Unable to Delete Rating"
+                ),
+                message: invalidInputMessage
             )
         )
         updateAccountStateSectionAfterRatingMutation(errorMessage: errorMessage)
@@ -153,12 +162,19 @@ final class EpisodeDetailViewModel {
         onRatingStateChange?(ratingState)
     }
 
-    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+    private var invalidInputMessage: String {
+        localization.string(
+            "episode_detail.error.invalid_input.message",
+            defaultValue: "Valid TV show, season, and episode information is required."
+        )
+    }
+
+    private func errorMessage(for error: DomainError) -> ErrorMessage {
         switch error {
         case .invalidIdentifier:
             return ErrorMessage(
-                title: "資料錯誤",
-                message: "缺少有效的影集、季數或集數資訊。"
+                title: localization.string("detail.error.invalid_data.title", defaultValue: "Invalid Data"),
+                message: invalidInputMessage
             )
         }
     }

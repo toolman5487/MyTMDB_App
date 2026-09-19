@@ -34,6 +34,7 @@ class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
 
     private var items: [DetailExternalLinkItem] = []
     private var onLinkSelected: ((URL) -> Void)?
+    private var interfaceLocalization = AppInterfaceLocalization.traditionalChinese
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -72,10 +73,12 @@ class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
 
     func configure(
         items: [DetailExternalLinkItem],
+        localization: AppInterfaceLocalization,
         onLinkSelected: @escaping (URL) -> Void
     ) {
         self.items = items
         self.onLinkSelected = onLinkSelected
+        interfaceLocalization = localization
         collectionViewFlowLayout.itemSize = Layout.itemSize
         collectionViewFlowLayout.invalidateLayout()
         collectionView.reloadData()
@@ -100,7 +103,10 @@ extension DetailExternalLinkStripCollectionViewCell: UICollectionViewDataSource,
         )
 
         if let cell = cell as? DetailExternalLinkItemCollectionViewCell {
-            cell.configure(with: items[indexPath.item])
+            cell.configure(
+                with: items[indexPath.item],
+                localization: interfaceLocalization
+            )
         }
 
         return cell
@@ -200,7 +206,10 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(with item: DetailExternalLinkItem) {
+    func configure(
+        with item: DetailExternalLinkItem,
+        localization: AppInterfaceLocalization
+    ) {
         let style = DetailExternalLinkStyle(id: item.id)
 
         if let imageName = style.imageName,
@@ -217,7 +226,10 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
         applyAccessibility(
             AccessibilityText(
                 label: item.title,
-                hint: "點兩下開啟連結"
+                hint: localization.string(
+                    "detail.external_link.accessibility_hint",
+                    defaultValue: "Double-tap to open the link"
+                )
             )
         )
     }

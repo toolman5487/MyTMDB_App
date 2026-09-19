@@ -53,7 +53,8 @@ final class MemberCenterListViewController: BaseListViewController {
     private let sceneBuilder: MemberCenterSceneBuilding
     private lazy var router: MemberCenterRouting = MemberCenterRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var items: [MemberCenterListItem] = []
@@ -65,11 +66,13 @@ final class MemberCenterListViewController: BaseListViewController {
 
     init(
         viewModel: MemberCenterListViewModel,
-        sceneBuilder: MemberCenterSceneBuilding
+        sceneBuilder: MemberCenterSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -86,7 +89,7 @@ final class MemberCenterListViewController: BaseListViewController {
 
     override func configureView() {
         super.configureView()
-        navigationItem.title = viewModel.destination.title
+        navigationItem.title = viewModel.destination.title(localization: interfaceLocalization)
         navigationItem.largeTitleDisplayMode = .never
         configureCollectionView()
     }
@@ -147,16 +150,23 @@ final class MemberCenterListViewController: BaseListViewController {
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "沒有\(destination.title)",
-                    message: "這個分類目前沒有內容。",
+                    title: destination.emptyTitle(localization: interfaceLocalization),
+                    message: interfaceLocalization.string(
+                        "member_center.empty.message",
+                        defaultValue: "There's nothing in this category yet."
+                    ),
                     systemImageName: destination.systemImageName
-                )
+                ),
+                localization: interfaceLocalization
             )
 
         case .failed(let message):
             items = []
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
+            collectionView.backgroundView = ErrorMessageView(
+                message: message,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.loadInitialContent()
             }
         }

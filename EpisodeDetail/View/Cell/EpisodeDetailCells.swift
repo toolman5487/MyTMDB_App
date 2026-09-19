@@ -38,6 +38,7 @@ final class EpisodeDetailVideosCollectionViewCell: DetailImageTitleStripCollecti
 
     func configure(
         videos: [EpisodeVideoItem],
+        localization: AppInterfaceLocalization,
         onVideoSelected: @escaping (EpisodeVideoItem) -> Void
     ) {
         configure(
@@ -50,7 +51,8 @@ final class EpisodeDetailVideosCollectionViewCell: DetailImageTitleStripCollecti
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let video = videos.first(where: { $0.id == item.id }) else { return }
             onVideoSelected(video)
@@ -67,9 +69,14 @@ final class EpisodeDetailCastCollectionViewCell: DetailImageTitleStripCollection
 
     func configure(
         cast: [EpisodePersonItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
-        configureEpisodePeople(cast, onPersonSelected: onPersonSelected)
+        configureEpisodePeople(
+            cast,
+            localization: localization,
+            onPersonSelected: onPersonSelected
+        )
     }
 }
 
@@ -82,9 +89,14 @@ final class EpisodeDetailGuestStarsCollectionViewCell: DetailImageTitleStripColl
 
     func configure(
         guestStars: [EpisodePersonItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
-        configureEpisodePeople(guestStars, onPersonSelected: onPersonSelected)
+        configureEpisodePeople(
+            guestStars,
+            localization: localization,
+            onPersonSelected: onPersonSelected
+        )
     }
 }
 
@@ -97,9 +109,14 @@ final class EpisodeDetailCrewCollectionViewCell: DetailImageTitleStripCollection
 
     func configure(
         crew: [EpisodePersonItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
-        configureEpisodePeople(crew, onPersonSelected: onPersonSelected)
+        configureEpisodePeople(
+            crew,
+            localization: localization,
+            onPersonSelected: onPersonSelected
+        )
     }
 }
 
@@ -112,6 +129,7 @@ private extension DetailImageTitleStripCollectionViewCell {
 
     func configureEpisodePeople(
         _ people: [EpisodePersonItem],
+        localization: AppInterfaceLocalization,
         onPersonSelected: @escaping (Int) -> Void
     ) {
         configure(
@@ -124,7 +142,8 @@ private extension DetailImageTitleStripCollectionViewCell {
                 )
             },
             itemSize: EpisodePeopleLayout.itemSize,
-            imageHeight: EpisodePeopleLayout.imageHeight
+            imageHeight: EpisodePeopleLayout.imageHeight,
+            localization: localization
         ) { item in
             guard let personID = people.first(where: { $0.id == item.id })?.personID else { return }
             onPersonSelected(personID)
@@ -146,19 +165,22 @@ final class EpisodeDetailImagesCollectionViewCell: DetailImageTitleStripCollecti
 
     func configure(
         images: [EpisodeImageItem],
+        localization: AppInterfaceLocalization,
         onImageSelected: @escaping (EpisodeImageItem) -> Void
     ) {
+        let imageTitle = localization.string("detail.image.still", defaultValue: "Still")
         configure(
             items: images.map {
                 DetailImageTitleItem(
                     id: $0.id,
                     imageURL: $0.imageURL,
-                    title: "劇照",
+                    title: imageTitle,
                     subtitle: nil
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let image = images.first(where: { $0.id == item.id }) else { return }
             onImageSelected(image)
@@ -175,12 +197,14 @@ final class EpisodeDetailExternalLinksCollectionViewCell: DetailExternalLinkStri
 
     func configure(
         items: [EpisodeExternalLinkItem],
+        localization: AppInterfaceLocalization,
         onLinkSelected: @escaping (URL) -> Void
     ) {
         configure(
             items: items.map {
                 DetailExternalLinkItem(id: $0.id, title: $0.title, url: $0.url)
             },
+            localization: localization,
             onLinkSelected: onLinkSelected
         )
     }
@@ -256,6 +280,7 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
 
     func configure(
         items: [EpisodeDetailTextListItem],
+        localization: AppInterfaceLocalization,
         onItemSelected: ((EpisodeDetailTextListItem) -> Void)? = nil
     ) {
         self.items = items
@@ -263,7 +288,15 @@ final class EpisodeDetailAccountStateCollectionViewCell: BaseCollectionViewCell 
         removeRows()
         items.forEach { item in
             let rowView = EpisodeDetailTextListRowView()
-            rowView.configure(with: item, isTappable: onItemSelected != nil)
+            rowView.configure(
+                with: item,
+                selectionHint: onItemSelected == nil
+                    ? nil
+                    : localization.string(
+                        "common.accessibility.action.hint",
+                        defaultValue: "Double-tap to perform this action"
+                    )
+            )
             rowView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapRow(_:))))
             rowView.isUserInteractionEnabled = onItemSelected != nil
             stackView.addArrangedSubview(rowView)
@@ -348,7 +381,7 @@ private final class EpisodeDetailTextListRowView: UIView {
         setupConstraints()
     }
 
-    func configure(with item: EpisodeDetailTextListItem, isTappable: Bool) {
+    func configure(with item: EpisodeDetailTextListItem, selectionHint: String?) {
         titleLabel.text = item.title
         subtitleLabel.text = item.subtitle
         subtitleLabel.isHidden = item.subtitle?.isEmpty ?? true
@@ -358,10 +391,10 @@ private final class EpisodeDetailTextListRowView: UIView {
             AccessibilityText(
                 label: item.title,
                 value: BaseDisplayTextFormatter.nonEmptyText(item.subtitle),
-                hint: isTappable ? "點兩下執行" : nil
+                hint: selectionHint
             )
         )
-        accessibilityTraits = isTappable ? .button : .staticText
+        accessibilityTraits = selectionHint == nil ? .staticText : .button
     }
 
     private func setupHierarchy() {
@@ -424,17 +457,28 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(overview: String) {
-        overviewLabel.attributedText = Self.overviewAttributedText(overview: overview)
+    func configure(
+        overview: String,
+        localization: AppInterfaceLocalization
+    ) {
+        let sectionTitle = Self.sectionTitle(localization: localization)
+        overviewLabel.attributedText = Self.overviewAttributedText(
+            overview: overview,
+            sectionTitle: sectionTitle
+        )
         applyAccessibility(
             AccessibilityText(
-                label: "集數簡介",
+                label: sectionTitle,
                 value: overview
             )
         )
     }
 
-    static func fittingHeight(for overview: String, width: CGFloat) -> CGFloat {
+    static func fittingHeight(
+        for overview: String,
+        width: CGFloat,
+        localization: AppInterfaceLocalization
+    ) -> CGFloat {
         let contentWidth = DetailLayoutMetrics.contentWidth(
             for: width,
             horizontalInsetLevelCount: 2
@@ -443,7 +487,10 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let attributedText = overviewAttributedText(overview: overview)
+        let attributedText = overviewAttributedText(
+            overview: overview,
+            sectionTitle: sectionTitle(localization: localization)
+        )
         let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -456,7 +503,17 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         )
     }
 
-    private static func overviewAttributedText(overview: String) -> NSAttributedString {
+    private static func sectionTitle(localization: AppInterfaceLocalization) -> String {
+        localization.string(
+            "episode_detail.overview.title",
+            defaultValue: "Episode Overview"
+        )
+    }
+
+    private static func overviewAttributedText(
+        overview: String,
+        sectionTitle: String
+    ) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
 
@@ -464,7 +521,7 @@ final class EpisodeDetailOverviewCollectionViewCell: BaseCollectionViewCell {
         bodyParagraphStyle.lineSpacing = Layout.bodyLineSpacing
 
         let attributedText = NSMutableAttributedString(
-            string: "集數簡介\n",
+            string: "\(sectionTitle)\n",
             attributes: [
                 .font: UIFont.preferredFont(forTextStyle: .headline),
                 .foregroundColor: ThemeColor.textPrimary,

@@ -77,11 +77,13 @@ class BaseShowAllFilterHeaderView: BaseFilterHeaderView {
     func configure(
         filters: [BaseFilterHeaderItem],
         isExpanded: Bool,
-        isShowingSkeleton: Bool = false
+        isShowingSkeleton: Bool = false,
+        localization: AppInterfaceLocalization
     ) {
         super.configure(
             filters: filters,
-            isShowingSkeleton: isShowingSkeleton
+            isShowingSkeleton: isShowingSkeleton,
+            localization: localization
         )
         showAllButton.isHidden = isShowingSkeleton
         showAllButton.isEnabled = !isShowingSkeleton
@@ -130,9 +132,28 @@ class BaseShowAllFilterHeaderView: BaseFilterHeaderView {
 
         showAllButton.applyAccessibilityText(
             AccessibilityText(
-                label: "顯示全部篩選",
-                value: isShowAllButtonExpanded ? "已展開" : "已收合",
-                hint: isShowAllButtonExpanded ? "點兩下收合篩選選單" : "點兩下展開完整篩選選單"
+                label: interfaceLocalization.string(
+                    "filter.show_all.accessibility.label",
+                    defaultValue: "Show all filters"
+                ),
+                value: isShowAllButtonExpanded
+                    ? interfaceLocalization.string(
+                        "common.accessibility.expanded",
+                        defaultValue: "Expanded"
+                    )
+                    : interfaceLocalization.string(
+                        "common.accessibility.collapsed",
+                        defaultValue: "Collapsed"
+                    ),
+                hint: isShowAllButtonExpanded
+                    ? interfaceLocalization.string(
+                        "filter.show_all.accessibility.collapse_hint",
+                        defaultValue: "Double-tap to collapse the filter menu"
+                    )
+                    : interfaceLocalization.string(
+                        "filter.show_all.accessibility.expand_hint",
+                        defaultValue: "Double-tap to open the full filter menu"
+                    )
             )
         )
     }

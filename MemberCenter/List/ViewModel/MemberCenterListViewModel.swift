@@ -26,6 +26,7 @@ final class MemberCenterListViewModel {
     private let accountID: Int
     private let sessionID: String
     private let contentRepository: AccountContentProviding
+    private let localization: AppInterfaceLocalization
 
     // MARK: - Initialization
 
@@ -33,12 +34,14 @@ final class MemberCenterListViewModel {
         destination: MemberCenterDestination,
         accountID: Int,
         sessionID: String,
-        contentRepository: AccountContentProviding
+        contentRepository: AccountContentProviding,
+        localization: AppInterfaceLocalization
     ) {
         self.destination = destination
         self.accountID = accountID
         self.sessionID = sessionID
         self.contentRepository = contentRepository
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -60,7 +63,7 @@ final class MemberCenterListViewModel {
             state = content.items.isEmpty ? .empty(destination) : .loaded(content)
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -109,7 +112,10 @@ final class MemberCenterListViewModel {
             posterFallbackLimit: .max
         )
 
-        return MemberCenterPresentationBuilder.makeListContent(from: collection)
+        return MemberCenterPresentationBuilder.makeListContent(
+            from: collection,
+            localization: localization
+        )
     }
 
     private func shouldLoadNextPage(

@@ -27,6 +27,7 @@ final class HomeSectionListViewModel {
     private let loadSectionList: LoadHomeSectionListUseCase
     private let filterByGenre: FilterMediaByGenreUseCase
     private let contentRepository: HomeContentProviding
+    private let localization: AppInterfaceLocalization
 
     private var genres: [MediaGenre] = []
     private var summaries: [MediaSummary] = []
@@ -40,12 +41,14 @@ final class HomeSectionListViewModel {
         category: HomeCategory,
         loadSectionList: LoadHomeSectionListUseCase,
         filterByGenre: FilterMediaByGenreUseCase,
-        contentRepository: HomeContentProviding
+        contentRepository: HomeContentProviding,
+        localization: AppInterfaceLocalization
     ) {
         self.category = category
         self.contentRepository = contentRepository
         self.filterByGenre = filterByGenre
         self.loadSectionList = loadSectionList
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -78,7 +81,7 @@ final class HomeSectionListViewModel {
             state = .loaded(makeContent(isLoadingNextPage: false))
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -145,7 +148,8 @@ final class HomeSectionListViewModel {
 
     private func makeContent(isLoadingNextPage: Bool) -> HomeSectionListContent {
         let genreItems = [HomeSectionListGenreItem.all(
-            isSelected: selectedGenreID == HomeGenreFilterID.all
+            isSelected: selectedGenreID == HomeGenreFilterID.all,
+            localization: localization
         )] + genres.map { genre in
             HomeSectionListGenreItem(
                 genre: genre,
@@ -157,7 +161,11 @@ final class HomeSectionListViewModel {
             genres: genreItems,
             selectedGenreID: selectedGenreID,
             items: displayedSummaries.map { summary in
-                HomeContentItem(summary: summary, mediaType: category.mediaType)
+                HomeContentItem(
+                    summary: summary,
+                    mediaType: category.mediaType,
+                    localization: localization
+                )
             },
             currentPage: currentPage,
             totalPages: totalPages,

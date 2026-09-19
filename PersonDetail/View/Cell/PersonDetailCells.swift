@@ -74,6 +74,7 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
 
     func configure(
         with item: PersonDetailHeroItem,
+        localization: AppInterfaceLocalization,
         onProfileImageSelected: ((URL) -> Void)? = nil
     ) {
         profileURL = item.profileURL
@@ -88,7 +89,8 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         metadataLabel.isHidden = item.metadataText?.isEmpty != false
         applyProfileImageAccessibility(
             name: item.name,
-            isSelectable: item.profileURL != nil && onProfileImageSelected != nil
+            isSelectable: item.profileURL != nil && onProfileImageSelected != nil,
+            localization: localization
         )
     }
 
@@ -137,11 +139,24 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
         profileImageView.accessibilityTraits.insert(.image)
     }
 
-    private func applyProfileImageAccessibility(name: String, isSelectable: Bool) {
+    private func applyProfileImageAccessibility(
+        name: String,
+        isSelectable: Bool,
+        localization: AppInterfaceLocalization
+    ) {
         profileImageView.applyAccessibilityText(
             AccessibilityText(
-                label: "\(name) 照片",
-                hint: isSelectable ? "點兩下預覽圖片" : nil
+                label: localization.formatted(
+                    "person_detail.profile_image.accessibility_label_format",
+                    defaultValue: "Photo of %@",
+                    name
+                ),
+                hint: isSelectable
+                    ? localization.string(
+                        "common.accessibility.preview_image.hint",
+                        defaultValue: "Double-tap to preview the image"
+                    )
+                    : nil
             )
         )
         profileImageView.accessibilityTraits.insert(.image)
@@ -205,17 +220,28 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         resetAccessibility()
     }
 
-    func configure(biography: String) {
-        biographyLabel.attributedText = Self.makeAttributedText(biography: biography)
+    func configure(
+        biography: String,
+        localization: AppInterfaceLocalization
+    ) {
+        let sectionTitle = Self.sectionTitle(localization: localization)
+        biographyLabel.attributedText = Self.makeAttributedText(
+            biography: biography,
+            sectionTitle: sectionTitle
+        )
         applyAccessibility(
             AccessibilityText(
-                label: "人物簡介",
+                label: sectionTitle,
                 value: biography
             )
         )
     }
 
-    static func fittingHeight(for biography: String, width: CGFloat) -> CGFloat {
+    static func fittingHeight(
+        for biography: String,
+        width: CGFloat,
+        localization: AppInterfaceLocalization
+    ) -> CGFloat {
         let contentWidth = DetailLayoutMetrics.contentWidth(
             for: width,
             horizontalInsetLevelCount: 2
@@ -224,7 +250,10 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
             return Layout.minimumHeight
         }
 
-        let attributedText = makeAttributedText(biography: biography)
+        let attributedText = makeAttributedText(
+            biography: biography,
+            sectionTitle: sectionTitle(localization: localization)
+        )
         let textHeight = attributedText.boundingRect(
             with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -237,7 +266,17 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         )
     }
 
-    private static func makeAttributedText(biography: String) -> NSAttributedString {
+    private static func sectionTitle(localization: AppInterfaceLocalization) -> String {
+        localization.string(
+            "person_detail.biography.title",
+            defaultValue: "Biography"
+        )
+    }
+
+    private static func makeAttributedText(
+        biography: String,
+        sectionTitle: String
+    ) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.paragraphSpacing = Layout.titleContentSpacing
 
@@ -245,7 +284,7 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         bodyParagraphStyle.lineSpacing = 4
 
         let attributedText = NSMutableAttributedString(
-            string: "人物簡介\n",
+            string: "\(sectionTitle)\n",
             attributes: [
                 .font: UIFont.preferredFont(forTextStyle: .headline),
                 .foregroundColor: ThemeColor.textPrimary,
@@ -297,6 +336,7 @@ final class PersonDetailMovieCreditsCollectionViewCell: DetailImageTitleStripCol
 
     func configure(
         items: [PersonDetailCreditItem],
+        localization: AppInterfaceLocalization,
         onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
     ) {
         configure(
@@ -309,7 +349,8 @@ final class PersonDetailMovieCreditsCollectionViewCell: DetailImageTitleStripCol
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let credit = items.first(where: { $0.id == item.id }) else { return }
             onCreditSelected(credit)
@@ -338,6 +379,7 @@ final class PersonDetailTVCreditsCollectionViewCell: DetailImageTitleStripCollec
 
     func configure(
         items: [PersonDetailCreditItem],
+        localization: AppInterfaceLocalization,
         onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
     ) {
         configure(
@@ -350,7 +392,8 @@ final class PersonDetailTVCreditsCollectionViewCell: DetailImageTitleStripCollec
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let credit = items.first(where: { $0.id == item.id }) else { return }
             onCreditSelected(credit)
@@ -379,19 +422,25 @@ final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCo
 
     func configure(
         items: [PersonDetailProfileImageItem],
+        localization: AppInterfaceLocalization,
         onImageSelected: @escaping (URL) -> Void
     ) {
+        let fallbackTitle = localization.string(
+            "person_detail.image.profile_photo",
+            defaultValue: "Profile Photo"
+        )
         configure(
             items: items.map {
                 DetailImageTitleItem(
                     id: $0.id,
                     imageURL: $0.imageURL,
-                    title: $0.sizeText.isEmpty ? "人物照片" : $0.sizeText,
+                    title: $0.sizeText.isEmpty ? fallbackTitle : $0.sizeText,
                     subtitle: nil
                 )
             },
             itemSize: Layout.itemSize,
-            imageHeight: Layout.imageHeight
+            imageHeight: Layout.imageHeight,
+            localization: localization
         ) { item in
             guard let imageURL = item.imageURL else { return }
             onImageSelected(imageURL)
@@ -423,6 +472,7 @@ final class PersonDetailAliasesCollectionViewCell: BaseNestedCollectionViewCell 
     }
 
     private var items: [PersonDetailAliasItem] = []
+    private var interfaceLocalization = AppInterfaceLocalization.traditionalChinese
 
     override func configureView() {
         containerView.backgroundColor = .clear
@@ -455,8 +505,12 @@ final class PersonDetailAliasesCollectionViewCell: BaseNestedCollectionViewCell 
         collectionView.reloadData()
     }
 
-    func configure(items: [PersonDetailAliasItem]) {
+    func configure(
+        items: [PersonDetailAliasItem],
+        localization: AppInterfaceLocalization
+    ) {
         self.items = items
+        interfaceLocalization = localization
         collectionViewFlowLayout.invalidateLayout()
         collectionView.reloadData()
     }
@@ -480,7 +534,10 @@ extension PersonDetailAliasesCollectionViewCell: UICollectionViewDataSource, UIC
         )
 
         if let cell = cell as? PersonDetailAliasPillCollectionViewCell {
-            cell.configure(with: items[indexPath.item])
+            cell.configure(
+                with: items[indexPath.item],
+                localization: interfaceLocalization
+            )
         }
 
         return cell
@@ -556,11 +613,17 @@ private final class PersonDetailAliasPillCollectionViewCell: BaseCollectionViewC
         titleLabel.text = nil
     }
 
-    func configure(with item: PersonDetailAliasItem) {
+    func configure(
+        with item: PersonDetailAliasItem,
+        localization: AppInterfaceLocalization
+    ) {
         titleLabel.text = item.name
         applyAccessibility(
             AccessibilityText(
-                label: "別名",
+                label: localization.string(
+                    "person_detail.alias.accessibility_label",
+                    defaultValue: "Alias"
+                ),
                 value: item.name
             )
         )
@@ -593,12 +656,14 @@ final class PersonDetailExternalLinksCollectionViewCell: DetailExternalLinkStrip
 
     func configure(
         items: [PersonDetailExternalLinkItem],
+        localization: AppInterfaceLocalization,
         onLinkSelected: @escaping (URL) -> Void
     ) {
         configure(
             items: items.map {
                 DetailExternalLinkItem(id: $0.id, title: $0.title, url: $0.url)
             },
+            localization: localization,
             onLinkSelected: onLinkSelected
         )
     }

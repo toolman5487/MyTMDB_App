@@ -30,9 +30,6 @@ final class ReviewLoadingFooterView: UICollectionReusableView {
         super.init(frame: frame)
         setupHierarchy()
         setupConstraints()
-        applyAccessibilityText(
-            AccessibilityText(label: "正在載入更多評論")
-        )
         accessibilityTraits.insert(.updatesFrequently)
         loadingView.isAccessibilityElement = false
     }
@@ -41,9 +38,6 @@ final class ReviewLoadingFooterView: UICollectionReusableView {
         super.init(coder: coder)
         setupHierarchy()
         setupConstraints()
-        applyAccessibilityText(
-            AccessibilityText(label: "正在載入更多評論")
-        )
         accessibilityTraits.insert(.updatesFrequently)
         loadingView.isAccessibilityElement = false
     }
@@ -68,10 +62,20 @@ final class ReviewLoadingFooterView: UICollectionReusableView {
 
     // MARK: - Configuration
 
-    func configure(isAnimating: Bool) {
+    func configure(
+        isAnimating: Bool,
+        localization: AppInterfaceLocalization
+    ) {
         loadingView.setAnimating(isAnimating)
         applyAccessibilityText(
-            isAnimating ? AccessibilityText(label: "正在載入更多評論") : nil
+            isAnimating
+                ? AccessibilityText(
+                    label: localization.string(
+                        "review_list.loading_more.accessibility_label",
+                        defaultValue: "Loading more reviews"
+                    )
+                )
+                : nil
         )
     }
 }

@@ -17,19 +17,11 @@ nonisolated struct DetailHeroHeaderContent: Sendable, Equatable {
     let tagline: String?
     let posterURL: URL?
     let backdropURL: URL?
-    let scoreText: String?
-    let voteCountText: String?
+    let scoreDisplayText: String?
     let metadataText: String?
 
     var displayTitle: String {
         title.isEmpty ? originalTitle : title
-    }
-
-    var scoreDisplayText: String? {
-        BaseDisplayTextFormatter.ratingText(
-            scoreText: scoreText,
-            voteCountText: voteCountText
-        )
     }
 }
 

@@ -28,6 +28,7 @@ final class DetailImagePreviewViewController: UIViewController {
 
     private let imageURLs: [URL]
     private let previewTitle: String?
+    private let interfaceLocalization: AppInterfaceLocalization
 
     private var currentIndex: Int
     private var isPaging = false
@@ -51,7 +52,6 @@ final class DetailImagePreviewViewController: UIViewController {
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = UIColor.white.withAlphaComponent(0.32)
         pageControl.allowsContinuousInteraction = false
-        pageControl.accessibilityLabel = "圖片頁碼"
         return pageControl
     }()
 
@@ -67,8 +67,6 @@ final class DetailImagePreviewViewController: UIViewController {
         button.backgroundColor = UIColor.black.withAlphaComponent(0.48)
         button.layer.cornerRadius = Layout.closeButtonSize / 2
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.accessibilityLabel = "關閉"
-        button.accessibilityHint = "點兩下關閉圖片預覽"
         return button
     }()
 
@@ -80,10 +78,16 @@ final class DetailImagePreviewViewController: UIViewController {
 
     // MARK: - Initialization
 
-    init(imageURLs: [URL], selectedIndex: Int, title: String?) {
+    init(
+        imageURLs: [URL],
+        selectedIndex: Int,
+        title: String?,
+        interfaceLocalization: AppInterfaceLocalization
+    ) {
         let uniqueImageURLs = Self.uniqueImageURLs(from: imageURLs)
         self.imageURLs = uniqueImageURLs
         self.previewTitle = title
+        self.interfaceLocalization = interfaceLocalization
         self.currentIndex = min(max(selectedIndex, 0), max(uniqueImageURLs.count - 1, 0))
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
@@ -107,6 +111,18 @@ final class DetailImagePreviewViewController: UIViewController {
 
     private func configureView() {
         view.backgroundColor = .black
+        pageControl.accessibilityLabel = interfaceLocalization.string(
+            "image_preview.page_control.accessibility_label",
+            defaultValue: "Image Page"
+        )
+        closeButton.accessibilityLabel = interfaceLocalization.string(
+            "common.action.close",
+            defaultValue: "Close"
+        )
+        closeButton.accessibilityHint = interfaceLocalization.string(
+            "image_preview.close.accessibility_hint",
+            defaultValue: "Double-tap to close the image preview"
+        )
         pageControl.numberOfPages = imageURLs.count
         pageControl.currentPage = currentIndex
         pageControl.isHidden = imageURLs.count <= 1
@@ -185,7 +201,8 @@ final class DetailImagePreviewViewController: UIViewController {
             imageURL: imageURLs[index],
             index: index,
             totalCount: imageURLs.count,
-            previewTitle: previewTitle
+            previewTitle: previewTitle,
+            interfaceLocalization: interfaceLocalization
         )
     }
 
@@ -239,9 +256,17 @@ final class DetailImagePreviewViewController: UIViewController {
         pageTextLabel.isHidden = imageURLs.isEmpty
         pageControl.accessibilityValue = imageURLs.isEmpty
             ? nil
-            : "第 \(currentIndex + 1) 張，共 \(imageURLs.count) 張"
+            : interfaceLocalization.formatted(
+                "image_preview.page.accessibility_value_format",
+                defaultValue: "Image %1$lld of %2$lld",
+                currentIndex + 1,
+                imageURLs.count
+            )
         pageControl.accessibilityHint = imageURLs.count > 1
-            ? "左右滑動可切換圖片"
+            ? interfaceLocalization.string(
+                "image_preview.page_control.accessibility_hint",
+                defaultValue: "Swipe left or right to switch images"
+            )
             : nil
     }
 }
@@ -324,6 +349,7 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     private let imageURL: URL
     private let totalCount: Int
     private let previewTitle: String?
+    private let interfaceLocalization: AppInterfaceLocalization
 
     // MARK: - UI Components
 
@@ -350,12 +376,14 @@ private final class DetailImagePreviewPageViewController: UIViewController {
         imageURL: URL,
         index: Int,
         totalCount: Int,
-        previewTitle: String?
+        previewTitle: String?,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.imageURL = imageURL
         self.index = index
         self.totalCount = totalCount
         self.previewTitle = previewTitle
+        self.interfaceLocalization = interfaceLocalization
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -383,9 +411,24 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     private func configureView() {
         view.backgroundColor = .black
         scrollView.delegate = self
-        let titleText = BaseDisplayTextFormatter.nonEmptyText(previewTitle) ?? "圖片"
-        imageView.accessibilityLabel = "\(titleText)，第 \(index + 1) 張，共 \(totalCount) 張"
-        imageView.accessibilityHint = totalCount > 1 ? "左右滑動可切換圖片，雙指縮放可放大縮小" : "雙指縮放可放大縮小"
+        let titleText = BaseDisplayTextFormatter.nonEmptyText(previewTitle)
+            ?? interfaceLocalization.string("image_preview.image.fallback_title", defaultValue: "Image")
+        imageView.accessibilityLabel = interfaceLocalization.formatted(
+            "image_preview.image.accessibility_label_format",
+            defaultValue: "%1$@, image %2$lld of %3$lld",
+            titleText,
+            index + 1,
+            totalCount
+        )
+        imageView.accessibilityHint = totalCount > 1
+            ? interfaceLocalization.string(
+                "image_preview.image.paging_zoom_hint",
+                defaultValue: "Swipe left or right to switch images. Pinch to zoom."
+            )
+            : interfaceLocalization.string(
+                "image_preview.image.zoom_hint",
+                defaultValue: "Pinch to zoom."
+            )
     }
 
     private func setupHierarchy() {

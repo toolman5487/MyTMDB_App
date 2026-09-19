@@ -20,34 +20,34 @@ nonisolated enum EpisodeDetailSectionItem: Sendable, Equatable {
     case externalLinks([EpisodeExternalLinkItem])
     case accountState(EpisodeAccountStateItem)
 
-    var title: String? {
+    func title(localization: AppInterfaceLocalization) -> String? {
         switch self {
         case .overview:
             return nil
 
         case .facts:
-            return "集數資訊"
+            return localization.string("episode_detail.section.information", defaultValue: "Episode Information")
 
         case .videos:
-            return "預告與影片"
+            return localization.string("detail.section.videos", defaultValue: "Trailers and Videos")
 
         case .cast:
-            return "主要演員"
+            return localization.string("detail.section.cast", defaultValue: "Cast")
 
         case .guestStars:
-            return "客串演員"
+            return localization.string("episode_detail.section.guest_stars", defaultValue: "Guest Stars")
 
         case .crew:
-            return "幕後人員"
+            return localization.string("detail.section.crew", defaultValue: "Crew")
 
         case .images:
-            return "劇照"
+            return localization.string("detail.section.images", defaultValue: "Images")
 
         case .externalLinks:
-            return "相關連結"
+            return localization.string("detail.section.external_links", defaultValue: "Related Links")
 
         case .accountState:
-            return "我的評分"
+            return localization.string("common.rating.my_rating", defaultValue: "My Rating")
         }
     }
 }
@@ -74,11 +74,18 @@ nonisolated struct EpisodeDetailFactItem: Sendable, Equatable, Identifiable {
 
 nonisolated enum EpisodeDetailPresentationBuilder {
 
-    static func makeContent(content: EpisodeDetailContent) -> EpisodeDetailViewContent {
-        let detail = EpisodeDetailItem(detail: content.detail)
+    static func makeContent(
+        content: EpisodeDetailContent,
+        localization: AppInterfaceLocalization
+    ) -> EpisodeDetailViewContent {
+        let detail = EpisodeDetailItem(detail: content.detail, localization: localization)
 
         return EpisodeDetailViewContent(
-            sections: makeSections(content: content, detail: detail),
+            sections: makeSections(
+                content: content,
+                detail: detail,
+                localization: localization
+            ),
             navigationTitle: detail.title
         )
     }
@@ -107,7 +114,8 @@ nonisolated enum EpisodeDetailPresentationBuilder {
 
     private static func makeSections(
         content: EpisodeDetailContent,
-        detail: EpisodeDetailItem
+        detail: EpisodeDetailItem,
+        localization: AppInterfaceLocalization
     ) -> [EpisodeDetailSectionItem] {
         var sections: [EpisodeDetailSectionItem] = [
             .overview(
@@ -118,7 +126,11 @@ nonisolated enum EpisodeDetailPresentationBuilder {
             )
         ]
 
-        let facts = makeFacts(detail: detail, source: content.detail)
+        let facts = makeFacts(
+            detail: detail,
+            source: content.detail,
+            localization: localization
+        )
         if !facts.isEmpty {
             sections.append(.facts(facts))
         }
@@ -127,7 +139,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
             .filter { !$0.key.isEmpty }
             .sorted { videoPriority($0) < videoPriority($1) }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(EpisodeVideoItem.init(video:))
+            .map { EpisodeVideoItem(video: $0, localization: localization) }
         if !videoItems.isEmpty {
             sections.append(.videos(Array(videoItems)))
         }
@@ -135,17 +147,17 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         let castItems = content.credits.cast
             .sorted { $0.order < $1.order }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(EpisodePersonItem.init(cast:))
+            .map { EpisodePersonItem(cast: $0, localization: localization) }
         if !castItems.isEmpty {
             sections.append(.cast(Array(castItems)))
         }
 
-        let guestStarItems = makeGuestStarItems(content: content)
+        let guestStarItems = makeGuestStarItems(content: content, localization: localization)
         if !guestStarItems.isEmpty {
             sections.append(.guestStars(guestStarItems))
         }
 
-        let crewItems = makeCrewItems(content: content)
+        let crewItems = makeCrewItems(content: content, localization: localization)
         if !crewItems.isEmpty {
             sections.append(.crew(crewItems))
         }
@@ -164,7 +176,10 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         }
 
         if content.supportsAccountRating, case .rated = content.accountState.rating {
-            sections.append(.accountState(EpisodeAccountStateItem(accountState: content.accountState)))
+            sections.append(.accountState(EpisodeAccountStateItem(
+                accountState: content.accountState,
+                localization: localization
+            )))
         }
 
         return sections
@@ -172,16 +187,38 @@ nonisolated enum EpisodeDetailPresentationBuilder {
 
     private static func makeFacts(
         detail: EpisodeDetailItem,
-        source: Episode
+        source: Episode,
+        localization: AppInterfaceLocalization
     ) -> [EpisodeDetailFactItem] {
         [
-            makeFact(title: "季數", value: detail.seasonNumberText),
-            makeFact(title: "集數", value: detail.episodeNumberText),
-            makeFact(title: "首播日期", value: detail.airDateText),
-            makeFact(title: "片長", value: detail.runtimeText),
-            makeFact(title: "製作編號", value: detail.productionCodeText),
-            makeFact(title: "評分", value: source.voteAverage > 0 ? detail.scoreText : nil),
-            makeFact(title: "票數", value: source.voteCount > 0 ? detail.voteCountText : nil)
+            makeFact(
+                title: localization.string("season_detail.fact.season", defaultValue: "Season"),
+                value: detail.seasonNumberText
+            ),
+            makeFact(
+                title: localization.string("episode_detail.fact.episode", defaultValue: "Episode"),
+                value: detail.episodeNumberText
+            ),
+            makeFact(
+                title: localization.string("season_detail.fact.air_date", defaultValue: "Air Date"),
+                value: detail.airDateText
+            ),
+            makeFact(
+                title: localization.string("movie_detail.fact.runtime", defaultValue: "Runtime"),
+                value: detail.runtimeText
+            ),
+            makeFact(
+                title: localization.string("episode_detail.fact.production_code", defaultValue: "Production Code"),
+                value: detail.productionCodeText
+            ),
+            makeFact(
+                title: localization.string("common.rating.label", defaultValue: "Rating"),
+                value: source.voteAverage > 0 ? detail.scoreText : nil
+            ),
+            makeFact(
+                title: localization.string("episode_detail.fact.vote_count", defaultValue: "Votes"),
+                value: source.voteCount > 0 ? detail.voteCountText : nil
+            )
         ].compactMap { $0 }
     }
 
@@ -190,11 +227,14 @@ nonisolated enum EpisodeDetailPresentationBuilder {
         return EpisodeDetailFactItem(title: title, value: value)
     }
 
-    private static func makeGuestStarItems(content: EpisodeDetailContent) -> [EpisodePersonItem] {
+    private static func makeGuestStarItems(
+        content: EpisodeDetailContent,
+        localization: AppInterfaceLocalization
+    ) -> [EpisodePersonItem] {
         let creditsGuestStars = content.credits.guestStars
             .sorted { $0.order < $1.order }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(EpisodePersonItem.init(cast:))
+            .map { EpisodePersonItem(cast: $0, localization: localization) }
 
         if !creditsGuestStars.isEmpty {
             return Array(creditsGuestStars)
@@ -204,11 +244,14 @@ nonisolated enum EpisodeDetailPresentationBuilder {
             content.detail.guestStars
                 .sorted { $0.order < $1.order }
                 .prefix(DetailSectionPreviewLimit.itemCount)
-                .map(EpisodePersonItem.init(cast:))
+                .map { EpisodePersonItem(cast: $0, localization: localization) }
         )
     }
 
-    private static func makeCrewItems(content: EpisodeDetailContent) -> [EpisodePersonItem] {
+    private static func makeCrewItems(
+        content: EpisodeDetailContent,
+        localization: AppInterfaceLocalization
+    ) -> [EpisodePersonItem] {
         let creditsCrew = content.credits.crew
             .sorted { lhs, rhs in
                 if lhs.department != rhs.department {
@@ -218,7 +261,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
                 return lhs.name < rhs.name
             }
             .prefix(DetailSectionPreviewLimit.itemCount)
-            .map(EpisodePersonItem.init(crew:))
+            .map { EpisodePersonItem(crew: $0, localization: localization) }
 
         if !creditsCrew.isEmpty {
             return Array(creditsCrew)
@@ -234,7 +277,7 @@ nonisolated enum EpisodeDetailPresentationBuilder {
                     return lhs.name < rhs.name
                 }
                 .prefix(DetailSectionPreviewLimit.itemCount)
-                .map(EpisodePersonItem.init(crew:))
+                .map { EpisodePersonItem(crew: $0, localization: localization) }
         )
     }
 

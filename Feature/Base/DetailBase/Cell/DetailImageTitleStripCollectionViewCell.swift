@@ -75,6 +75,7 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
         itemSize: CGSize = Layout.defaultItemSize,
         imageHeight: CGFloat = Layout.defaultImageHeight,
         imageBackgroundColor: UIColor = DetailImageTitleCollectionViewCell.defaultImageBackgroundColor,
+        localization: AppInterfaceLocalization,
         onItemSelected: ((DetailImageTitleItem) -> Void)? = nil
     ) {
         updateItemSize(
@@ -91,7 +92,12 @@ class DetailImageTitleStripCollectionViewCell: BaseHorizontalStripCollectionView
                 with: item,
                 imageHeight: imageHeight,
                 imageBackgroundColor: imageBackgroundColor,
-                isSelectable: onItemSelected != nil
+                selectionHint: onItemSelected == nil
+                    ? nil
+                    : localization.string(
+                        "common.accessibility.open_detail.hint",
+                        defaultValue: "Double-tap to open details"
+                    )
             )
         }
     }
@@ -205,7 +211,7 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
         with item: DetailImageTitleItem,
         imageHeight: CGFloat,
         imageBackgroundColor: UIColor,
-        isSelectable: Bool
+        selectionHint: String?
     ) {
         imageHeightConstraint?.update(offset: imageHeight)
         itemImageView.backgroundColor = imageBackgroundColor
@@ -217,7 +223,7 @@ final class DetailImageTitleCollectionViewCell: BaseCollectionViewCell {
             AccessibilityText(
                 label: item.title,
                 value: BaseDisplayTextFormatter.nonEmptyText(item.subtitle),
-                hint: isSelectable ? "點兩下開啟詳細資料" : nil
+                hint: selectionHint
             )
         )
     }

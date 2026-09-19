@@ -52,11 +52,15 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
     init(
         sourceViewController: UIViewController,
         sceneBuilder: MemberCenterSceneBuilding,
-        appFlowRouter: AppFlowRouting
+        appFlowRouter: AppFlowRouting,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.sceneBuilder = sceneBuilder
         self.appFlowRouter = appFlowRouter
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func showMemberCenter(session: AuthSession) {
@@ -64,59 +68,122 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
     }
 
     func showProfileRefreshCompleted() {
-        showAlert(title: "已更新", message: "會員資料已重新整理。")
+        showAlert(
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.updated.title",
+                defaultValue: "Updated"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.profile_refreshed.message",
+                defaultValue: "Your profile has been refreshed."
+            )
+        )
     }
 
     func showProfileRefreshFailed() {
-        showAlert(title: "更新失敗", message: "目前無法重新整理會員資料，請稍後再試。")
+        showAlert(
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.update_failed.title",
+                defaultValue: "Update Failed"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.profile_refresh_failed.message",
+                defaultValue: "Your profile cannot be refreshed right now. Please try again later."
+            )
+        )
     }
 
     func showClearProfileCacheConfirmation(onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
-            title: "清除會員資料快取",
-            message: "會清除本機儲存的會員名稱與頭像快取，但不會登出。",
-            actionTitle: "清除",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.clear_profile_cache.title",
+                defaultValue: "Clear Profile Cache"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.clear_profile_cache.message",
+                defaultValue: "This removes the locally stored profile name and avatar without signing you out."
+            ),
+            actionTitle: interfaceLocalization.string("common.action.clear", defaultValue: "Clear"),
             onConfirm: onConfirm
         )
     }
 
     func showProfileCacheCleared() {
-        showAlert(title: "已清除", message: "會員資料快取已清除。")
+        showAlert(
+            title: interfaceLocalization.string("common.state.cleared", defaultValue: "Cleared"),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.profile_cache_cleared.message",
+                defaultValue: "The profile cache has been cleared."
+            )
+        )
     }
 
     func showClearImageCacheConfirmation(onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
-            title: "清除圖片快取",
-            message: "會清除本機儲存的圖片快取，下次瀏覽時會重新下載。",
-            actionTitle: "清除",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.clear_image_cache.title",
+                defaultValue: "Clear Image Cache"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.clear_image_cache.message",
+                defaultValue: "This removes locally stored images. They will be downloaded again the next time you browse."
+            ),
+            actionTitle: interfaceLocalization.string("common.action.clear", defaultValue: "Clear"),
             onConfirm: onConfirm
         )
     }
 
     func showImageCacheCleared() {
-        showAlert(title: "已清除", message: "圖片快取已清除。")
+        showAlert(
+            title: interfaceLocalization.string("common.state.cleared", defaultValue: "Cleared"),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.image_cache_cleared.message",
+                defaultValue: "The image cache has been cleared."
+            )
+        )
     }
 
     func showClearSearchHistoryConfirmation(onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
-            title: "清除搜尋紀錄？",
-            message: "將刪除本機所有搜尋關鍵字紀錄。此操作無法復原。",
-            actionTitle: "清除",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.clear_search_history.title",
+                defaultValue: "Clear Search History?"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.clear_search_history.message",
+                defaultValue: "This permanently deletes all locally stored search terms."
+            ),
+            actionTitle: interfaceLocalization.string("common.action.clear", defaultValue: "Clear"),
             onConfirm: onConfirm
         )
     }
 
     func showSearchHistoryCleared() {
-        showAlert(title: "已清除", message: "搜尋紀錄已清除。")
+        showAlert(
+            title: interfaceLocalization.string("common.state.cleared", defaultValue: "Cleared"),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.search_history_cleared.message",
+                defaultValue: "Search history has been cleared."
+            )
+        )
     }
 
     func showClearAllLocalDataConfirmation(isMember: Bool, onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
-            title: "清除所有本機資料",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.clear_all_local_data.title",
+                defaultValue: "Clear All Local Data"
+            ),
             message: isMember
-                ? "會清除會員資料、Session、搜尋紀錄與圖片快取，並返回登入頁。"
-                : "會結束訪客模式，清除搜尋紀錄與圖片快取，並返回登入頁。",
-            actionTitle: "清除",
+                ? interfaceLocalization.string(
+                    "main_member_setting.alert.clear_all_local_data.member_message",
+                    defaultValue: "This clears your profile, session, search history, and image cache, then returns to the sign-in screen."
+                )
+                : interfaceLocalization.string(
+                    "main_member_setting.alert.clear_all_local_data.guest_message",
+                    defaultValue: "This ends guest mode, clears search history and the image cache, then returns to the sign-in screen."
+                ),
+            actionTitle: interfaceLocalization.string("common.action.clear", defaultValue: "Clear"),
             onConfirm: onConfirm
         )
     }
@@ -126,8 +193,14 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
         onClearLocalOnly: @escaping () -> Void
     ) {
         showRemoteSessionFailureAlert(
-            title: "無法撤銷 TMDB Session",
-            localOnlyTitle: "仍清除本機資料",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.revoke_session_failed.title",
+                defaultValue: "Unable to Revoke TMDB Session"
+            ),
+            localOnlyTitle: interfaceLocalization.string(
+                "main_member_setting.alert.clear_local_data_anyway",
+                defaultValue: "Clear Local Data Anyway"
+            ),
             onRetry: onRetry,
             onLocalOnly: onClearLocalOnly
         )
@@ -135,12 +208,24 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
 
     func showSecureSessionOperationFailed(onRetry: @escaping () -> Void) {
         let alert = UIAlertController(
-            title: "無法清除登入資料",
-            message: "TMDB Session 可能已失效，但目前無法安全清除此裝置的登入資料。請確認裝置已解鎖後重試。",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.clear_sign_in_data_failed.title",
+                defaultValue: "Unable to Clear Sign-in Data"
+            ),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.clear_sign_in_data_failed.message",
+                defaultValue: "The TMDB session may have expired, but sign-in data cannot be safely cleared from this device. Unlock the device and try again."
+            ),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(UIAlertAction(title: "重試", style: .default) { _ in onRetry() })
+        alert.addAction(UIAlertAction(
+            title: interfaceLocalization.string("common.action.cancel", defaultValue: "Cancel"),
+            style: .cancel
+        ))
+        alert.addAction(UIAlertAction(
+            title: interfaceLocalization.string("common.action.retry", defaultValue: "Retry"),
+            style: .default
+        ) { _ in onRetry() })
         show(alert, using: .present)
     }
 
@@ -150,9 +235,12 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
 
     func showLogoutConfirmation(onConfirm: @escaping () -> Void) {
         showConfirmationAlert(
-            title: "登出",
-            message: "確定要登出並返回登入頁嗎？",
-            actionTitle: "登出",
+            title: interfaceLocalization.string("common.action.sign_out", defaultValue: "Sign Out"),
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.sign_out.message",
+                defaultValue: "Are you sure you want to sign out and return to the sign-in screen?"
+            ),
+            actionTitle: interfaceLocalization.string("common.action.sign_out", defaultValue: "Sign Out"),
             onConfirm: onConfirm
         )
     }
@@ -162,8 +250,14 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
         onClearLocalOnly: @escaping () -> Void
     ) {
         showRemoteSessionFailureAlert(
-            title: "登出失敗",
-            localOnlyTitle: "僅清除本機登入",
+            title: interfaceLocalization.string(
+                "main_member_setting.alert.sign_out_failed.title",
+                defaultValue: "Sign Out Failed"
+            ),
+            localOnlyTitle: interfaceLocalization.string(
+                "main_member_setting.alert.clear_local_sign_in_only",
+                defaultValue: "Clear Local Sign-in Only"
+            ),
             onRetry: onRetry,
             onLocalOnly: onClearLocalOnly
         )
@@ -190,11 +284,20 @@ final class MainMemberSettingRouter: BaseRouter, MainMemberSettingRouting {
     ) {
         let alert = UIAlertController(
             title: title,
-            message: "目前無法連線至 TMDB 撤銷 Session。若只清除本機資料，遠端 Session 可能仍然有效。",
+            message: interfaceLocalization.string(
+                "main_member_setting.alert.remote_session_failure.message",
+                defaultValue: "CineBase cannot connect to TMDB to revoke the session. If you clear only local data, the remote session may remain active."
+            ),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(UIAlertAction(title: "重試", style: .default) { _ in onRetry() })
+        alert.addAction(UIAlertAction(
+            title: interfaceLocalization.string("common.action.cancel", defaultValue: "Cancel"),
+            style: .cancel
+        ))
+        alert.addAction(UIAlertAction(
+            title: interfaceLocalization.string("common.action.retry", defaultValue: "Retry"),
+            style: .default
+        ) { _ in onRetry() })
         alert.addAction(UIAlertAction(title: localOnlyTitle, style: .destructive) { _ in
             onLocalOnly()
         })

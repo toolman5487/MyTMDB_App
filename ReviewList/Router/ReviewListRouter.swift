@@ -20,8 +20,15 @@ protocol ReviewListRouting: AnyObject {
 final class ReviewListRouter: BaseRouter, ReviewListRouting {
 
     func showReviewDetail(for review: ReviewItem) {
-        let title = BaseDisplayTextFormatter.ratingText(review.ratingText) ?? "評論"
-        let viewController = ReviewDetailViewController(review: review, title: title)
+        let title = BaseDisplayTextFormatter.ratingText(
+            review.ratingText,
+            localization: interfaceLocalization
+        ) ?? interfaceLocalization.string("review_detail.fallback_title", defaultValue: "Review")
+        let viewController = ReviewDetailViewController(
+            review: review,
+            title: title,
+            interfaceLocalization: interfaceLocalization
+        )
         show(viewController, using: .pageSheet(.large))
     }
 }

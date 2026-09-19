@@ -24,7 +24,8 @@ final class MainMediaListFilterHeaderView: BaseShowAllFilterHeaderView {
     func configure(
         filters: [MainMediaGenreItem],
         isExpanded: Bool,
-        isShowingSkeleton: Bool = false
+        isShowingSkeleton: Bool = false,
+        localization: AppInterfaceLocalization
     ) {
         onBaseFilterSelected = { [weak self] item in
             guard let id = Int(item.id) else { return }
@@ -34,7 +35,8 @@ final class MainMediaListFilterHeaderView: BaseShowAllFilterHeaderView {
         configure(
             filters: filters.map(BaseFilterHeaderItem.init(movieGenre:)),
             isExpanded: isExpanded,
-            isShowingSkeleton: isShowingSkeleton
+            isShowingSkeleton: isShowingSkeleton,
+            localization: localization
         )
     }
 }

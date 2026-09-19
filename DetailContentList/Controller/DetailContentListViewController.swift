@@ -18,7 +18,8 @@ final class DetailContentListViewController: BaseListViewController {
     private let sceneBuilder: DetailSceneBuilding
     private lazy var router: DetailContentListRouting = DetailContentListRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     // MARK: - Override Points
@@ -41,11 +42,13 @@ final class DetailContentListViewController: BaseListViewController {
 
     init(
         configuration: DetailContentListConfiguration,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.configuration = configuration
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -108,7 +111,8 @@ extension DetailContentListViewController: UICollectionViewDataSource {
             )
             (cell as? DetailContentListRowCollectionViewCell)?.configure(
                 with: item,
-                thumbnailStyle: configuration.thumbnailStyle
+                thumbnailStyle: configuration.thumbnailStyle,
+                localization: interfaceLocalization
             )
             return cell
 
@@ -117,7 +121,10 @@ extension DetailContentListViewController: UICollectionViewDataSource {
                 withReuseIdentifier: DetailContentListGalleryCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? DetailContentListGalleryCollectionViewCell)?.configure(with: item)
+            (cell as? DetailContentListGalleryCollectionViewCell)?.configure(
+                with: item,
+                localization: interfaceLocalization
+            )
             return cell
         }
     }

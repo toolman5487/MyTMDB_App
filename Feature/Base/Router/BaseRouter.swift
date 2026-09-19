@@ -70,6 +70,7 @@ class BaseRouter {
     // MARK: - Properties
 
     private(set) weak var sourceViewController: UIViewController?
+    let interfaceLocalization: AppInterfaceLocalization
 
     var mainTabBarController: MainTabBarController? {
         sourceViewController?.tabBarController as? MainTabBarController
@@ -77,8 +78,12 @@ class BaseRouter {
 
     // MARK: - Initialization
 
-    init(sourceViewController: UIViewController) {
+    init(
+        sourceViewController: UIViewController,
+        interfaceLocalization: AppInterfaceLocalization
+    ) {
         self.sourceViewController = sourceViewController
+        self.interfaceLocalization = interfaceLocalization
     }
 
     // MARK: - Presentation
@@ -150,14 +155,20 @@ class BaseRouter {
     func showAlert(
         title: String,
         message: String,
-        actionTitle: String = "確定"
+        actionTitle: String? = nil
     ) {
         let alert = UIAlertController(
             title: title,
             message: message,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: actionTitle, style: .default))
+        alert.addAction(UIAlertAction(
+            title: actionTitle ?? interfaceLocalization.string(
+                "common.action.ok",
+                defaultValue: "OK"
+            ),
+            style: .default
+        ))
         show(alert, using: .present)
     }
 
@@ -165,7 +176,7 @@ class BaseRouter {
         title: String,
         message: String,
         actionTitle: String,
-        cancelTitle: String = "取消",
+        cancelTitle: String? = nil,
         onConfirm: @escaping () -> Void
     ) {
         let alert = UIAlertController(
@@ -173,7 +184,13 @@ class BaseRouter {
             message: message,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+        alert.addAction(UIAlertAction(
+            title: cancelTitle ?? interfaceLocalization.string(
+                "common.action.cancel",
+                defaultValue: "Cancel"
+            ),
+            style: .cancel
+        ))
         alert.addAction(
             UIAlertAction(title: actionTitle, style: .destructive) { _ in
                 onConfirm()

@@ -24,6 +24,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
     // MARK: - Properties
 
     private var onTitleTap: (() -> Void)?
+    private(set) var interfaceLocalization: AppInterfaceLocalization = .traditionalChinese
 
     // MARK: - UI Components
 
@@ -65,7 +66,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        configure(title: nil)
+        configure(title: nil, localization: interfaceLocalization)
         resetForReuse()
     }
 
@@ -94,7 +95,12 @@ class BaseSectionHeaderView: UICollectionReusableView {
 
     // MARK: - Configuration
 
-    func configure(title: String?, onTitleTap: (() -> Void)? = nil) {
+    func configure(
+        title: String?,
+        localization: AppInterfaceLocalization,
+        onTitleTap: (() -> Void)? = nil
+    ) {
+        interfaceLocalization = localization
         let displayTitle = BaseDisplayTextFormatter.nonEmptyText(title)
         let titleTapHandler = displayTitle == nil ? nil : onTitleTap
         let isTappable = titleTapHandler != nil

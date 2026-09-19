@@ -18,28 +18,28 @@ nonisolated enum PersonDetailSectionItem: Sendable, Equatable {
     case aliases([PersonDetailAliasItem])
     case externalLinks([PersonDetailExternalLinkItem])
 
-    var title: String? {
+    func title(localization: AppInterfaceLocalization) -> String? {
         switch self {
         case .biography:
             return nil
 
         case .facts:
-            return "人物資訊"
+            return localization.string("person_detail.section.information", defaultValue: "Personal Information")
 
         case .movieCredits:
-            return "電影作品"
+            return PersonCreditMediaType.movie.creditsTitle(localization: localization)
 
         case .tvCredits:
-            return "劇集作品"
+            return PersonCreditMediaType.tv.creditsTitle(localization: localization)
 
         case .profileImages:
-            return "人物照片"
+            return localization.string("person_detail.section.profile_images", defaultValue: "Profile Photos")
 
         case .aliases:
-            return "其他名稱"
+            return localization.string("person_detail.section.aliases", defaultValue: "Also Known As")
 
         case .externalLinks:
-            return "相關連結"
+            return localization.string("detail.section.external_links", defaultValue: "Related Links")
         }
     }
 
@@ -80,9 +80,12 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
     let homepageURL: URL?
     let imdbURL: URL?
 
-    init(detail: Person) {
+    init(detail: Person, localization: AppInterfaceLocalization) {
         self.id = detail.id
-        self.name = BaseDisplayTextFormatter.nonEmptyText(detail.name) ?? "未命名"
+        self.name = BaseDisplayTextFormatter.text(
+            detail.name,
+            fallback: localization.string("common.fallback.unnamed", defaultValue: "Unnamed")
+        )
         self.biography = BaseDisplayTextFormatter.nonEmptyText(detail.biography)
         self.profileURL = detail.profilePath.flatMap {
             TMDBResourceURL.image(path: $0, size: .w500)
@@ -90,26 +93,32 @@ nonisolated struct PersonDetailItem: Sendable, Equatable, Identifiable {
         self.birthdayText = BaseDisplayTextFormatter.isoDayText(from: detail.birthday)
         self.deathdayText = BaseDisplayTextFormatter.isoDayText(from: detail.deathday)
         self.placeOfBirthText = BaseDisplayTextFormatter.nonEmptyText(detail.placeOfBirth)
-        self.knownForDepartmentText = BaseFormatter.CrewJobDisplayMapper.departmentText(detail.knownForDepartment)
-        self.genderText = Self.makeGenderText(detail.gender)
+        self.knownForDepartmentText = BaseFormatter.CrewJobDisplayMapper.departmentText(
+            detail.knownForDepartment,
+            localization: localization
+        )
+        self.genderText = Self.makeGenderText(detail.gender, localization: localization)
         self.popularityText = BaseDisplayTextFormatter.positiveDecimal(detail.popularity)
         self.homepageURL = detail.homepage
         self.imdbURL = Self.makeIMDbURL(from: detail.imdbID)
     }
 
-    private static func makeGenderText(_ gender: PersonGender) -> String? {
+    private static func makeGenderText(
+        _ gender: PersonGender,
+        localization: AppInterfaceLocalization
+    ) -> String? {
         switch gender {
         case .notSpecified:
             return nil
 
         case .female:
-            return "女性"
+            return localization.string("person_detail.gender.female", defaultValue: "Female")
 
         case .male:
-            return "男性"
+            return localization.string("person_detail.gender.male", defaultValue: "Male")
 
         case .nonBinary:
-            return "非二元"
+            return localization.string("person_detail.gender.non_binary", defaultValue: "Non-binary")
 
         case .unknown:
             return nil
@@ -182,14 +191,21 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
 
     init(
         cast: PersonCreditCast,
-        mediaType: PersonCreditMediaType? = nil
+        mediaType: PersonCreditMediaType? = nil,
+        localization: AppInterfaceLocalization
     ) {
         let resolvedMediaType = mediaType ?? cast.mediaType
         self.id = "cast-\(resolvedMediaType.idValue)-\(cast.creditID)-\(cast.id)"
         self.sourceID = cast.id
         self.mediaType = resolvedMediaType
-        self.title = BaseDisplayTextFormatter.nonEmptyText(cast.title) ?? "未命名"
-        self.subtitle = Self.makeSubtitle(primary: cast.character, fallback: resolvedMediaType.displayText)
+        self.title = BaseDisplayTextFormatter.text(
+            cast.title,
+            fallback: localization.string("common.fallback.untitled", defaultValue: "Untitled")
+        )
+        self.subtitle = Self.makeSubtitle(
+            primary: cast.character,
+            fallback: resolvedMediaType.displayText(localization: localization)
+        )
         self.dateText = BaseDisplayTextFormatter.isoDayText(from: cast.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(cast.voteAverage, voteCount: cast.voteCount)
         self.posterURL = cast.posterPath.flatMap {
@@ -199,16 +215,21 @@ nonisolated struct PersonDetailCreditItem: Sendable, Equatable, Identifiable {
 
     init(
         crew: PersonCreditCrew,
-        mediaType: PersonCreditMediaType? = nil
+        mediaType: PersonCreditMediaType? = nil,
+        localization: AppInterfaceLocalization
     ) {
         let resolvedMediaType = mediaType ?? crew.mediaType
         self.id = "crew-\(resolvedMediaType.idValue)-\(crew.creditID)-\(crew.id)"
         self.sourceID = crew.id
         self.mediaType = resolvedMediaType
-        self.title = BaseDisplayTextFormatter.nonEmptyText(crew.title) ?? "未命名"
+        self.title = BaseDisplayTextFormatter.text(
+            crew.title,
+            fallback: localization.string("common.fallback.untitled", defaultValue: "Untitled")
+        )
         self.subtitle = BaseFormatter.CrewJobDisplayMapper.displayText(
             job: crew.job,
-            department: crew.department
+            department: crew.department,
+            localization: localization
         ) ?? ""
         self.dateText = BaseDisplayTextFormatter.isoDayText(from: crew.primaryDate)
         self.scoreText = BaseDisplayTextFormatter.score(crew.voteAverage, voteCount: crew.voteCount)
@@ -277,16 +298,29 @@ extension PersonCreditMediaType {
         }
     }
 
-    var displayText: String {
+    func displayText(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .movie:
-            return "電影"
+            return MediaKind.movie.displayName(localization: localization)
 
         case .tv:
-            return "影集"
+            return MediaKind.tv.displayName(localization: localization)
 
         case .unknown(let value):
             return value
+        }
+    }
+
+    func creditsTitle(localization: AppInterfaceLocalization) -> String {
+        switch self {
+        case .movie:
+            return localization.string("person_detail.credits.movie.title", defaultValue: "Movie Credits")
+
+        case .tv:
+            return localization.string("person_detail.credits.tv.title", defaultValue: "TV Credits")
+
+        case .unknown:
+            return localization.string("person_detail.credits.other.title", defaultValue: "Credits")
         }
     }
 }

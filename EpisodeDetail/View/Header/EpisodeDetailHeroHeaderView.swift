@@ -96,7 +96,7 @@ final class EpisodeDetailHeroHeaderView: UICollectionReusableView {
             item.episodeNumberText
         ])
         metadataLabel.text = metadataText(from: item)
-        scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
+        scoreLabel.text = item.ratingText
         applyAccessibilityText(
             AccessibilityText(
                 label: item.title,

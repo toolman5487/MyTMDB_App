@@ -26,7 +26,8 @@ final class MainMediaListViewController: MainBaseViewController {
     private lazy var router: MainMediaListRouting = MainMediaListRouter(
         sourceViewController: self,
         mediaKind: mediaKind,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var filters: [MainMediaGenreItem] = []
@@ -65,7 +66,9 @@ final class MainMediaListViewController: MainBaseViewController {
         let searchController = UISearchController(searchResultsController: searchResultsViewController)
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "搜尋\(mediaKind.displayName)"
+        searchController.searchBar.placeholder = mediaKind.mediaListSearchPlaceholder(
+            localization: interfaceLocalization
+        )
         searchController.obscuresBackgroundDuringPresentation = true
         return searchController
     }()
@@ -73,6 +76,7 @@ final class MainMediaListViewController: MainBaseViewController {
     private lazy var sortBarButtonItem: UIBarButtonItem = {
         let item = AppFactory.SortMenu.makeBarButtonItem(
             selectedOption: nil as MediaSortOrder?,
+            localization: interfaceLocalization,
             onSelect: { [weak self] option in
                 self?.selectSortOption(option)
             }
@@ -86,12 +90,14 @@ final class MainMediaListViewController: MainBaseViewController {
     init(
         mediaKind: MediaKind,
         viewModel: MainMediaListViewModel,
-        sceneBuilder: MediaListSceneBuilding
+        sceneBuilder: MediaListSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.mediaKind = mediaKind
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -170,8 +176,12 @@ final class MainMediaListViewController: MainBaseViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
-        searchController.searchBar.searchTextField.accessibilityLabel = "搜尋\(mediaKind.displayName)"
-        searchController.searchBar.searchTextField.accessibilityHint = "輸入\(mediaKind.displayName)名稱後搜尋"
+        searchController.searchBar.searchTextField.accessibilityLabel = mediaKind.mediaListSearchPlaceholder(
+            localization: interfaceLocalization
+        )
+        searchController.searchBar.searchTextField.accessibilityHint = mediaKind.mediaListSearchAccessibilityHint(
+            localization: interfaceLocalization
+        )
     }
 
     // MARK: - Data Loading
@@ -209,14 +219,17 @@ final class MainMediaListViewController: MainBaseViewController {
             filters = content.genres
             items = []
             isFilterSkeletonVisible = false
-            navigationItem.title = "\(content.selectedGenre.name)\(mediaKind.displayName)"
+            navigationItem.title = mediaKind.mediaListGenreTitle(
+                genreName: content.selectedGenre.name,
+                localization: interfaceLocalization
+            )
             collectionView.backgroundView = nil
             hideSortBarButtonItem()
 
         case .empty:
             renderUnavailableListState(
-                title: "沒有\(mediaKind.displayName)資料",
-                message: "目前沒有可顯示的\(mediaKind.displayName)。",
+                title: mediaKind.mediaListEmptyTitle(localization: interfaceLocalization),
+                message: mediaKind.mediaListEmptyMessage(localization: interfaceLocalization),
                 systemImageName: mediaKind.systemImageName
             )
             hideSortBarButtonItem()
@@ -233,7 +246,10 @@ final class MainMediaListViewController: MainBaseViewController {
             filters = content.genres
             items = content.items
             isFilterSkeletonVisible = false
-            navigationItem.title = "\(content.selectedGenre.name)\(mediaKind.displayName)"
+            navigationItem.title = mediaKind.mediaListGenreTitle(
+                genreName: content.selectedGenre.name,
+                localization: interfaceLocalization
+            )
             collectionView.backgroundView = nil
             showSortBarButtonItem(selectedSortOption: content.selectedSortOption)
         }
@@ -268,6 +284,7 @@ final class MainMediaListViewController: MainBaseViewController {
     ) {
         sortBarButtonItem.menu = AppFactory.SortMenu.makeMenu(
             selectedOption: selectedSortOption,
+            localization: interfaceLocalization,
             onSelect: { [weak self] option in
                 self?.selectSortOption(option, isSearchMode: isSearchMode)
             }
@@ -295,9 +312,17 @@ final class MainMediaListViewController: MainBaseViewController {
         to item: UIBarButtonItem,
         selectedOption: MediaSortOrder?
     ) {
-        item.accessibilityLabel = "排序\(mediaKind.displayName)"
-        item.accessibilityValue = selectedOption?.title ?? "尚未選擇"
-        item.accessibilityHint = "點兩下選擇\(mediaKind.displayName)排序方式"
+        item.accessibilityLabel = mediaKind.mediaListSortAccessibilityLabel(
+            localization: interfaceLocalization
+        )
+        item.accessibilityValue = selectedOption?.title(localization: interfaceLocalization)
+            ?? interfaceLocalization.string(
+                "common.value.not_selected",
+                defaultValue: "Not selected"
+            )
+        item.accessibilityHint = mediaKind.mediaListSortAccessibilityHint(
+            localization: interfaceLocalization
+        )
     }
 
     private func selectSortOption(
@@ -343,7 +368,9 @@ extension MainMediaListViewController: UICollectionViewDataSource {
            items.indices.contains(indexPath.item) {
             cell.configure(
                 with: items[indexPath.item],
-                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width)
+                imageHeight: MediaGridLayoutMetrics.posterHeight(for: collectionView.bounds.width),
+                mediaKind: mediaKind,
+                localization: interfaceLocalization
             )
         }
 
@@ -369,7 +396,8 @@ extension MainMediaListViewController: UICollectionViewDataSource {
             headerView.configure(
                 filters: filters,
                 isExpanded: isFilterPageSheetPresented,
-                isShowingSkeleton: isFilterSkeletonVisible
+                isShowingSkeleton: isFilterSkeletonVisible,
+                localization: interfaceLocalization
             )
             headerView.onFilterSelected = { [weak self] id in
                 self?.selectFilter(id: id)
@@ -549,7 +577,8 @@ private extension MainMediaListViewController {
                 title: title,
                 message: message,
                 systemImageName: systemImageName
-            )
+            ),
+            localization: interfaceLocalization
         )
     }
 

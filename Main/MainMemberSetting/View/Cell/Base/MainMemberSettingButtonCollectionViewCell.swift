@@ -50,8 +50,12 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         accessories = []
         valueLabel.text = nil
         toggleSwitch.setOn(false, animated: false)
+        toggleSwitch.accessibilityLabel = nil
+        toggleSwitch.accessibilityHint = nil
+        toggleSwitch.isAccessibilityElement = false
         toggleValueChangedHandler = nil
         applyAccessibilityText(nil)
+        isAccessibilityElement = true
         accessibilityTraits = .none
     }
 
@@ -61,19 +65,34 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         with item: MainMemberSettingRowItem,
         isFirstInSection: Bool,
         isLastInSection: Bool,
+        localization: AppInterfaceLocalization,
         onToggleValueChanged: ((Bool) -> Void)? = nil
     ) {
         toggleValueChangedHandler = onToggleValueChanged
         contentConfiguration = makeContentConfiguration(for: item)
         backgroundConfiguration = makeBackgroundConfiguration()
         accessories = makeAccessories(for: item.accessory)
-        configureAccessibility(for: item)
+        configureAccessibility(for: item, localization: localization)
     }
 
-    private func configureAccessibility(for item: MainMemberSettingRowItem) {
+    private func configureAccessibility(
+        for item: MainMemberSettingRowItem,
+        localization: AppInterfaceLocalization
+    ) {
         valueLabel.isAccessibilityElement = false
+
+        if case .toggle = item.accessory {
+            applyAccessibilityText(nil)
+            isAccessibilityElement = false
+            toggleSwitch.isAccessibilityElement = true
+            toggleSwitch.accessibilityLabel = item.title
+            toggleSwitch.accessibilityHint = item.subtitle
+            return
+        }
+
         toggleSwitch.isAccessibilityElement = false
-        applyAccessibilityText(item.accessibilityText)
+        isAccessibilityElement = true
+        applyAccessibilityText(item.accessibilityText(localization: localization))
         accessibilityTraits = item.action == nil ? .staticText : .button
     }
 

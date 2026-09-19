@@ -16,7 +16,10 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     private let mediaID: Int
     private let viewModel: ReviewListViewModel
-    private lazy var router: ReviewListRouting = ReviewListRouter(sourceViewController: self)
+    private lazy var router: ReviewListRouting = ReviewListRouter(
+        sourceViewController: self,
+        interfaceLocalization: interfaceLocalization
+    )
 
     private var filters: [ReviewFilterItem] = []
     private var reviews: [ReviewItem] = []
@@ -32,11 +35,13 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     init(
         mediaID: Int,
-        viewModel: ReviewListViewModel
+        viewModel: ReviewListViewModel,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.mediaID = mediaID
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -64,7 +69,10 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
 
     override func configureView() {
         super.configureView()
-        title = "評論"
+        title = interfaceLocalization.string(
+            "review_list.navigation.title",
+            defaultValue: "Reviews"
+        )
         configureNavigationBarAppearance()
         configureCollectionView()
     }
@@ -152,10 +160,17 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "目前沒有評論",
-                    message: "這個篩選條件下沒有可顯示的評論。",
+                    title: interfaceLocalization.string(
+                        "review_list.empty.title",
+                        defaultValue: "No Reviews Yet"
+                    ),
+                    message: interfaceLocalization.string(
+                        "review_list.empty.message",
+                        defaultValue: "No reviews match this filter."
+                    ),
                     systemImageName: "text.bubble"
-                )
+                ),
+                localization: interfaceLocalization
             )
 
         case .failed(let message):
@@ -164,7 +179,10 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
             hasNextPage = false
             isLoadingNextPage = false
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
+            collectionView.backgroundView = ErrorMessageView(
+                message: message,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.loadInitialContent()
             }
         }
@@ -176,7 +194,8 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         ReviewFilter.allCases.map {
             ReviewFilterItem(
                 filter: $0,
-                selectedFilter: viewModel.selectedFilter
+                selectedFilter: viewModel.selectedFilter,
+                localization: interfaceLocalization
             )
         }
     }
@@ -219,7 +238,10 @@ extension ReviewListViewController: UICollectionViewDataSource {
             withReuseIdentifier: ReviewCollectionViewCell.reuseIdentifier,
             for: indexPath
         )
-        (cell as? ReviewCollectionViewCell)?.configure(with: reviews[indexPath.item])
+        (cell as? ReviewCollectionViewCell)?.configure(
+            with: reviews[indexPath.item],
+            localization: interfaceLocalization
+        )
         return cell
     }
 
@@ -236,7 +258,10 @@ extension ReviewListViewController: UICollectionViewDataSource {
             )
 
             if let footerView = reusableView as? ReviewLoadingFooterView {
-                footerView.configure(isAnimating: isLoadingNextPage)
+                footerView.configure(
+                    isAnimating: isLoadingNextPage,
+                    localization: interfaceLocalization
+                )
             }
 
             return reusableView
@@ -253,7 +278,10 @@ extension ReviewListViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? ReviewFilterHeaderView {
-            headerView.configure(filters: filters)
+            headerView.configure(
+                filters: filters,
+                localization: interfaceLocalization
+            )
             headerView.onFilterSelected = { [weak self] filter in
                 self?.viewModel.selectFilter(filter)
             }

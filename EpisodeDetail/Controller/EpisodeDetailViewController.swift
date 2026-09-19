@@ -18,7 +18,8 @@ final class EpisodeDetailViewController: DetailActionBarViewController {
     private let sceneBuilder: DetailSceneBuilding
     private lazy var router: DetailRouting = DetailRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
     private lazy var shareBarButtonItem = UIBarButtonItem(
         image: UIImage(systemName: "square.and.arrow.up"),
@@ -44,12 +45,14 @@ final class EpisodeDetailViewController: DetailActionBarViewController {
     init(
         input: EpisodeDetailInput,
         viewModel: EpisodeDetailViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.input = input
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -214,7 +217,10 @@ final class EpisodeDetailViewController: DetailActionBarViewController {
 
     private func presentRatingSheet() {
         router.showRatingPageSheet(
-            title: "為這集評分",
+            title: interfaceLocalization.string(
+                "episode_detail.rating.title",
+                defaultValue: "Rate This Episode"
+            ),
             currentValue: viewModel.ratingState.value,
             defaultValue: viewModel.ratingDefaultValue,
             onSubmit: { [weak self] value in
@@ -273,7 +279,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailOverviewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailOverviewCollectionViewCell)?.configure(overview: item.overview ?? "")
+            (cell as? EpisodeDetailOverviewCollectionViewCell)?.configure(
+                overview: item.overview ?? "",
+                localization: interfaceLocalization
+            )
             return cell
 
         case .facts(let facts):
@@ -289,7 +298,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailVideosCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailVideosCollectionViewCell)?.configure(videos: videos) { [weak self] video in
+            (cell as? EpisodeDetailVideosCollectionViewCell)?.configure(
+                videos: videos,
+                localization: interfaceLocalization
+            ) { [weak self] video in
                 guard let self else { return }
                 if let youtubeVideoKey = video.youtubeVideoKey {
                     router.showYouTubeVideo(videoKey: youtubeVideoKey, title: video.title)
@@ -304,7 +316,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailCastCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailCastCollectionViewCell)?.configure(cast: people) { [weak self] personID in
+            (cell as? EpisodeDetailCastCollectionViewCell)?.configure(
+                cast: people,
+                localization: interfaceLocalization
+            ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
@@ -315,7 +330,8 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? EpisodeDetailGuestStarsCollectionViewCell)?.configure(
-                guestStars: people
+                guestStars: people,
+                localization: interfaceLocalization
             ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
@@ -326,7 +342,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailCrewCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailCrewCollectionViewCell)?.configure(crew: people) { [weak self] personID in
+            (cell as? EpisodeDetailCrewCollectionViewCell)?.configure(
+                crew: people,
+                localization: interfaceLocalization
+            ) { [weak self] personID in
                 self?.router.showPersonDetail(personID: personID)
             }
             return cell
@@ -336,7 +355,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailImagesCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailImagesCollectionViewCell)?.configure(images: images) { [weak self] image in
+            (cell as? EpisodeDetailImagesCollectionViewCell)?.configure(
+                images: images,
+                localization: interfaceLocalization
+            ) { [weak self] image in
                 self?.showImagePreview(selectedImage: image)
             }
             return cell
@@ -346,7 +368,10 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 withReuseIdentifier: EpisodeDetailExternalLinksCollectionViewCell.reuseIdentifier,
                 for: indexPath
             )
-            (cell as? EpisodeDetailExternalLinksCollectionViewCell)?.configure(items: links) { [weak self] url in
+            (cell as? EpisodeDetailExternalLinksCollectionViewCell)?.configure(
+                items: links,
+                localization: interfaceLocalization
+            ) { [weak self] url in
                 self?.router.openExternalURL(url)
             }
             return cell
@@ -357,7 +382,8 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
                 for: indexPath
             )
             (cell as? EpisodeDetailAccountStateCollectionViewCell)?.configure(
-                items: accountStateRows(from: accountState)
+                items: accountStateRows(from: accountState),
+                localization: interfaceLocalization
             )
             return cell
         }
@@ -388,7 +414,7 @@ extension EpisodeDetailViewController: UICollectionViewDataSource {
 
         return dequeueDetailSectionHeader(
             at: indexPath,
-            title: sections[indexPath.section].title
+            title: sections[indexPath.section].title(localization: interfaceLocalization)
         )
     }
 }
@@ -413,7 +439,7 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        guard sections[section].title != nil else {
+        guard sections[section].title(localization: interfaceLocalization) != nil else {
             return .zero
         }
 
@@ -449,7 +475,9 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
             )
         }
 
-        let topInset = sections[section].title == nil ? 0 : DetailLayoutMetrics.headerContentSpacing
+        let topInset = sections[section].title(localization: interfaceLocalization) == nil
+            ? 0
+            : DetailLayoutMetrics.headerContentSpacing
 
         return DetailLayoutMetrics.sectionInsets(top: topInset)
     }
@@ -464,7 +492,8 @@ extension EpisodeDetailViewController: UICollectionViewDelegateFlowLayout {
 
             return EpisodeDetailOverviewCollectionViewCell.fittingHeight(
                 for: overview,
-                width: width
+                width: width,
+                localization: interfaceLocalization
             )
 
         case .facts:
@@ -499,7 +528,10 @@ private extension EpisodeDetailViewController {
         [
             EpisodeDetailTextListItem(
                 id: "rating",
-                title: "你的評分",
+                title: interfaceLocalization.string(
+                    "detail.account_state.your_rating",
+                    defaultValue: "Your Rating"
+                ),
                 subtitle: accountState.ratingText
             )
         ]

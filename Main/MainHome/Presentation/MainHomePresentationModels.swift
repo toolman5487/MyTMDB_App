@@ -11,13 +11,16 @@ import Foundation
 
 nonisolated enum MainHomePresentationBuilder {
 
-    static func makeSections(from sections: [HomeSection]) -> [MainHomeSectionItem] {
+    static func makeSections(
+        from sections: [HomeSection],
+        localization: AppInterfaceLocalization
+    ) -> [MainHomeSectionItem] {
         sections
             .filter { !$0.items.isEmpty }
             .sorted { lhs, rhs in
                 lhs.category.displayPriority < rhs.category.displayPriority
             }
-            .map(MainHomeSectionItem.init(section:))
+            .map { MainHomeSectionItem(section: $0, localization: localization) }
     }
 }
 
@@ -29,14 +32,15 @@ nonisolated struct MainHomeSectionItem: Sendable, Equatable, Identifiable {
     let title: String
     let contents: [HomeContentItem]
 
-    init(section: HomeSection) {
+    init(section: HomeSection, localization: AppInterfaceLocalization) {
         self.id = section.category
         self.category = section.category
-        self.title = section.category.title
+        self.title = section.category.title(localization: localization)
         self.contents = section.items.map { summary in
             HomeContentItem(
                 summary: summary,
-                mediaType: section.category.mediaType
+                mediaType: section.category.mediaType,
+                localization: localization
             )
         }
     }

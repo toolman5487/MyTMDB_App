@@ -39,6 +39,7 @@ final class MainSearchViewModel {
     private let loadDiscovery: LoadMainSearchDiscoveryUseCase
     private let repository: MainSearchProviding
     private let searchHistory: SearchHistoryProviding
+    private let localization: AppInterfaceLocalization
     private let recentSearchLimit = 15
     private var cachedDailyTrendingContent: MainSearchDailyTrendingContent?
 
@@ -47,11 +48,13 @@ final class MainSearchViewModel {
     init(
         loadDiscovery: LoadMainSearchDiscoveryUseCase,
         repository: MainSearchProviding,
-        searchHistory: SearchHistoryProviding
+        searchHistory: SearchHistoryProviding,
+        localization: AppInterfaceLocalization
     ) {
         self.loadDiscovery = loadDiscovery
         self.repository = repository
         self.searchHistory = searchHistory
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -79,10 +82,14 @@ final class MainSearchViewModel {
 
             let page = discovery.trending
             let items = MainSearchContent.uniqueResults(
-                page.items.map(MainSearchResultItem.init(result:))
+                page.items.map {
+                    MainSearchResultItem(result: $0, localization: localization)
+                }
             ).shuffled()
             let popularPeople = MainSearchContent.uniqueResults(
-                discovery.popularPeople.map(MainSearchResultItem.init(person:))
+                discovery.popularPeople.map {
+                    MainSearchResultItem(person: $0, localization: localization)
+                }
             )
 
             let content = MainSearchDailyTrendingContent(
@@ -99,7 +106,7 @@ final class MainSearchViewModel {
             state = dailyTrendingState(for: content)
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -125,7 +132,10 @@ final class MainSearchViewModel {
                 return
             }
 
-            let updatedContent = currentContent.appending(page: nextPage)
+            let updatedContent = currentContent.appending(
+                page: nextPage,
+                localization: localization
+            )
             cachedDailyTrendingContent = updatedContent
             state = .dailyTrending(updatedContent)
         } catch {
@@ -192,7 +202,7 @@ final class MainSearchViewModel {
             state = content.results.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -220,7 +230,10 @@ final class MainSearchViewModel {
                 return
             }
 
-            state = .results(currentContent.appending(page: nextPage))
+            state = .results(currentContent.appending(
+                page: nextPage,
+                localization: localization
+            ))
         } catch {
             guard !Task.isCancelled else { return }
 
@@ -255,7 +268,9 @@ final class MainSearchViewModel {
     ) -> MainSearchContent {
         MainSearchContent(
             keyword: keyword,
-            allResults: MainSearchContent.uniqueResults(page.items.map(MainSearchResultItem.init(result:))),
+            allResults: MainSearchContent.uniqueResults(page.items.map {
+                MainSearchResultItem(result: $0, localization: localization)
+            }),
             selectedFilter: .all,
             currentPage: page.number,
             totalPages: page.totalPages,

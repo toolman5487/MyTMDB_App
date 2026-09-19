@@ -11,8 +11,11 @@ import Foundation
 
 nonisolated enum PersonDetailSectionBuilder {
 
-    static func makeSections(content: PersonDetailContent) -> [PersonDetailSectionItem] {
-        let detailItem = PersonDetailItem(detail: content.detail)
+    static func makeSections(
+        content: PersonDetailContent,
+        localization: AppInterfaceLocalization
+    ) -> [PersonDetailSectionItem] {
+        let detailItem = PersonDetailItem(detail: content.detail, localization: localization)
         var sections: [PersonDetailSectionItem] = [
             .biography(
                 PersonDetailBiographySectionItem(
@@ -22,14 +25,15 @@ nonisolated enum PersonDetailSectionBuilder {
             )
         ]
 
-        let facts = makeFacts(detail: detailItem)
+        let facts = makeFacts(detail: detailItem, localization: localization)
         if !facts.isEmpty {
             sections.append(.facts(facts))
         }
 
         let movieCreditItems = PersonDetailCreditsPresentationBuilder.makePreviewItems(
             credits: content.combinedCredits,
-            mediaType: .movie
+            mediaType: .movie,
+            localization: localization
         )
         if !movieCreditItems.isEmpty {
             sections.append(.movieCredits(movieCreditItems))
@@ -37,7 +41,8 @@ nonisolated enum PersonDetailSectionBuilder {
 
         let tvCreditItems = PersonDetailCreditsPresentationBuilder.makePreviewItems(
             credits: content.combinedCredits,
-            mediaType: .tv
+            mediaType: .tv,
+            localization: localization
         )
         if !tvCreditItems.isEmpty {
             sections.append(.tvCredits(tvCreditItems))
@@ -62,7 +67,11 @@ nonisolated enum PersonDetailSectionBuilder {
             sections.append(.aliases(Array(aliasItems)))
         }
 
-        let externalLinks = makeExternalLinks(detail: detailItem, externalIDs: content.externalIDs)
+        let externalLinks = makeExternalLinks(
+            detail: detailItem,
+            externalIDs: content.externalIDs,
+            localization: localization
+        )
         if !externalLinks.isEmpty {
             sections.append(.externalLinks(externalLinks))
         }
@@ -70,14 +79,35 @@ nonisolated enum PersonDetailSectionBuilder {
         return sections
     }
 
-    private static func makeFacts(detail: PersonDetailItem) -> [PersonDetailFactItem] {
+    private static func makeFacts(
+        detail: PersonDetailItem,
+        localization: AppInterfaceLocalization
+    ) -> [PersonDetailFactItem] {
         [
-            makeFact(title: "生日", value: detail.birthdayText),
-            makeFact(title: "逝世", value: detail.deathdayText),
-            makeFact(title: "出生地", value: detail.placeOfBirthText),
-            makeFact(title: "主要部門", value: detail.knownForDepartmentText),
-            makeFact(title: "性別", value: detail.genderText),
-            makeFact(title: "人氣", value: detail.popularityText)
+            makeFact(
+                title: localization.string("person_detail.fact.birthday", defaultValue: "Birthday"),
+                value: detail.birthdayText
+            ),
+            makeFact(
+                title: localization.string("person_detail.fact.deathday", defaultValue: "Died"),
+                value: detail.deathdayText
+            ),
+            makeFact(
+                title: localization.string("person_detail.fact.place_of_birth", defaultValue: "Place of Birth"),
+                value: detail.placeOfBirthText
+            ),
+            makeFact(
+                title: localization.string("person_detail.fact.known_for", defaultValue: "Known For"),
+                value: detail.knownForDepartmentText
+            ),
+            makeFact(
+                title: localization.string("person_detail.fact.gender", defaultValue: "Gender"),
+                value: detail.genderText
+            ),
+            makeFact(
+                title: localization.string("person_detail.fact.popularity", defaultValue: "Popularity"),
+                value: detail.popularityText
+            )
         ].compactMap { $0 }
     }
 
@@ -88,11 +118,20 @@ nonisolated enum PersonDetailSectionBuilder {
 
     private static func makeExternalLinks(
         detail: PersonDetailItem,
-        externalIDs: PersonExternalIDs
+        externalIDs: PersonExternalIDs,
+        localization: AppInterfaceLocalization
     ) -> [PersonDetailExternalLinkItem] {
         [
             detail.homepageURL.map {
-                PersonDetailExternalLinkItem(id: "homepage", title: "官方網站", value: $0.absoluteString, url: $0)
+                PersonDetailExternalLinkItem(
+                    id: "homepage",
+                    title: localization.string(
+                        "person_detail.link.homepage",
+                        defaultValue: "Official Website"
+                    ),
+                    value: $0.absoluteString,
+                    url: $0
+                )
             },
             externalIDs.imdbID.flatMap {
                 makeExternalLink(id: "imdb", title: "IMDb", value: $0, urlString: "https://www.imdb.com/name/\($0)")

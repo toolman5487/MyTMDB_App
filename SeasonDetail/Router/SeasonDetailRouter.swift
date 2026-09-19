@@ -37,15 +37,20 @@ final class SeasonDetailRouter: BaseRouter, SeasonDetailRouting {
         sourceViewController: UIViewController,
         seriesID: Int,
         seasonNumber: Int,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.seriesID = seriesID
         self.seasonNumber = seasonNumber
         self.detailRouter = DetailRouter(
             sourceViewController: sourceViewController,
-            sceneBuilder: sceneBuilder
+            sceneBuilder: sceneBuilder,
+            interfaceLocalization: interfaceLocalization
         )
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - Push

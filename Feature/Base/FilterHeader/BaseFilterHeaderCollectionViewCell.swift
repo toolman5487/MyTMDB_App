@@ -118,7 +118,8 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         title: String,
-        isSelected: Bool
+        isSelected: Bool,
+        localization: AppInterfaceLocalization
     ) {
         hideSkeletonIfNeeded()
         titleLabel.isHidden = false
@@ -129,8 +130,18 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
         applyAccessibility(
             AccessibilityText(
                 label: title,
-                value: isSelected ? "已選取" : "未選取",
-                hint: isSelected ? "目前套用的篩選" : "點兩下套用篩選"
+                value: isSelected
+                    ? localization.string("common.accessibility.selected", defaultValue: "Selected")
+                    : localization.string("common.accessibility.not_selected", defaultValue: "Not selected"),
+                hint: isSelected
+                    ? localization.string(
+                        "filter.accessibility.applied.hint",
+                        defaultValue: "Currently applied filter"
+                    )
+                    : localization.string(
+                        "filter.accessibility.apply.hint",
+                        defaultValue: "Double-tap to apply this filter"
+                    )
             )
         )
         accessibilityTraits = isSelected ? [.button, .selected] : .button

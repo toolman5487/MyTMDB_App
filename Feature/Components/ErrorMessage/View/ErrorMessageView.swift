@@ -70,9 +70,13 @@ final class ErrorMessageView: UIView {
         setupConstraints()
     }
 
-    convenience init(message: ErrorMessage, action: (() -> Void)? = nil) {
+    convenience init(
+        message: ErrorMessage,
+        localization: AppInterfaceLocalization,
+        action: (() -> Void)? = nil
+    ) {
         self.init(frame: .zero)
-        configure(with: message, action: action)
+        configure(with: message, localization: localization, action: action)
     }
 
     // MARK: - Setup
@@ -99,7 +103,11 @@ final class ErrorMessageView: UIView {
 
     // MARK: - Configuration
 
-    func configure(with message: ErrorMessage, action: (() -> Void)? = nil) {
+    func configure(
+        with message: ErrorMessage,
+        localization: AppInterfaceLocalization,
+        action: (() -> Void)? = nil
+    ) {
         self.action = action
         imageView.image = UIImage(systemName: message.systemImageName)
         titleLabel.text = message.title
@@ -117,7 +125,11 @@ final class ErrorMessageView: UIView {
         if let actionTitle = message.actionTitle, action != nil {
             actionButton.configuration?.title = actionTitle
             actionButton.isHidden = false
-            actionButton.accessibilityHint = "點兩下\(actionTitle)"
+            actionButton.accessibilityHint = localization.formatted(
+                "common.accessibility.activate_action.hint_format",
+                defaultValue: "Double-tap to %@",
+                actionTitle
+            )
         } else {
             actionButton.configuration?.title = nil
             actionButton.isHidden = true

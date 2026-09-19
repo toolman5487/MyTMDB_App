@@ -33,7 +33,8 @@ final class MainHomeViewController: MainBaseViewController {
     private let sceneBuilder: HomeSceneBuilding
     private lazy var router: MainHomeRouting = MainHomeRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var sections: [MainHomeSectionItem] = []
@@ -45,11 +46,13 @@ final class MainHomeViewController: MainBaseViewController {
 
     init(
         viewModel: MainHomeViewModel,
-        sceneBuilder: HomeSceneBuilding
+        sceneBuilder: HomeSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -171,13 +174,19 @@ final class MainHomeViewController: MainBaseViewController {
             sections = []
             carouselItems = []
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: .emptyContent)
+            collectionView.backgroundView = ErrorMessageView(
+                message: .emptyContent(localization: interfaceLocalization),
+                localization: interfaceLocalization
+            )
 
         case .failed(let message):
             sections = []
             carouselItems = []
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message) { [weak self] in
+            collectionView.backgroundView = ErrorMessageView(
+                message: message,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.loadInitialContent()
             }
         }
@@ -251,6 +260,7 @@ extension MainHomeViewController: UICollectionViewDataSource {
                 headerView.configure(
                     title: section.title,
                     carouselItems: carouselItems,
+                    localization: interfaceLocalization,
                     onTitleTap: { [weak self] in
                         self?.showSectionList(for: section.category)
                     }
@@ -270,7 +280,10 @@ extension MainHomeViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainHomeSectionHeaderView {
-            headerView.configure(title: section.title) { [weak self] in
+            headerView.configure(
+                title: section.title,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.showSectionList(for: section.category)
             }
         }

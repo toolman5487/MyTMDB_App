@@ -16,9 +16,24 @@ class MainHomeSectionHeaderView: BaseSectionHeaderView {
 
     override func titleAccessibilityText(for title: String, isTappable: Bool) -> AccessibilityText {
         AccessibilityText(
-            label: "\(title) 分類",
-            value: isTappable ? "可查看更多" : nil,
-            hint: isTappable ? "點兩下查看\(title)完整列表" : nil
+            label: interfaceLocalization.formatted(
+                "home.section.accessibility_label_format",
+                defaultValue: "%@ category",
+                title
+            ),
+            value: isTappable
+                ? interfaceLocalization.string(
+                    "home.section.accessibility_value",
+                    defaultValue: "More available"
+                )
+                : nil,
+            hint: isTappable
+                ? interfaceLocalization.formatted(
+                    "home.section.accessibility_hint_format",
+                    defaultValue: "Double-tap to view all %@",
+                    title
+                )
+                : nil
         )
     }
 }

@@ -39,6 +39,7 @@ final class RatingPageSheetViewController: UIViewController {
     // MARK: - Properties
 
     private let currentValue: Double?
+    private let interfaceLocalization: AppInterfaceLocalization
     private let onSubmit: (Double) -> Void
     private let onDelete: () -> Void
 
@@ -55,20 +56,33 @@ final class RatingPageSheetViewController: UIViewController {
     }()
 
     private lazy var starSliderView: RatingStarSliderView = {
-        let view = RatingStarSliderView(value: selectedValue)
+        let view = RatingStarSliderView(
+            value: selectedValue,
+            localization: interfaceLocalization
+        )
         view.addTarget(self, action: #selector(handleRatingValueChanged), for: .valueChanged)
         view.addTarget(self, action: #selector(handleRatingEditingEnded), for: .editingDidEnd)
         return view
     }()
 
     private lazy var submitButton: UIButton = {
-        let button = AppFactory.Button.primaryFilled(title: "送出評分")
+        let button = AppFactory.Button.primaryFilled(
+            title: interfaceLocalization.string(
+                "rating_sheet.submit",
+                defaultValue: "Submit Rating"
+            )
+        )
         button.addTarget(self, action: #selector(handleSubmitButtonTapped), for: .touchUpInside)
         return button
     }()
 
     private lazy var deleteButton: UIButton = {
-        let button = AppFactory.Button.destructiveFilled(title: "刪除評分")
+        let button = AppFactory.Button.destructiveFilled(
+            title: interfaceLocalization.string(
+                "rating_sheet.delete",
+                defaultValue: "Delete Rating"
+            )
+        )
         button.isHidden = currentValue == nil
         button.addTarget(self, action: #selector(handleDeleteButtonTapped), for: .touchUpInside)
         return button
@@ -103,10 +117,12 @@ final class RatingPageSheetViewController: UIViewController {
         title: String,
         currentValue: Double?,
         defaultValue: Double = AccountMediaRatingValue.fallback,
+        interfaceLocalization: AppInterfaceLocalization,
         onSubmit: @escaping (Double) -> Void,
         onDelete: @escaping () -> Void
     ) {
         self.currentValue = currentValue
+        self.interfaceLocalization = interfaceLocalization
         self.onSubmit = onSubmit
         self.onDelete = onDelete
         self.selectedValue = RatingStarValue.normalized(currentValue ?? defaultValue)
@@ -114,13 +130,9 @@ final class RatingPageSheetViewController: UIViewController {
         self.title = title
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.currentValue = nil
-        self.onSubmit = { _ in }
-        self.onDelete = {}
-        self.selectedValue = RatingStarValue.normalized(AccountMediaRatingValue.fallback)
-        super.init(coder: coder)
-        title = "評分"
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
@@ -309,8 +321,11 @@ private final class RatingStarSliderView: UIControl {
 
     private lazy var filledStackView = makeStarStackView(imageViews: filledStarImageViews)
 
-    init(value: Double) {
+    private let localization: AppInterfaceLocalization
+
+    init(value: Double, localization: AppInterfaceLocalization) {
         self.value = RatingPageSheetViewController.RatingStarValue.normalized(value)
+        self.localization = localization
         super.init(frame: .zero)
         configureView()
         setupHierarchy()
@@ -318,13 +333,9 @@ private final class RatingStarSliderView: UIControl {
         updateStarImages()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.value = RatingPageSheetViewController.RatingStarValue.normalized(AccountMediaRatingValue.fallback)
-        super.init(coder: coder)
-        configureView()
-        setupHierarchy()
-        setupConstraints()
-        updateStarImages()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override var intrinsicContentSize: CGSize {
@@ -359,8 +370,11 @@ private final class RatingStarSliderView: UIControl {
         filledContainerView.isUserInteractionEnabled = false
         isAccessibilityElement = true
         accessibilityTraits = .adjustable
-        accessibilityLabel = "評分"
-        accessibilityHint = "上下調整評分星等"
+        accessibilityLabel = localization.string("common.rating.label", defaultValue: "Rating")
+        accessibilityHint = localization.string(
+            "rating_sheet.slider.accessibility_hint",
+            defaultValue: "Swipe up or down to adjust the rating"
+        )
         updateAccessibilityValue()
         (emptyStarImageViews + filledStarImageViews).forEach {
             $0.isAccessibilityElement = false
@@ -387,7 +401,11 @@ private final class RatingStarSliderView: UIControl {
         let displayValue = value.truncatingRemainder(dividingBy: 1) == 0
             ? String(Int(value))
             : String(format: "%.1f", value)
-        accessibilityValue = "\(displayValue) 星"
+        accessibilityValue = localization.formatted(
+            "rating_sheet.slider.accessibility_value_format",
+            defaultValue: "%@ out of 10",
+            displayValue
+        )
     }
 
     private func setupHierarchy() {

@@ -26,39 +26,58 @@ final class LoginPageView: UIView, AuthPageView {
     weak var delegate: LoginPageViewDelegate?
 
     let page: AuthPage = .login
+    private let localization: AppInterfaceLocalization
 
     // MARK: - UI Components
 
     private let cardView = UIView()
 
-    private let userField = AuthPageStyle.makeTextField(
-        placeholder: "輸入帳號",
+    private lazy var userField = AuthPageStyle.makeTextField(
+        placeholder: localization.string(
+            "login.username.placeholder",
+            defaultValue: "Enter username"
+        ),
         contentType: .username
     )
 
-    private let passwordToggleButton: UIButton = {
+    private lazy var passwordToggleButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         button.tintColor = .secondaryLabel
         button.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-        button.accessibilityLabel = "顯示密碼"
-        button.accessibilityHint = "點兩下切換密碼可見狀態"
+        button.accessibilityLabel = localization.string(
+            "login.password.show.accessibility_label",
+            defaultValue: "Show Password"
+        )
+        button.accessibilityHint = localization.string(
+            "login.password.toggle.accessibility_hint",
+            defaultValue: "Double-tap to toggle password visibility"
+        )
         return button
     }()
 
-    private let passField = AuthPageStyle.makeTextField(
-        placeholder: "輸入密碼",
+    private lazy var passField = AuthPageStyle.makeTextField(
+        placeholder: localization.string(
+            "login.password.placeholder",
+            defaultValue: "Enter password"
+        ),
         contentType: .password,
         isSecure: true
     )
 
     private lazy var inputStack = AuthPageStyle.makeInputStack(arrangedSubviews: [userField, passField])
 
-    private let loginButton = AuthPageStyle.makeFilledButton(title: "確認")
+    private lazy var loginButton = AuthPageStyle.makeFilledButton(
+        title: localization.string("common.action.confirm", defaultValue: "Confirm")
+    )
 
     // MARK: - Initialization
 
-    override init(frame: CGRect) {
+    init(
+        localization: AppInterfaceLocalization,
+        frame: CGRect = .zero
+    ) {
+        self.localization = localization
         super.init(frame: frame)
         setup()
     }
@@ -145,7 +164,11 @@ final class LoginPageView: UIView, AuthPageView {
 
         let imageName = passField.isSecureTextEntry ? "eye.slash" : "eye"
         sender.setImage(UIImage(systemName: imageName), for: .normal)
-        sender.accessibilityLabel = passField.isSecureTextEntry ? "顯示密碼" : "隱藏密碼"
-        sender.accessibilityValue = passField.isSecureTextEntry ? "目前已隱藏" : "目前可見"
+        sender.accessibilityLabel = passField.isSecureTextEntry
+            ? localization.string("login.password.show.accessibility_label", defaultValue: "Show Password")
+            : localization.string("login.password.hide.accessibility_label", defaultValue: "Hide Password")
+        sender.accessibilityValue = passField.isSecureTextEntry
+            ? localization.string("login.password.hidden.accessibility_value", defaultValue: "Currently hidden")
+            : localization.string("login.password.visible.accessibility_value", defaultValue: "Currently visible")
     }
 }

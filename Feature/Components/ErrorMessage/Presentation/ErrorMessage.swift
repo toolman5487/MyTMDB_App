@@ -31,7 +31,7 @@ nonisolated struct ErrorMessage: Sendable, Equatable {
 // MARK: - ErrorMessageConvertible
 
 nonisolated protocol ErrorMessageConvertible {
-    var errorMessage: ErrorMessage { get }
+    func errorMessage(localization: AppInterfaceLocalization) -> ErrorMessage
 }
 
 // MARK: - Error Presentation
@@ -39,14 +39,24 @@ nonisolated protocol ErrorMessageConvertible {
 nonisolated extension Error {
 
     var errorMessage: ErrorMessage {
+        errorMessage(localization: .traditionalChinese)
+    }
+
+    func errorMessage(localization: AppInterfaceLocalization) -> ErrorMessage {
         if let error = self as? ErrorMessageConvertible {
-            return error.errorMessage
+            return error.errorMessage(localization: localization)
         }
 
         return ErrorMessage(
-            title: "發生錯誤",
+            title: localization.string(
+                "error.generic.title",
+                defaultValue: "Something Went Wrong"
+            ),
             message: localizedDescription,
-            actionTitle: "重試"
+            actionTitle: localization.string(
+                "common.action.retry",
+                defaultValue: "Retry"
+            )
         )
     }
 }
@@ -55,17 +65,35 @@ nonisolated extension Error {
 
 nonisolated extension ErrorMessage {
 
-    static let emptyContent = ErrorMessage(
-        title: "目前沒有可顯示的內容",
-        message: "請稍後再重新整理。",
-        systemImageName: "tray",
-        actionTitle: nil
-    )
+    static func emptyContent(localization: AppInterfaceLocalization) -> ErrorMessage {
+        ErrorMessage(
+            title: localization.string(
+                "empty.content.title",
+                defaultValue: "Nothing to Show"
+            ),
+            message: localization.string(
+                "empty.content.message",
+                defaultValue: "Try refreshing again later."
+            ),
+            systemImageName: "tray",
+            actionTitle: nil
+        )
+    }
 
-    static let emptyMemberCenterContent = ErrorMessage(
-        title: "目前沒有會員內容",
-        message: "收藏、待看、評分與片單都還沒有資料。",
-        systemImageName: "tray",
-        actionTitle: nil
-    )
+    static func emptyMemberCenterContent(
+        localization: AppInterfaceLocalization
+    ) -> ErrorMessage {
+        ErrorMessage(
+            title: localization.string(
+                "empty.member_center.title",
+                defaultValue: "No Account Content Yet"
+            ),
+            message: localization.string(
+                "empty.member_center.message",
+                defaultValue: "Favorites, watchlists, ratings, and lists will appear here."
+            ),
+            systemImageName: "tray",
+            actionTitle: nil
+        )
+    }
 }

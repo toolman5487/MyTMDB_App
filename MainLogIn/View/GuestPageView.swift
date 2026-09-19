@@ -24,20 +24,33 @@ final class GuestPageView: UIView, AuthPageView {
     weak var delegate: GuestPageViewDelegate?
 
     let page: AuthPage = .guest
+    private let localization: AppInterfaceLocalization
 
     // MARK: - UI Components
 
     private let cardView = UIView()
 
-    private let descriptionLabel = AuthPageStyle.makeDescriptionLabel(
-        "無需帳號即可瀏覽電影與影集，部分個人化功能將無法使用。"
+    private lazy var descriptionLabel = AuthPageStyle.makeDescriptionLabel(
+        localization.string(
+            "login.guest.description",
+            defaultValue: "Browse movies and TV shows without an account. Some personalized features will be unavailable."
+        )
     )
 
-    private let continueButton = AuthPageStyle.makeFilledButton(title: "以訪客身分繼續")
+    private lazy var continueButton = AuthPageStyle.makeFilledButton(
+        title: localization.string(
+            "login.guest.continue",
+            defaultValue: "Continue as Guest"
+        )
+    )
 
     // MARK: - Initialization
 
-    override init(frame: CGRect) {
+    init(
+        localization: AppInterfaceLocalization,
+        frame: CGRect = .zero
+    ) {
+        self.localization = localization
         super.init(frame: frame)
         setup()
     }

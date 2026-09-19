@@ -50,33 +50,45 @@ nonisolated enum DetailContentListDestination: Sendable, Equatable {
 
 extension DetailContentListItem {
 
-    var accessibilityText: AccessibilityText {
+    func accessibilityText(localization: AppInterfaceLocalization) -> AccessibilityText {
         AccessibilityText(
             label: title,
             value: BaseDisplayTextFormatter.nonEmptyText(subtitle),
-            hint: accessibilityHint
+            hint: accessibilityHint(localization: localization)
         )
     }
 
-    private var accessibilityHint: String? {
+    private func accessibilityHint(localization: AppInterfaceLocalization) -> String? {
         switch destination {
         case .movie:
-            return "點兩下開啟電影詳細資料"
+            return MediaKind.movie.detailAccessibilityHint(localization: localization)
 
         case .tv:
-            return "點兩下開啟劇集詳細資料"
+            return MediaKind.tv.detailAccessibilityHint(localization: localization)
 
         case .episode:
-            return "點兩下開啟單集詳細資料"
+            return localization.string(
+                "common.accessibility.open_episode_detail.hint",
+                defaultValue: "Double-tap to open episode details"
+            )
 
         case .person:
-            return "點兩下開啟人物詳細資料"
+            return localization.string(
+                "common.accessibility.open_person_detail.hint",
+                defaultValue: "Double-tap to open person details"
+            )
 
         case .youtube, .webVideo:
-            return "點兩下播放影片"
+            return localization.string(
+                "common.accessibility.play_video.hint",
+                defaultValue: "Double-tap to play the video"
+            )
 
         case .image:
-            return "點兩下預覽圖片"
+            return localization.string(
+                "common.accessibility.preview_image.hint",
+                defaultValue: "Double-tap to preview the image"
+            )
 
         case .none:
             return nil

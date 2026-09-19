@@ -27,7 +27,11 @@ final class LoginViewController: BaseViewController {
     private let loginVM: LoginViewModel
     private let authFlowHandler: AuthFlowHandling
     private let entryContext: LoginEntryContext
-    private lazy var router: LoginRouting = LoginRouter(sourceViewController: self)
+    private let localization: AppInterfaceLocalization
+    private lazy var router: LoginRouting = LoginRouter(
+        sourceViewController: self,
+        interfaceLocalization: localization
+    )
 
     private var currentPage: AuthPage = .login
     private var handledSuccessSessionID: String?
@@ -37,9 +41,9 @@ final class LoginViewController: BaseViewController {
 
     // MARK: - UI Components
 
-    private lazy var loginPageView = LoginPageView()
-    private lazy var guestPageView = GuestPageView()
-    private lazy var registerPageView = RegisterPageView()
+    private lazy var loginPageView = LoginPageView(localization: localization)
+    private lazy var guestPageView = GuestPageView(localization: localization)
+    private lazy var registerPageView = RegisterPageView(localization: localization)
 
     private lazy var pageViews: [AuthPageView] = {
         let allPageViews: [AuthPageView] = [
@@ -75,12 +79,15 @@ final class LoginViewController: BaseViewController {
         return view
     }()
 
-    private let pageControl: UIPageControl = {
+    private lazy var pageControl: UIPageControl = {
         let control = UIPageControl()
         control.currentPage = 0
         control.currentPageIndicatorTintColor = .label
         control.pageIndicatorTintColor = .tertiaryLabel
-        control.accessibilityLabel = "登入方式"
+        control.accessibilityLabel = localization.string(
+            "login.page_control.accessibility_label",
+            defaultValue: "Sign-in Method"
+        )
         return control
     }()
 
@@ -102,7 +109,12 @@ final class LoginViewController: BaseViewController {
     private let errorMessageLabel = AppFactory.Label.body(alignment: .center, lines: 0)
 
     private lazy var errorActionButton: UIButton = {
-        let button = AppFactory.Button.primaryFilled(title: "返回修改")
+        let button = AppFactory.Button.primaryFilled(
+            title: localization.string(
+                "login.action.edit_credentials",
+                defaultValue: "Edit Credentials"
+            )
+        )
         button.addTarget(self, action: #selector(handleErrorActionButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -126,12 +138,15 @@ final class LoginViewController: BaseViewController {
     init(
         loginViewModel: LoginViewModel,
         authFlowHandler: AuthFlowHandling,
-        entryContext: LoginEntryContext
+        entryContext: LoginEntryContext,
+        localization: AppInterfaceLocalization
     ) {
         self.loginVM = loginViewModel
         self.authFlowHandler = authFlowHandler
         self.entryContext = entryContext
+        self.localization = localization
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(localization)
     }
 
     @available(*, unavailable)
@@ -236,7 +251,7 @@ final class LoginViewController: BaseViewController {
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        navigationItem.title = AuthPage.login.title
+        navigationItem.title = AuthPage.login.title(localization: localization)
         definesPresentationContext = true
         navigationItem.hidesSearchBarWhenScrolling = false
 
@@ -318,7 +333,7 @@ final class LoginViewController: BaseViewController {
             } catch {
                 guard !Task.isCancelled else { return }
                 handledSuccessSessionID = nil
-                loginVM.reportFailure(error.errorMessage)
+                loginVM.reportFailure(error.errorMessage(localization: localization))
             }
         }
     }
@@ -333,7 +348,7 @@ final class LoginViewController: BaseViewController {
             } catch {
                 guard !Task.isCancelled else { return }
                 handledSuccessSessionID = nil
-                loginVM.reportFailure(error.errorMessage)
+                loginVM.reportFailure(error.errorMessage(localization: localization))
             }
         }
     }
@@ -347,14 +362,36 @@ final class LoginViewController: BaseViewController {
 
     private func updateCurrentPage(_ page: AuthPage) {
         pageControl.currentPage = pages.firstIndex(of: page) ?? 0
-        navigationItem.title = page.title
+        navigationItem.title = page.title(localization: localization)
         updatePageControlAccessibility(for: page)
     }
 
     private func updatePageControlAccessibility(for page: AuthPage) {
         let pageNumber = (pages.firstIndex(of: page) ?? 0) + 1
-        pageControl.accessibilityValue = "\(page.title)，第 \(pageNumber) 頁，共 \(pages.count) 頁"
-        pageControl.accessibilityHint = "左右滑動切換\(pages.map(\.title).joined(separator: "、"))"
+        pageControl.accessibilityValue = localization.formatted(
+            "login.page_control.accessibility_value_format",
+            defaultValue: "%1$@, page %2$lld of %3$lld",
+            page.title(localization: localization),
+            pageNumber,
+            pages.count
+        )
+        pageControl.accessibilityHint = localization.formatted(
+            "login.page_control.accessibility_hint_format",
+            defaultValue: "Swipe left or right to switch between %@",
+            Self.pageListText(
+                pages.map { $0.title(localization: localization) },
+                localization: localization
+            )
+        )
+    }
+
+    private static func pageListText(
+        _ titles: [String],
+        localization: AppInterfaceLocalization
+    ) -> String {
+        let formatter = ListFormatter()
+        formatter.locale = localization.language.locale
+        return formatter.string(from: titles) ?? titles.joined(separator: ", ")
     }
 
     private func setActionButtonsEnabled(_ isEnabled: Bool) {
@@ -374,7 +411,10 @@ final class LoginViewController: BaseViewController {
         currentFailureRecoveryAction = recoveryAction
         errorTitleLabel.text = displayMessage.title
         errorMessageLabel.text = displayMessage.message
-        setErrorActionTitle(displayMessage.actionTitle ?? "重試")
+        setErrorActionTitle(
+            displayMessage.actionTitle
+                ?? localization.string("common.action.retry", defaultValue: "Retry")
+        )
         errorActionButton.isHidden = displayMessage.actionTitle == nil
         errorOverlayView.isUserInteractionEnabled = true
         errorOverlayView.isHidden = false
@@ -417,7 +457,10 @@ final class LoginViewController: BaseViewController {
                 title: message.title,
                 message: message.message,
                 systemImageName: message.systemImageName,
-                actionTitle: "返回修改"
+                actionTitle: localization.string(
+                    "login.action.edit_credentials",
+                    defaultValue: "Edit Credentials"
+                )
             )
 
         case .retry:
@@ -507,7 +550,7 @@ extension LoginViewController: UIScrollViewDelegate {
         let page = pages[pageIndex]
         currentPage = page
         pageControl.currentPage = pageIndex
-        navigationItem.title = page.title
+        navigationItem.title = page.title(localization: localization)
         updatePageControlAccessibility(for: page)
         hideFailureState()
     }

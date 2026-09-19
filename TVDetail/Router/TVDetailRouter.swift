@@ -48,15 +48,20 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
     init(
         sourceViewController: UIViewController,
         seriesID: Int,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.seriesID = seriesID
         self.sceneBuilder = sceneBuilder
         self.detailRouter = DetailRouter(
             sourceViewController: sourceViewController,
-            sceneBuilder: sceneBuilder
+            sceneBuilder: sceneBuilder,
+            interfaceLocalization: interfaceLocalization
         )
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     // MARK: - Push

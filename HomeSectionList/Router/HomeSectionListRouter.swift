@@ -33,10 +33,14 @@ final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
 
     init(
         sourceViewController: UIViewController,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.sceneBuilder = sceneBuilder
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     func showDetail(for item: HomeContentItem) {
@@ -64,6 +68,7 @@ final class HomeSectionListRouter: BaseRouter, HomeSectionListRouting {
         let viewController = MainMediaGenrePageSheetViewController(
             kind: kind,
             filters: filters.map(MainMediaGenreItem.init(filterItem:)),
+            interfaceLocalization: interfaceLocalization,
             onFilterSelected: onFilterSelected,
             onDismiss: onDismiss
         )

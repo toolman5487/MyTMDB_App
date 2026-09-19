@@ -134,9 +134,14 @@ final class MainHomeFeaturedHeaderView: MainHomeSectionHeaderView {
     func configure(
         title: String?,
         carouselItems: [HomeContentItem],
+        localization: AppInterfaceLocalization,
         onTitleTap: (() -> Void)?
     ) {
-        configure(title: title, onTitleTap: onTitleTap)
+        configure(
+            title: title,
+            localization: localization,
+            onTitleTap: onTitleTap
+        )
         carouselView.configure(items: carouselItems)
         carouselView.onItemSelected = { [weak self] item in
             self?.onCarouselSelected?(item)

@@ -21,7 +21,7 @@ final class HomeSectionListItemCollectionViewCell: ImageTitleBaseCollectionViewC
         configure(with: ImageTitleCellContent(
             imageURL: item.posterURL,
             title: item.title,
-            subtitle: BaseDisplayTextFormatter.ratingText(item.scoreText),
+            subtitle: item.ratingText,
             imageHeight: imageHeight,
             accessibilityText: item.accessibilityText
         ))

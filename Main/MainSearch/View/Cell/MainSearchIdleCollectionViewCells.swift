@@ -66,6 +66,7 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
     private var onKeywordSelected: ((String) -> Void)?
     private var onKeywordDeleted: ((SearchHistoryEntry) -> Void)?
     private var onEntryMoved: ((SearchHistoryEntry, Int) -> Void)?
+    private var interfaceLocalization: AppInterfaceLocalization = .traditionalChinese
 
     // MARK: - BaseCollectionViewCell
 
@@ -108,11 +109,13 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         entries: [SearchHistoryEntry],
+        localization: AppInterfaceLocalization,
         onKeywordSelected: @escaping (String) -> Void,
         onKeywordDeleted: @escaping (SearchHistoryEntry) -> Void,
         onEntryMoved: @escaping (SearchHistoryEntry, Int) -> Void
     ) {
         self.entries = entries
+        self.interfaceLocalization = localization
         self.onKeywordSelected = onKeywordSelected
         self.onKeywordDeleted = onKeywordDeleted
         self.onEntryMoved = onEntryMoved
@@ -161,7 +164,10 @@ extension MainSearchRecentHistoryCollectionViewCell: UICollectionViewDataSource 
         if let cell = cell as? MainSearchHistoryPillCollectionViewCell,
            entries.indices.contains(indexPath.item) {
             let entry = entries[indexPath.item]
-            cell.configure(with: entry) { [weak self] entry in
+            cell.configure(
+                with: entry,
+                localization: interfaceLocalization
+            ) { [weak self] entry in
                 self?.onKeywordDeleted?(entry)
             }
         }
@@ -307,6 +313,7 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
 
     func configure(
         with entry: SearchHistoryEntry,
+        localization: AppInterfaceLocalization,
         onDeleteRequested: @escaping (SearchHistoryEntry) -> Void
     ) {
         self.entry = entry
@@ -314,14 +321,21 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
         titleLabel.text = entry.keyword
         applyAccessibility(
             AccessibilityText(
-                label: "最近搜尋：\(entry.keyword)",
-                hint: "點兩下以再次搜尋，長按可拖曳排序"
+                label: localization.formatted(
+                    "main_search.recent.accessibility_label_format",
+                    defaultValue: "Recent search: %@",
+                    entry.keyword
+                ),
+                hint: localization.string(
+                    "main_search.recent.accessibility_hint",
+                    defaultValue: "Double-tap to search again, or touch and hold to reorder"
+                )
             )
         )
         accessibilityTraits = .button
         accessibilityCustomActions = [
             UIAccessibilityCustomAction(
-                name: "刪除",
+                name: localization.string("common.action.delete", defaultValue: "Delete"),
                 target: self,
                 selector: #selector(deleteAccessibilityAction(_:))
             )

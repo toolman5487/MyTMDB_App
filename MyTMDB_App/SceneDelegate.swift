@@ -19,9 +19,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         window.overrideUserInterfaceStyle = .dark
-        let composition = AppComposition { [weak self] session in
-            self?.replaceRoot(for: session)
-        }
+        let composition = AppComposition(
+            onSessionChanged: { [weak self] session in
+                self?.replaceRoot(for: session)
+            },
+            onInterfaceLanguageChanged: { [weak self] session in
+                self?.replaceRoot(for: session)
+            }
+        )
 
         window.rootViewController = composition.makeRootLoadingViewController()
 
@@ -57,17 +62,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     @MainActor
     private func showSessionValidationFailure() {
-        guard let rootViewController = window?.rootViewController,
+        guard let composition,
+              let rootViewController = window?.rootViewController,
               rootViewController.presentedViewController == nil else {
             return
         }
 
+        let localization = composition.currentInterfaceLocalization
+
         let alert = UIAlertController(
-            title: "無法讀取登入狀態",
-            message: "無法安全讀取登入資料，請確認裝置已解鎖後再試一次。",
+            title: localization.string(
+                "session_validation.failure.title",
+                defaultValue: "Unable to Read Sign-in Status"
+            ),
+            message: localization.string(
+                "session_validation.failure.message",
+                defaultValue: "Sign-in data cannot be read securely. Unlock the device and try again."
+            ),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "重試", style: .default) { [weak self] _ in
+        alert.addAction(UIAlertAction(
+            title: localization.string("common.action.retry", defaultValue: "Retry"),
+            style: .default
+        ) { [weak self] _ in
             self?.validateStoredSession()
         })
         rootViewController.present(alert, animated: true)

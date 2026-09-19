@@ -106,7 +106,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
         }
 
         titleLabel.text = item.title
-        scoreLabel.text = BaseDisplayTextFormatter.ratingText(item.scoreText)
+        scoreLabel.text = item.ratingText
         applyAccessibility(item.accessibilityText)
     }
 

@@ -59,23 +59,33 @@ final class MainMemberSettingSectionHeaderView: UICollectionReusableView {
 
     // MARK: - Configuration
 
-    func configure(title: String?) {
+    func configure(
+        title: String?,
+        localization: AppInterfaceLocalization
+    ) {
         let trimmedTitle = BaseDisplayTextFormatter.nonEmptyText(title)
         titleLabel.text = trimmedTitle?.uppercased()
-        applyAccessibility(title: trimmedTitle)
+        applyAccessibility(title: trimmedTitle, localization: localization)
         setNeedsLayout()
     }
 
-    private func applyAccessibility(title: String?) {
+    private func applyAccessibility(
+        title: String?,
+        localization: AppInterfaceLocalization
+    ) {
         guard let title else {
             applyAccessibilityText(nil)
             accessibilityTraits.remove(.header)
             return
         }
 
-        applyAccessibilityText(
-            AccessibilityText(label: "\(title) 設定")
+        let labelFormat = localization.string(
+            "main_member_setting.section.accessibility.label_format",
+            defaultValue: "%@ settings"
         )
+        applyAccessibilityText(AccessibilityText(
+            label: String(format: labelFormat, locale: localization.language.locale, title)
+        ))
         accessibilityTraits.insert(.header)
         titleLabel.isAccessibilityElement = false
     }

@@ -11,158 +11,206 @@ import Foundation
 
 extension NetworkError: ErrorMessageConvertible {
 
-    var errorMessage: ErrorMessage {
+    func errorMessage(localization: AppInterfaceLocalization) -> ErrorMessage {
         switch self {
         case .invalidURL:
-            return ErrorMessage(
-                title: "無法建立請求",
-                message: "網址格式錯誤，請稍後再試。",
-                actionTitle: "重試"
+            return Self.makeMessage(
+                titleKey: "network_error.invalid_url.title",
+                title: "Unable to Create Request",
+                messageKey: "network_error.invalid_url.message",
+                message: "The URL is invalid. Please try again later.",
+                localization: localization
             )
 
         case .invalidResponse:
-            return ErrorMessage(
-                title: "伺服器回應異常",
-                message: "目前無法確認伺服器回應，請稍後再試。",
-                actionTitle: "重試"
+            return Self.makeMessage(
+                titleKey: "network_error.invalid_response.title",
+                title: "Unexpected Server Response",
+                messageKey: "network_error.invalid_response.message",
+                message: "The server response could not be verified. Please try again later.",
+                localization: localization
             )
 
         case .requestFailed(let code):
-            return code.errorMessage
+            return Self.urlErrorMessage(for: code, localization: localization)
 
         case .encodingFailed:
-            return ErrorMessage(
-                title: "請求資料錯誤",
-                message: "送出的資料無法處理，請稍後再試。",
-                actionTitle: "重試"
+            return Self.makeMessage(
+                titleKey: "network_error.encoding_failed.title",
+                title: "Invalid Request Data",
+                messageKey: "network_error.encoding_failed.message",
+                message: "The submitted data could not be processed. Please try again later.",
+                localization: localization
             )
 
         case .httpError(let statusCode):
-            return NetworkError.errorMessage(for: statusCode)
+            return Self.httpErrorMessage(for: statusCode, localization: localization)
 
         case .apiError(let statusCode, let apiCode, let message):
-            let errorMessage = NetworkError.errorMessage(for: statusCode)
-            let apiCodeText = apiCode.map { "（\($0)）" } ?? ""
+            let fallback = Self.httpErrorMessage(
+                for: statusCode,
+                localization: localization
+            )
             return ErrorMessage(
-                title: errorMessage.title,
-                message: message.isEmpty ? errorMessage.message : "服務回傳錯誤\(apiCodeText)：\(message)",
-                systemImageName: errorMessage.systemImageName,
-                actionTitle: errorMessage.actionTitle
+                title: fallback.title,
+                message: message.isEmpty
+                    ? fallback.message
+                    : Self.apiErrorMessage(
+                        apiCode: apiCode,
+                        message: message,
+                        localization: localization
+                    ),
+                systemImageName: fallback.systemImageName,
+                actionTitle: fallback.actionTitle
             )
 
         case .decodingFailed:
-            return ErrorMessage(
-                title: "資料解析失敗",
-                message: "伺服器資料格式和 App 預期不一致，請稍後再試。",
-                actionTitle: "重試"
+            return Self.makeMessage(
+                titleKey: "network_error.decoding_failed.title",
+                title: "Unable to Read Data",
+                messageKey: "network_error.decoding_failed.message",
+                message: "The server data does not match the format expected by the app. Please try again later.",
+                localization: localization
             )
         }
     }
 
-    private static func errorMessage(for statusCode: Int) -> ErrorMessage {
+    private static func httpErrorMessage(
+        for statusCode: Int,
+        localization: AppInterfaceLocalization
+    ) -> ErrorMessage {
         switch statusCode {
         case 401:
-            return ErrorMessage(
-                title: "登入已失效",
-                message: "請重新登入後再試。",
+            return makeMessage(
+                titleKey: "network_error.unauthorized.title",
+                title: "Sign-in Expired",
+                messageKey: "network_error.unauthorized.message",
+                message: "Sign in again and retry.",
                 systemImageName: "person.crop.circle.badge.exclamationmark",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case 403:
-            return ErrorMessage(
-                title: "沒有權限",
-                message: "目前帳號沒有執行此操作的權限。",
+            return makeMessage(
+                titleKey: "network_error.forbidden.title",
+                title: "Permission Denied",
+                messageKey: "network_error.forbidden.message",
+                message: "This account does not have permission to perform this action.",
                 systemImageName: "lock",
-                actionTitle: nil
+                includesRetry: false,
+                localization: localization
             )
 
         case 404:
-            return ErrorMessage(
-                title: "找不到資料",
-                message: "這筆資料可能已不存在或暫時無法取得。",
+            return makeMessage(
+                titleKey: "network_error.not_found.title",
+                title: "Content Not Found",
+                messageKey: "network_error.not_found.message",
+                message: "This content may no longer exist or may be temporarily unavailable.",
                 systemImageName: "questionmark.folder",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case 408:
-            return ErrorMessage(
-                title: "連線逾時",
-                message: "伺服器回應時間過長，請稍後再試。",
+            return makeMessage(
+                titleKey: "network_error.timeout.title",
+                title: "Connection Timed Out",
+                messageKey: "network_error.server_timeout.message",
+                message: "The server took too long to respond. Please try again later.",
                 systemImageName: "clock.badge.exclamationmark",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case 429:
-            return ErrorMessage(
-                title: "請求過於頻繁",
-                message: "目前請求次數過多，請稍後再試。",
+            return makeMessage(
+                titleKey: "network_error.rate_limit.title",
+                title: "Too Many Requests",
+                messageKey: "network_error.rate_limit.message",
+                message: "Too many requests were made. Please try again later.",
                 systemImageName: "hourglass",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case 500...599:
-            return ErrorMessage(
-                title: "伺服器暫時無法回應",
-                message: "服務目前不穩定，請稍後再試。",
+            return makeMessage(
+                titleKey: "network_error.server_unavailable.title",
+                title: "Server Temporarily Unavailable",
+                messageKey: "network_error.server_unavailable.message",
+                message: "The service is currently unstable. Please try again later.",
                 systemImageName: "externaldrive.badge.exclamationmark",
-                actionTitle: "重試"
+                localization: localization
             )
 
         default:
             return ErrorMessage(
-                title: "連線發生錯誤",
-                message: "HTTP 錯誤（\(statusCode)），請稍後再試。",
-                actionTitle: "重試"
+                title: localization.string(
+                    "network_error.http.title",
+                    defaultValue: "Connection Error"
+                ),
+                message: localization.formatted(
+                    "network_error.http.message_format",
+                    defaultValue: "HTTP error (%lld). Please try again later.",
+                    statusCode
+                ),
+                actionTitle: retryTitle(localization: localization)
             )
         }
     }
-}
 
-// MARK: - URLError Presentation
-
-private extension URLError.Code {
-
-    var errorMessage: ErrorMessage {
-        switch self {
+    private static func urlErrorMessage(
+        for code: URLError.Code,
+        localization: AppInterfaceLocalization
+    ) -> ErrorMessage {
+        switch code {
         case .notConnectedToInternet:
-            return ErrorMessage(
-                title: "沒有網路連線",
-                message: "請檢查網路連線後再試。",
+            return makeMessage(
+                titleKey: "network_error.offline.title",
+                title: "No Internet Connection",
+                messageKey: "network_error.offline.message",
+                message: "Check your internet connection and try again.",
                 systemImageName: "wifi.exclamationmark",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case .timedOut:
-            return ErrorMessage(
-                title: "連線逾時",
-                message: "網路回應時間過長，請稍後再試。",
+            return makeMessage(
+                titleKey: "network_error.timeout.title",
+                title: "Connection Timed Out",
+                messageKey: "network_error.connection_timeout.message",
+                message: "The network took too long to respond. Please try again later.",
                 systemImageName: "clock.badge.exclamationmark",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case .cancelled:
-            return ErrorMessage(
-                title: "請求已取消",
-                message: "操作已取消。",
+            return makeMessage(
+                titleKey: "network_error.cancelled.title",
+                title: "Request Cancelled",
+                messageKey: "network_error.cancelled.message",
+                message: "The operation was cancelled.",
                 systemImageName: "xmark.circle",
-                actionTitle: nil
+                includesRetry: false,
+                localization: localization
             )
 
         case .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
-            return ErrorMessage(
-                title: "無法連線到伺服器",
-                message: "目前找不到服務主機，請稍後再試。",
+            return makeMessage(
+                titleKey: "network_error.host_unavailable.title",
+                title: "Unable to Reach Server",
+                messageKey: "network_error.host_unavailable.message",
+                message: "The service host could not be reached. Please try again later.",
                 systemImageName: "network.slash",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case .networkConnectionLost:
-            return ErrorMessage(
-                title: "網路連線中斷",
-                message: "請確認連線穩定後再試。",
+            return makeMessage(
+                titleKey: "network_error.connection_lost.title",
+                title: "Connection Lost",
+                messageKey: "network_error.connection_lost.message",
+                message: "Check that your connection is stable and try again.",
                 systemImageName: "wifi.slash",
-                actionTitle: "重試"
+                localization: localization
             )
 
         case .secureConnectionFailed,
@@ -173,19 +221,67 @@ private extension URLError.Code {
                 .clientCertificateRejected,
                 .clientCertificateRequired,
                 .appTransportSecurityRequiresSecureConnection:
-            return ErrorMessage(
-                title: "安全連線失敗",
-                message: "無法建立安全連線，請稍後再試。",
+            return makeMessage(
+                titleKey: "network_error.secure_connection.title",
+                title: "Secure Connection Failed",
+                messageKey: "network_error.secure_connection.message",
+                message: "A secure connection could not be established. Please try again later.",
                 systemImageName: "lock.trianglebadge.exclamationmark",
-                actionTitle: "重試"
+                localization: localization
             )
 
         default:
-            return ErrorMessage(
-                title: "連線失敗",
-                message: "網路請求失敗，請稍後再試。",
-                actionTitle: "重試"
+            return makeMessage(
+                titleKey: "network_error.generic.title",
+                title: "Connection Failed",
+                messageKey: "network_error.generic.message",
+                message: "The network request failed. Please try again later.",
+                localization: localization
             )
         }
+    }
+
+    private static func makeMessage(
+        titleKey: StaticString,
+        title: String,
+        messageKey: StaticString,
+        message: String,
+        systemImageName: String = "exclamationmark.triangle",
+        includesRetry: Bool = true,
+        localization: AppInterfaceLocalization
+    ) -> ErrorMessage {
+        ErrorMessage(
+            title: localization.string(titleKey, defaultValue: title),
+            message: localization.string(messageKey, defaultValue: message),
+            systemImageName: systemImageName,
+            actionTitle: includesRetry ? retryTitle(localization: localization) : nil
+        )
+    }
+
+    private static func apiErrorMessage(
+        apiCode: Int?,
+        message: String,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        guard let apiCode else {
+            return localization.formatted(
+                "network_error.api.message_format",
+                defaultValue: "The service returned an error: %@",
+                message
+            )
+        }
+
+        return localization.formatted(
+            "network_error.api.message_with_code_format",
+            defaultValue: "The service returned an error (%1$lld): %2$@",
+            apiCode,
+            message
+        )
+    }
+
+    private static func retryTitle(
+        localization: AppInterfaceLocalization
+    ) -> String {
+        localization.string("common.action.retry", defaultValue: "Retry")
     }
 }

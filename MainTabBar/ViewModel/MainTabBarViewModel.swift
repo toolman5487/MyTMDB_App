@@ -12,14 +12,20 @@ import Foundation
 /// Synchronous query model; it intentionally has no asynchronous state binding.
 struct MainTabBarViewModel: Sendable {
 
+    private let localization: AppInterfaceLocalization
+
+    init(localization: AppInterfaceLocalization) {
+        self.localization = localization
+    }
+
     var items: [MainTabItem] {
         MainTab.allCases.map { tab in
             MainTabItem(
                 kind: tab.kind,
-                title: tab.title,
+                title: tab.title(localization: localization),
                 imageName: tab.imageName,
                 selectedImageName: tab.selectedImageName,
-                accessibilityText: tab.accessibilityText
+                accessibilityText: tab.accessibilityText(localization: localization)
             )
         }
     }
@@ -62,6 +68,20 @@ struct MainTabBarViewModel: Sendable {
         }
 
         return targetIndex > currentIndex ? .next : .previous
+    }
+
+    func accessibilitySelectionValue(isSelected: Bool) -> String {
+        if isSelected {
+            return localization.string(
+                "common.accessibility.selected",
+                defaultValue: "Selected"
+            )
+        }
+
+        return localization.string(
+            "common.accessibility.not_selected",
+            defaultValue: "Not selected"
+        )
     }
 }
 
@@ -127,22 +147,37 @@ private enum MainTab: CaseIterable, Sendable {
         }
     }
 
-    var title: String {
+    func title(localization: AppInterfaceLocalization) -> String {
         switch self {
         case .home:
-            return "首頁"
+            return localization.string(
+                "main_tab.home.title",
+                defaultValue: "Home"
+            )
 
         case .search:
-            return "搜尋"
+            return localization.string(
+                "main_tab.search.title",
+                defaultValue: "Search"
+            )
 
         case .movie:
-            return "電影"
+            return localization.string(
+                "main_tab.movie.title",
+                defaultValue: "Movies"
+            )
 
         case .series:
-            return "劇集"
+            return localization.string(
+                "main_tab.series.title",
+                defaultValue: "TV Shows"
+            )
 
         case .memberSetting:
-            return "設定"
+            return localization.string(
+                "main_tab.settings.title",
+                defaultValue: "Settings"
+            )
         }
     }
 
@@ -184,10 +219,20 @@ private enum MainTab: CaseIterable, Sendable {
         }
     }
 
-    var accessibilityText: AccessibilityText {
-        AccessibilityText(
-            label: "\(title) 分頁",
-            hint: "點兩下切換到\(title)"
+    func accessibilityText(localization: AppInterfaceLocalization) -> AccessibilityText {
+        let localizedTitle = title(localization: localization)
+
+        return AccessibilityText(
+            label: localization.formatted(
+                "main_tab.accessibility.label_format",
+                defaultValue: "%@ tab",
+                localizedTitle
+            ),
+            hint: localization.formatted(
+                "main_tab.accessibility.hint_format",
+                defaultValue: "Double-tap to switch to %@",
+                localizedTitle
+            )
         )
     }
 }

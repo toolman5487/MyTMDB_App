@@ -75,7 +75,11 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
         case .failed(let message, let retry):
             setDetailNavigationTitle(nil)
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: message, action: retry)
+            collectionView.backgroundView = ErrorMessageView(
+                message: message,
+                localization: interfaceLocalization,
+                action: retry
+            )
         }
     }
 
@@ -99,7 +103,11 @@ class DetailBaseViewController: ScrollTrackingBaseViewController {
             withReuseIdentifier: DetailSectionHeaderView.reuseIdentifier,
             for: indexPath
         )
-        (reusableView as? DetailSectionHeaderView)?.configure(title: title, onTitleTap: onTap)
+        (reusableView as? DetailSectionHeaderView)?.configure(
+            title: title,
+            localization: interfaceLocalization,
+            onTitleTap: onTap
+        )
         return reusableView
     }
 

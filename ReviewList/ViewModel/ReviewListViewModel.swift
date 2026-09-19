@@ -36,6 +36,7 @@ final class ReviewListViewModel {
     private let mediaKind: MediaKind
     private let loadReviewsUseCase: LoadReviewsUseCase
     private let filterReviewsUseCase: FilterReviewsUseCase
+    private let localization: AppInterfaceLocalization
 
     private var reviews: [Review] = []
     private var currentPage: Int = 0
@@ -49,11 +50,13 @@ final class ReviewListViewModel {
     init(
         mediaKind: MediaKind,
         loadReviewsUseCase: LoadReviewsUseCase,
-        filterReviewsUseCase: FilterReviewsUseCase
+        filterReviewsUseCase: FilterReviewsUseCase,
+        localization: AppInterfaceLocalization
     ) {
         self.mediaKind = mediaKind
         self.loadReviewsUseCase = loadReviewsUseCase
         self.filterReviewsUseCase = filterReviewsUseCase
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -75,9 +78,9 @@ final class ReviewListViewModel {
             apply(page: page, replacingCurrentReviews: true)
             renderCurrentPresentation()
         } catch let error as DomainError {
-            state = .failed(Self.errorMessage(for: error))
+            state = .failed(errorMessage(for: error))
         } catch {
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -122,12 +125,15 @@ final class ReviewListViewModel {
 
     // MARK: - Private Methods
 
-    private static func errorMessage(for error: DomainError) -> ErrorMessage {
+    private func errorMessage(for error: DomainError) -> ErrorMessage {
         switch error {
         case .invalidIdentifier(let kind):
             return ErrorMessage(
-                title: "找不到評論",
-                message: "\(kind.displayName) ID 不正確，請返回上一頁後再試。",
+                title: localization.string(
+                    "review_list.error.not_found.title",
+                    defaultValue: "Reviews Not Found"
+                ),
+                message: kind.invalidIdentifierMessage(localization: localization),
                 actionTitle: nil
             )
         }
@@ -140,7 +146,7 @@ final class ReviewListViewModel {
         }
 
         let reviewItems = filterReviewsUseCase(reviews, filter: selectedFilter)
-            .map(ReviewItem.init(review:))
+            .map { ReviewItem(review: $0, localization: localization) }
 
         guard !reviewItems.isEmpty else {
             state = .empty
@@ -150,7 +156,11 @@ final class ReviewListViewModel {
         state = .loaded(
             ReviewListPresentation(
                 filters: ReviewFilter.allCases.map {
-                    ReviewFilterItem(filter: $0, selectedFilter: selectedFilter)
+                    ReviewFilterItem(
+                        filter: $0,
+                        selectedFilter: selectedFilter,
+                        localization: localization
+                    )
                 },
                 reviews: reviewItems,
                 page: currentPage,

@@ -36,6 +36,7 @@ final class MainMediaListViewModel {
     private let mediaKind: MediaKind
     private let loadMediaList: LoadMediaListUseCase
     private let repository: MediaListProviding
+    private let localization: AppInterfaceLocalization
     private var preferredGenreID: Int?
     private var genres: [MediaGenre] = []
     private var selectedSortOption: MediaSortOrder = .popularity
@@ -46,12 +47,14 @@ final class MainMediaListViewModel {
         mediaKind: MediaKind,
         loadMediaList: LoadMediaListUseCase,
         repository: MediaListProviding,
-        initialGenreID: Int? = nil
+        initialGenreID: Int? = nil,
+        localization: AppInterfaceLocalization
     ) {
         self.mediaKind = mediaKind
         self.loadMediaList = loadMediaList
         self.repository = repository
         self.preferredGenreID = initialGenreID
+        self.localization = localization
     }
 
     // MARK: - Output Binding
@@ -85,7 +88,7 @@ final class MainMediaListViewModel {
             )
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -107,7 +110,7 @@ final class MainMediaListViewModel {
             state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
         } catch {
             guard !Task.isCancelled else { return }
-            state = .failed(error.errorMessage)
+            state = .failed(error.errorMessage(localization: localization))
         }
     }
 
@@ -138,7 +141,10 @@ final class MainMediaListViewModel {
                 return
             }
 
-            state = .loaded(currentContent.appending(page: nextPage))
+            state = .loaded(currentContent.appending(
+                page: nextPage,
+                localization: localization
+            ))
         } catch {
             guard !Task.isCancelled else { return }
 
@@ -176,7 +182,7 @@ final class MainMediaListViewModel {
                 state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
             } catch {
                 guard !Task.isCancelled, selectedSortOption == option else { return }
-                state = .failed(error.errorMessage)
+                state = .failed(error.errorMessage(localization: localization))
             }
 
         case .idle, .loading, .refreshing, .empty, .failed:
@@ -222,7 +228,9 @@ final class MainMediaListViewModel {
         selectedGenre: MediaGenre,
         page: Page<MediaSummary>
     ) -> MainMediaListContent {
-        let items = page.items.map(MediaGridItem.init(summary:))
+        let items = page.items.map {
+            MediaGridItem(summary: $0, localization: localization)
+        }
 
         return MainMediaListContent(
             genres: genres.map { genre in

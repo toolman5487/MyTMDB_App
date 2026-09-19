@@ -25,7 +25,8 @@ final class HomeSectionListViewController: BaseListViewController {
     private let sceneBuilder: DetailSceneBuilding
     private lazy var router: HomeSectionListRouting = HomeSectionListRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var filters: [HomeSectionListGenreItem] = []
@@ -43,12 +44,14 @@ final class HomeSectionListViewController: BaseListViewController {
     init(
         category: HomeCategory,
         viewModel: HomeSectionListViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.category = category
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -65,7 +68,7 @@ final class HomeSectionListViewController: BaseListViewController {
     override func configureView() {
         super.configureView()
         configureNavigationBarAppearance()
-        title = category.title
+        title = category.title(localization: interfaceLocalization)
         configureCollectionView()
     }
 
@@ -135,14 +138,20 @@ final class HomeSectionListViewController: BaseListViewController {
             items = []
             isFilterSkeletonVisible = false
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: .emptyContent)
+            collectionView.backgroundView = ErrorMessageView(
+                message: .emptyContent(localization: interfaceLocalization),
+                localization: interfaceLocalization
+            )
 
         case .failed(let errorMessage):
             filters = []
             items = []
             isFilterSkeletonVisible = false
             setLoadingVisible(false)
-            collectionView.backgroundView = ErrorMessageView(message: errorMessage) { [weak self] in
+            collectionView.backgroundView = ErrorMessageView(
+                message: errorMessage,
+                localization: interfaceLocalization
+            ) { [weak self] in
                 self?.loadInitialContent()
             }
 
@@ -152,7 +161,10 @@ final class HomeSectionListViewController: BaseListViewController {
             isFilterSkeletonVisible = false
             setLoadingVisible(false)
             collectionView.backgroundView = content.items.isEmpty
-                ? ErrorMessageView(message: .emptyContent)
+                ? ErrorMessageView(
+                    message: .emptyContent(localization: interfaceLocalization),
+                    localization: interfaceLocalization
+                )
                 : nil
         }
 
@@ -195,7 +207,8 @@ final class HomeSectionListViewController: BaseListViewController {
         headerView.configure(
             filters: filters,
             isExpanded: isFilterPageSheetPresented,
-            isShowingSkeleton: isFilterSkeletonVisible
+            isShowingSkeleton: isFilterSkeletonVisible,
+            localization: interfaceLocalization
         )
         headerView.onFilterSelected = { [weak self] id in
             self?.selectFilter(id: id)

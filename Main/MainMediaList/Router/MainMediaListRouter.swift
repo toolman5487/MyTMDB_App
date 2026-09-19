@@ -43,11 +43,15 @@ final class MainMediaListRouter: BaseRouter, MainMediaListRouting {
     init(
         sourceViewController: UIViewController,
         mediaKind: MediaKind,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.mediaKind = mediaKind
         self.sceneBuilder = sceneBuilder
-        super.init(sourceViewController: sourceViewController)
+        super.init(
+            sourceViewController: sourceViewController,
+            interfaceLocalization: interfaceLocalization
+        )
     }
 
     var shouldIgnoreSearchCancellation: Bool {
@@ -117,6 +121,7 @@ final class MainMediaListRouter: BaseRouter, MainMediaListRouting {
         let viewController = MainMediaGenrePageSheetViewController(
             kind: kind,
             filters: filters,
+            interfaceLocalization: interfaceLocalization,
             onFilterSelected: onFilterSelected,
             onDismiss: onDismiss
         )

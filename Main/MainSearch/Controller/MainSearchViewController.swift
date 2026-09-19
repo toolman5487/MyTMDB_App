@@ -56,7 +56,8 @@ final class MainSearchViewController: MainBaseViewController {
     private let sceneBuilder: DetailSceneBuilding
     private lazy var router: MainSearchRouting = MainSearchRouter(
         sourceViewController: self,
-        sceneBuilder: sceneBuilder
+        sceneBuilder: sceneBuilder,
+        interfaceLocalization: interfaceLocalization
     )
 
     private var filters: [MainSearchFilterItem] = []
@@ -80,7 +81,10 @@ final class MainSearchViewController: MainBaseViewController {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "搜尋電影、劇集、人物"
+        searchController.searchBar.placeholder = interfaceLocalization.string(
+            "main_search.placeholder",
+            defaultValue: "Search movies, TV shows, and people"
+        )
         searchController.obscuresBackgroundDuringPresentation = false
         return searchController
     }()
@@ -89,11 +93,13 @@ final class MainSearchViewController: MainBaseViewController {
 
     init(
         viewModel: MainSearchViewModel,
-        sceneBuilder: DetailSceneBuilding
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
     ) {
         self.viewModel = viewModel
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
+        setInterfaceLocalization(interfaceLocalization)
     }
 
     @available(*, unavailable)
@@ -131,7 +137,10 @@ final class MainSearchViewController: MainBaseViewController {
 
     private func configureNavigationBarAppearance() {
         AppFactory.NavigationBar.applyStandardAppearance(to: navigationItem)
-        navigationItem.title = "搜尋"
+        navigationItem.title = interfaceLocalization.string(
+            "main_search.navigation.title",
+            defaultValue: "Search"
+        )
     }
 
     private func configureCollectionView() {
@@ -168,8 +177,14 @@ final class MainSearchViewController: MainBaseViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
-        searchController.searchBar.searchTextField.accessibilityLabel = "搜尋電影、劇集、人物"
-        searchController.searchBar.searchTextField.accessibilityHint = "輸入關鍵字後搜尋"
+        searchController.searchBar.searchTextField.accessibilityLabel = interfaceLocalization.string(
+            "main_search.accessibility.search.label",
+            defaultValue: "Search movies, TV shows, and people"
+        )
+        searchController.searchBar.searchTextField.accessibilityHint = interfaceLocalization.string(
+            "main_search.accessibility.search.hint",
+            defaultValue: "Enter a keyword to search"
+        )
     }
 
     // MARK: - Rendering
@@ -223,10 +238,17 @@ final class MainSearchViewController: MainBaseViewController {
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "目前沒有熱門內容",
-                    message: "稍後再回來看看近期熱門的電影、劇集與人物。",
+                    title: interfaceLocalization.string(
+                        "main_search.trending_empty.title",
+                        defaultValue: "No Trending Content Right Now"
+                    ),
+                    message: interfaceLocalization.string(
+                        "main_search.trending_empty.message",
+                        defaultValue: "Check back later for trending movies, TV shows, and people."
+                    ),
                     systemImageName: "flame"
-                )
+                ),
+                localization: interfaceLocalization
             )
 
         case .typing:
@@ -238,7 +260,9 @@ final class MainSearchViewController: MainBaseViewController {
             isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = SearchTypingLoadingView()
+            collectionView.backgroundView = SearchTypingLoadingView(
+                localization: interfaceLocalization
+            )
 
         case .searching(let keyword):
             filters = []
@@ -249,10 +273,13 @@ final class MainSearchViewController: MainBaseViewController {
             isShowingDailyTrending = false
             canLoadNextPage = false
             isLoadingNextPage = false
-            collectionView.backgroundView = SearchSubmittedLoadingView(keyword: keyword)
+            collectionView.backgroundView = SearchSubmittedLoadingView(
+                keyword: keyword,
+                localization: interfaceLocalization
+            )
 
         case .results(let content):
-            filters = content.filters
+            filters = content.filters(localization: interfaceLocalization)
             results = content.results
             recentSearchEntries = []
             popularPeopleItems = []
@@ -273,10 +300,18 @@ final class MainSearchViewController: MainBaseViewController {
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
                 message: ErrorMessage(
-                    title: "找不到結果",
-                    message: "沒有符合「\(keyword)」的搜尋結果。",
+                    title: interfaceLocalization.string(
+                        "search.empty.title",
+                        defaultValue: "No Results Found"
+                    ),
+                    message: interfaceLocalization.formatted(
+                        "search.empty.message_format",
+                        defaultValue: "No results matched “%@.”",
+                        keyword
+                    ),
                     systemImageName: "magnifyingglass"
-                )
+                ),
+                localization: interfaceLocalization
             )
 
         case .failed(let errorMessage):
@@ -289,7 +324,8 @@ final class MainSearchViewController: MainBaseViewController {
             canLoadNextPage = false
             isLoadingNextPage = false
             collectionView.backgroundView = ErrorMessageView(
-                message: errorMessage
+                message: errorMessage,
+                localization: interfaceLocalization
             ) { [weak self] in
                 self?.retryCurrentRequest()
             }
@@ -372,6 +408,7 @@ extension MainSearchViewController: UICollectionViewDataSource {
             if let cell = cell as? MainSearchRecentHistoryCollectionViewCell {
                 cell.configure(
                     entries: recentSearchEntries,
+                    localization: interfaceLocalization,
                     onKeywordSelected: { [weak self] keyword in
                         self?.selectRecentSearch(keyword: keyword)
                     },
@@ -449,7 +486,10 @@ extension MainSearchViewController: UICollectionViewDataSource {
         )
 
         if let headerView = reusableView as? MainSearchFilterHeaderView {
-            headerView.configure(filters: filters)
+            headerView.configure(
+                filters: filters,
+                localization: interfaceLocalization
+            )
             headerView.onFilterSelected = { [weak self] filter in
                 self?.selectFilter(filter)
             }
@@ -754,10 +794,14 @@ private extension MainSearchViewController {
 
         return ErrorMessageView(
             message: ErrorMessage(
-                title: "沒有\(content.selectedFilter.title)結果",
-                message: "目前已載入的搜尋結果沒有符合此分類的內容。",
+                title: content.selectedFilter.emptyResultsTitle(localization: interfaceLocalization),
+                message: interfaceLocalization.string(
+                    "main_search.filtered_empty.message",
+                    defaultValue: "None of the loaded results match this category."
+                ),
                 systemImageName: "line.3.horizontal.decrease.circle"
-            )
+            ),
+            localization: interfaceLocalization
         )
     }
 }

@@ -15,11 +15,7 @@ final class SearchSubmittedLoadingView: UIView {
 
     private let animationView = AppFactory.Animation.searchLoading(size: AppAnimationView.Metrics.searchSize)
 
-    private let titleLabel: UILabel = {
-        let label = AppFactory.Label.headline(alignment: .center, lines: 0)
-        label.text = "正在搜尋"
-        return label
-    }()
+    private let titleLabel = AppFactory.Label.headline(alignment: .center, lines: 0)
 
     private let messageLabel = AppFactory.Label.subheadline(alignment: .center, lines: 0)
 
@@ -35,15 +31,26 @@ final class SearchSubmittedLoadingView: UIView {
         return stackView
     }()
 
-    init(keyword: String) {
+    private let localization: AppInterfaceLocalization
+
+    init(
+        keyword: String,
+        localization: AppInterfaceLocalization
+    ) {
+        self.localization = localization
         super.init(frame: .zero)
-        messageLabel.text = "正在搜尋「\(keyword)」"
+        titleLabel.text = localization.string("search.loading.title", defaultValue: "Searching")
+        messageLabel.text = localization.formatted(
+            "search.loading.message_format",
+            defaultValue: "Searching for “%@”",
+            keyword
+        )
         setupUI()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func setupUI() {
@@ -58,7 +65,10 @@ final class SearchSubmittedLoadingView: UIView {
         messageLabel.isAccessibilityElement = false
         applyAccessibilityText(
             AccessibilityText(
-                label: titleLabel.text ?? "正在搜尋",
+                label: titleLabel.text ?? localization.string(
+                    "search.loading.title",
+                    defaultValue: "Searching"
+                ),
                 value: messageLabel.text
             )
         )

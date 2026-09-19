@@ -20,8 +20,7 @@ final class TVDetailHeroHeaderView: DetailHeroHeaderView {
                 tagline: item.tagline,
                 posterURL: item.posterURL,
                 backdropURL: item.backdropURL,
-                scoreText: item.scoreText,
-                voteCountText: item.voteCountText,
+                scoreDisplayText: item.scoreDisplayText,
                 metadataText: item.metadataText
             )
         )

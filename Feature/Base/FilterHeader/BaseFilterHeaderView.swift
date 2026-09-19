@@ -18,6 +18,7 @@ class BaseFilterHeaderView: UICollectionReusableView {
     private(set) var filters: [BaseFilterHeaderItem] = []
     private(set) var selectedFilterID: String?
     private(set) var isShowingSkeleton = false
+    private(set) var interfaceLocalization: AppInterfaceLocalization = .traditionalChinese
     var onBaseFilterSelected: ((BaseFilterHeaderItem) -> Void)?
 
     // MARK: - Layout
@@ -106,9 +107,11 @@ class BaseFilterHeaderView: UICollectionReusableView {
 
     func configure(
         filters: [BaseFilterHeaderItem],
-        isShowingSkeleton: Bool = false
+        isShowingSkeleton: Bool = false,
+        localization: AppInterfaceLocalization
     ) {
         self.filters = filters
+        interfaceLocalization = localization
         selectedFilterID = filters.first(where: \.isSelected)?.id
         self.isShowingSkeleton = isShowingSkeleton
         collectionView.isUserInteractionEnabled = !isShowingSkeleton
@@ -199,7 +202,8 @@ extension BaseFilterHeaderView: UICollectionViewDataSource {
                 let item = filters[indexPath.item]
                 cell.configure(
                     title: item.title,
-                    isSelected: item.id == selectedFilterID
+                    isSelected: item.id == selectedFilterID,
+                    localization: interfaceLocalization
                 )
             }
         }
