@@ -1,6 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+
+    },
+    "%@ 影集" : {
+
+    },
+    "%@ 電影" : {
+
+    },
     "common.accessibility.action.hint" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1052,23 +1061,6 @@
         }
       }
     },
-    "common.season.number_format" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Season %lld"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "第 %lld 季"
-          }
-        }
-      }
-    },
     "common.season_episode.number_format" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1082,6 +1074,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "第 %1$lld 季第 %2$lld 集"
+          }
+        }
+      }
+    },
+    "common.season.number_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Season %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %lld 季"
           }
         }
       }
@@ -1834,6 +1843,40 @@
         }
       }
     },
+    "detail.section_header.accessibility_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to view the full list"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點兩下查看完整列表"
+          }
+        }
+      }
+    },
+    "detail.section_header.accessibility_label_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ section"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 區段"
+          }
+        }
+      }
+    },
     "detail.section.cast" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1932,40 +1975,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觀看平台"
-          }
-        }
-      }
-    },
-    "detail.section_header.accessibility_hint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Double-tap to view the full list"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "點兩下查看完整列表"
-          }
-        }
-      }
-    },
-    "detail.section_header.accessibility_label_format" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ section"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 區段"
           }
         }
       }
@@ -2190,6 +2199,9 @@
           }
         }
       }
+    },
+    "film" : {
+
     },
     "filter.accessibility.applied.hint" : {
       "extractionState" : "manual",
@@ -2650,23 +2662,6 @@
         }
       }
     },
-    "image_preview.page.accessibility_value_format" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Image %1$lld of %2$lld"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "第 %1$lld 張，共 %2$lld 張"
-          }
-        }
-      }
-    },
     "image_preview.page_control.accessibility_hint" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2697,6 +2692,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圖片頁碼"
+          }
+        }
+      }
+    },
+    "image_preview.page.accessibility_value_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image %1$lld of %2$lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$lld 張，共 %2$lld 張"
           }
         }
       }
@@ -3568,23 +3580,6 @@
         }
       }
     },
-    "main_member_setting.alert.sign_out.message" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Are you sure you want to sign out and return to the sign-in screen?"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確定要登出並返回登入頁嗎？"
-          }
-        }
-      }
-    },
     "main_member_setting.alert.sign_out_failed.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3598,6 +3593,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登出失敗"
+          }
+        }
+      }
+    },
+    "main_member_setting.alert.sign_out.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to sign out and return to the sign-in screen?"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定要登出並返回登入頁嗎？"
           }
         }
       }
@@ -4809,23 +4821,6 @@
         }
       }
     },
-    "member_center.guest.subtitle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sign in to sync favorites, watchlists, and ratings"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登入後同步收藏、待看與評分"
-          }
-        }
-      }
-    },
     "member_center.guest_prompt.accessibility_hint" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4890,6 +4885,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登入帳號"
+          }
+        }
+      }
+    },
+    "member_center.guest.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in to sync favorites, watchlists, and ratings"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登入後同步收藏、待看與評分"
           }
         }
       }
@@ -4978,6 +4990,9 @@
           }
         }
       }
+    },
+    "movie" : {
+
     },
     "movie_detail.fact.budget" : {
       "extractionState" : "manual",
@@ -6424,91 +6439,6 @@
         }
       }
     },
-    "review.author.anonymous" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anonymous User"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "匿名使用者"
-          }
-        }
-      }
-    },
-    "review.filter.latest" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Newest Reviews"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新評論"
-          }
-        }
-      }
-    },
-    "review.filter.oldest" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oldest Reviews"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最舊評論"
-          }
-        }
-      }
-    },
-    "review.filter.rated" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rated"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有評分"
-          }
-        }
-      }
-    },
-    "review.filter.unrated" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unrated"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無評分"
-          }
-        }
-      }
-    },
     "review_detail.close.accessibility_hint" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6658,6 +6588,91 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 的評論"
+          }
+        }
+      }
+    },
+    "review.author.anonymous" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anonymous User"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匿名使用者"
+          }
+        }
+      }
+    },
+    "review.filter.latest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Newest Reviews"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新評論"
+          }
+        }
+      }
+    },
+    "review.filter.oldest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oldest Reviews"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最舊評論"
+          }
+        }
+      }
+    },
+    "review.filter.rated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rated"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有評分"
+          }
+        }
+      }
+    },
+    "review.filter.unrated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrated"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無評分"
           }
         }
       }
@@ -6951,6 +6966,9 @@
         }
       }
     },
+    "series" : {
+
+    },
     "session_validation.failure.message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7103,6 +7121,9 @@
           }
         }
       }
+    },
+    "tv" : {
+
     },
     "tv_detail.attribute.networks" : {
       "extractionState" : "manual",
@@ -7664,6 +7685,66 @@
           }
         }
       }
+    },
+    "在 CineBase 開啟 TMDB 帳號的收藏影集列表。" : {
+
+    },
+    "在 CineBase 開啟 TMDB 帳號的收藏電影列表。" : {
+
+    },
+    "在 CineBase 開啟指定影集詳情。" : {
+
+    },
+    "在 CineBase 開啟指定電影詳情。" : {
+
+    },
+    "將指定影集加入 TMDB 收藏。" : {
+
+    },
+    "將指定影集從 TMDB 收藏移除。" : {
+
+    },
+    "將指定電影加入 TMDB 收藏。" : {
+
+    },
+    "將指定電影從 TMDB 收藏移除。" : {
+
+    },
+    "影集" : {
+
+    },
+    "影集詳情" : {
+
+    },
+    "收藏影集" : {
+
+    },
+    "收藏電影" : {
+
+    },
+    "移除收藏影集" : {
+
+    },
+    "移除收藏電影" : {
+
+    },
+    "開啟影集詳情" : {
+
+    },
+    "開啟收藏影集" : {
+
+    },
+    "開啟收藏電影" : {
+
+    },
+    "開啟電影詳情" : {
+
+    },
+    "電影" : {
+
+    },
+    "電影詳情" : {
+
     }
   },
   "version" : "1.0"
