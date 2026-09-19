@@ -31,11 +31,16 @@ nonisolated enum MainMemberSettingRowRole: Sendable, Equatable {
 
 // MARK: - MainMemberSettingRowAccessory
 
+nonisolated struct MainMemberSettingMenuOption: Sendable, Equatable, Identifiable {
+    let id: String
+    let title: String
+}
+
 nonisolated enum MainMemberSettingRowAccessory: Sendable, Equatable {
     case none
     case disclosure
     case value(String)
-    case toggle(isOn: Bool)
+    case menu(selectedOptionID: String, options: [MainMemberSettingMenuOption])
 }
 
 // MARK: - MainMemberSettingRowKind
@@ -152,12 +157,12 @@ extension MainMemberSettingRowItem {
     func accessibilityText(localization: AppInterfaceLocalization) -> AccessibilityText {
         AccessibilityText(
             label: title,
-            value: accessibilityValue(localization: localization),
+            value: accessibilityValue(),
             hint: accessibilityHint(localization: localization)
         )
     }
 
-    private func accessibilityValue(localization: AppInterfaceLocalization) -> String? {
+    private func accessibilityValue() -> String? {
         switch accessory {
         case .none, .disclosure:
             return BaseDisplayTextFormatter.nonEmptyText(subtitle)
@@ -165,13 +170,9 @@ extension MainMemberSettingRowItem {
         case .value(let value):
             return BaseDisplayTextFormatter.metadata([subtitle, value])
 
-        case .toggle(let isOn):
-            return BaseDisplayTextFormatter.metadata([
-                subtitle,
-                isOn
-                    ? localization.string("common.state.on", defaultValue: "On")
-                    : localization.string("common.state.off", defaultValue: "Off")
-            ])
+        case .menu(let selectedOptionID, let options):
+            let selectedTitle = options.first { $0.id == selectedOptionID }?.title
+            return BaseDisplayTextFormatter.metadata([subtitle, selectedTitle])
         }
     }
 

@@ -9,19 +9,11 @@ import Foundation
 
 // MARK: - AppInterfaceLanguage
 
-nonisolated enum AppInterfaceLanguage: String, Sendable, Equatable {
+nonisolated enum AppInterfaceLanguage: String, CaseIterable, Sendable, Equatable {
     case traditionalChinese = "zh-Hant"
     case english = "en"
 
     var locale: Locale {
         Locale(identifier: rawValue)
-    }
-
-    var isEnglish: Bool {
-        self == .english
-    }
-
-    init(isEnglish: Bool) {
-        self = isEnglish ? .english : .traditionalChinese
     }
 }

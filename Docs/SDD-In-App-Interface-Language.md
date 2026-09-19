@@ -11,17 +11,17 @@
 | 功能入口 | 個人／設定頁 `MainMemberSetting` 的「偏好設定」區段 |
 | 功能範圍 | App 內本地寫死的使用者可見文案；繁體中文／英文 |
 | 驗收責任 | 開發者自行執行 Build、Simulator／實機與英文文案驗收 |
-| 狀態 | Phase 1–5 Source Done；Static Verification Passed；實作者編譯檢查 Passed；Developer Build、Runtime、Copy Review 均 NotRun |
-| 日期 | 2026-09-19（v1.1 同日更新） |
+| 狀態 | Phase 1–5 Source Done；v1.3 Static Verification Passed；Developer Build、Runtime、Copy Review 均 NotRun |
+| 日期 | 2026-09-19（v1.3 同日更新） |
 
 ---
 
 ## 1. 目的
 
-本文件定義 CineBase 在個人／設定頁新增中英文 Switch，讓使用者可在 App 內切換本地介面文案：
+本文件定義 CineBase 在個人／設定頁新增介面語言選單，讓使用者可在 App 內切換本地介面文案：
 
-- Switch 關閉：繁體中文。
-- Switch 開啟：英文。
+- Menu 選擇「繁體中文」：使用繁體中文介面。
+- Menu 選擇「English」：使用英文介面。
 - 選擇會保存在本機，重新啟動 App 後維持不變。
 - 切換後立即重建 App 主畫面並停留在設定分頁。
 - 僅切換 App 本地定義的標題、按鈕、提示、錯誤、空狀態、格式化標籤與無障礙文案。
@@ -42,14 +42,14 @@
 | 決策 | 結論 |
 |------|------|
 | 語言數量 | 僅繁體中文與英文 |
-| Switch 語意 | `isOn == true` 為英文；`false` 為繁體中文 |
+| 選擇模型 | `AppInterfaceLanguage` raw value；目前語言在 Menu 內顯示勾選，不使用二元 Bool |
 | 初始值 | 沒有已儲存設定時使用繁體中文，維持既有 App 行為 |
 | 儲存位置 | `UserDefaults`，透過既有 `AppPreferencesStorage` 同步存取 |
 | 生效方式 | 儲存後重建 Main root，不要求關閉 App |
 | 切換後位置 | 保留登入狀態並回到 `.memberSetting` 分頁 |
 | UI 資源 | `Localizable.xcstrings`，來源語言為英文，提供 `zh-Hant` 翻譯 |
 | 執行期查字串 | 明確傳入介面 `Locale`，不依賴 `Locale.current` 自動切換 |
-| API 語言 | 完全沿用現有 `AppLocalization`，不受 Switch 影響 |
+| API 語言 | 完全沿用現有 `AppLocalization`，不受介面語言選擇影響 |
 | 自動化測試 | 本次不新增 test target；以靜態檢查與開發者手動驗收為主 |
 | 最終驗收 | 由開發者自行操作、確認文案後回填結果 |
 
@@ -59,9 +59,9 @@
 
 ### 3.1 目標
 
-- 在 `MainMemberSetting` 的「偏好設定」區段第一列新增語言 Switch。
-- 訪客與已登入會員都能看到並使用 Switch。
-- Switch 狀態與實際介面語言一致。
+- 在 `MainMemberSetting` 的「偏好設定」區段第一列新增語言 Menu 按鈕。
+- 訪客與已登入會員都能看到並使用 Menu。
+- Menu 顯示值與實際介面語言一致，且目前選項有勾選狀態。
 - App 內所有本地使用者可見文案提供繁體中文與英文。
 - 本地組合的日期、數量、季／集、評分、空狀態與 fallback 文案依介面語言呈現。
 - 本地 Accessibility label、value、hint 依介面語言呈現。
@@ -75,13 +75,13 @@
 - 不修改 `Feature/Config/AppLocalization.swift` 的 API localization 行為。
 - 不修改 `languageParameter`、`imageLanguageParameter`、`regionCode` 或 `timeZoneIdentifier`。
 - 不修改任何 Repository 的 `language`、`region`、`timezone`、`include_image_language` 或 `include_video_language` query。
-- 不要求 TMDB 電影名稱、影集名稱、人物名稱、簡介、評論或其他後端欄位跟隨 Switch。
+- 不要求 TMDB 電影名稱、影集名稱、人物名稱、簡介、評論或其他後端欄位跟隨介面語言選擇。
 - 不翻譯或改寫後端實際回傳的文字。
 - 不增加翻譯 API、AI 翻譯、第三方 localization 套件或遠端設定。
 - 不設定或竄改非公開的 `AppleLanguages` UserDefaults。
 - 不使用 method swizzling、替換 `Bundle.main` 或全域可變 singleton 切換語言。
 - 不修改登入、Session、收藏、評分、搜尋、分頁或導航業務規則。
-- 不要求 Siri、App Intents、App Shortcuts 等 App 外系統介面跟隨 App 內 Switch；它們維持系統語言規則，另案處理。
+- 不要求 Siri、App Intents、App Shortcuts 等 App 外系統介面跟隨 App 內語言選擇；它們維持系統語言規則，另案處理。
 - 不翻譯 developer log、API path、JSON key、UserDefaults key、URL、SF Symbol 名稱、程式 symbol 或 TMDB／CineBase 品牌名。
 - 不新增 Coordinator、Service Locator、BaseViewModel、無業務價值的 UseCase、SPM package 或測試 target。
 
@@ -89,24 +89,18 @@
 
 ## 4. 現況盤點
 
-### 4.1 設定頁已有 Switch 基礎
+### 4.1 設定頁語言選擇元件
 
-`MainMemberSetting` 已具備：
+v1.2 使用 `UISwitch` 將語言綁定為 Bool，不利於新增第三種以上語言。v1.3 改為：
 
-- `MainMemberSettingRowAccessory.toggle(isOn:)`。
-- `MainMemberSettingButtonCollectionViewCell` 內的 `UISwitch`。
-- `onToggleValueChanged` callback。
-- 所有登入狀態都會顯示的 `preferencesSection`。
+- `MainMemberSettingRowAccessory.menu(selectedOptionID:options:)` 表達任意數量選項。
+- `MainMemberSettingButtonCollectionViewCell` 以 `UIButton` 顯示 `UIMenu`。
+- `AppInterfaceLanguage` 採 `CaseIterable`，ViewModel 將所有 case 建立為 Menu option。
+- Menu 使用 `.singleSelection`，目前語言以 `UIAction.State.on` 顯示勾選。
+- callback 回傳語言 raw value，不再傳遞 `Bool`。
+- Menu 仍位於所有登入狀態都會顯示的 `preferencesSection`。
 
-目前缺少：
-
-- 語言 row kind。
-- Switch callback 的 Controller 接線。
-- 介面語言 model 與持久化。
-- App root 重新建立流程。
-- String Catalog 與英文文案。
-
-因此本功能不新增另一個 Switch Cell，而是補齊現有 row model 與 callback。
+這個模型允許未來新增語言 case 與對應 String Catalog 文案，不必增加新的 Switch 或修改 Bool mapping。
 
 ### 4.2 目前的 `AppLocalization` 是 API 設定
 
@@ -150,26 +144,29 @@ v1.1 實作完成後的掃描結果（同一 `rg` 指令）只剩 13 個檔案�
 
 ## 5. 使用者體驗規格
 
-### 5.1 Switch 位置與內容
+### 5.1 Menu 位置與內容
 
-Switch 放在 `MainMemberSetting` 的「偏好設定」區段第一列，既有「預設列表排序」與「預設內容類型」順序往後移。
+Menu 按鈕放在 `MainMemberSetting` 的「偏好設定」區段第一列，既有「預設列表排序」與「預設內容類型」順序往後移。
 
-| 語言 | 標題 | 副標題 | Switch |
-|------|------|--------|--------|
-| 繁體中文 | 使用英文介面 | 關閉時使用繁體中文 | Off |
-| English | Use English Interface | Turn off to use Traditional Chinese | On |
+| 介面語言 | Row 標題 | 按鈕顯示值 |
+|----------|----------|--------------|
+| 繁體中文 | 語言偏好 | 繁體中文 |
+| English | Language Preference | English |
 
 其他規格：
 
 - SF Symbol：`globe`。
-- 使用既有 `ThemeColor.highlight` on tint。
+- 不顯示副標題。
+- Menu 按鈕使用 `ThemeColor.highlight`，並顯示 `chevron.down`。
 - Row 高度沿用一般設定列，不新增特殊高度。
-- 點擊 Switch 才觸發切換；row 不執行 disclosure navigation。
-- 快速重複切換時，相同語言請求不得重複重建 root。
+- Menu 在繁中介面顯示「繁體中文」／「英文」，英文介面顯示 `Traditional Chinese`／`English`。
+- 選單採單選，當前語言顯示勾選。
+- 點擊 Menu 選項才觸發切換；row 不執行 disclosure navigation。
+- 重複選擇目前語言不得重建 root。
 
 ### 5.2 切換行為
 
-1. 使用者切換 Switch。
+1. 使用者從 Menu 選擇語言。
 2. 將新語言寫入本機偏好。
 3. 更新 `AppComposition` 持有的介面 localization value。
 4. 以目前 `AuthSession` 重新建立 Main root。
@@ -195,19 +192,19 @@ Switch 放在 `MainMemberSetting` 的「偏好設定」區段第一列，既有�
 
 - Row 標題需本地化為 `API Data Language`／`API 資料語言`。
 - Accessory value 繼續顯示現行 `AppLocalization.languageParameter`。
-- Switch 切成英文時，不得把 value 強制改為 `en-US`。
+- 介面語言選成英文時，不得把 value 強制改為 `en-US`。
 
 這一列可讓開發者與使用者辨認「App 介面語言」與「TMDB API 資料語言」是兩個獨立設定來源。
 
 ### 5.5 Accessibility
 
-本次只補足新語言 Switch 必要的無障礙行為，不擴張其他既有 Accessibility 範圍：
+本次只補足新語言 Menu 必要的無障礙行為，不擴張其他既有 Accessibility 範圍：
 
-- Switch 可單獨聚焦。
+- Menu 按鈕可單獨聚焦。
 - Label 使用當前語言的 row title。
-- Hint 使用當前語言的 row subtitle。
-- Value／trait 使用 `UISwitch` 系統語意，不自行寫死中文「開啟／關閉」。
-- 不得因現有 Cell 將 `toggleSwitch.isAccessibilityElement` 設為 `false`，導致新 Switch 無法操作。
+- Value 使用目前選取的語言名稱。
+- 不另外加入自訂 Hint；按鈕與 Menu 使用 UIKit 系統語意。
+- Menu action 的勾選狀態由 `UIAction.State.on` 表達。
 
 ---
 
@@ -263,7 +260,7 @@ Switch 放在 `MainMemberSetting` 的「偏好設定」區段第一列，既有�
 位置：`Feature/Config/AppInterfaceLanguage.swift`
 
 ```swift
-nonisolated enum AppInterfaceLanguage: String, Sendable, Equatable {
+nonisolated enum AppInterfaceLanguage: String, CaseIterable, Sendable, Equatable {
     case traditionalChinese = "zh-Hant"
     case english = "en"
 }
@@ -273,7 +270,8 @@ nonisolated enum AppInterfaceLanguage: String, Sendable, Equatable {
 
 - 表達 App 內介面語言。
 - 提供對應 `Locale`。
-- 提供 Switch boolean mapping。
+- 透過 `CaseIterable` 提供 Menu 選項來源。
+- 不提供 Bool mapping，避免語言模型被限制為兩種。
 - 不提供任何 TMDB API query value。
 
 #### `AppInterfaceLanguageStoring`／`AppInterfaceLanguageStore`
@@ -334,7 +332,7 @@ nonisolated struct AppInterfaceLocalization: Sendable, Equatable {
 
 v1.0 草案的 `String(localized:defaultValue:bundle:locale:comment:)` 經實測不可用，原因有兩個：
 
-1. 該 initializer 的 `locale` 只影響 interpolation 格式化，不會選擇 localization。以 Xcode 27 編譯 catalog 後實測，傳入 `zh-Hant` 仍回傳 `Bundle` preferred localization（`en`）的值，Switch 將完全無效。
+1. 該 initializer 的 `locale` 只影響 interpolation 格式化，不會選擇 localization。以 Xcode 27 編譯 catalog 後實測，傳入 `zh-Hant` 仍回傳 `Bundle` preferred localization（`en`）的值，App 內語言選擇將完全無效。
 2. `defaultValue` 若宣告為 `String.LocalizationValue`，`SWIFT_EMIT_LOC_STRINGS = YES` 會把呼叫端的英文字面值當成 key 抽取；在 Xcode IDE build 後同步進 catalog，產生數百筆以英文句子為 key 的無效項目。
 
 `Bundle.localizedString(forKey:value:table:localizations:)`（iOS 17+）以明確 localization 查表，實測可正確選擇 `en`／`zh-Hant`，且 `String(format:locale:arguments:)` 能套用 `.stringsdict` 的 plural 規則。三項原則（明確 locale、value semantics、無 global mutation）維持不變。
@@ -344,9 +342,9 @@ v1.0 草案的 `String(localized:defaultValue:bundle:locale:comment:)` 經實測
 ### 7.2 資料流
 
 ```text
-MainMemberSetting UISwitch
+MainMemberSetting UIButton / UIMenu
     -> MainMemberSettingViewController
-    -> MainMemberSettingViewModel 將 Bool 映射為 AppInterfaceLanguage
+    -> MainMemberSettingViewModel 將 option raw value 映射為 AppInterfaceLanguage
     -> AppFlowRouting.applyInterfaceLanguage(...)
     -> AppComposition
         -> AppInterfaceLanguageStore.save(...)
@@ -361,15 +359,15 @@ MainMemberSetting UISwitch
 
 #### View／ViewController
 
-- 顯示 Switch。
-- 將 `valueChanged` 轉交 ViewModel／App flow。
+- 顯示 Menu 按鈕、目前選取值與勾選狀態。
+- 將選取的 option ID 轉交 ViewModel／App flow。
 - 不讀寫 `UserDefaults`。
 - 不直接更新其他畫面文字。
 
 #### ViewModel／Presentation Builder
 
 - 使用注入的 `AppInterfaceLocalization` 產生本地 UI 文案。
-- `MainMemberSettingViewModel` 提供 Switch state 與 Bool-to-language mapping。
+- `MainMemberSettingViewModel` 由 `AppInterfaceLanguage.allCases` 建立 Menu options，並驗證 option raw value。
 - 不 import UIKit。
 - 不持有 concrete Store 或 `AppComposition`。
 
@@ -427,7 +425,6 @@ Xcode project：
 main_tab.home.title
 main_member_setting.navigation.title
 main_member_setting.language.title
-main_member_setting.language.subtitle
 common.action.cancel
 common.action.retry
 common.state.loading
@@ -450,7 +447,7 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - 計數文案走 `BaseDisplayTextFormatter.CountUnit`，`en` 提供 `one`／`other` plural variation，`zh-Hant` 提供單一 stringUnit。
 - 會隨媒體類型改變語法的句子（例如「沒有電影資料」、「搜尋影集」）不以 `%@` 插入 `displayName`，而是每種 `MediaKind` 一個 key，避免英文出現 `There are no Movie to show` 這類錯誤。
 - 共用 key 合併了原本措辭不同的繁中文案時，統一採用「影集」；其餘 key 保留原繁中字面值。
-- `STRING_CATALOG_GENERATE_SYMBOLS = YES` 會為所有 manual key 產生 `LocalizedStringResource` symbol，已驗證 449 個 symbol 可編譯；App 程式碼不使用這些 symbol。
+- `STRING_CATALOG_GENERATE_SYMBOLS = YES` 會為所有 manual key 產生 `LocalizedStringResource` symbol，已驗證 448 個 symbol 可編譯；App 程式碼不使用這些 symbol。
 
 ### 8.3 注入規則
 
@@ -477,7 +474,7 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - `MyTMDB_App/SceneDelegate.swift`
 - `MyTMDB_App.xcodeproj/project.pbxproj`
 
-### 9.3 語言 Switch
+### 9.3 語言 Menu
 
 - `Main/MainMemberSetting/Presentation/MainMemberSettingModels.swift`
 - `Main/MainMemberSetting/ViewModel/MainMemberSettingViewModel.swift`
@@ -539,7 +536,7 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 3. 新增 `AppInterfaceLocalization`。
 4. 新增 String Catalog 與 `zh-Hant` region。
 5. 在 `AppComposition` 建立並持有介面 localization。
-6. 建立語言變更與 root replacement callback，但尚不公開 Switch。
+6. 建立語言變更與 root replacement callback，但尚不公開語言入口。
 
 完成條件：基礎型別可編譯；API localization diff 為空；使用者尚看不到未完成的語言入口。
 
@@ -573,16 +570,16 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 
 完成條件：第 6.1 範圍全部遷移；剩餘中文字串 literal 已逐筆分類。
 
-### Phase 5 — Switch 公開與 cutover
+### Phase 5 — Menu 公開與 cutover
 
 1. 新增 `.appInterfaceLanguage` row kind。
-2. 在 preferences 第一列加入 `.toggle(isOn:)`。
-3. 接上既有 `onToggleValueChanged`。
-4. 修正新 Switch 的 Accessibility 聚焦。
+2. 在 preferences 第一列加入 `.menu(selectedOptionID:options:)`。
+3. 以 `AppInterfaceLanguage.allCases` 建立選項，Controller 接收 option ID。
+4. 補足 Menu 按鈕的 Accessibility label 與 value。
 5. 寫入偏好並重建 Main root。
 6. 確認設定頁、Session、API localization 與 selected tab 邊界。
 
-完成條件：使用者可見 Switch；任一語言切換後不出現已知的混合介面。
+完成條件：使用者可見 Menu；任一語言切換後不出現已知的混合介面。
 
 ### Phase 6 — 開發者自行驗收
 
@@ -615,10 +612,13 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 ### 11.2 語言切換與持久化
 
 - [ ] 初次啟動沒有語言設定時顯示繁體中文。
-- [ ] 訪客模式可看到語言 Switch。
-- [ ] 會員模式可看到語言 Switch。
-- [ ] Switch Off 時為繁體中文。
-- [ ] Switch On 時為英文。
+- [ ] 訪客模式可看到語言 Menu。
+- [ ] 會員模式可看到語言 Menu。
+- [ ] Menu 顯示目前介面語言。
+- [ ] 目前語言選項顯示勾選。
+- [ ] 可由 Menu 選擇繁體中文。
+- [ ] 可由 Menu 選擇 English。
+- [ ] 重複選擇目前語言不會重建 root。
 - [ ] 切換後立即回到設定分頁。
 - [ ] 切換不會登出。
 - [ ] 強制關閉再開啟後保留選擇。
@@ -656,12 +656,12 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - [ ] 空狀態、fallback 與錯誤訊息沒有殘留中文。
 - [ ] 繁體中文模式沒有非預期英文 UI；品牌、API value 與後端內容除外。
 - [ ] English 模式沒有非預期中文 UI；TMDB 後端內容除外。
-- [ ] `API Data Language` value 可與介面語言不同，且沒有被 Switch 改寫。
+- [ ] `API Data Language` value 可與介面語言不同，且沒有被 Menu 選擇改寫。
 
 ### 11.5 Accessibility
 
-- [ ] VoiceOver 可聚焦語言 Switch。
-- [ ] Switch label、hint 與狀態使用當前介面語言／系統語意。
+- [ ] VoiceOver 可聚焦語言 Menu 按鈕。
+- [ ] Menu 按鈕 label 使用當前介面語言，value 讀出目前選取語言，且沒有額外自訂 hint。
 - [ ] 切換後重新聚焦設定頁時不會讀出舊語言文案。
 - [ ] MainTab、主要按鈕與既有 Accessibility 文案跟隨介面語言。
 
@@ -672,7 +672,7 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - [ ] 同一裝置切換 UI 前後，`language` query 不變。
 - [ ] `region` 與 `timezone` query 不變。
 - [ ] image／video language query 不變。
-- [ ] TMDB 回傳的 title／overview 沒有因 UI Switch 被本機翻譯或覆寫。
+- [ ] TMDB 回傳的 title／overview 沒有因 UI 語言選擇被本機翻譯或覆寫。
 - [ ] 因 root 重建發生的重新請求只屬畫面重新載入，query 語意沒有變更。
 
 ---
@@ -723,7 +723,7 @@ rg -n --glob '*.swift' --glob '!Feature/AppIntents/**' 'error\.errorMessage([^(]
 - `error.errorMessage` 無參數版本只剩 App Intents 與 `AppLogger` developer log 使用。
 - staged／unstaged diff 無 whitespace error。
 
-另需以腳本比對：程式碼中每個 `string`／`formatted` 呼叫的 key 都存在於 catalog，catalog 沒有未使用的 key，且同一 key 在所有呼叫端的 English default 一致。v1.1 結果為 449 個 key，零缺漏、零多餘、零不一致。
+另需以腳本比對：程式碼中每個 `string`／`formatted` 呼叫的 key 都存在於 catalog，catalog 沒有未使用的 key，且同一 key 在所有呼叫端的 English default 一致。v1.3 結果為 448 個 key，零缺漏、零多餘、零不一致。
 
 另需人工檢查所有 Repository diff，確認 API query 未改變。靜態搜尋不能取代這項 diff review。
 
@@ -747,7 +747,7 @@ xcodebuild \
 
 不得因 build 失敗自行更新第三方套件、Resolve Package Versions、Reset Package Caches 或修改 `Package.resolved`。
 
-v1.1 實作者編譯檢查（不等於開發者 Build 驗收）：
+v1.1 實作者編譯檢查歷史紀錄（不等於開發者 Build 驗收）：
 
 | 項目 | 內容 |
 |------|------|
@@ -757,6 +757,8 @@ v1.1 實作者編譯檢查（不等於開發者 Build 驗收）：
 | 結果 | `** BUILD SUCCEEDED **`；專案 Swift 原始碼零 warning，僅有 2 筆連結器 `ld` address warning（未另行比對 HEAD 是否原本就有） |
 | 產物檢查 | `en.lproj` 含 445 筆 `.strings` 與 4 筆 plural `.stringsdict`，`zh-Hant.lproj` 含 449 筆 |
 | `Package.resolved` | 未變動 |
+
+v1.2 移除設定列副標題、v1.3 改為 Menu 後皆未重新執行 Build；兩版只完成第 12.1 節的 Swift 語法、String Catalog、project 與 diff 靜態檢查。Developer Build 仍由開發者自行執行。
 
 ### 12.3 Runtime 與 Copy Review
 
@@ -775,14 +777,15 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 |------|------|----------|
 | UI 與 API 語言不同 | 英文介面可能搭配中文片名／簡介 | 這是明確產品邊界；設定頁保留 API language value |
 | 漏掉散落的 literal | English 模式出現中文 | 機械掃描 + 第 11 節逐畫面走查 |
-| 先公開 Switch | 使用者看到半中半英 | Switch 延後至 Phase 5 cutover 才公開 |
-| 使用系統 locale 查字串 | App 內 Switch 不生效或重啟後不一致 | 每次查字串明確傳入 interface locale |
+| 先公開語言 Menu | 使用者看到半中半英 | Menu 延後至 Phase 5 cutover 才公開 |
+| 使用系統 locale 查字串 | App 內語言選擇不生效或重啟後不一致 | 每次查字串明確傳入 interface locale |
 | 全域 mutable language | Swift 6 data race 或隱性依賴 | 使用 immutable localization value，由 Composition 注入 |
-| Root rebuild 重置導航 | 使用者離開目前 detail stack | Switch 只在設定 root；切換後明確回設定分頁 |
+| Root rebuild 重置導航 | 使用者離開目前 detail stack | Menu 只在設定 root；切換後明確回設定分頁 |
 | Root rebuild 重新打 API | 額外載入或畫面閃動 | 接受重新載入，但 query 語意不得改變 |
 | String Catalog interpolation 錯誤 | 參數遺失、語序錯誤或 crash | 使用 catalog placeholder／plural，開發者雙語走查 |
 | 英文變長造成截斷 | Button、Cell、Alert 版面退化 | Dynamic Type 與主要尺寸手動驗收 |
-| Accessibility Switch 不可聚焦 | VoiceOver 無法切換語言 | Toggle row 使用 UISwitch 系統 accessibility semantics |
+| Accessibility Menu 不可聚焦 | VoiceOver 無法選擇語言 | Cell 不聚焦，改由 Menu 按鈕提供 label、目前語言 value 與 UIKit Menu semantics |
+| 語言模型綁定 Bool | 新增第三種語言需重寫 UI 與 mapping | `CaseIterable` 語言 case + raw value Menu option，不使用 `isEnglish` |
 | 把 API 文案誤當 UI 文案 | 未授權的資料語言行為變更 | 依第 6 節分類；Repository 與 AppLocalization diff review |
 | 預設參數掩蓋漏傳 | English 模式局部殘留中文 | 移除所有 `= .traditionalChinese` 參數預設值，由編譯器強制傳遞 |
 | catalog 缺 `en` 值 | English 模式顯示原始 key | 每個 key 皆寫入 `en` stringUnit，並以腳本比對 code 與 catalog |
@@ -791,7 +794,7 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 以下行為不屬於本 SDD 範圍，開發者驗收時請勿視為缺陷：
 
-- **UIKit 與系統提供的文字跟隨 iOS 系統語言**，不跟隨 App 內 Switch。例如 `UISearchController` 的「取消」、預設返回按鈕、分享面板、`SFSafariViewController`、WebKit 錯誤的 `localizedDescription`。App 新增 `zh-Hant.lproj` 後，繁中裝置上的這些系統文字會從原本的英文變為中文。
+- **UIKit 與系統提供的文字跟隨 iOS 系統語言**，不跟隨 App 內語言選擇。例如 `UISearchController` 的「取消」、預設返回按鈕、分享面板、`SFSafariViewController`、WebKit 錯誤的 `localizedDescription`。App 新增 `zh-Hant.lproj` 後，繁中裝置上的這些系統文字會從原本的英文變為中文。
 - **App Intents 與 Shortcuts** 維持原本中文，依 3.2 另案處理。
 - **TMDB 職稱／部門**：繁中模式沿用 `BaseFormatter.CrewJobDisplayMapper` 對照表；English 模式直接顯示 TMDB 原始英文值（例如 `Director`、`Acting`）。
 - **Developer log**：`AuthFlowHandler` 與 `MainTabBarAvatarImageProvider` 的 `AppLogger` 訊息仍使用中文 `errorMessage`，屬 developer-only。
@@ -804,7 +807,7 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 ### Phase 1–4 尚未 cutover
 
-- 不公開語言 Switch。
+- 不公開語言 Menu。
 - 新增的 String Catalog 與 localization value 可保留，不影響繁體中文既有流程。
 - 任一 feature 遷移有問題時，可只回退該 feature 的注入與字串呼叫。
 
@@ -824,7 +827,7 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 - Phase 1–5 source implementation 完成。
 - String Catalog 包含 English 與完整 `zh-Hant`。
 - App 內本地使用者可見文案已依第 6 節完成分類與遷移。
-- Switch 在訪客與會員模式皆正確顯示與運作。
+- 語言 Menu 在訪客與會員模式皆正確顯示與運作。
 - 語言偏好可持久化，且登出／清除帳號資料不會重置。
 - `AppLocalization` 與所有 Repository API query 行為不變。
 - Source／String Catalog／project 靜態檢查通過。
@@ -836,7 +839,7 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 ## 16. 實作狀態
 
-截至 2026-09-19（v1.1）：
+截至 2026-09-19（v1.3）：
 
 | 項目 | 狀態 | 證據／限制 |
 |------|------|------------|
@@ -846,10 +849,10 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 | Phase 2 Shell／登入／共用元件 | Done | MainTab、Loading、ErrorMessage、BaseRouter、Login、Player、WebView、ImagePreview、Session alert |
 | Phase 3 Main 與列表 | Done | Home、HomeSectionList、MainSearch、SearchResults、MainMediaList |
 | Phase 4 詳情／會員／PageSheet | Done | Movie、TV、Season、Episode、Person、Review、ReviewDetail、MemberCenter、Settings、Genre、Rating、DetailContentList |
-| Phase 5 Switch cutover | Done | 偏好設定第一列 Switch、Accessibility、寫入偏好、重建 root 回設定分頁 |
-| String Catalog | Done | 449 key，`en` 與 `zh-Hant` 完整，4 個 English plural |
-| Static Verification | Passed | 第 12.1 節全部指令與 key 比對腳本 |
-| 實作者編譯檢查 | Passed | 見 12.2；不代表開發者 Build 驗收 |
+| Phase 5 Menu cutover | Done | 偏好設定第一列 Menu、單選勾選、Accessibility、寫入偏好、重建 root 回設定分頁 |
+| String Catalog | Done | 448 key，`en` 與 `zh-Hant` 完整，4 個 English plural |
+| Static Verification | Passed | v1.3 已通過第 12.1 節與 448-key 比對腳本 |
+| 實作者編譯檢查 | v1.1 Passed／v1.2–v1.3 NotRun | v1.1 歷史紀錄見 12.2；v1.2–v1.3 依規格不代替開發者 Build |
 | Xcode Build（開發者） | NotRun | 由開發者自行執行並回填 11.1 |
 | Runtime — 繁體中文 | NotRun | 等待開發者驗收 |
 | Runtime — English | NotRun | 等待開發者驗收 |
@@ -880,3 +883,5 @@ v1.1 接手時，工作區已有 Phase 1 與部分 Phase 2–4、5 的未提交�
 |------|------|------|
 | 1.0 Draft | 2026-09-19 | 建立 App 內繁體中文／英文 Switch SDD；範圍限定本地寫死的 UI、格式化與 Accessibility 文案；明確排除 TMDB API localization 與後端內容；Build、Runtime、英文 Copy 由開發者自行驗收 |
 | 1.1 | 2026-09-19 | 完成 Phase 1–5 source；查表改用 `Bundle.localizedString(…localizations:)`，`defaultValue` 改為 `String`；catalog 補齊 449 個 key 的 `en`／`zh-Hant` 與 English plural；移除 `.traditionalChinese` 參數預設值；媒體類型文案改為分 key；新增 4.3 殘留分類、8.2 補充規則、12.1 catalog 檢查、12.2 實作者編譯檢查、13.1 已知限制、16.1 盤點；開發者 Build、Runtime、Copy Review 仍為 NotRun |
+| 1.2 | 2026-09-19 | 設定列文案簡化為「語言偏好」／`Language Preference`，移除副標題與自訂 Switch hint；String Catalog 調整為 448 個 key；Developer Build、Runtime、Copy Review 仍為 NotRun |
+| 1.3 | 2026-09-19 | 語言控制由二元 Switch 改為 `UIButton` + 單選 `UIMenu`；`AppInterfaceLanguage` 改採 `CaseIterable`，Menu option 使用 raw value；移除 Bool mapping，保留 448 個雙語 key；Developer Build、Runtime、Copy Review 仍為 NotRun |

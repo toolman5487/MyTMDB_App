@@ -1137,40 +1137,6 @@
         }
       }
     },
-    "common.state.off" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Off"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "關閉"
-          }
-        }
-      }
-    },
-    "common.state.on" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "On"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開啟"
-          }
-        }
-      }
-    },
     "common.value.not_selected" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3772,19 +3738,36 @@
         }
       }
     },
-    "main_member_setting.language.subtitle" : {
+    "main_member_setting.language.option.english" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Turn off to use Traditional Chinese"
+            "value" : "English"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉時使用繁體中文"
+            "value" : "英文"
+          }
+        }
+      }
+    },
+    "main_member_setting.language.option.traditional_chinese" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traditional Chinese"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繁體中文"
           }
         }
       }
@@ -3795,13 +3778,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Use English Interface"
+            "value" : "Language Preference"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用英文介面"
+            "value" : "語言偏好"
           }
         }
       }

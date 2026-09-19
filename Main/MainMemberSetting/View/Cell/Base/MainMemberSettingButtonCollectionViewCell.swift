@@ -24,7 +24,7 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
 
     // MARK: - Properties
 
-    private var toggleValueChangedHandler: ((Bool) -> Void)?
+    private var menuOptionSelectedHandler: ((String) -> Void)?
 
     // MARK: - UI Components
 
@@ -34,11 +34,21 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         return label
     }()
 
-    private lazy var toggleSwitch: UISwitch = {
-        let toggle = UISwitch()
-        toggle.onTintColor = ThemeColor.highlight
-        toggle.addTarget(self, action: #selector(handleToggleValueChanged), for: .valueChanged)
-        return toggle
+    private let menuButton: UIButton = {
+        var configuration = UIButton.Configuration.plain()
+        configuration.baseForegroundColor = ThemeColor.highlight
+        configuration.imagePlacement = .trailing
+        configuration.imagePadding = 4
+        configuration.contentInsets = NSDirectionalEdgeInsets(
+            top: 8,
+            leading: 8,
+            bottom: 8,
+            trailing: 8
+        )
+
+        let button = UIButton(configuration: configuration)
+        button.showsMenuAsPrimaryAction = true
+        return button
     }()
 
     // MARK: - Lifecycle
@@ -49,11 +59,15 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         backgroundConfiguration = nil
         accessories = []
         valueLabel.text = nil
-        toggleSwitch.setOn(false, animated: false)
-        toggleSwitch.accessibilityLabel = nil
-        toggleSwitch.accessibilityHint = nil
-        toggleSwitch.isAccessibilityElement = false
-        toggleValueChangedHandler = nil
+        menuButton.menu = nil
+        var menuConfiguration = menuButton.configuration
+        menuConfiguration?.title = nil
+        menuButton.configuration = menuConfiguration
+        menuButton.accessibilityLabel = nil
+        menuButton.accessibilityValue = nil
+        menuButton.accessibilityHint = nil
+        menuButton.isAccessibilityElement = false
+        menuOptionSelectedHandler = nil
         applyAccessibilityText(nil)
         isAccessibilityElement = true
         accessibilityTraits = .none
@@ -66,35 +80,16 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         isFirstInSection: Bool,
         isLastInSection: Bool,
         localization: AppInterfaceLocalization,
-        onToggleValueChanged: ((Bool) -> Void)? = nil
+        onMenuOptionSelected: ((String) -> Void)? = nil
     ) {
-        toggleValueChangedHandler = onToggleValueChanged
+        menuOptionSelectedHandler = onMenuOptionSelected
         contentConfiguration = makeContentConfiguration(for: item)
         backgroundConfiguration = makeBackgroundConfiguration()
         accessories = makeAccessories(for: item.accessory)
         configureAccessibility(for: item, localization: localization)
     }
 
-    private func configureAccessibility(
-        for item: MainMemberSettingRowItem,
-        localization: AppInterfaceLocalization
-    ) {
-        valueLabel.isAccessibilityElement = false
-
-        if case .toggle = item.accessory {
-            applyAccessibilityText(nil)
-            isAccessibilityElement = false
-            toggleSwitch.isAccessibilityElement = true
-            toggleSwitch.accessibilityLabel = item.title
-            toggleSwitch.accessibilityHint = item.subtitle
-            return
-        }
-
-        toggleSwitch.isAccessibilityElement = false
-        isAccessibilityElement = true
-        applyAccessibilityText(item.accessibilityText(localization: localization))
-        accessibilityTraits = item.action == nil ? .staticText : .button
-    }
+    // MARK: - Content Configuration
 
     private func makeContentConfiguration(for item: MainMemberSettingRowItem) -> UIListContentConfiguration {
         var configuration = defaultContentConfiguration()
@@ -108,77 +103,6 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         configuration.textProperties.color = titleColor(for: item.role)
         configuration.secondaryTextProperties.color = subtitleColor(for: item.role)
         return configuration
-    }
-
-    private func makeBackgroundConfiguration() -> UIBackgroundConfiguration {
-        var configuration = UIBackgroundConfiguration.listCell()
-        configuration.backgroundColor = .secondarySystemGroupedBackground
-        configuration.cornerRadius = Layout.rowCornerRadius
-        return configuration
-    }
-
-    private func makeAccessories(for accessory: MainMemberSettingRowAccessory) -> [UICellAccessory] {
-        switch accessory {
-        case .none:
-            return []
-
-        case .disclosure:
-            return [
-                .disclosureIndicator(displayed: .always)
-            ]
-
-        case .value(let value):
-            valueLabel.text = value
-            return [
-                .customView(
-                    configuration: .init(
-                        customView: valueLabel,
-                        placement: .trailing()
-                    )
-                )
-            ]
-
-        case .toggle(let isOn):
-            toggleSwitch.setOn(isOn, animated: false)
-            return [
-                .customView(
-                    configuration: .init(
-                        customView: toggleSwitch,
-                        placement: .trailing()
-                    )
-                )
-            ]
-        }
-    }
-
-    private func iconBackgroundColor(for role: MainMemberSettingRowRole) -> UIColor {
-        switch role {
-        case .normal:
-            return ThemeColor.highlight
-
-        case .destructive:
-            return ThemeColor.systemRed
-        }
-    }
-
-    private func titleColor(for role: MainMemberSettingRowRole) -> UIColor {
-        switch role {
-        case .normal:
-            return ThemeColor.textPrimary
-
-        case .destructive:
-            return ThemeColor.systemRed
-        }
-    }
-
-    private func subtitleColor(for role: MainMemberSettingRowRole) -> UIColor {
-        switch role {
-        case .normal:
-            return ThemeColor.textSecondary
-
-        case .destructive:
-            return ThemeColor.systemRed.withAlphaComponent(0.78)
-        }
     }
 
     private func makeIconImage(systemName: String, backgroundColor: UIColor) -> UIImage? {
@@ -216,7 +140,130 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
         }
     }
 
-    @objc private func handleToggleValueChanged(_ sender: UISwitch) {
-        toggleValueChangedHandler?(sender.isOn)
+    private func iconBackgroundColor(for role: MainMemberSettingRowRole) -> UIColor {
+        switch role {
+        case .normal:
+            return ThemeColor.highlight
+
+        case .destructive:
+            return ThemeColor.systemRed
+        }
+    }
+
+    private func titleColor(for role: MainMemberSettingRowRole) -> UIColor {
+        switch role {
+        case .normal:
+            return ThemeColor.textPrimary
+
+        case .destructive:
+            return ThemeColor.systemRed
+        }
+    }
+
+    private func subtitleColor(for role: MainMemberSettingRowRole) -> UIColor {
+        switch role {
+        case .normal:
+            return ThemeColor.textSecondary
+
+        case .destructive:
+            return ThemeColor.systemRed.withAlphaComponent(0.78)
+        }
+    }
+
+    // MARK: - Background Configuration
+
+    private func makeBackgroundConfiguration() -> UIBackgroundConfiguration {
+        var configuration = UIBackgroundConfiguration.listCell()
+        configuration.backgroundColor = .secondarySystemGroupedBackground
+        configuration.cornerRadius = Layout.rowCornerRadius
+        return configuration
+    }
+
+    // MARK: - Accessory Configuration
+
+    private func makeAccessories(for accessory: MainMemberSettingRowAccessory) -> [UICellAccessory] {
+        switch accessory {
+        case .none:
+            return []
+
+        case .disclosure:
+            return [
+                .disclosureIndicator(displayed: .always)
+            ]
+
+        case .value(let value):
+            valueLabel.text = value
+            return [
+                .customView(
+                    configuration: .init(
+                        customView: valueLabel,
+                        placement: .trailing()
+                    )
+                )
+            ]
+
+        case .menu(let selectedOptionID, let options):
+            configureMenuButton(
+                selectedOptionID: selectedOptionID,
+                options: options
+            )
+            return [
+                .customView(
+                    configuration: .init(
+                        customView: menuButton,
+                        placement: .trailing()
+                    )
+                )
+            ]
+        }
+    }
+
+    private func configureMenuButton(
+        selectedOptionID: String,
+        options: [MainMemberSettingMenuOption]
+    ) {
+        let selectedOption = options.first { $0.id == selectedOptionID }
+        var configuration = menuButton.configuration
+        configuration?.title = selectedOption?.title
+        menuButton.configuration = configuration
+        menuButton.menu = UIMenu(
+            options: .singleSelection,
+            children: options.map { option in
+                UIAction(
+                    title: option.title,
+                    state: option.id == selectedOptionID ? .on : .off
+                ) { [weak self] _ in
+                    Task(priority: .userInitiated) { @MainActor [weak self] in
+                        self?.menuOptionSelectedHandler?(option.id)
+                    }
+                }
+            }
+        )
+    }
+
+    // MARK: - Accessibility Configuration
+
+    private func configureAccessibility(
+        for item: MainMemberSettingRowItem,
+        localization: AppInterfaceLocalization
+    ) {
+        valueLabel.isAccessibilityElement = false
+
+        if case .menu(let selectedOptionID, let options) = item.accessory {
+            applyAccessibilityText(nil)
+            isAccessibilityElement = false
+            menuButton.isAccessibilityElement = true
+            menuButton.accessibilityLabel = item.title
+            menuButton.accessibilityValue = options.first {
+                $0.id == selectedOptionID
+            }?.title
+            menuButton.accessibilityHint = nil
+            return
+        }
+
+        menuButton.isAccessibilityElement = false
+        isAccessibilityElement = true
+        applyAccessibilityText(item.accessibilityText(localization: localization))
+        accessibilityTraits = item.action == nil ? .staticText : .button
     }
 }

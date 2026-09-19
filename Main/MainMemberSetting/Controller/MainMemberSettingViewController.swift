@@ -387,9 +387,9 @@ extension MainMemberSettingViewController: UICollectionViewDataSource {
             isFirstInSection: indexPath.item == 0,
             isLastInSection: indexPath.item == section.rows.count - 1,
             localization: viewModel.interfaceLocalization,
-            onToggleValueChanged: row.kind == .appInterfaceLanguage
-                ? { [weak self] isEnglishEnabled in
-                    self?.applyInterfaceLanguage(isEnglishEnabled: isEnglishEnabled)
+            onMenuOptionSelected: row.kind == .appInterfaceLanguage
+                ? { [weak self] optionID in
+                    self?.applyInterfaceLanguage(optionID: optionID)
                 }
                 : nil
         )
@@ -500,10 +500,8 @@ extension MainMemberSettingViewController: UICollectionViewDelegateFlowLayout {
         }
     }
 
-    private func applyInterfaceLanguage(isEnglishEnabled: Bool) {
-        guard let language = viewModel.interfaceLanguage(
-            isEnglishEnabled: isEnglishEnabled
-        ) else {
+    private func applyInterfaceLanguage(optionID: String) {
+        guard let language = viewModel.interfaceLanguage(for: optionID) else {
             return
         }
 

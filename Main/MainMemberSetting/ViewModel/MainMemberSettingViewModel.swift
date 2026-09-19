@@ -148,8 +148,10 @@ final class MainMemberSettingViewModel {
         row(at: indexPath)?.action
     }
 
-    func interfaceLanguage(isEnglishEnabled: Bool) -> AppInterfaceLanguage? {
-        let language = AppInterfaceLanguage(isEnglish: isEnglishEnabled)
+    func interfaceLanguage(for optionID: String) -> AppInterfaceLanguage? {
+        guard let language = AppInterfaceLanguage(rawValue: optionID) else {
+            return nil
+        }
         guard language != interfaceLocalization.language else { return nil }
         return language
     }
@@ -356,14 +358,13 @@ final class MainMemberSettingViewModel {
                     kind: .appInterfaceLanguage,
                     title: interfaceLocalization.string(
                         "main_member_setting.language.title",
-                        defaultValue: "Use English Interface"
-                    ),
-                    subtitle: interfaceLocalization.string(
-                        "main_member_setting.language.subtitle",
-                        defaultValue: "Turn off to use Traditional Chinese"
+                        defaultValue: "Language Preference"
                     ),
                     systemImageName: "globe",
-                    accessory: .toggle(isOn: interfaceLocalization.language.isEnglish)
+                    accessory: .menu(
+                        selectedOptionID: interfaceLocalization.language.rawValue,
+                        options: interfaceLanguageMenuOptions
+                    )
                 ),
                 MainMemberSettingRowItem(
                     kind: .defaultSort,
@@ -391,6 +392,31 @@ final class MainMemberSettingViewModel {
                 )
             ]
         )
+    }
+
+    private var interfaceLanguageMenuOptions: [MainMemberSettingMenuOption] {
+        AppInterfaceLanguage.allCases.map { language in
+            MainMemberSettingMenuOption(
+                id: language.rawValue,
+                title: interfaceLanguageTitle(for: language)
+            )
+        }
+    }
+
+    private func interfaceLanguageTitle(for language: AppInterfaceLanguage) -> String {
+        switch language {
+        case .traditionalChinese:
+            return interfaceLocalization.string(
+                "main_member_setting.language.option.traditional_chinese",
+                defaultValue: "Traditional Chinese"
+            )
+
+        case .english:
+            return interfaceLocalization.string(
+                "main_member_setting.language.option.english",
+                defaultValue: "English"
+            )
+        }
     }
 
     private func aboutSection(session: AuthSession) -> MainMemberSettingSectionItem {
