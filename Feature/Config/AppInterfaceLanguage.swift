@@ -12,6 +12,7 @@ import Foundation
 nonisolated enum AppInterfaceLanguage: String, CaseIterable, Sendable, Equatable {
     case traditionalChinese = "zh-Hant"
     case english = "en"
+    case japanese = "ja"
 
     var locale: Locale {
         Locale(identifier: rawValue)

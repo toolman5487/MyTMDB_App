@@ -416,6 +416,12 @@ final class MainMemberSettingViewModel {
                 "main_member_setting.language.option.english",
                 defaultValue: "English"
             )
+
+        case .japanese:
+            return interfaceLocalization.string(
+                "main_member_setting.language.option.japanese",
+                defaultValue: "Japanese"
+            )
         }
     }
 

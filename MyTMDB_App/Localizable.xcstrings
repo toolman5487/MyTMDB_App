@@ -19,6 +19,12 @@
             "value" : "Double-tap to perform this action"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてこの操作を実行"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -34,6 +40,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして%@"
           }
         },
         "zh-Hant" : {
@@ -53,6 +65,12 @@
             "value" : "Collapsed"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "折りたたまれています"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -68,6 +86,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to perform this action. This change may be irreversible."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてこの操作を実行します。この変更は元に戻せない場合があります。"
           }
         },
         "zh-Hant" : {
@@ -87,6 +111,12 @@
             "value" : "Expanded"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展開されています"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -102,6 +132,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未選択"
           }
         },
         "zh-Hant" : {
@@ -121,6 +157,12 @@
             "value" : "Double-tap to open details"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして詳細を表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -136,6 +178,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to open episode details"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてエピソードの詳細を表示"
           }
         },
         "zh-Hant" : {
@@ -155,6 +203,12 @@
             "value" : "Double-tap to open movie details"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして映画の詳細を表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -170,6 +224,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to open person details"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして人物の詳細を表示"
           }
         },
         "zh-Hant" : {
@@ -189,6 +249,12 @@
             "value" : "Double-tap to open TV show details"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてテレビ番組の詳細を表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -204,6 +270,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to play the video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして動画を再生"
           }
         },
         "zh-Hant" : {
@@ -223,6 +295,12 @@
             "value" : "Double-tap to preview the image"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして画像をプレビュー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -238,6 +316,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択済み"
           }
         },
         "zh-Hant" : {
@@ -257,6 +341,12 @@
             "value" : "Guest"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲスト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -272,6 +362,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Member"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メンバー"
           }
         },
         "zh-Hant" : {
@@ -291,6 +387,12 @@
             "value" : "Signed Out"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未ログイン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -306,6 +408,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャンセル"
           }
         },
         "zh-Hant" : {
@@ -325,6 +433,12 @@
             "value" : "Clear"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "消去"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -340,6 +454,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Close"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
           }
         },
         "zh-Hant" : {
@@ -359,6 +479,12 @@
             "value" : "Confirm"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確認"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -376,6 +502,12 @@
             "value" : "Delete"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -388,6 +520,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
@@ -410,6 +548,12 @@
             "value" : "Register"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -425,6 +569,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Retry"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再試行"
           }
         },
         "zh-Hant" : {
@@ -444,6 +594,12 @@
             "value" : "Sign In"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -461,6 +617,12 @@
             "value" : "Sign Out"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログアウト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -476,6 +638,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sort"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "並べ替え"
           }
         },
         "zh-Hant" : {
@@ -507,6 +675,12 @@
             }
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld話"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -534,6 +708,12 @@
                 }
               }
             }
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld件"
           }
         },
         "zh-Hant" : {
@@ -565,6 +745,12 @@
             }
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldシーズン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -594,6 +780,12 @@
             }
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld票"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -609,6 +801,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld hr"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld時間"
           }
         },
         "zh-Hant" : {
@@ -628,6 +826,12 @@
             "value" : "%1$lld hr %2$lld min"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld時間%2$lld分"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -643,6 +847,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分"
           }
         },
         "zh-Hant" : {
@@ -662,6 +872,12 @@
             "value" : "Episode %lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第%lld話"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -677,6 +893,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The movie ID is invalid. Go back and try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画IDが無効です。前の画面に戻ってもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -696,6 +918,12 @@
             "value" : "The TV show ID is invalid. Go back and try again."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組IDが無効です。前の画面に戻ってもう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -711,6 +939,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No overview is available."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あらすじはありません。"
           }
         },
         "zh-Hant" : {
@@ -730,6 +964,12 @@
             "value" : "Not announced"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未発表"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -745,6 +985,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unnamed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称未設定"
           }
         },
         "zh-Hant" : {
@@ -764,6 +1010,12 @@
             "value" : "Unnamed Provider"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名称未設定の配信サービス"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -779,6 +1031,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untitled"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル未設定"
           }
         },
         "zh-Hant" : {
@@ -798,6 +1056,12 @@
             "value" : "Untitled Collection"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル未設定のコレクション"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -813,6 +1077,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untitled Episode"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル未設定のエピソード"
           }
         },
         "zh-Hant" : {
@@ -832,6 +1102,12 @@
             "value" : "Untitled Season"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル未設定のシーズン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -847,6 +1123,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untitled Video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル未設定の動画"
           }
         },
         "zh-Hant" : {
@@ -866,6 +1148,12 @@
             "value" : "All"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべて"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -881,6 +1169,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Movie"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画"
           }
         },
         "zh-Hant" : {
@@ -900,6 +1194,12 @@
             "value" : "Movies and TV Shows"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画とテレビ番組"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -915,6 +1215,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Person"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物"
           }
         },
         "zh-Hant" : {
@@ -934,6 +1240,12 @@
             "value" : "TV Show"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -949,6 +1261,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rating"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価"
           }
         },
         "zh-Hant" : {
@@ -968,6 +1286,12 @@
             "value" : "My Rating"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自分の評価"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -983,6 +1307,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not rated"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未評価"
           }
         },
         "zh-Hant" : {
@@ -1002,6 +1332,12 @@
             "value" : "My Rating %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自分の評価 %@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1017,6 +1353,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rating %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価 %@"
           }
         },
         "zh-Hant" : {
@@ -1036,6 +1378,12 @@
             "value" : "%@ (%@)"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@（%@）"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1051,6 +1399,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Release date %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公開日 %@"
           }
         },
         "zh-Hant" : {
@@ -1070,6 +1424,12 @@
             "value" : "S%1$lld E%2$lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズン%1$lld・エピソード%2$lld"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1085,6 +1445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Season %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズン%lld"
           }
         },
         "zh-Hant" : {
@@ -1104,6 +1470,12 @@
             "value" : "Popularity"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人気度"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1119,6 +1491,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cleared"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "消去済み"
           }
         },
         "zh-Hant" : {
@@ -1138,6 +1516,12 @@
             "value" : "Loading..."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込み中…"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1153,6 +1537,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未選択"
           }
         },
         "zh-Hant" : {
@@ -1172,6 +1562,12 @@
             "value" : "Not Synced"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未同期"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1187,6 +1583,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unknown"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明"
           }
         },
         "zh-Hant" : {
@@ -1206,6 +1608,12 @@
             "value" : "Unable to Delete Rating"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価を削除できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1221,6 +1629,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rating Deletion Unavailable"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価を削除できません"
           }
         },
         "zh-Hant" : {
@@ -1240,6 +1654,12 @@
             "value" : "Favorite Update Failed"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りを更新できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1255,6 +1675,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The favorite data is invalid. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りのデータが無効です。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -1274,6 +1700,12 @@
             "value" : "Sign in to your TMDB account to use favorites."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りを利用するには、TMDBアカウントにログインしてください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1289,6 +1721,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Favorite status cannot be loaded right now. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、お気に入りの状態を取得できません。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -1308,6 +1746,12 @@
             "value" : "Favorites Unavailable"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りを利用できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1323,6 +1767,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ratings must be between 0.5 and 10."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価は0.5から10の範囲で入力してください。"
           }
         },
         "zh-Hant" : {
@@ -1342,6 +1792,12 @@
             "value" : "Rating Failed"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1357,6 +1813,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in to your TMDB account to use ratings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価機能を利用するには、TMDBアカウントにログインしてください。"
           }
         },
         "zh-Hant" : {
@@ -1376,6 +1838,12 @@
             "value" : "Rating status cannot be loaded right now. Please try again later."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、評価の状態を取得できません。しばらくしてからもう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1391,6 +1859,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ratings Unavailable"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価機能を利用できません"
           }
         },
         "zh-Hant" : {
@@ -1410,6 +1884,12 @@
             "value" : "Sign-in Required"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインが必要です"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1425,6 +1905,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your Rating"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたの評価"
           }
         },
         "zh-Hant" : {
@@ -1444,6 +1930,12 @@
             "value" : "Double-tap to change favorite status"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてお気に入りの状態を変更"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1459,6 +1951,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Favorite"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入り"
           }
         },
         "zh-Hant" : {
@@ -1478,6 +1976,12 @@
             "value" : "Added to Favorites"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りに追加済み"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1493,6 +1997,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not in Favorites"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りに未追加"
           }
         },
         "zh-Hant" : {
@@ -1512,6 +2022,12 @@
             "value" : "Double-tap to rate"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして評価"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1527,6 +2043,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Current rating: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在の評価：%@"
           }
         },
         "zh-Hant" : {
@@ -1546,6 +2068,12 @@
             "value" : "Rate"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価する"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1561,6 +2089,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to view reviews"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてレビューを表示"
           }
         },
         "zh-Hant" : {
@@ -1580,6 +2114,12 @@
             "value" : "Reviews"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビュー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1595,6 +2135,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Genres"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ジャンル"
           }
         },
         "zh-Hant" : {
@@ -1614,6 +2160,12 @@
             "value" : "Production Companies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作会社"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1629,6 +2181,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Delete Rating"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価を削除できません"
           }
         },
         "zh-Hant" : {
@@ -1648,6 +2206,12 @@
             "value" : "Unable to Favorite"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りに追加できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1663,6 +2227,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalid Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効なデータ"
           }
         },
         "zh-Hant" : {
@@ -1682,6 +2252,12 @@
             "value" : "%@ Not Found"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@が見つかりません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1697,6 +2273,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Rate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価できません"
           }
         },
         "zh-Hant" : {
@@ -1716,6 +2298,12 @@
             "value" : "Double-tap to open the link"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてリンクを開く"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1731,6 +2319,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ステータス"
           }
         },
         "zh-Hant" : {
@@ -1750,6 +2344,12 @@
             "value" : "Backdrop"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景画像"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1765,6 +2365,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Logo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロゴ"
           }
         },
         "zh-Hant" : {
@@ -1784,6 +2390,12 @@
             "value" : "Poster"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ポスター"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1799,6 +2411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Still"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "場面写真"
           }
         },
         "zh-Hant" : {
@@ -1818,6 +2436,12 @@
             "value" : "Image %lld"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像%lld"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1833,6 +2457,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Overview"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あらすじ"
           }
         },
         "zh-Hant" : {
@@ -1852,6 +2482,12 @@
             "value" : "Double-tap to view the full list"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして一覧を表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1867,6 +2503,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ section"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@セクション"
           }
         },
         "zh-Hant" : {
@@ -1886,6 +2528,12 @@
             "value" : "Cast"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャスト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1901,6 +2549,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crew"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スタッフ"
           }
         },
         "zh-Hant" : {
@@ -1920,6 +2574,12 @@
             "value" : "Related Links"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "関連リンク"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1935,6 +2595,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Images"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像"
           }
         },
         "zh-Hant" : {
@@ -1954,6 +2620,12 @@
             "value" : "Trailers and Videos"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予告編と動画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1969,6 +2641,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Where to Watch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "視聴方法"
           }
         },
         "zh-Hant" : {
@@ -1988,6 +2666,12 @@
             "value" : "Try refreshing again later."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "しばらくしてから再読み込みしてください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2003,6 +2687,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing to Show"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示できる内容がありません"
           }
         },
         "zh-Hant" : {
@@ -2022,6 +2712,12 @@
             "value" : "Favorites, watchlists, ratings, and lists will appear here."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入り、ウォッチリスト、評価、リストはここに表示されます。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2037,6 +2733,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Account Content Yet"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントのコンテンツはまだありません"
           }
         },
         "zh-Hant" : {
@@ -2056,6 +2758,12 @@
             "value" : "Valid TV show, season, and episode information is required."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効なテレビ番組、シーズン、エピソードの情報が必要です。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2071,6 +2779,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Episode"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソード"
           }
         },
         "zh-Hant" : {
@@ -2090,6 +2804,12 @@
             "value" : "Production Code"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作番号"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2105,6 +2825,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Votes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "投票数"
           }
         },
         "zh-Hant" : {
@@ -2124,6 +2850,12 @@
             "value" : "Episode Overview"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソードのあらすじ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2139,6 +2871,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rate This Episode"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このエピソードを評価"
           }
         },
         "zh-Hant" : {
@@ -2158,6 +2896,12 @@
             "value" : "Guest Stars"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲスト出演"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2175,6 +2919,12 @@
             "value" : "Episode Information"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソード情報"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2190,6 +2940,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Something Went Wrong"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "問題が発生しました"
           }
         },
         "zh-Hant" : {
@@ -2212,6 +2968,12 @@
             "value" : "Currently applied filter"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在適用中のフィルター"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2227,6 +2989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to apply this filter"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてこのフィルターを適用"
           }
         },
         "zh-Hant" : {
@@ -2246,6 +3014,12 @@
             "value" : "Double-tap to collapse the filter menu"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてフィルターメニューを折りたたむ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2261,6 +3035,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to open the full filter menu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてすべてのフィルターを表示"
           }
         },
         "zh-Hant" : {
@@ -2280,6 +3060,12 @@
             "value" : "Show all filters"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのフィルターを表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2295,6 +3081,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to close the filter menu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてフィルターメニューを閉じる"
           }
         },
         "zh-Hant" : {
@@ -2314,6 +3106,12 @@
             "value" : "%@ Genres"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@のジャンル"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2329,6 +3127,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TV Airing Today"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本日放送のテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -2348,6 +3152,12 @@
             "value" : "Now Playing"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上映中"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2363,6 +3173,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TV Shows on the Air"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放送中のテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -2382,6 +3198,12 @@
             "value" : "Popular Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人気の映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2397,6 +3219,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Popular TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人気のテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -2416,6 +3244,12 @@
             "value" : "Top Rated Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高評価の映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2431,6 +3265,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Top Rated TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高評価のテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -2450,6 +3290,12 @@
             "value" : "Trending Movies Today"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日のトレンド映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2465,6 +3311,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trending TV Today"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日のトレンド番組"
           }
         },
         "zh-Hant" : {
@@ -2484,6 +3336,12 @@
             "value" : "Upcoming Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "近日公開"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2499,6 +3357,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Now playing, %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上映中、%@"
           }
         },
         "zh-Hant" : {
@@ -2518,6 +3382,12 @@
             "value" : "Now Playing"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上映中"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2533,6 +3403,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to view all %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして%@をすべて表示"
           }
         },
         "zh-Hant" : {
@@ -2552,6 +3428,12 @@
             "value" : "%@ category"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@カテゴリー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2567,6 +3449,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "More available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ほかにも項目があります"
           }
         },
         "zh-Hant" : {
@@ -2586,6 +3474,12 @@
             "value" : "Double-tap to close the image preview"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして画像プレビューを閉じる"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2601,6 +3495,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@, image %2$lld of %3$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@、全%3$lld枚中%2$lld枚目"
           }
         },
         "zh-Hant" : {
@@ -2620,6 +3520,12 @@
             "value" : "Image"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2635,6 +3541,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Swipe left or right to switch images. Pinch to zoom."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右にスワイプして画像を切り替えます。ピンチして拡大・縮小できます。"
           }
         },
         "zh-Hant" : {
@@ -2654,6 +3566,12 @@
             "value" : "Pinch to zoom."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピンチして拡大・縮小できます。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2669,6 +3587,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Swipe left or right to switch images"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右にスワイプして画像を切り替える"
           }
         },
         "zh-Hant" : {
@@ -2688,6 +3612,12 @@
             "value" : "Image Page"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像ページ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2703,6 +3633,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Image %1$lld of %2$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全%2$lld枚中%1$lld枚目"
           }
         },
         "zh-Hant" : {
@@ -2722,6 +3658,12 @@
             "value" : "Edit Credentials"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "入力内容を修正"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2737,6 +3679,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check your TMDB username and password, then try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBのユーザー名とパスワードを確認して、もう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -2756,6 +3704,12 @@
             "value" : "Incorrect Username or Password"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名またはパスワードが正しくありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2771,6 +3725,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continue as Guest"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲストとして続ける"
           }
         },
         "zh-Hant" : {
@@ -2790,6 +3750,12 @@
             "value" : "Browse movies and TV shows without an account. Some personalized features will be unavailable."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントなしで映画やテレビ番組を閲覧できます。一部のパーソナライズ機能は利用できません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2805,6 +3771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Swipe left or right to switch between %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右にスワイプして%@を切り替える"
           }
         },
         "zh-Hant" : {
@@ -2824,6 +3796,12 @@
             "value" : "Sign-in Method"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン方法"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2839,6 +3817,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@, page %2$lld of %3$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@、全%3$lldページ中%2$lldページ目"
           }
         },
         "zh-Hant" : {
@@ -2858,6 +3842,12 @@
             "value" : "Currently hidden"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在は非表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2873,6 +3863,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hide Password"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードを隠す"
           }
         },
         "zh-Hant" : {
@@ -2892,6 +3888,12 @@
             "value" : "Enter password"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードを入力"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2907,6 +3909,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show Password"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードを表示"
           }
         },
         "zh-Hant" : {
@@ -2926,6 +3934,12 @@
             "value" : "Double-tap to toggle password visibility"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてパスワードの表示を切り替える"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2941,6 +3955,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Currently visible"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在は表示中"
           }
         },
         "zh-Hant" : {
@@ -2960,6 +3980,12 @@
             "value" : "Create an account on the TMDB website to use favorites, watchlists, and more."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBのWebサイトでアカウントを作成すると、お気に入りやウォッチリストなどを利用できます。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2975,6 +4001,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Go to Registration"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録ページを開く"
           }
         },
         "zh-Hant" : {
@@ -2994,6 +4026,12 @@
             "value" : "Enter username"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名を入力"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3009,6 +4047,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter your TMDB username and password before signing in."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインする前に、TMDBのユーザー名とパスワードを入力してください。"
           }
         },
         "zh-Hant" : {
@@ -3028,6 +4072,12 @@
             "value" : "Enter Username and Password"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名とパスワードを入力"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3043,6 +4093,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter your TMDB password before signing in."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインする前に、TMDBのパスワードを入力してください。"
           }
         },
         "zh-Hant" : {
@@ -3062,6 +4118,12 @@
             "value" : "Enter Password"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードを入力"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3077,6 +4139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter your TMDB username before signing in."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインする前に、TMDBのユーザー名を入力してください。"
           }
         },
         "zh-Hant" : {
@@ -3096,6 +4164,12 @@
             "value" : "Enter Username"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名を入力"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3111,6 +4185,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API Data Language"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIデータの言語"
           }
         },
         "zh-Hant" : {
@@ -3130,6 +4210,12 @@
             "value" : "App Version"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appバージョン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3145,6 +4231,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Current Sign-in Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在のログイン状態"
           }
         },
         "zh-Hant" : {
@@ -3164,6 +4256,12 @@
             "value" : "About"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このAppについて"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3179,6 +4277,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TMDB Data Source"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBデータ提供元"
           }
         },
         "zh-Hant" : {
@@ -3198,6 +4302,12 @@
             "value" : "Clear Profile Cache"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールのキャッシュを消去"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3213,6 +4323,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Refresh Profile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールを更新"
           }
         },
         "zh-Hant" : {
@@ -3232,6 +4348,12 @@
             "value" : "Account"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3247,6 +4369,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This ends guest mode, clears search history and the image cache, then returns to the sign-in screen."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲストモードを終了し、検索履歴と画像キャッシュを消去して、ログイン画面に戻ります。"
           }
         },
         "zh-Hant" : {
@@ -3266,6 +4394,12 @@
             "value" : "This clears your profile, session, search history, and image cache, then returns to the sign-in screen."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィール、セッション、検索履歴、画像キャッシュを消去して、ログイン画面に戻ります。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3281,6 +4415,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear All Local Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのローカルデータを消去"
           }
         },
         "zh-Hant" : {
@@ -3300,6 +4440,12 @@
             "value" : "This removes locally stored images. They will be downloaded again the next time you browse."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末に保存された画像を消去します。次回の閲覧時に再度ダウンロードされます。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3315,6 +4461,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear Image Cache"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像キャッシュを消去"
           }
         },
         "zh-Hant" : {
@@ -3334,6 +4486,12 @@
             "value" : "Clear Local Data Anyway"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ローカルデータを消去"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3349,6 +4507,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear Local Sign-in Only"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末のログイン情報のみ消去"
           }
         },
         "zh-Hant" : {
@@ -3368,6 +4532,12 @@
             "value" : "This removes the locally stored profile name and avatar without signing you out."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログアウトせずに、端末に保存されたプロフィール名とアバターのキャッシュを消去します。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3383,6 +4553,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear Profile Cache"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールのキャッシュを消去"
           }
         },
         "zh-Hant" : {
@@ -3402,6 +4578,12 @@
             "value" : "This permanently deletes all locally stored search terms."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末に保存されたすべての検索履歴を完全に削除します。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3417,6 +4599,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear Search History?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索履歴を消去しますか？"
           }
         },
         "zh-Hant" : {
@@ -3436,6 +4624,12 @@
             "value" : "The TMDB session may have expired, but sign-in data cannot be safely cleared from this device. Unlock the device and try again."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBセッションの有効期限が切れている可能性がありますが、この端末からログイン情報を安全に消去できません。端末のロックを解除して、もう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3451,6 +4645,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Clear Sign-in Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン情報を消去できません"
           }
         },
         "zh-Hant" : {
@@ -3470,6 +4670,12 @@
             "value" : "The image cache has been cleared."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像キャッシュを消去しました。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3485,6 +4691,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The profile cache has been cleared."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールのキャッシュを消去しました。"
           }
         },
         "zh-Hant" : {
@@ -3504,6 +4716,12 @@
             "value" : "Your profile cannot be refreshed right now. Please try again later."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、プロフィールを更新できません。しばらくしてからもう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3519,6 +4737,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your profile has been refreshed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールを更新しました。"
           }
         },
         "zh-Hant" : {
@@ -3538,6 +4762,12 @@
             "value" : "CineBase cannot connect to TMDB to revoke the session. If you clear only local data, the remote session may remain active."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CineBaseはTMDBに接続してセッションを無効にできません。ローカルデータのみ消去すると、リモートセッションが有効なままになる場合があります。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3553,6 +4783,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Revoke TMDB Session"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBセッションを無効にできません"
           }
         },
         "zh-Hant" : {
@@ -3572,6 +4808,12 @@
             "value" : "Search history has been cleared."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索履歴を消去しました。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3587,6 +4829,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign Out Failed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログアウトできません"
           }
         },
         "zh-Hant" : {
@@ -3606,6 +4854,12 @@
             "value" : "Are you sure you want to sign out and return to the sign-in screen?"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログアウトしてログイン画面に戻りますか？"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3621,6 +4875,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Update Failed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新できません"
           }
         },
         "zh-Hant" : {
@@ -3640,6 +4900,12 @@
             "value" : "Updated"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新しました"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3655,6 +4921,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear All Local Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのローカルデータを消去"
           }
         },
         "zh-Hant" : {
@@ -3674,6 +4946,12 @@
             "value" : "Clear Image Cache"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像キャッシュを消去"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3689,6 +4967,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clear Search History"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索履歴を消去"
           }
         },
         "zh-Hant" : {
@@ -3708,6 +4992,12 @@
             "value" : "Cache and Data"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャッシュとデータ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3723,6 +5013,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in to your TMDB account to sync favorites, lists, and ratings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBアカウントにログインすると、お気に入り、リスト、評価を同期できます。"
           }
         },
         "zh-Hant" : {
@@ -3742,6 +5038,12 @@
             "value" : "Browsing as a Guest"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲストとして閲覧中"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3759,10 +5061,39 @@
             "value" : "English"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英語"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "英文"
+          }
+        }
+      }
+    },
+    "main_member_setting.language.option.japanese" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Japanese"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日本語"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日本語"
           }
         }
       }
@@ -3774,6 +5105,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Traditional Chinese"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繁体字中国語"
           }
         },
         "zh-Hant" : {
@@ -3793,6 +5130,12 @@
             "value" : "Language Preference"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示言語"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3808,6 +5151,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
           }
         },
         "zh-Hant" : {
@@ -3827,6 +5176,12 @@
             "value" : "Default Content Type"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトのコンテンツタイプ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3842,6 +5197,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Default List Sort"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトの並べ替え"
           }
         },
         "zh-Hant" : {
@@ -3861,6 +5222,12 @@
             "value" : "Preferences"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "環境設定"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3876,6 +5243,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to open Member Center"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてメンバーセンターを開く"
           }
         },
         "zh-Hant" : {
@@ -3895,6 +5268,12 @@
             "value" : "TMDB Member"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBメンバー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3910,6 +5289,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Profile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィール"
           }
         },
         "zh-Hant" : {
@@ -3929,6 +5314,12 @@
             "value" : "Username not synced"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名は未同期です"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3944,6 +5335,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の設定"
           }
         },
         "zh-Hant" : {
@@ -3963,6 +5360,12 @@
             "value" : "Enter a keyword to search"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キーワードを入力して検索"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3978,6 +5381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search movies, TV shows, and people"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画、テレビ番組、人物を検索"
           }
         },
         "zh-Hant" : {
@@ -3997,6 +5406,12 @@
             "value" : "No Results"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結果がありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4012,6 +5427,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "None of the loaded results match this category."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込み済みの検索結果に、このカテゴリーと一致する項目はありません。"
           }
         },
         "zh-Hant" : {
@@ -4031,6 +5452,12 @@
             "value" : "No Movie Results"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画の結果がありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4046,6 +5473,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No People Results"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物の結果がありません"
           }
         },
         "zh-Hant" : {
@@ -4065,6 +5498,12 @@
             "value" : "No TV Show Results"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組の結果がありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4080,6 +5519,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索"
           }
         },
         "zh-Hant" : {
@@ -4099,6 +5544,12 @@
             "value" : "Search movies, TV shows, and people"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画、テレビ番組、人物を検索"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4114,6 +5565,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to search again, or touch and hold to reorder"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして再検索します。長押しすると並べ替えられます。"
           }
         },
         "zh-Hant" : {
@@ -4133,6 +5590,12 @@
             "value" : "Recent search: %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近の検索：%@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4148,6 +5611,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check back later for trending movies, TV shows, and people."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "話題の映画、テレビ番組、人物については、しばらくしてからもう一度ご確認ください。"
           }
         },
         "zh-Hant" : {
@@ -4167,6 +5636,12 @@
             "value" : "No Trending Content Right Now"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、トレンドのコンテンツはありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4182,6 +5657,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to switch to %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして%@に切り替える"
           }
         },
         "zh-Hant" : {
@@ -4201,6 +5682,12 @@
             "value" : "%@ tab"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@タブ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4216,6 +5703,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Home"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホーム"
           }
         },
         "zh-Hant" : {
@@ -4235,6 +5728,12 @@
             "value" : "Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4250,6 +5749,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索"
           }
         },
         "zh-Hant" : {
@@ -4269,6 +5774,12 @@
             "value" : "TV Shows"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4284,6 +5795,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
           }
         },
         "zh-Hant" : {
@@ -4303,6 +5820,12 @@
             "value" : "There are no movies to show right now."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在表示できる映画はありません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4318,6 +5841,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Movies Available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画がありません"
           }
         },
         "zh-Hant" : {
@@ -4337,6 +5866,12 @@
             "value" : "There are no TV shows to show right now."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在表示できるテレビ番組はありません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4352,6 +5887,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No TV Shows Available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組がありません"
           }
         },
         "zh-Hant" : {
@@ -4371,6 +5912,12 @@
             "value" : "%@ Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4386,6 +5933,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@のテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -4405,6 +5958,12 @@
             "value" : "Enter a movie title to search"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画のタイトルを入力して検索"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4420,6 +5979,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search Movies"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画を検索"
           }
         },
         "zh-Hant" : {
@@ -4439,6 +6004,12 @@
             "value" : "Enter a TV show title to search"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組のタイトルを入力して検索"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4454,6 +6025,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組を検索"
           }
         },
         "zh-Hant" : {
@@ -4473,6 +6050,12 @@
             "value" : "Double-tap to choose how movies are sorted"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして映画の並べ替え方法を選択"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4488,6 +6071,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sort Movies"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画を並べ替え"
           }
         },
         "zh-Hant" : {
@@ -4507,6 +6096,12 @@
             "value" : "Double-tap to choose how TV shows are sorted"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてテレビ番組の並べ替え方法を選択"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4522,6 +6117,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sort TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組を並べ替え"
           }
         },
         "zh-Hant" : {
@@ -4541,6 +6142,12 @@
             "value" : "Favorite Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りの映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4556,6 +6163,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Favorite TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りのテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -4575,6 +6188,12 @@
             "value" : "My Lists"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マイリスト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4590,6 +6209,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rated Episodes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価したエピソード"
           }
         },
         "zh-Hant" : {
@@ -4609,6 +6234,12 @@
             "value" : "Rated Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価した映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4624,6 +6255,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rated TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価したテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -4643,6 +6280,12 @@
             "value" : "Movie Watchlist"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画のウォッチリスト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4658,6 +6301,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TV Watchlist"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組のウォッチリスト"
           }
         },
         "zh-Hant" : {
@@ -4677,6 +6326,12 @@
             "value" : "No Favorite Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りの映画はありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4692,6 +6347,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Favorite TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りのテレビ番組はありません"
           }
         },
         "zh-Hant" : {
@@ -4711,6 +6372,12 @@
             "value" : "No Lists"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リストはありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4726,6 +6393,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "There's nothing in this category yet."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このカテゴリーにはまだ項目がありません。"
           }
         },
         "zh-Hant" : {
@@ -4745,6 +6418,12 @@
             "value" : "No Rated Episodes"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価したエピソードはありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4760,6 +6439,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Rated Movies"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価した映画はありません"
           }
         },
         "zh-Hant" : {
@@ -4779,6 +6464,12 @@
             "value" : "No Rated TV Shows"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価したテレビ番組はありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4794,6 +6485,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Movies in Watchlist"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ウォッチリストに映画はありません"
           }
         },
         "zh-Hant" : {
@@ -4813,6 +6510,12 @@
             "value" : "No TV Shows in Watchlist"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ウォッチリストにテレビ番組はありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4828,6 +6531,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to sign in"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてログイン"
           }
         },
         "zh-Hant" : {
@@ -4847,6 +6556,12 @@
             "value" : "Go to Sign In"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインへ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4862,6 +6577,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in to sync favorites, movie lists, and ratings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインすると、お気に入り、映画リスト、評価を同期できます。"
           }
         },
         "zh-Hant" : {
@@ -4881,6 +6602,12 @@
             "value" : "Sign In to Your Account"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントにログイン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4896,6 +6623,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in to sync favorites, watchlists, and ratings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインしてお気に入り、ウォッチリスト、評価を同期"
           }
         },
         "zh-Hant" : {
@@ -4915,6 +6648,12 @@
             "value" : "Double-tap to open the list"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてリストを開く"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4930,6 +6669,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No description"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "説明はありません"
           }
         },
         "zh-Hant" : {
@@ -4949,6 +6694,12 @@
             "value" : "Untitled List"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル未設定のリスト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4966,6 +6717,12 @@
             "value" : "Member Center"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メンバーセンター"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4981,6 +6738,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to open Settings or sign in"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして設定またはログイン画面を開く"
           }
         },
         "zh-Hant" : {
@@ -5003,6 +6766,12 @@
             "value" : "Budget"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作費"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5018,6 +6787,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Release Date"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公開日"
           }
         },
         "zh-Hant" : {
@@ -5037,6 +6812,12 @@
             "value" : "Box Office"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "興行収入"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5052,6 +6833,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Runtime"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上映時間"
           }
         },
         "zh-Hant" : {
@@ -5071,6 +6858,12 @@
             "value" : "Double-tap to view movies in this genre"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてこのジャンルの映画を表示"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5086,6 +6879,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rate This Movie"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この映画を評価"
           }
         },
         "zh-Hant" : {
@@ -5105,6 +6904,12 @@
             "value" : "Genres and Production Companies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ジャンルと制作会社"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5120,6 +6925,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Movie Information"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画情報"
           }
         },
         "zh-Hant" : {
@@ -5139,6 +6950,12 @@
             "value" : "Recommended Movies"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "おすすめの映画"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5154,6 +6971,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Similar Movies"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "類似の映画"
           }
         },
         "zh-Hant" : {
@@ -5173,6 +6996,12 @@
             "value" : "The service returned an error: %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスからエラーが返されました：%@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5188,6 +7017,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The service returned an error (%1$lld): %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスからエラーが返されました（%1$lld）：%2$@"
           }
         },
         "zh-Hant" : {
@@ -5207,6 +7042,12 @@
             "value" : "The operation was cancelled."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作はキャンセルされました。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5222,6 +7063,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Request Cancelled"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リクエストをキャンセルしました"
           }
         },
         "zh-Hant" : {
@@ -5241,6 +7088,12 @@
             "value" : "Check that your connection is stable and try again."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続が安定していることを確認して、もう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5256,6 +7109,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connection Lost"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続が切断されました"
           }
         },
         "zh-Hant" : {
@@ -5275,6 +7134,12 @@
             "value" : "The network took too long to respond. Please try again later."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークからの応答に時間がかかりすぎています。しばらくしてからもう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5290,6 +7155,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The server data does not match the format expected by the app. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーのデータがAppで想定されている形式と一致しません。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5309,6 +7180,12 @@
             "value" : "Unable to Read Data"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを読み込めません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5324,6 +7201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The submitted data could not be processed. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "送信したデータを処理できませんでした。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5343,6 +7226,12 @@
             "value" : "Invalid Request Data"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リクエストデータが無効です"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5358,6 +7247,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This account does not have permission to perform this action."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアカウントには、この操作を実行する権限がありません。"
           }
         },
         "zh-Hant" : {
@@ -5377,6 +7272,12 @@
             "value" : "Permission Denied"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセス権がありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5392,6 +7293,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The network request failed. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークリクエストに失敗しました。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5411,6 +7318,12 @@
             "value" : "Connection Failed"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5426,6 +7339,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The service host could not be reached. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サービスのホストに接続できません。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5445,6 +7364,12 @@
             "value" : "Unable to Reach Server"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーに接続できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5460,6 +7385,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HTTP error (%lld). Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HTTPエラー（%lld）。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5479,6 +7410,12 @@
             "value" : "Connection Error"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続エラー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5494,6 +7431,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The server response could not be verified. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーからの応答を確認できません。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5513,6 +7456,12 @@
             "value" : "Unexpected Server Response"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーから予期しない応答がありました"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5528,6 +7477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The URL is invalid. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URLが無効です。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5547,6 +7502,12 @@
             "value" : "Unable to Create Request"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リクエストを作成できません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5562,6 +7523,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This content may no longer exist or may be temporarily unavailable."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このコンテンツは削除されたか、一時的に利用できない可能性があります。"
           }
         },
         "zh-Hant" : {
@@ -5581,6 +7548,12 @@
             "value" : "Content Not Found"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コンテンツが見つかりません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5596,6 +7569,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check your internet connection and try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターネット接続を確認して、もう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5615,6 +7594,12 @@
             "value" : "No Internet Connection"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターネットに接続されていません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5630,6 +7615,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Too many requests were made. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5649,6 +7640,12 @@
             "value" : "Too Many Requests"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リクエストが多すぎます"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5664,6 +7661,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A secure connection could not be established. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全な接続を確立できませんでした。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5683,6 +7686,12 @@
             "value" : "Secure Connection Failed"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全な接続に失敗しました"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5698,6 +7707,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The server took too long to respond. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーからの応答に時間がかかりすぎています。しばらくしてからもう一度お試しください。"
           }
         },
         "zh-Hant" : {
@@ -5717,6 +7732,12 @@
             "value" : "The service is currently unstable. Please try again later."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、サービスが不安定です。しばらくしてからもう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5732,6 +7753,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Server Temporarily Unavailable"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーを一時的に利用できません"
           }
         },
         "zh-Hant" : {
@@ -5751,6 +7778,12 @@
             "value" : "Connection Timed Out"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続がタイムアウトしました"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5766,6 +7799,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign in again and retry."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう一度ログインしてお試しください。"
           }
         },
         "zh-Hant" : {
@@ -5785,6 +7824,12 @@
             "value" : "Sign-in Expired"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインの有効期限が切れました"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5800,6 +7845,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alias"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "別名"
           }
         },
         "zh-Hant" : {
@@ -5819,6 +7870,12 @@
             "value" : "Biography"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "経歴"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5834,6 +7891,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TMDB doesn't have movie credits for this person yet."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBには、まだこの人物の映画出演情報がありません。"
           }
         },
         "zh-Hant" : {
@@ -5853,6 +7916,12 @@
             "value" : "TMDB doesn't have credits for this person yet."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBには、まだこの人物の出演情報がありません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5868,6 +7937,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Credits Yet"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出演情報はまだありません"
           }
         },
         "zh-Hant" : {
@@ -5887,6 +7962,12 @@
             "value" : "TMDB doesn't have TV credits for this person yet."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDBには、まだこの人物のテレビ出演情報がありません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5902,6 +7983,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Load Credits"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出演情報を読み込めません"
           }
         },
         "zh-Hant" : {
@@ -5921,6 +8008,12 @@
             "value" : "This credit type isn't supported."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この出演情報の種類には対応していません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5936,6 +8029,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Movie Credits"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画出演作"
           }
         },
         "zh-Hant" : {
@@ -5955,6 +8054,12 @@
             "value" : "Credits"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出演作"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5970,6 +8075,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TV Credits"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ出演作"
           }
         },
         "zh-Hant" : {
@@ -5989,6 +8100,12 @@
             "value" : "The person ID is invalid. Go back and try again."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物IDが無効です。前の画面に戻ってもう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6004,6 +8121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Person Not Found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物が見つかりません"
           }
         },
         "zh-Hant" : {
@@ -6023,6 +8146,12 @@
             "value" : "Birthday"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生年月日"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6038,6 +8167,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Died"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没年月日"
           }
         },
         "zh-Hant" : {
@@ -6057,6 +8192,12 @@
             "value" : "Gender"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "性別"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6072,6 +8213,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Known For"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主な活動分野"
           }
         },
         "zh-Hant" : {
@@ -6091,6 +8238,12 @@
             "value" : "Place of Birth"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出生地"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6106,6 +8259,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Popularity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人気度"
           }
         },
         "zh-Hant" : {
@@ -6125,6 +8284,12 @@
             "value" : "Female"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "女性"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6140,6 +8305,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Male"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "男性"
           }
         },
         "zh-Hant" : {
@@ -6159,6 +8330,12 @@
             "value" : "Non-binary"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ノンバイナリー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6174,6 +8351,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Profile Photo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィール写真"
           }
         },
         "zh-Hant" : {
@@ -6193,6 +8376,12 @@
             "value" : "Official Website"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公式Webサイト"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6208,6 +8397,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Photo of %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の写真"
           }
         },
         "zh-Hant" : {
@@ -6227,6 +8422,12 @@
             "value" : "Also Known As"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "別名"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6242,6 +8443,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Personal Information"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物情報"
           }
         },
         "zh-Hant" : {
@@ -6261,6 +8468,12 @@
             "value" : "Profile Photos"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィール写真"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6276,6 +8489,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Use the player controls to play, pause, or adjust the video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレーヤーのコントロールを使用して、動画の再生、一時停止、調整を行います"
           }
         },
         "zh-Hant" : {
@@ -6295,6 +8514,12 @@
             "value" : "Video Player"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画プレーヤー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6310,6 +8535,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to close the video player"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして動画プレーヤーを閉じる"
           }
         },
         "zh-Hant" : {
@@ -6329,6 +8560,12 @@
             "value" : "Try again later, or choose another trailer."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "しばらくしてからもう一度試すか、別の予告編を選択してください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6344,6 +8581,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Play Video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画を再生できません"
           }
         },
         "zh-Hant" : {
@@ -6363,6 +8606,12 @@
             "value" : "Trailer"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予告編"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6378,6 +8627,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete Rating"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価を削除"
           }
         },
         "zh-Hant" : {
@@ -6397,6 +8652,12 @@
             "value" : "Swipe up or down to adjust the rating"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上下にスワイプして評価を調整"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6412,6 +8673,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ out of 10"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10点満点中%@点"
           }
         },
         "zh-Hant" : {
@@ -6431,6 +8698,12 @@
             "value" : "Submit Rating"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価を送信"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6446,6 +8719,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to close the review"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてレビューを閉じる"
           }
         },
         "zh-Hant" : {
@@ -6465,6 +8744,12 @@
             "value" : "Review"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビュー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6480,6 +8765,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No reviews match this filter."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このフィルターに一致するレビューはありません。"
           }
         },
         "zh-Hant" : {
@@ -6499,6 +8790,12 @@
             "value" : "No Reviews Yet"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビューはまだありません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6514,6 +8811,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reviews Not Found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビューが見つかりません"
           }
         },
         "zh-Hant" : {
@@ -6533,6 +8836,12 @@
             "value" : "Loading more reviews"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビューをさらに読み込み中"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6548,6 +8857,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reviews"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビュー"
           }
         },
         "zh-Hant" : {
@@ -6567,6 +8882,12 @@
             "value" : "Double-tap to read the full review"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてレビュー全文を読む"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6582,6 +8903,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Review by %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@さんのレビュー"
           }
         },
         "zh-Hant" : {
@@ -6601,6 +8928,12 @@
             "value" : "Anonymous User"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匿名ユーザー"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6616,6 +8949,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Newest Reviews"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい順"
           }
         },
         "zh-Hant" : {
@@ -6635,6 +8974,12 @@
             "value" : "Oldest Reviews"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "古い順"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6650,6 +8995,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rated"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価あり"
           }
         },
         "zh-Hant" : {
@@ -6669,6 +9020,12 @@
             "value" : "Unrated"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価なし"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6684,6 +9041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Checking Sign-in Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン状態を確認中"
           }
         },
         "zh-Hant" : {
@@ -6703,6 +9066,12 @@
             "value" : "No results matched “%@.”"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「%@」に一致する結果はありません。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6718,6 +9087,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Movies Found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画が見つかりません"
           }
         },
         "zh-Hant" : {
@@ -6737,6 +9112,12 @@
             "value" : "No Results Found"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結果が見つかりません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6752,6 +9133,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No TV Shows Found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組が見つかりません"
           }
         },
         "zh-Hant" : {
@@ -6771,6 +9158,12 @@
             "value" : "Searching for “%@”"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「%@」を検索中"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6786,6 +9179,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Searching"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索中"
           }
         },
         "zh-Hant" : {
@@ -6805,6 +9204,12 @@
             "value" : "Searching"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索中"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6820,6 +9225,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entering a keyword"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キーワードを入力中"
           }
         },
         "zh-Hant" : {
@@ -6839,6 +9250,12 @@
             "value" : "Valid TV show and season information is required."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効なテレビ番組とシーズンの情報が必要です。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6854,6 +9271,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Air Date"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放送日"
           }
         },
         "zh-Hant" : {
@@ -6873,6 +9296,12 @@
             "value" : "Episodes"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソード"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6888,6 +9317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Season"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズン"
           }
         },
         "zh-Hant" : {
@@ -6907,6 +9342,12 @@
             "value" : "Season Overview"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズンのあらすじ"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6922,6 +9363,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Episodes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソード"
           }
         },
         "zh-Hant" : {
@@ -6941,6 +9388,12 @@
             "value" : "Images and Posters"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像とポスター"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6956,6 +9409,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Season Information"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズン情報"
           }
         },
         "zh-Hant" : {
@@ -6978,6 +9437,12 @@
             "value" : "Sign-in data cannot be read securely. Unlock the device and try again."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン情報を安全に読み込めません。端末のロックを解除して、もう一度お試しください。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6993,6 +9458,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Read Sign-in Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン状態を読み込めません"
           }
         },
         "zh-Hant" : {
@@ -7012,6 +9483,12 @@
             "value" : "Newest"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい順"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7027,6 +9504,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oldest"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "古い順"
           }
         },
         "zh-Hant" : {
@@ -7046,6 +9529,12 @@
             "value" : "Most Popular"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人気順"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7061,6 +9550,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Highest Rated"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価の高い順"
           }
         },
         "zh-Hant" : {
@@ -7080,6 +9575,12 @@
             "value" : "Lowest Rated"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価の低い順"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7097,6 +9598,12 @@
             "value" : "Title (A → Z)"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル（A → Z）"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7112,6 +9619,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Title (Z → A)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイトル（Z → A）"
           }
         },
         "zh-Hant" : {
@@ -7134,6 +9647,12 @@
             "value" : "Networks"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放送局"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7149,6 +9668,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Episode Runtime"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソードの長さ"
           }
         },
         "zh-Hant" : {
@@ -7168,6 +9693,12 @@
             "value" : "Episodes"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エピソード数"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7183,6 +9714,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "First Air Date"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "初回放送日"
           }
         },
         "zh-Hant" : {
@@ -7202,6 +9739,12 @@
             "value" : "Last Air Date"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終放送日"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7217,6 +9760,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seasons"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズン数"
           }
         },
         "zh-Hant" : {
@@ -7236,6 +9785,12 @@
             "value" : "Type"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "種類"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7251,6 +9806,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to view TV shows in this genre"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてこのジャンルのテレビ番組を表示"
           }
         },
         "zh-Hant" : {
@@ -7270,6 +9831,12 @@
             "value" : "Rate This TV Show"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このテレビ番組を評価"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7285,6 +9852,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Genres, Networks, and Production Companies"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ジャンル、放送局、制作会社"
           }
         },
         "zh-Hant" : {
@@ -7304,6 +9877,12 @@
             "value" : "TV Show Information"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テレビ番組情報"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7319,6 +9898,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recommended TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "おすすめのテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -7338,6 +9923,12 @@
             "value" : "Seasons"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シーズン"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7353,6 +9944,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Similar TV Shows"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "類似のテレビ番組"
           }
         },
         "zh-Hant" : {
@@ -7372,6 +9969,12 @@
             "value" : "With Ads"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広告付き"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7387,6 +9990,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Buy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入"
           }
         },
         "zh-Hant" : {
@@ -7406,6 +10015,12 @@
             "value" : "Free"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7421,6 +10036,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rent"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レンタル"
           }
         },
         "zh-Hant" : {
@@ -7440,6 +10061,12 @@
             "value" : "Stream"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "見放題"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7455,6 +10082,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Double-tap to go to the previous page"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして前のページに戻る"
           }
         },
         "zh-Hant" : {
@@ -7474,6 +10107,12 @@
             "value" : "Back"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻る"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7489,6 +10128,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻れます"
           }
         },
         "zh-Hant" : {
@@ -7508,6 +10153,12 @@
             "value" : "Unavailable"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻れません"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7523,6 +10174,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Open Link"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リンクを開けません"
           }
         },
         "zh-Hant" : {
@@ -7542,6 +10199,12 @@
             "value" : "Double-tap to go to the next page"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして次のページに進む"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7557,6 +10220,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Forward"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進む"
           }
         },
         "zh-Hant" : {
@@ -7576,6 +10245,12 @@
             "value" : "Available"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進めます"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7591,6 +10266,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unavailable"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進めません"
           }
         },
         "zh-Hant" : {
@@ -7610,6 +10291,12 @@
             "value" : "Double-tap to reload the current page"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップして現在のページを再読み込み"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7625,6 +10312,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reload"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再読み込み"
           }
         },
         "zh-Hant" : {
@@ -7644,6 +10337,12 @@
             "value" : "Enter a web address, then tap Go to open the page"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webアドレスを入力し、「移動」をタップしてページを開きます"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7661,6 +10360,12 @@
             "value" : "Address"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アドレス"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7676,6 +10381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search or enter website address"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索またはWebサイトのアドレスを入力"
           }
         },
         "zh-Hant" : {

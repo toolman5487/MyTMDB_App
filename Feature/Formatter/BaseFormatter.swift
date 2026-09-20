@@ -40,7 +40,7 @@ nonisolated enum BaseFormatter {
             case .traditionalChinese:
                 return displayText(job: job, department: department)
 
-            case .english:
+            case .english, .japanese:
                 return normalizedDisplayText(job) ?? normalizedDisplayText(department)
             }
         }
@@ -67,7 +67,7 @@ nonisolated enum BaseFormatter {
             case .traditionalChinese:
                 return departmentText(department)
 
-            case .english:
+            case .english, .japanese:
                 return normalizedDisplayText(department)
             }
         }

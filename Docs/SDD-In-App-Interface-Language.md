@@ -1,4 +1,4 @@
-# SDD: CineBase App 內中英文介面切換
+# SDD: CineBase App 內繁體中文／英文／日文介面切換
 
 | 項目 | 內容 |
 |------|------|
@@ -9,10 +9,10 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 功能入口 | 個人／設定頁 `MainMemberSetting` 的「偏好設定」區段 |
-| 功能範圍 | App 內本地寫死的使用者可見文案；繁體中文／英文 |
-| 驗收責任 | 開發者自行執行 Build、Simulator／實機與英文文案驗收 |
-| 狀態 | Phase 1–5 Source Done；v1.3 Static Verification Passed；Developer Build、Runtime、Copy Review 均 NotRun |
-| 日期 | 2026-09-19（v1.3 同日更新） |
+| 功能範圍 | App 內本地寫死的使用者可見文案；繁體中文／英文／日文 |
+| 驗收責任 | 開發者自行執行 Build、Simulator／實機與英文／日文文案驗收 |
+| 狀態 | v1.4 三語 Source Done；v1.4 Static Verification Passed；Developer Build、Runtime、Copy Review 均 NotRun |
+| 日期 | 2026-09-20（v1.4 更新） |
 
 ---
 
@@ -22,6 +22,7 @@
 
 - Menu 選擇「繁體中文」：使用繁體中文介面。
 - Menu 選擇「English」：使用英文介面。
+- Menu 選擇「日本語」：使用日文介面。
 - 選擇會保存在本機，重新啟動 App 後維持不變。
 - 切換後立即重建 App 主畫面並停留在設定分頁。
 - 僅切換 App 本地定義的標題、按鈕、提示、錯誤、空狀態、格式化標籤與無障礙文案。
@@ -33,7 +34,7 @@
 - `SDD-Unified-Interface-Naming.md` 的 Storage、ViewModel、Router 與 Scene Builder 命名規則。
 - `SceneDelegate` 管理 root，`AppComposition` 建立並注入場景，不新增 `AppCoordinator`。
 
-本文件建立只代表設計已就緒，不代表功能已實作或驗收。
+v1.4 將日文視為既有介面語言模型的第三個 case，一次完成日文字串與 Menu cutover，不新增暫時 feature flag。本文件更新只代表日文規格已鎖定；各項實作與驗證狀態仍以第 16 節為準。
 
 ---
 
@@ -41,13 +42,13 @@
 
 | 決策 | 結論 |
 |------|------|
-| 語言數量 | 僅繁體中文與英文 |
+| 語言數量 | 繁體中文、英文與日文 |
 | 選擇模型 | `AppInterfaceLanguage` raw value；目前語言在 Menu 內顯示勾選，不使用二元 Bool |
 | 初始值 | 沒有已儲存設定時使用繁體中文，維持既有 App 行為 |
 | 儲存位置 | `UserDefaults`，透過既有 `AppPreferencesStorage` 同步存取 |
 | 生效方式 | 儲存後重建 Main root，不要求關閉 App |
 | 切換後位置 | 保留登入狀態並回到 `.memberSetting` 分頁 |
-| UI 資源 | `Localizable.xcstrings`，來源語言為英文，提供 `zh-Hant` 翻譯 |
+| UI 資源 | `Localizable.xcstrings`，來源語言為英文，提供完整 `zh-Hant` 與 `ja` 翻譯 |
 | 執行期查字串 | 明確傳入介面 `Locale`，不依賴 `Locale.current` 自動切換 |
 | API 語言 | 完全沿用現有 `AppLocalization`，不受介面語言選擇影響 |
 | 自動化測試 | 本次不新增 test target；以靜態檢查與開發者手動驗收為主 |
@@ -62,7 +63,7 @@
 - 在 `MainMemberSetting` 的「偏好設定」區段第一列新增語言 Menu 按鈕。
 - 訪客與已登入會員都能看到並使用 Menu。
 - Menu 顯示值與實際介面語言一致，且目前選項有勾選狀態。
-- App 內所有本地使用者可見文案提供繁體中文與英文。
+- App 內所有本地使用者可見文案提供繁體中文、英文與日文。
 - 本地組合的日期、數量、季／集、評分、空狀態與 fallback 文案依介面語言呈現。
 - 本地 Accessibility label、value、hint 依介面語言呈現。
 - 切換後不登出、不清除會員資料、搜尋紀錄或圖片快取。
@@ -100,7 +101,7 @@ v1.2 使用 `UISwitch` 將語言綁定為 Bool，不利於新增第三種以上�
 - callback 回傳語言 raw value，不再傳遞 `Bool`。
 - Menu 仍位於所有登入狀態都會顯示的 `preferencesSection`。
 
-這個模型允許未來新增語言 case 與對應 String Catalog 文案，不必增加新的 Switch 或修改 Bool mapping。
+這個模型允許 v1.4 直接加入 `.japanese` 與對應 String Catalog 文案，不必增加新的 Switch 或修改 Bool mapping；未來新增其他語言也沿用相同擴充點。
 
 ### 4.2 目前的 `AppLocalization` 是 API 設定
 
@@ -122,21 +123,21 @@ AppLocalization       -> TMDB API language / region / timezone
 
 ### 4.3 本地文案基線
 
-截至 2026-09-19：
+v1.4 開始前的 String Catalog 基線（2026-09-19）：
 
-- 專案沒有 `Localizable.xcstrings`。
-- Xcode project `knownRegions` 只有 `en` 與 `Base`。
-- 機械掃描找到 101 個 Swift 檔含中文字串 literal。
-- 中文 literal 同時存在於 View、ViewController、ViewModel、Presentation Builder、Router、Formatter、ErrorMessage 與 App Intents。
+- `MyTMDB_App/Localizable.xcstrings` 共 475 個 key。
+- 其中 448 個 key 已有 `en` 與 `zh-Hant`，且由 App 內 `string`／`formatted` 呼叫使用；這 448 個 key 是既有日文翻譯目標。
+- 另有 27 個沒有 localization 的 Xcode 自動擷取／App Intents 相關 key；它們不在本 SDD 的 App 內介面範圍，不納入日文完成率。
+- v1.4 會新增 `main_member_setting.language.option.japanese`，完成後預期共 476 個 key：449 個 App 內範圍 key 具備 `en`／`zh-Hant`／`ja`，27 個排除 key 維持沒有 localization。
+- 既有 4 個 English plural key 必須保留 plural variation；日文可依語法使用單一 string unit，但格式參數集合不得改變。
+- Xcode project 既有 `en`、`zh-Hant` 與 `Base` region；v1.4 新增 `ja`。
 
-101 個檔案只是候選基線，不代表全部都需修改。實作時需依第 6 節分類，排除 comment、developer-only 訊息、品牌名、App 外系統介面與後端原始內容。
-
-v1.1 實作完成後的掃描結果（同一 `rg` 指令）只剩 13 個檔案，全部已分類為不遷移：
+v1.1 雙語實作完成後的中文 literal 掃描結果只剩 13 個檔案，全部已分類為不遷移；v1.4 仍沿用相同邊界：
 
 | 檔案 | 數量 | 分類 |
 |------|------|------|
 | `Feature/AppIntents/**`（12 檔） | 54 | App 外系統介面，依 3.2 另案處理 |
-| `Feature/Formatter/BaseFormatter.swift` | 574 | TMDB 英文職稱／部門的繁中對照表；English 模式改顯示 TMDB 原值，見 13.1 |
+| `Feature/Formatter/BaseFormatter.swift` | 574 | TMDB 英文職稱／部門的繁中對照表；English／日本語模式顯示 TMDB 原值，見 13.1 |
 
 `MovieDetail`、`TVDetail`、`SeasonDetail`、`EpisodeDetail` 內 `"\(video.type) · \(video.site)"` 與 `metadata(_:)` 的 `" · "` 會被 `\p{Han}` 命中，原因是 U+00B7 的 Script_Extensions 含 Han，屬誤判。
 
@@ -152,6 +153,7 @@ Menu 按鈕放在 `MainMemberSetting` 的「偏好設定」區段第一列，既
 |----------|----------|--------------|
 | 繁體中文 | 語言偏好 | 繁體中文 |
 | English | Language Preference | English |
+| 日本語 | 表示言語 | 日本語 |
 
 其他規格：
 
@@ -159,7 +161,9 @@ Menu 按鈕放在 `MainMemberSetting` 的「偏好設定」區段第一列，既
 - 不顯示副標題。
 - Menu 按鈕使用 `ThemeColor.highlight`，並顯示 `chevron.down`。
 - Row 高度沿用一般設定列，不新增特殊高度。
-- Menu 在繁中介面顯示「繁體中文」／「英文」，英文介面顯示 `Traditional Chinese`／`English`。
+- Menu 在繁中介面顯示「繁體中文」／「英文」／「日本語」。
+- Menu 在英文介面顯示 `Traditional Chinese`／`English`／`Japanese`。
+- Menu 在日文介面顯示「繁体字中国語」／「英語」／「日本語」。
 - 選單採單選，當前語言顯示勾選。
 - 點擊 Menu 選項才觸發切換；row 不執行 disclosure navigation。
 - 重複選擇目前語言不得重建 root。
@@ -263,6 +267,7 @@ Menu 按鈕放在 `MainMemberSetting` 的「偏好設定」區段第一列，既
 nonisolated enum AppInterfaceLanguage: String, CaseIterable, Sendable, Equatable {
     case traditionalChinese = "zh-Hant"
     case english = "en"
+    case japanese = "ja"
 }
 ```
 
@@ -335,7 +340,7 @@ v1.0 草案的 `String(localized:defaultValue:bundle:locale:comment:)` 經實測
 1. 該 initializer 的 `locale` 只影響 interpolation 格式化，不會選擇 localization。以 Xcode 27 編譯 catalog 後實測，傳入 `zh-Hant` 仍回傳 `Bundle` preferred localization（`en`）的值，App 內語言選擇將完全無效。
 2. `defaultValue` 若宣告為 `String.LocalizationValue`，`SWIFT_EMIT_LOC_STRINGS = YES` 會把呼叫端的英文字面值當成 key 抽取；在 Xcode IDE build 後同步進 catalog，產生數百筆以英文句子為 key 的無效項目。
 
-`Bundle.localizedString(forKey:value:table:localizations:)`（iOS 17+）以明確 localization 查表，實測可正確選擇 `en`／`zh-Hant`，且 `String(format:locale:arguments:)` 能套用 `.stringsdict` 的 plural 規則。三項原則（明確 locale、value semantics、無 global mutation）維持不變。
+`Bundle.localizedString(forKey:value:table:localizations:)`（iOS 17+）以明確 localization 查表，既有實測可正確選擇 `en`／`zh-Hant`；v1.4 以同一機制加入 `ja`。`String(format:locale:arguments:)` 能套用 `.stringsdict` 的 plural 規則。三項原則（明確 locale、value semantics、無 global mutation）維持不變。
 
 `static let traditionalChinese` 只用於三種情況：`UICollectionReusableView`／cell 在 `configure` 前的暫存預設值、`BaseViewController` 在 `setInterfaceLocalization(_:)` 前的預設值，以及 `Error.errorMessage` 這個僅供 App Intents 與 developer log 使用的相容屬性。所有 initializer 與 function 參數都不得再有 `= .traditionalChinese` 預設值，確保漏傳時會編譯失敗。
 
@@ -413,9 +418,19 @@ MyTMDB_App/Localizable.xcstrings
 Xcode project：
 
 - `developmentRegion` 保持 `en`。
-- `knownRegions` 新增 `zh-Hant`。
+- `knownRegions` 保留 `en`、`zh-Hant`、`Base`，v1.4 新增 `ja`。
 - String Catalog 必須加入 `MyTMDB_App` target。
 - 不建立重複的 `.strings` 與 `.xcstrings` 來源。
+
+v1.4 數量基線與完成目標：
+
+| 指標 | v1.4 開始前 | v1.4 完成目標 |
+|------|-------------|---------------|
+| Catalog 全部 key | 475 | 476 |
+| App 內本地化範圍 key | 448（`en`／`zh-Hant`） | 449（`en`／`zh-Hant`／`ja`） |
+| 無 localization 的排除 key | 27 | 27 |
+
+完成目標增加的一個 key 是 `main_member_setting.language.option.japanese`。27 個排除 key 不得為了讓統計歸零而納入日文翻譯；若未來要本地化 App Intents，需另立範圍與驗收。
 
 ### 8.2 Key 規則
 
@@ -437,17 +452,18 @@ common.state.loading
 - 不為了字面相同合併不同語意的 key。
 - English default value 必須自然、可直接顯示。
 - `zh-Hant` 必須提供完整翻譯，不依賴 fallback。
+- `ja` 必須提供完整、自然的日文翻譯，不得依賴 English 或 `zh-Hant` fallback。
 - 參數、plural 與句子順序交由 String Catalog 管理，不以字串相加拼句。
 - 品牌、ID、數字與後端 value 使用 interpolation，不放進翻譯內容硬編碼。
 
 v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）：
 
 - 每個 key 都必須有明確的 `en` stringUnit。`extractionState: manual` 且缺 `en` 值的 key，會被編譯成 `en.lproj` 內 key = key，English 模式會直接顯示 `main_tab.home.title` 這類原始 key。
-- `Int` 參數一律用 `%lld`，多參數一律用 positional specifier（`%1$@`、`%2$lld`），`en` 與 `zh-Hant` 的 specifier 集合必須一致。
-- 計數文案走 `BaseDisplayTextFormatter.CountUnit`，`en` 提供 `one`／`other` plural variation，`zh-Hant` 提供單一 stringUnit。
+- `Int` 參數一律用 `%lld`，多參數一律用 positional specifier（`%1$@`、`%2$lld`），`en`、`zh-Hant` 與 `ja` 的 specifier 集合必須一致。
+- 計數文案走 `BaseDisplayTextFormatter.CountUnit`，`en` 保留 `one`／`other` plural variation，`zh-Hant` 與 `ja` 可提供單一 stringUnit。
 - 會隨媒體類型改變語法的句子（例如「沒有電影資料」、「搜尋影集」）不以 `%@` 插入 `displayName`，而是每種 `MediaKind` 一個 key，避免英文出現 `There are no Movie to show` 這類錯誤。
 - 共用 key 合併了原本措辭不同的繁中文案時，統一採用「影集」；其餘 key 保留原繁中字面值。
-- `STRING_CATALOG_GENERATE_SYMBOLS = YES` 會為所有 manual key 產生 `LocalizedStringResource` symbol，已驗證 448 個 symbol 可編譯；App 程式碼不使用這些 symbol。
+- `STRING_CATALOG_GENERATE_SYMBOLS = YES` 會為所有 manual key 產生 `LocalizedStringResource` symbol；v1.4 已驗證 449 個 symbol 可產生，App 程式碼仍不使用這些 symbol。
 
 ### 8.3 注入規則
 
@@ -461,50 +477,27 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 
 ## 9. 預計檔案影響
 
-### 9.1 新增
+### 9.1 v1.4 必須修改
 
-- `Feature/Config/AppInterfaceLanguage.swift`
-- `Feature/Config/AppInterfaceLocalization.swift`
-- `Feature/Data/Storage/AppInterfaceLanguageStore.swift`
-- `MyTMDB_App/Localizable.xcstrings`
+- `Feature/Config/AppInterfaceLanguage.swift`：新增 `.japanese = "ja"`。
+- `Main/MainMemberSetting/ViewModel/MainMemberSettingViewModel.swift`：補上日文 Menu option title 的 exhaustive `switch` case。
+- `Feature/Formatter/BaseFormatter.swift`：日文與英文相同，對 TMDB 職稱／部門顯示正規化後的後端原值。
+- `MyTMDB_App/Localizable.xcstrings`：既有 448 個範圍 key 補齊 `ja`，並新增三語完整的 `main_member_setting.language.option.japanese`。
+- `MyTMDB_App.xcodeproj/project.pbxproj`：在 `knownRegions` 新增 `ja`。
+- `Docs/SDD-In-App-Interface-Language.md`：升級為 v1.4 三語規格並記錄驗證邊界。
 
-### 9.2 App 組裝與入口
+### 9.2 沿用、不新增抽象
 
-- `MyTMDB_App/Composition/AppComposition.swift`
-- `MyTMDB_App/SceneDelegate.swift`
-- `MyTMDB_App.xcodeproj/project.pbxproj`
+下列既有資料流與型別直接支援第三種語言，不需因 v1.4 修改責任或新增包裝層：
 
-### 9.3 語言 Menu
+- `AppInterfaceLanguageStore` 以 raw value 儲存，既有 key `AppInterfaceLanguage.v1` 不需遷移或升版。
+- `AppInterfaceLocalization` 依 `language.locale.language` 明確選擇 localization，沿用同一查表 API。
+- `MainMemberSetting` 既有 `CaseIterable` Menu、單選勾選與 raw-value callback。
+- `AppComposition` 儲存偏好、更新 immutable localization value，再由 `SceneDelegate` 重建 root。
 
-- `Main/MainMemberSetting/Presentation/MainMemberSettingModels.swift`
-- `Main/MainMemberSetting/ViewModel/MainMemberSettingViewModel.swift`
-- `Main/MainMemberSetting/Controller/MainMemberSettingViewController.swift`
-- `Main/MainMemberSetting/View/Cell/Base/MainMemberSettingButtonCollectionViewCell.swift`
+不新增 Coordinator、UseCase、Repository、Service Locator、可變 Localization Manager、Notification、Combine publisher 或 feature flag。
 
-### 9.4 本地文案遷移
-
-需依第 6 節逐一處理含使用者可見 literal 的：
-
-- `MainLogIn/`
-- `MainTabBar/`
-- `Main/`
-- `HomeSectionList/`
-- `Search/`
-- `DetailContentList/`
-- `MovieDetail/`
-- `TVDetail/`
-- `SeasonDetail/`
-- `EpisodeDetail/`
-- `PersonDetail/`
-- `ReviewList/`
-- `MemberCenter/`
-- `PageSheet/`
-- `Feature/Base/`
-- `Feature/Components/`
-- `Feature/Formatter/`
-- `Feature/Media/`
-
-### 9.5 明確不得因本功能修改
+### 9.3 明確不得因本功能修改
 
 - `Feature/Config/AppLocalization.swift`
 - 各 feature `Data/Repository/` 的 API query 行為
@@ -518,78 +511,54 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 
 ## 10. 分階段實作計畫
 
-### Phase 0 — SDD 與基線
+v1.1–v1.3 已完成語言儲存、localization value 注入、雙語文案遷移與 Menu cutover。v1.4 不重做既有階段，以下工作在同一次 source delivery 完成；只有驗證狀態需依實際執行結果分開記錄。
 
-狀態：本文件建立後完成。
+### Phase J0 — 範圍與基線
 
-1. 鎖定只處理本地 App 內文案。
-2. 記錄 API localization 不變的邊界。
-3. 記錄中文 literal 候選基線。
-4. 確認 Runtime 與英文文案由開發者自行驗收。
+1. 鎖定日文只處理第 6.1 節的 App 內本地文案。
+2. 記錄 475 total／448 localized scope／27 unlocalized excluded 基線。
+3. 明確排除 TMDB API／後端內容、App Intents／Shortcuts。
+4. 鎖定不新增架構層、feature flag 或 storage migration。
 
-完成條件：本文件核准；production source 仍為 NotStarted。
+完成條件：v1.4 SDD 規格、key count 與驗收責任一致。
 
-### Phase 1 — 介面語言基礎
+### Phase J1 — 日文 String Catalog
 
-1. 新增 `AppInterfaceLanguage`。
-2. 新增 `AppInterfaceLanguageStoring`／Store。
-3. 新增 `AppInterfaceLocalization`。
-4. 新增 String Catalog 與 `zh-Hant` region。
-5. 在 `AppComposition` 建立並持有介面 localization。
-6. 建立語言變更與 root replacement callback，但尚不公開語言入口。
+1. 為既有 448 個 App 內範圍 key 補齊 `ja`。
+2. 新增 `main_member_setting.language.option.japanese`，並提供 `en`／`zh-Hant`／`ja`。
+3. 檢查所有 placeholder、positional specifier、換行與 English plural variation 未被破壞。
+4. 日文使用自然 UI 措辭，不以繁中字面逐字轉換；品牌與 TMDB 原始內容保持不變。
 
-完成條件：基礎型別可編譯；API localization diff 為空；使用者尚看不到未完成的語言入口。
+完成條件：預期 476 total；449 個 App 內範圍 key 都有 `en`／`zh-Hant`／`ja`，27 個排除 key 維持原狀。
 
-### Phase 2 — App Shell、登入與共用元件
+### Phase J2 — Source cutover
 
-1. MainTabBar title 與 Accessibility。
-2. Loading、ErrorMessage、BaseRouter 共用 action title。
-3. Login／Guest／Register 頁面與錯誤訊息。
-4. Player、WebView、ImagePreview 等共用固定文案。
-5. App root／session validation alert。
+1. `AppInterfaceLanguage` 新增 `.japanese = "ja"`。
+2. `MainMemberSettingViewModel` 的語言名稱 `switch` 新增 `.japanese`。
+3. `BaseFormatter.CrewJobDisplayMapper` 的兩個語言 `switch` 讓 `.japanese` 與 `.english` 共用正規化後的 TMDB 原值。
+4. Xcode project `knownRegions` 新增 `ja`。
+5. 由既有 `CaseIterable` Menu 自動公開日文，不新增其他 UI 元件。
 
-完成條件：冷啟動、登入與主分頁 shell 可使用兩種注入語言呈現，不修改登入與 API 行為。
+完成條件：所有 exhaustive `switch` 都覆蓋日文；Menu 可選「日本語」；偏好仍以既有 `AppInterfaceLanguage.v1` raw value 儲存。
 
-### Phase 3 — Main 與列表流程
+### Phase J3 — Source 與靜態驗證
 
-1. MainHome 與 HomeSectionList。
-2. MainSearch、SearchResults 與搜尋紀錄 UI。
-3. Movie／TV MainMediaList、filter、sort、empty、pagination 文案。
-4. 本地產生的 media presentation fallback。
+1. 驗證 catalog JSON、Xcode project plist 與 diff whitespace。
+2. 編譯 catalog、產生 symbols，並比對 449 個 App 內 key 的三語完整性。
+3. 比對 code key、catalog key 與 English default value，確認零缺漏、零多餘、零不一致。
+4. 確認 `AppLocalization`、Repository 與 Network diff 為空。
+5. 執行 Swift syntax parse；不把 syntax、catalog 或 source check 記成 Xcode Build。
 
-完成條件：主分頁與列表流程的本地文案都有 English／`zh-Hant` 值。
+完成條件：只依實際執行結果將個別靜態項目標記 Passed／Failed；未執行項目維持 `NotRun`。
 
-### Phase 4 — 詳情、會員與 PageSheet
+### Phase J4 — 開發者自行驗收
 
-1. Movie、TV、Season、Episode、Person detail。
-2. ReviewList、ReviewDetail。
-3. MemberCenter overview／list。
-4. MainMemberSetting 的所有 row、alert 與狀態。
-5. Genre、Rating 等 PageSheet。
-6. Formatter 與本地組合文案。
+1. 開發者在 Xcode 執行 Build。
+2. 開發者依第 11 節操作 Simulator／實機。
+3. 開發者確認繁中、英文、日文用字、截斷、格式、日期與 Accessibility。
+4. 開發者回填 Passed／Failed 與裝置、OS、登入狀態。
 
-完成條件：第 6.1 範圍全部遷移；剩餘中文字串 literal 已逐筆分類。
-
-### Phase 5 — Menu 公開與 cutover
-
-1. 新增 `.appInterfaceLanguage` row kind。
-2. 在 preferences 第一列加入 `.menu(selectedOptionID:options:)`。
-3. 以 `AppInterfaceLanguage.allCases` 建立選項，Controller 接收 option ID。
-4. 補足 Menu 按鈕的 Accessibility label 與 value。
-5. 寫入偏好並重建 Main root。
-6. 確認設定頁、Session、API localization 與 selected tab 邊界。
-
-完成條件：使用者可見 Menu；任一語言切換後不出現已知的混合介面。
-
-### Phase 6 — 開發者自行驗收
-
-1. 實作者完成 source 與靜態檢查紀錄。
-2. 開發者在 Xcode 執行 Build。
-3. 開發者依第 11 節操作 Simulator／實機。
-4. 開發者確認英文用字、截斷、複數、日期與 Accessibility。
-5. 開發者回填 Passed／Failed 與裝置、OS、登入狀態。
-
-未收到開發者明確驗收結果前，Runtime 與 Copy Review 必須保持 `NotRun`，不得由 source review 推定通過。
+未收到開發者明確驗收結果前，Developer Build、Runtime 與 Copy Review 必須保持 `NotRun`，不得由 source review 或靜態檢查推定通過。
 
 ---
 
@@ -606,7 +575,9 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 | Build | Passed／Failed |
 | 繁體中文 Runtime | Passed／Failed／NotRun |
 | English Runtime | Passed／Failed／NotRun |
-| Copy Review | Passed／Failed／NotRun |
+| 日本語 Runtime | Passed／Failed／NotRun |
+| English Copy Review | Passed／Failed／NotRun |
+| 日本語 Copy Review | Passed／Failed／NotRun |
 | 備註 | 截圖、問題或例外 |
 
 ### 11.2 語言切換與持久化
@@ -618,6 +589,7 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - [ ] 目前語言選項顯示勾選。
 - [ ] 可由 Menu 選擇繁體中文。
 - [ ] 可由 Menu 選擇 English。
+- [ ] 可由 Menu 選擇日本語。
 - [ ] 重複選擇目前語言不會重建 root。
 - [ ] 切換後立即回到設定分頁。
 - [ ] 切換不會登出。
@@ -626,9 +598,9 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - [ ] 「清除所有本機資料」後語言保留。
 - [ ] 快速重複點擊不會 crash、卡住或重複 present root。
 
-### 11.3 繁體中文與英文畫面矩陣
+### 11.3 繁體中文、英文與日文畫面矩陣
 
-下列流程需各以繁體中文與英文走查一次：
+下列流程需各以繁體中文、英文與日文走查一次：
 
 - [ ] 冷啟動與 Session validation error／retry。
 - [ ] Login、Guest、Register。
@@ -649,13 +621,14 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 
 ### 11.4 Copy 與版面
 
-- [ ] 英文不是逐字直譯，語意自然且操作動詞一致。
+- [ ] 英文與日文不是逐字直譯，語意自然且操作動詞一致。
 - [ ] Navigation title、button、cell、alert 無截斷或重疊。
 - [ ] Dynamic Type 下主要操作仍可辨認。
 - [ ] 日期、數量、季／集與評分句型符合當前介面語言。
 - [ ] 空狀態、fallback 與錯誤訊息沒有殘留中文。
 - [ ] 繁體中文模式沒有非預期英文 UI；品牌、API value 與後端內容除外。
 - [ ] English 模式沒有非預期中文 UI；TMDB 後端內容除外。
+- [ ] 日本語模式沒有非預期中文或英文 UI；品牌、API value、系統 UI 與 TMDB 後端內容除外。
 - [ ] `API Data Language` value 可與介面語言不同，且沒有被 Menu 選擇改寫。
 
 ### 11.5 Accessibility
@@ -725,6 +698,19 @@ rg -n --glob '*.swift' --glob '!Feature/AppIntents/**' 'error\.errorMessage([^(]
 
 另需以腳本比對：程式碼中每個 `string`／`formatted` 呼叫的 key 都存在於 catalog，catalog 沒有未使用的 key，且同一 key 在所有呼叫端的 English default 一致。v1.3 結果為 448 個 key，零缺漏、零多餘、零不一致。
 
+v1.4 靜態驗證結果（2026-09-20）：
+
+| 項目 | 結果 |
+|------|------|
+| Catalog 數量 | 476 total；449 個範圍 key 具備 `en`／`zh-Hant`／`ja`；27 個排除 key 維持無 localization |
+| Placeholder | 449 個日文字串與 English 的 `%@`／`%lld`／positional specifier 集合一致 |
+| Code／catalog key | 449 個範圍 key 均可在 Swift source 找到；零缺漏、零多餘；416 個直接呼叫的 English default 零不一致 |
+| Catalog JSON／compile | `jq empty`、`xcstringstool compile`、`xcstringstool generate-symbols` 均 Passed |
+| 編譯產物 | `en.lproj` 445 筆 strings + 4 筆 plural；`zh-Hant.lproj` 449 筆；`ja.lproj` 449 筆；generated symbols 449 筆 |
+| Swift syntax | `AppInterfaceLanguage.swift`、`BaseFormatter.swift`、`MainMemberSettingViewModel.swift` parse Passed |
+| Xcode project | `plutil -lint MyTMDB_App.xcodeproj/project.pbxproj` Passed |
+| API 邊界 | `AppLocalization`、Repository、Network 無 diff |
+
 另需人工檢查所有 Repository diff，確認 API query 未改變。靜態搜尋不能取代這項 diff review。
 
 ### 12.2 Build
@@ -758,15 +744,15 @@ v1.1 實作者編譯檢查歷史紀錄（不等於開發者 Build 驗收）：
 | 產物檢查 | `en.lproj` 含 445 筆 `.strings` 與 4 筆 plural `.stringsdict`，`zh-Hant.lproj` 含 449 筆 |
 | `Package.resolved` | 未變動 |
 
-v1.2 移除設定列副標題、v1.3 改為 Menu 後皆未重新執行 Build；兩版只完成第 12.1 節的 Swift 語法、String Catalog、project 與 diff 靜態檢查。Developer Build 仍由開發者自行執行。
+v1.2 移除設定列副標題、v1.3 改為 Menu、v1.4 新增日文後皆未重新執行 Build；這些版本只完成第 12.1 節的 Swift 語法、String Catalog、project 與 diff 靜態檢查。Developer Build 仍由開發者自行執行。
 
 ### 12.3 Runtime 與 Copy Review
 
-Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
+Runtime 與英文／日文 Copy Review 完全由開發者依第 11 節執行。
 
 - Source Implementation Done 不等於 Runtime Passed。
 - Static Verification Passed 不等於 Build Passed。
-- Build Passed 不等於兩種語言文案與畫面已驗收。
+- Build Passed 不等於三種語言文案與畫面已驗收。
 - 未收到開發者結果前，不得代為勾選第 11 節或將 SDD 標記 Complete。
 
 ---
@@ -775,15 +761,15 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 | 風險 | 影響 | 處理方式 |
 |------|------|----------|
-| UI 與 API 語言不同 | 英文介面可能搭配中文片名／簡介 | 這是明確產品邊界；設定頁保留 API language value |
-| 漏掉散落的 literal | English 模式出現中文 | 機械掃描 + 第 11 節逐畫面走查 |
-| 先公開語言 Menu | 使用者看到半中半英 | Menu 延後至 Phase 5 cutover 才公開 |
+| UI 與 API 語言不同 | 英文／日文介面可能搭配中文片名／簡介 | 這是明確產品邊界；設定頁保留 API language value |
+| 漏掉散落的 literal | English／日本語模式出現中文 | 機械掃描 + 第 11 節逐畫面走查 |
+| 先公開語言 Menu | 使用者看到混合語言介面 | Menu 必須在三語 catalog 完成後才加入 `.japanese` case |
 | 使用系統 locale 查字串 | App 內語言選擇不生效或重啟後不一致 | 每次查字串明確傳入 interface locale |
 | 全域 mutable language | Swift 6 data race 或隱性依賴 | 使用 immutable localization value，由 Composition 注入 |
 | Root rebuild 重置導航 | 使用者離開目前 detail stack | Menu 只在設定 root；切換後明確回設定分頁 |
 | Root rebuild 重新打 API | 額外載入或畫面閃動 | 接受重新載入，但 query 語意不得改變 |
-| String Catalog interpolation 錯誤 | 參數遺失、語序錯誤或 crash | 使用 catalog placeholder／plural，開發者雙語走查 |
-| 英文變長造成截斷 | Button、Cell、Alert 版面退化 | Dynamic Type 與主要尺寸手動驗收 |
+| String Catalog interpolation 錯誤 | 參數遺失、語序錯誤或 crash | 使用 catalog placeholder／plural，開發者三語走查 |
+| 英文／日文長度改變造成截斷 | Button、Cell、Alert 版面退化 | Dynamic Type 與主要尺寸手動驗收 |
 | Accessibility Menu 不可聚焦 | VoiceOver 無法選擇語言 | Cell 不聚焦，改由 Menu 按鈕提供 label、目前語言 value 與 UIKit Menu semantics |
 | 語言模型綁定 Bool | 新增第三種語言需重寫 UI 與 mapping | `CaseIterable` 語言 case + raw value Menu option，不使用 `isEnglish` |
 | 把 API 文案誤當 UI 文案 | 未授權的資料語言行為變更 | 依第 6 節分類；Repository 與 AppLocalization diff review |
@@ -796,7 +782,7 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 - **UIKit 與系統提供的文字跟隨 iOS 系統語言**，不跟隨 App 內語言選擇。例如 `UISearchController` 的「取消」、預設返回按鈕、分享面板、`SFSafariViewController`、WebKit 錯誤的 `localizedDescription`。App 新增 `zh-Hant.lproj` 後，繁中裝置上的這些系統文字會從原本的英文變為中文。
 - **App Intents 與 Shortcuts** 維持原本中文，依 3.2 另案處理。
-- **TMDB 職稱／部門**：繁中模式沿用 `BaseFormatter.CrewJobDisplayMapper` 對照表；English 模式直接顯示 TMDB 原始英文值（例如 `Director`、`Acting`）。
+- **TMDB 職稱／部門**：繁中模式沿用 `BaseFormatter.CrewJobDisplayMapper` 對照表；English／日本語模式直接顯示 TMDB 原始英文值（例如 `Director`、`Acting`），符合後端內容不在本次翻譯範圍的邊界。
 - **Developer log**：`AuthFlowHandler` 與 `MainTabBarAvatarImageProvider` 的 `AppLogger` 訊息仍使用中文 `errorMessage`，屬 developer-only。
 - **繁中措辭統一**：搜尋篩選的「劇集」、以及開啟影集詳情的無障礙提示，改為共用 key 的「影集」。登入頁分頁提示改用 `ListFormatter`，繁中由「登入、訪客、註冊」變為「登入、訪客和註冊」。
 - **切換語言會重置導航堆疊**：維持 5.2 設計，root 重建後停在設定分頁。
@@ -805,15 +791,16 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 ## 14. 回退策略
 
-### Phase 1–4 尚未 cutover
+### 日文 cutover 尚未完成
 
 - 不公開語言 Menu。
 - 新增的 String Catalog 與 localization value 可保留，不影響繁體中文既有流程。
 - 任一 feature 遷移有問題時，可只回退該 feature 的注入與字串呼叫。
 
-### Phase 5 cutover 後
+### 日文 cutover 後
 
-- 優先隱藏／移除 `.appInterfaceLanguage` row，暫時固定 `.traditionalChinese`。
+- 若只有日文內容有問題，優先移除 `.japanese` case 以隱藏日文選項；保留已完成的 catalog 文案供修復版本使用。
+- 若整體介面語言功能有問題，再隱藏／移除 `.appInterfaceLanguage` row，暫時固定 `.traditionalChinese`。
 - 不刪除使用者已儲存的 `AppInterfaceLanguage.v1`，避免修復版本重新開放時遺失選擇。
 - 不以修改 `AppLocalization` 或 API query 作為回退手段。
 - 若 root replacement 有問題，回退 app-flow callback，不回退已完成的 String Catalog 文案。
@@ -824,39 +811,42 @@ Runtime 與英文 Copy Review 完全由開發者依第 11 節執行。
 
 只有同時符合下列條件，才能將本 SDD 標記為 Complete：
 
-- Phase 1–5 source implementation 完成。
-- String Catalog 包含 English 與完整 `zh-Hant`。
+- Phase 1–5 與 Phase J0–J3 source implementation 完成。
+- String Catalog 的 449 個範圍 key 包含完整 `en`、`zh-Hant` 與 `ja`。
 - App 內本地使用者可見文案已依第 6 節完成分類與遷移。
 - 語言 Menu 在訪客與會員模式皆正確顯示與運作。
 - 語言偏好可持久化，且登出／清除帳號資料不會重置。
 - `AppLocalization` 與所有 Repository API query 行為不變。
 - Source／String Catalog／project 靜態檢查通過。
 - Build 結果由開發者回填為 Passed。
-- 第 11 節繁體中文、English、Copy、Accessibility、API 不變矩陣由開發者回填為 Passed。
+- 第 11 節繁體中文、English、日本語、Copy、Accessibility、API 不變矩陣由開發者回填為 Passed。
 - 沒有以 source review、static check 或 build 結果冒充 Runtime／Copy 驗收。
 
 ---
 
 ## 16. 實作狀態
 
-截至 2026-09-19（v1.3）：
+截至 2026-09-20（v1.4）：
 
 | 項目 | 狀態 | 證據／限制 |
 |------|------|------------|
-| Design | Ready | v1.1 已依實測修正 7.1、8.2、12.1 |
+| Design | Ready | v1.4 三語範圍、API 邊界與驗收責任已鎖定 |
 | Phase 0 | Done | 範圍、API 邊界與開發者驗收責任已定義 |
 | Phase 1 基礎 | Done | `AppInterfaceLanguage`、Store、`AppInterfaceLocalization`、catalog、`zh-Hant` region、root 重建 callback |
 | Phase 2 Shell／登入／共用元件 | Done | MainTab、Loading、ErrorMessage、BaseRouter、Login、Player、WebView、ImagePreview、Session alert |
 | Phase 3 Main 與列表 | Done | Home、HomeSectionList、MainSearch、SearchResults、MainMediaList |
 | Phase 4 詳情／會員／PageSheet | Done | Movie、TV、Season、Episode、Person、Review、ReviewDetail、MemberCenter、Settings、Genre、Rating、DetailContentList |
 | Phase 5 Menu cutover | Done | 偏好設定第一列 Menu、單選勾選、Accessibility、寫入偏好、重建 root 回設定分頁 |
-| String Catalog | Done | 448 key，`en` 與 `zh-Hant` 完整，4 個 English plural |
-| Static Verification | Passed | v1.3 已通過第 12.1 節與 448-key 比對腳本 |
-| 實作者編譯檢查 | v1.1 Passed／v1.2–v1.3 NotRun | v1.1 歷史紀錄見 12.2；v1.2–v1.3 依規格不代替開發者 Build |
+| Phase J0–J2 日文 source | Done | `.japanese`、Menu option、formatter boundary、`ja` region 與三語 catalog 已完成 |
+| String Catalog | Done | 449 個範圍 key 的 `en`／`zh-Hant`／`ja` 完整；4 個 English plural；27 個排除 key 維持原狀 |
+| Static Verification | Passed | v1.4 已通過第 12.1 節 JSON、catalog compile／symbols、placeholder、key、Swift parse、project 與 diff 檢查 |
+| 實作者編譯檢查 | v1.1 Passed／v1.2–v1.4 NotRun | v1.1 歷史紀錄見 12.2；v1.2–v1.4 依規格不代替開發者 Build |
 | Xcode Build（開發者） | NotRun | 由開發者自行執行並回填 11.1 |
 | Runtime — 繁體中文 | NotRun | 等待開發者驗收 |
 | Runtime — English | NotRun | 等待開發者驗收 |
 | English Copy Review | NotRun | 等待開發者驗收 |
+| Runtime — 日本語 | NotRun | 等待開發者驗收 |
+| 日本語 Copy Review | NotRun | 等待開發者驗收 |
 | API unchanged review | Source Passed／Runtime NotRun | `AppLocalization`、Repository、Network 無 diff；request 比對等待開發者 |
 
 ### 16.1 v1.1 進度盤點與修正
@@ -885,3 +875,4 @@ v1.1 接手時，工作區已有 Phase 1 與部分 Phase 2–4、5 的未提交�
 | 1.1 | 2026-09-19 | 完成 Phase 1–5 source；查表改用 `Bundle.localizedString(…localizations:)`，`defaultValue` 改為 `String`；catalog 補齊 449 個 key 的 `en`／`zh-Hant` 與 English plural；移除 `.traditionalChinese` 參數預設值；媒體類型文案改為分 key；新增 4.3 殘留分類、8.2 補充規則、12.1 catalog 檢查、12.2 實作者編譯檢查、13.1 已知限制、16.1 盤點；開發者 Build、Runtime、Copy Review 仍為 NotRun |
 | 1.2 | 2026-09-19 | 設定列文案簡化為「語言偏好」／`Language Preference`，移除副標題與自訂 Switch hint；String Catalog 調整為 448 個 key；Developer Build、Runtime、Copy Review 仍為 NotRun |
 | 1.3 | 2026-09-19 | 語言控制由二元 Switch 改為 `UIButton` + 單選 `UIMenu`；`AppInterfaceLanguage` 改採 `CaseIterable`，Menu option 使用 raw value；移除 Bool mapping，保留 448 個雙語 key；Developer Build、Runtime、Copy Review 仍為 NotRun |
+| 1.4 | 2026-09-20 | 新增日本語介面；449 個範圍 key 完成 `en`／`zh-Hant`／`ja`；新增 `.japanese`、Menu option、`ja` region，並讓日文維持 TMDB 後端職稱原值；Static Verification Passed；Developer Build、Runtime、Copy Review 仍為 NotRun |
