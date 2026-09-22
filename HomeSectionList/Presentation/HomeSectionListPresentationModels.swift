@@ -50,11 +50,5 @@ nonisolated struct HomeSectionListContent: Sendable, Equatable {
     let genres: [HomeSectionListGenreItem]
     let selectedGenreID: Int
     let items: [HomeContentItem]
-    let currentPage: Int
-    let totalPages: Int
-    let isLoadingNextPage: Bool
-
-    var canLoadNextPage: Bool {
-        currentPage < totalPages
-    }
+    let pagination: MediaGridPaginationState
 }

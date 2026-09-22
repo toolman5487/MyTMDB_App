@@ -318,7 +318,7 @@ private extension SearchResultsViewController {
         guard canLoadNextPage, !isLoadingNextPage else { return }
         guard !paginationTaskController.isRunning else { return }
 
-        guard MediaGridLayoutMetrics.shouldLoadNextPage(
+        guard MediaGridPaginationState.shouldLoadNextPage(
             currentIndex: indexPath.item,
             itemCount: items.count
         ) else { return }

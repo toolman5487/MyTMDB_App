@@ -21,7 +21,6 @@ final class MemberCenterListViewController: BaseListViewController {
         static let itemSpacing: CGFloat = 12
         static let columnCount: CGFloat = 3
         static let posterAspectRatio: CGFloat = 1.5
-        static let paginationThreshold = 4
         private static let minimumTextHeight: CGFloat = 44
         private static let textVerticalSpacing: CGFloat = 4
 
@@ -60,7 +59,7 @@ final class MemberCenterListViewController: BaseListViewController {
     private var items: [MemberCenterListItem] = []
 
     private var loadTask: Task<Void, Never>?
-    private var loadNextPageTask: Task<Void, Never>?
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - Initialization
 
@@ -82,7 +81,6 @@ final class MemberCenterListViewController: BaseListViewController {
 
     deinit {
         loadTask?.cancel()
-        loadNextPageTask?.cancel()
     }
 
     // MARK: - BaseViewController
@@ -120,8 +118,7 @@ final class MemberCenterListViewController: BaseListViewController {
 
     private func loadInitialContent() {
         loadTask?.cancel()
-        loadNextPageTask?.cancel()
-        loadNextPageTask = nil
+        paginationTaskController.cancel()
         loadTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             await viewModel.loadInitialContent()
@@ -268,19 +265,17 @@ private extension MemberCenterListViewController {
 
     func loadNextPageIfNeeded(for indexPath: IndexPath) {
         guard items.indices.contains(indexPath.item) else { return }
-        guard loadNextPageTask == nil else { return }
+        guard !paginationTaskController.isRunning else { return }
 
-        let thresholdIndex = max(items.count - Layout.paginationThreshold, 0)
-        guard indexPath.item >= thresholdIndex else { return }
+        guard MediaGridPaginationState.shouldLoadNextPage(
+            currentIndex: indexPath.item,
+            itemCount: items.count
+        ) else { return }
 
         let currentItemID = items[indexPath.item].id
 
-        loadNextPageTask = Task(priority: .utility) { @MainActor [weak self] in
+        paginationTaskController.run { [weak self] in
             guard let self else { return }
-
-            defer {
-                loadNextPageTask = nil
-            }
 
             await viewModel.loadNextPageIfNeeded(currentItemID: currentItemID)
         }

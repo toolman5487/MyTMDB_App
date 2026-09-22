@@ -24,7 +24,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
     private var filters: [ReviewFilterItem] = []
     private var reviews: [ReviewItem] = []
 
-    private var hasNextPage = false
+    private var canLoadNextPage = false
     private var isLoadingNextPage = false
 
     private var loadTask: Task<Void, Never>?
@@ -131,7 +131,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         case .idle:
             filters = []
             reviews = []
-            hasNextPage = false
+            canLoadNextPage = false
             isLoadingNextPage = false
             setLoadingVisible(false)
             collectionView.backgroundView = nil
@@ -139,7 +139,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         case .loading:
             filters = []
             reviews = []
-            hasNextPage = false
+            canLoadNextPage = false
             isLoadingNextPage = false
             setLoadingVisible(true)
             collectionView.backgroundView = nil
@@ -147,7 +147,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         case .loaded(let presentation):
             filters = presentation.filters
             reviews = presentation.reviews
-            hasNextPage = presentation.hasNextPage
+            canLoadNextPage = presentation.canLoadNextPage
             isLoadingNextPage = presentation.isLoadingNextPage
             setLoadingVisible(false)
             collectionView.backgroundView = nil
@@ -155,7 +155,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         case .empty:
             filters = makeFilterItems()
             reviews = []
-            hasNextPage = false
+            canLoadNextPage = false
             isLoadingNextPage = false
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(
@@ -176,7 +176,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
         case .failed(let message):
             filters = []
             reviews = []
-            hasNextPage = false
+            canLoadNextPage = false
             isLoadingNextPage = false
             setLoadingVisible(false)
             collectionView.backgroundView = ErrorMessageView(
@@ -201,7 +201,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
     }
 
     private func loadNextPageIfNeeded(for indexPath: IndexPath) {
-        guard hasNextPage else { return }
+        guard canLoadNextPage else { return }
         guard !isLoadingNextPage else { return }
         guard !paginationTaskController.isRunning else { return }
 

@@ -537,9 +537,3 @@ enum AppFactory {
         }
     }
 }
-
-// MARK: - AppSortMenuOption
-
-protocol AppSortMenuOption: Hashable, CaseIterable {
-    func title(localization: AppInterfaceLocalization) -> String
-}

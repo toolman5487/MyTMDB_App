@@ -69,21 +69,19 @@ final class MemberCenterListViewModel {
 
     func loadNextPageIfNeeded(currentItemID: String) async {
         guard case .loaded(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
+              content.pagination.shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
         state = .loaded(content.updatingLoadingNextPage(true))
 
         do {
-            let nextContent = try await fetchContent(page: content.currentPage + 1)
+            let nextContent = try await fetchContent(page: content.pagination.nextPage)
             guard !Task.isCancelled else { return }
 
             guard case .loaded(let currentContent) = state,
                   currentContent.destination == content.destination,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.pagination.currentPage == content.pagination.currentPage else {
                 return
             }
 
@@ -93,7 +91,7 @@ final class MemberCenterListViewModel {
 
             guard case .loaded(let currentContent) = state,
                   currentContent.destination == content.destination,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.pagination.currentPage == content.pagination.currentPage else {
                 return
             }
 
@@ -116,16 +114,5 @@ final class MemberCenterListViewModel {
             from: collection,
             localization: localization
         )
-    }
-
-    private func shouldLoadNextPage(
-        currentItemID: String,
-        items: [MemberCenterListItem]
-    ) -> Bool {
-        guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
-            return false
-        }
-
-        return currentIndex >= max(items.count - 4, 0)
     }
 }

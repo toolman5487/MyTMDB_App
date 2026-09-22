@@ -41,9 +41,7 @@ final class SearchResultsViewModel {
 
     private var keyword = ""
     private var summaries: [MediaSummary] = []
-    private var currentPage = 0
-    private var totalPages = 1
-    private var totalResults = 0
+    private var pagination = MediaGridPaginationState(currentPage: 0, totalPages: 1, totalResults: 0)
 
     // MARK: - Initialization
 
@@ -97,9 +95,7 @@ final class SearchResultsViewModel {
 
             self.keyword = trimmedKeyword
             summaries = page.items
-            currentPage = page.number
-            totalPages = page.totalPages
-            totalResults = page.totalResults
+            pagination = MediaGridPaginationState(page: page)
 
             let content = makeContent(isLoadingNextPage: false)
             state = content.items.isEmpty ? .empty(trimmedKeyword) : .results(content)
@@ -111,16 +107,14 @@ final class SearchResultsViewModel {
 
     func loadNextPageIfNeeded(currentItemID: Int) async {
         guard case .results(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
+              content.pagination.shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
         state = .results(content.updatingLoadingNextPage(true))
 
         let requestedKeyword = keyword
-        let requestedPage = currentPage
+        let requestedPage = pagination.currentPage
 
         do {
             let nextPage = try await searchMedia(
@@ -131,19 +125,17 @@ final class SearchResultsViewModel {
 
             guard !Task.isCancelled,
                   keyword == requestedKeyword,
-                  currentPage == requestedPage else {
+                  pagination.currentPage == requestedPage else {
                 return
             }
 
             summaries += nextPage.items
-            currentPage = nextPage.number
-            totalPages = nextPage.totalPages
-            totalResults = nextPage.totalResults
+            pagination = MediaGridPaginationState(page: nextPage)
             state = .results(makeContent(isLoadingNextPage: false))
         } catch {
             guard !Task.isCancelled,
                   keyword == requestedKeyword,
-                  currentPage == requestedPage else {
+                  pagination.currentPage == requestedPage else {
                 return
             }
 
@@ -166,25 +158,8 @@ final class SearchResultsViewModel {
         return SearchContent(
             keyword: keyword,
             items: ordered.map { MediaGridItem(summary: $0, localization: localization) },
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoadingNextPage,
+            pagination: pagination.updatingLoadingNextPage(isLoadingNextPage),
             selectedSortOption: selectedSortOption
-        )
-    }
-
-    private func shouldLoadNextPage(
-        currentItemID: Int,
-        items: [MediaGridItem]
-    ) -> Bool {
-        guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
-            return false
-        }
-
-        return MediaGridLayoutMetrics.shouldLoadNextPage(
-            currentIndex: currentIndex,
-            itemCount: items.count
         )
     }
 }

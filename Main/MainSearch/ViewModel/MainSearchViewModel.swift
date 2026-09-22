@@ -80,26 +80,10 @@ final class MainSearchViewModel {
             let discovery = try await loadDiscovery()
             guard !Task.isCancelled else { return }
 
-            let page = discovery.trending
-            let items = MainSearchContent.uniqueResults(
-                page.items.map {
-                    MainSearchResultItem(result: $0, localization: localization)
-                }
-            ).shuffled()
-            let popularPeople = MainSearchContent.uniqueResults(
-                discovery.popularPeople.map {
-                    MainSearchResultItem(person: $0, localization: localization)
-                }
-            )
-
-            let content = MainSearchDailyTrendingContent(
+            let content = MainSearchPresentationBuilder.makeDailyTrendingContent(
+                discovery: discovery,
                 recentSearchEntries: loadRecentSearchEntries(),
-                popularPeople: popularPeople,
-                items: items,
-                currentPage: page.number,
-                totalPages: page.totalPages,
-                totalResults: page.totalResults,
-                isLoadingNextPage: false
+                localization: localization
             )
 
             cachedDailyTrendingContent = content
@@ -112,9 +96,7 @@ final class MainSearchViewModel {
 
     func loadNextDailyTrendingPageIfNeeded(currentItemID: String) async {
         guard case .dailyTrending(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentItemID: currentItemID, results: content.items) else {
+              content.pagination.shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
@@ -122,13 +104,13 @@ final class MainSearchViewModel {
 
         do {
             let nextPage = try await repository.dailyTrending(
-                page: content.currentPage + 1
+                page: content.pagination.nextPage
             )
 
             guard !Task.isCancelled else { return }
 
             guard case .dailyTrending(let currentContent) = state,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.pagination.currentPage == content.pagination.currentPage else {
                 return
             }
 
@@ -142,7 +124,7 @@ final class MainSearchViewModel {
             guard !Task.isCancelled else { return }
 
             guard case .dailyTrending(let currentContent) = state,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.pagination.currentPage == content.pagination.currentPage else {
                 return
             }
 
@@ -198,7 +180,11 @@ final class MainSearchViewModel {
             let page = try await repository.searchResults(keyword: trimmedKeyword, page: 1)
             guard !Task.isCancelled else { return }
 
-            let content = makeContent(keyword: trimmedKeyword, page: page)
+            let content = MainSearchPresentationBuilder.makeSearchContent(
+                keyword: trimmedKeyword,
+                page: page,
+                localization: localization
+            )
             state = content.results.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
             guard !Task.isCancelled else { return }
@@ -208,9 +194,10 @@ final class MainSearchViewModel {
 
     func loadNextPageIfNeeded(currentItemID: String) async {
         guard case .results(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentItemID: currentItemID, results: content.results) else {
+              content.pagination.shouldLoadNextPage(
+                  currentItemID: currentItemID,
+                  items: content.results
+              ) else {
             return
         }
 
@@ -219,14 +206,14 @@ final class MainSearchViewModel {
         do {
             let nextPage = try await repository.searchResults(
                 keyword: content.keyword,
-                page: content.currentPage + 1
+                page: content.pagination.nextPage
             )
 
             guard !Task.isCancelled else { return }
 
             guard case .results(let currentContent) = state,
                   currentContent.keyword == content.keyword,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.pagination.currentPage == content.pagination.currentPage else {
                 return
             }
 
@@ -239,7 +226,7 @@ final class MainSearchViewModel {
 
             guard case .results(let currentContent) = state,
                   currentContent.keyword == content.keyword,
-                  currentContent.currentPage == content.currentPage else {
+                  currentContent.pagination.currentPage == content.pagination.currentPage else {
                 return
             }
 
@@ -261,23 +248,6 @@ final class MainSearchViewModel {
     }
 
     // MARK: - Private Methods
-
-    private func makeContent(
-        keyword: String,
-        page: Page<MainSearchResult>
-    ) -> MainSearchContent {
-        MainSearchContent(
-            keyword: keyword,
-            allResults: MainSearchContent.uniqueResults(page.items.map {
-                MainSearchResultItem(result: $0, localization: localization)
-            }),
-            selectedFilter: .all,
-            currentPage: page.number,
-            totalPages: page.totalPages,
-            totalResults: page.totalResults,
-            isLoadingNextPage: false
-        )
-    }
 
     private func restoreDailyTrending() {
         guard let cachedDailyTrendingContent else {
@@ -309,19 +279,5 @@ final class MainSearchViewModel {
         content.items.isEmpty && content.popularPeople.isEmpty && content.recentSearchEntries.isEmpty
             ? .dailyTrendingEmpty
             : .dailyTrending(content)
-    }
-
-    private func shouldLoadNextPage(
-        currentItemID: String,
-        results: [MainSearchResultItem]
-    ) -> Bool {
-        guard let currentIndex = results.firstIndex(where: { $0.id == currentItemID }) else {
-            return false
-        }
-
-        return MediaGridLayoutMetrics.shouldLoadNextPage(
-            currentIndex: currentIndex,
-            itemCount: results.count
-        )
     }
 }

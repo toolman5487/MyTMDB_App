@@ -45,6 +45,81 @@ nonisolated struct MediaGridItem: Sendable, Equatable, Identifiable {
     }
 }
 
+// MARK: - MediaGridPaginationState
+
+nonisolated struct MediaGridPaginationState: Sendable, Equatable {
+    private static let nextPageThreshold = 4
+
+    let currentPage: Int
+    let totalPages: Int
+    let totalResults: Int
+    let isLoadingNextPage: Bool
+
+    init(
+        currentPage: Int,
+        totalPages: Int,
+        totalResults: Int,
+        isLoadingNextPage: Bool = false
+    ) {
+        self.currentPage = currentPage
+        self.totalPages = totalPages
+        self.totalResults = totalResults
+        self.isLoadingNextPage = isLoadingNextPage
+    }
+
+    init<Element>(page: Page<Element>) {
+        self.init(
+            currentPage: page.number,
+            totalPages: page.totalPages,
+            totalResults: page.totalResults
+        )
+    }
+
+    var canLoadNextPage: Bool {
+        currentPage < totalPages
+    }
+
+    var nextPage: Int {
+        currentPage + 1
+    }
+
+    func updatingLoadingNextPage(_ isLoading: Bool) -> MediaGridPaginationState {
+        MediaGridPaginationState(
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalResults: totalResults,
+            isLoadingNextPage: isLoading
+        )
+    }
+
+    static func shouldLoadNextPage(currentIndex: Int, itemCount: Int) -> Bool {
+        let thresholdIndex = max(itemCount - nextPageThreshold, 0)
+        return currentIndex >= thresholdIndex
+    }
+
+    func shouldLoadNextPage<Item: Identifiable>(
+        currentItemID: Item.ID,
+        items: [Item]
+    ) -> Bool {
+        guard canLoadNextPage,
+              !isLoadingNextPage,
+              let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
+            return false
+        }
+
+        return Self.shouldLoadNextPage(
+            currentIndex: currentIndex,
+            itemCount: items.count
+        )
+    }
+}
+
+// MARK: - AppSortMenuOption
+
+nonisolated protocol AppSortMenuOption: Hashable, CaseIterable {
+    func title(localization: AppInterfaceLocalization) -> String
+}
+
 // MARK: - MediaSortOrder Presentation
 
 extension MediaSortOrder: Identifiable, AppSortMenuOption {

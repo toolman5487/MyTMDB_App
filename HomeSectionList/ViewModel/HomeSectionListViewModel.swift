@@ -32,8 +32,7 @@ final class HomeSectionListViewModel {
     private var genres: [MediaGenre] = []
     private var summaries: [MediaSummary] = []
     private var selectedGenreID = HomeGenreFilterID.all
-    private var currentPage = 1
-    private var totalPages = 1
+    private var pagination = MediaGridPaginationState(currentPage: 1, totalPages: 1, totalResults: 0)
 
     // MARK: - Initialization
 
@@ -70,8 +69,7 @@ final class HomeSectionListViewModel {
             genres = selection.genres
             selectedGenreID = HomeGenreFilterID.all
             summaries = selection.page.items
-            currentPage = selection.page.number
-            totalPages = selection.page.totalPages
+            pagination = MediaGridPaginationState(page: selection.page)
 
             guard !summaries.isEmpty else {
                 state = .empty
@@ -98,14 +96,12 @@ final class HomeSectionListViewModel {
 
     func loadNextPageIfNeeded(currentItemID: Int) async {
         guard case .loaded(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentItemID: currentItemID) else {
+              content.pagination.shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
         let requestedGenreID = selectedGenreID
-        let requestedPage = currentPage
+        let requestedPage = pagination.currentPage
 
         state = .loaded(makeContent(isLoadingNextPage: true))
 
@@ -121,8 +117,7 @@ final class HomeSectionListViewModel {
             }
 
             summaries += nextPage.items
-            currentPage = nextPage.number
-            totalPages = nextPage.totalPages
+            pagination = MediaGridPaginationState(page: nextPage)
 
             state = .loaded(makeContent(isLoadingNextPage: false))
         } catch {
@@ -143,7 +138,7 @@ final class HomeSectionListViewModel {
 
     private func isCurrentRequest(genreID: Int, page: Int) -> Bool {
         guard case .loaded = state else { return false }
-        return selectedGenreID == genreID && currentPage == page
+        return selectedGenreID == genreID && pagination.currentPage == page
     }
 
     private func makeContent(isLoadingNextPage: Bool) -> HomeSectionListContent {
@@ -167,22 +162,7 @@ final class HomeSectionListViewModel {
                     localization: localization
                 )
             },
-            currentPage: currentPage,
-            totalPages: totalPages,
-            isLoadingNextPage: isLoadingNextPage
-        )
-    }
-
-    private func shouldLoadNextPage(currentItemID: Int) -> Bool {
-        let items = displayedSummaries
-
-        guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
-            return false
-        }
-
-        return MediaGridLayoutMetrics.shouldLoadNextPage(
-            currentIndex: currentIndex,
-            itemCount: items.count
+            pagination: pagination.updatingLoadingNextPage(isLoadingNextPage)
         )
     }
 }

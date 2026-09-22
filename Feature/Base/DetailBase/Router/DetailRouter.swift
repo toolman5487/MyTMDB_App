@@ -12,7 +12,7 @@ import UIKit
 @MainActor
 protocol DetailRouting {
 
-    // MARK: Push
+    // MARK: - Push
 
     func showMovieDetail(movieID: Int)
     func showTVDetail(seriesID: Int)
@@ -26,7 +26,7 @@ protocol DetailRouting {
     func showLogin()
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
 
-    // MARK: Page Sheet
+    // MARK: - Page Sheet
 
     func showRatingPageSheet(
         title: String,
@@ -37,7 +37,7 @@ protocol DetailRouting {
     )
     func showYouTubeVideo(videoKey: String, title: String?)
 
-    // MARK: Share
+    // MARK: - Share
 
     func showShareSheet(for url: URL, sourceItem: UIBarButtonItem)
 }

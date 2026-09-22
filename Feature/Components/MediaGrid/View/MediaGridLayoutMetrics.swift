@@ -12,7 +12,6 @@ import UIKit
 nonisolated enum MediaGridLayoutMetrics {
     static let horizontalInset: CGFloat = 16
     static let itemSpacing: CGFloat = 12
-    static let paginationThreshold = 4
 
     private static let columnCount: CGFloat = 3
     private static let posterAspectRatio: CGFloat = 1.5
@@ -47,10 +46,5 @@ nonisolated enum MediaGridLayoutMetrics {
             width: itemWidth,
             height: posterHeight(for: collectionViewWidth) + textHeight
         )
-    }
-
-    static func shouldLoadNextPage(currentIndex: Int, itemCount: Int) -> Bool {
-        let thresholdIndex = max(itemCount - paginationThreshold, 0)
-        return currentIndex >= thresholdIndex
     }
 }

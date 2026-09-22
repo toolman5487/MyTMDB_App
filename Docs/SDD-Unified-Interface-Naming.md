@@ -112,7 +112,7 @@
 
 三個 `@Observable` ViewModel 的 UIKit Controller 沒有建立 Observation tracking，而是在操作後主動讀取 `viewModel.state`。因此目前同時存在 push 與 pull 兩種狀態輸出方式，且 `@Observable` 沒有成為實際畫面綁定介面。
 
-遷移後 14 個具有非同步 state flow 的 ViewModel 全部使用 `bind(onStateChange:)`；`MainMemberSettingViewModel` 與 `MainTabBarViewModel` 保留同步 query/action 介面，並在型別註解說明不提供非同步 state binding。ViewModel 已無 `Observation` import 或 `@Observable`。
+遷移後 14 個具有非同步 state flow 的 ViewModel 全部使用 `bind(onStateChange:)`；`MainMemberSettingViewModel` 與 `MainTabBarViewModel` 保留同步 query/action 介面，不提供非同步 state binding；兩者列於 5.4，不另寫型別註解（1.2 起）。ViewModel 已無 `Observation` import 或 `@Observable`。
 
 #### N3 — ViewModel 載入方法
 
@@ -449,7 +449,12 @@ func bind(
 - 不同的獨立狀態可增加具名 callback，例如 `onAccountStateChange`。
 - 不保留未被 UIKit 觀察的 `@Observable`。
 
-同步、無非同步 state flow 的 ViewModel 可以不提供 `bind`，但應在型別註解說明它是 query/action model，避免誤判為遺漏。
+同步、無非同步 state flow 的 ViewModel 可以不提供 `bind`。程式碼不以型別註解標示（註解規則見第 13 節），改由本文件列出名單，避免誤判為遺漏：
+
+- `MainMemberSettingViewModel`
+- `MainTabBarViewModel`
+
+新增同步 query/action model 時同步更新此名單。
 
 #### Input method
 
@@ -863,6 +868,7 @@ xcodebuild \
 - 新增 acronym identifier 時遵守 4.1。
 - 新增 Repository、UseCase、Router、Scene Builder 時遵守第 5 節。
 - 新增 ViewModel 前先判斷是否真的有非同步 state flow；有才使用統一 binding。
+- 程式碼註解只使用 `// MARK: -` 分段，不寫行內 `//`、文件註解 `///` 或 `/* */`，也不保留既有的說明註解；需要說明的設計決策寫進 SDD。檔頭的 Xcode 範本（檔名、專案、建立者）不在此限。
 - 新增 pagination 時使用 `loadNextPageIfNeeded(currentItemID:)`，除非 feature 有文件化差異。
 - 新增 scene factory 時回傳 `UIViewController`，事件由 factory 參數或窄 protocol 注入。
 - 不以「所有名稱都一樣」取代領域語意；Search、Login 等合法狀態差異應保留。
@@ -876,5 +882,6 @@ xcodebuild \
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 1.2 | 2026-09-22 | 註解規則改為只使用 `// MARK: -`：5.4 刪除同步 query/action model 的型別註解要求，改由本文件列出名單；第 13 節新增註解維護規則。程式碼同步移除 `MainMemberSettingViewModel`、`MainTabBarViewModel` 的型別註解與 `AppDelegate`／`SceneDelegate` 的 Xcode 範本註解，並將 12 處 `// MARK:` 補上 `-`。11.1 為 1.1 當時的驗證紀錄，不回溯修改 |
 | 1.1 | 2026-09-15 | 套用統一命名與介面：縮寫／ID、Codable 相容層、ViewModel binding 與載入方法、搜尋 Scene Builder callback 注入及 Router 動詞；Swift parser、Codable executable check、Clean Architecture 與靜態命名檢查通過，Build / Runtime NotRun |
 | 1.0 | 2026-09-15 | 依目前 337 個 Swift 檔、16 個 ViewModel、23 個 UseCase、單一 target 與現行 Clean Architecture SDD 建立介面與命名統一規格；只建立文件，尚未修改 production code、執行 build 或 runtime 走查 |

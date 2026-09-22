@@ -36,13 +36,14 @@ extension ReviewFilter {
 nonisolated struct ReviewListPresentation: Sendable, Equatable {
     let filters: [ReviewFilterItem]
     let reviews: [ReviewItem]
-    let page: Int
-    let totalPages: Int
-    let totalResults: Int
-    let isLoadingNextPage: Bool
+    let pagination: MediaGridPaginationState
 
-    var hasNextPage: Bool {
-        page < totalPages
+    var canLoadNextPage: Bool {
+        pagination.canLoadNextPage
+    }
+
+    var isLoadingNextPage: Bool {
+        pagination.isLoadingNextPage
     }
 }
 

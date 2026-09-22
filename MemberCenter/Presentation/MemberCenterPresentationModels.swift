@@ -292,10 +292,7 @@ nonisolated enum MemberCenterPresentationBuilder {
         MemberCenterListContent(
             destination: collection.destination,
             items: makeItems(from: collection, localization: localization),
-            currentPage: collection.page.number,
-            totalPages: collection.page.totalPages,
-            totalResults: collection.page.totalResults,
-            isLoadingNextPage: false
+            pagination: MediaGridPaginationState(page: collection.page)
         )
     }
 

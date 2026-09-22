@@ -150,6 +150,15 @@ nonisolated struct MainMemberSettingSectionItem: Sendable, Equatable, Identifiab
     }
 }
 
+// MARK: - MainMemberSettingContent
+
+nonisolated struct MainMemberSettingContent: Sendable, Equatable {
+    let navigationTitle: String
+    let sections: [MainMemberSettingSectionItem]
+    let profileSummary: MainMemberSettingProfileSummaryItem
+    let guestPrompt: MainMemberSettingGuestPromptItem
+}
+
 // MARK: - Accessibility
 
 extension MainMemberSettingRowItem {

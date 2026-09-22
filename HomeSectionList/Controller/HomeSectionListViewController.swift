@@ -175,7 +175,7 @@ final class HomeSectionListViewController: BaseListViewController {
         guard items.indices.contains(indexPath.item) else { return }
         guard !paginationTaskController.isRunning else { return }
 
-        guard MediaGridLayoutMetrics.shouldLoadNextPage(
+        guard MediaGridPaginationState.shouldLoadNextPage(
             currentIndex: indexPath.item,
             itemCount: items.count
         ) else {

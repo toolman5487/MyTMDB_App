@@ -38,11 +38,14 @@ final class ReviewListViewModel {
     private let filterReviewsUseCase: FilterReviewsUseCase
     private let localization: AppInterfaceLocalization
 
+    private static let initialPagination = MediaGridPaginationState(
+        currentPage: 0,
+        totalPages: 1,
+        totalResults: 0
+    )
+
     private var reviews: [Review] = []
-    private var currentPage: Int = 0
-    private var totalPages: Int = 1
-    private var totalResults: Int = 0
-    private var isLoadingNextPage = false
+    private var pagination = ReviewListViewModel.initialPagination
     private var mediaID: Int?
 
     // MARK: - Initialization
@@ -85,19 +88,20 @@ final class ReviewListViewModel {
     }
 
     func beginLoadingNextPage() -> Bool {
-        guard !isLoadingNextPage else { return false }
-        guard currentPage > 0, currentPage < totalPages else { return false }
+        guard !pagination.isLoadingNextPage else { return false }
+        guard pagination.currentPage > 0, pagination.canLoadNextPage else { return false }
 
-        isLoadingNextPage = true
+        pagination = pagination.updatingLoadingNextPage(true)
         renderCurrentPresentation()
         return true
     }
 
     func loadNextPage() async {
         guard let mediaID else { return }
-        guard isLoadingNextPage || beginLoadingNextPage() else { return }
+        guard pagination.isLoadingNextPage || beginLoadingNextPage() else { return }
 
-        let nextPage = currentPage + 1
+        let requestedPage = pagination.currentPage
+        let nextPage = pagination.nextPage
 
         do {
             let page = try await loadReviewsUseCase(
@@ -105,14 +109,25 @@ final class ReviewListViewModel {
                 mediaID: mediaID,
                 page: nextPage
             )
+
+            guard !Task.isCancelled,
+                  isCurrentRequest(mediaID: mediaID, page: requestedPage) else {
+                return
+            }
+
             apply(page: page, replacingCurrentReviews: false)
         } catch {
+            guard !Task.isCancelled,
+                  isCurrentRequest(mediaID: mediaID, page: requestedPage) else {
+                return
+            }
+
             AppLogger.network.warning(
                 "Failed to load next \(self.mediaKind.rawValue) review page. mediaID: \(mediaID), page: \(nextPage), error: \(error.localizedDescription)"
             )
         }
 
-        isLoadingNextPage = false
+        pagination = pagination.updatingLoadingNextPage(false)
         renderCurrentPresentation()
     }
 
@@ -140,7 +155,7 @@ final class ReviewListViewModel {
     }
 
     private func renderCurrentPresentation() {
-        guard currentPage > 0 else {
+        guard pagination.currentPage > 0 else {
             state = .empty
             return
         }
@@ -163,26 +178,22 @@ final class ReviewListViewModel {
                     )
                 },
                 reviews: reviewItems,
-                page: currentPage,
-                totalPages: totalPages,
-                totalResults: totalResults,
-                isLoadingNextPage: isLoadingNextPage
+                pagination: pagination
             )
         )
     }
 
+    private func isCurrentRequest(mediaID: Int, page: Int) -> Bool {
+        self.mediaID == mediaID && pagination.isLoadingNextPage && pagination.currentPage == page
+    }
+
     private func resetPagination() {
         reviews = []
-        currentPage = 0
-        totalPages = 1
-        totalResults = 0
-        isLoadingNextPage = false
+        pagination = Self.initialPagination
     }
 
     private func apply(page: Page<Review>, replacingCurrentReviews: Bool) {
-        currentPage = page.number
-        totalPages = page.totalPages
-        totalResults = page.totalResults
+        pagination = MediaGridPaginationState(page: page)
 
         reviews = replacingCurrentReviews
             ? page.items

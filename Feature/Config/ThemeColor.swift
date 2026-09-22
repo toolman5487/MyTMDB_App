@@ -11,7 +11,7 @@ import UIKit
 
 enum ThemeColor {
 
-    // MARK: Brand
+    // MARK: - Brand
 
     static let tmdbDarkBlueHex = "#0D253F"
     static let tmdbLightBlueHex = "#01B4E4"
@@ -24,7 +24,7 @@ enum ThemeColor {
 
     static let lightBlueGlass: UIColor = UIColor(hex: tmdbLightBlueHex, alpha: 0.20) ?? .systemCyan.withAlphaComponent(0.20)
 
-    // MARK: Text
+    // MARK: - Text
 
     static let textPrimary: UIColor = .label
     static let textSecondary: UIColor = .secondaryLabel
@@ -33,29 +33,29 @@ enum ThemeColor {
     static let textPlaceholder: UIColor = .placeholderText
     static let textLink: UIColor = .link
 
-    // MARK: Background
+    // MARK: - Background
 
     static let background: UIColor = .systemBackground
     static let backgroundSecondary: UIColor = .secondarySystemBackground
     static let backgroundTertiary: UIColor = .tertiarySystemBackground
 
-    // MARK: Grouped Background
+    // MARK: - Grouped Background
 
     static let groupedBackground: UIColor = background
     static let groupedBackgroundSecondary: UIColor = backgroundSecondary
     static let groupedBackgroundTertiary: UIColor = backgroundTertiary
 
-    // MARK: Fill
+    // MARK: - Fill
 
     static let fillSecondary: UIColor = lightBlueGlass
     static let fillQuaternary: UIColor = .quaternarySystemFill
 
-    // MARK: Separator
+    // MARK: - Separator
 
     static let separator: UIColor = .separator
     static let opaqueSeparator: UIColor = .opaqueSeparator
 
-    // MARK: System Feedback
+    // MARK: - System Feedback
 
     static let systemRed: UIColor = .systemRed
     static let systemOrange: UIColor = .systemOrange
@@ -70,7 +70,7 @@ enum ThemeColor {
     static let systemPink: UIColor = .systemPink
     static let systemBrown: UIColor = .systemBrown
 
-    // MARK: Gray Scale
+    // MARK: - Gray Scale
 
     static let gray: UIColor = .systemGray
     static let gray2: UIColor = .systemGray2

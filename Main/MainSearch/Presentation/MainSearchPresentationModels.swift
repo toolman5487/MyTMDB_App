@@ -92,25 +92,20 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
     let recentSearchEntries: [SearchHistoryEntry]
     let popularPeople: [MainSearchResultItem]
     let items: [MainSearchResultItem]
-    let currentPage: Int
-    let totalPages: Int
-    let totalResults: Int
-    let isLoadingNextPage: Bool
+    private(set) var pagination: MediaGridPaginationState
 
     var canLoadNextPage: Bool {
-        currentPage < totalPages
+        pagination.canLoadNextPage
+    }
+
+    var isLoadingNextPage: Bool {
+        pagination.isLoadingNextPage
     }
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> MainSearchDailyTrendingContent {
-        MainSearchDailyTrendingContent(
-            recentSearchEntries: recentSearchEntries,
-            popularPeople: popularPeople,
-            items: items,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoading
-        )
+        var content = self
+        content.pagination = pagination.updatingLoadingNextPage(isLoading)
+        return content
     }
 
     func appending(
@@ -128,10 +123,7 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
             recentSearchEntries: recentSearchEntries,
             popularPeople: popularPeople,
             items: items + newItems,
-            currentPage: page.number,
-            totalPages: page.totalPages,
-            totalResults: page.totalResults,
-            isLoadingNextPage: false
+            pagination: MediaGridPaginationState(page: page)
         )
     }
 
@@ -140,10 +132,7 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
             recentSearchEntries: entries,
             popularPeople: popularPeople,
             items: items,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoadingNextPage
+            pagination: pagination
         )
     }
 }
@@ -154,10 +143,7 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
     let keyword: String
     let allResults: [MainSearchResultItem]
     let selectedFilter: MainSearchFilter
-    let currentPage: Int
-    let totalPages: Int
-    let totalResults: Int
-    let isLoadingNextPage: Bool
+    private(set) var pagination: MediaGridPaginationState
 
     var results: [MainSearchResultItem] {
         guard let mediaType = selectedFilter.mediaType else {
@@ -178,19 +164,17 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
     }
 
     var canLoadNextPage: Bool {
-        currentPage < totalPages
+        pagination.canLoadNextPage
+    }
+
+    var isLoadingNextPage: Bool {
+        pagination.isLoadingNextPage
     }
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> MainSearchContent {
-        MainSearchContent(
-            keyword: keyword,
-            allResults: allResults,
-            selectedFilter: selectedFilter,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoading
-        )
+        var content = self
+        content.pagination = pagination.updatingLoadingNextPage(isLoading)
+        return content
     }
 
     func appending(
@@ -205,10 +189,7 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
                 }
             ),
             selectedFilter: selectedFilter,
-            currentPage: page.number,
-            totalPages: page.totalPages,
-            totalResults: page.totalResults,
-            isLoadingNextPage: false
+            pagination: MediaGridPaginationState(page: page)
         )
     }
 
@@ -217,10 +198,7 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
             keyword: keyword,
             allResults: allResults,
             selectedFilter: filter,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoadingNextPage
+            pagination: pagination
         )
     }
 
@@ -229,6 +207,51 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
         return results.filter { result in
             seenIDs.insert(result.id).inserted
         }
+    }
+}
+
+// MARK: - MainSearchPresentationBuilder
+
+nonisolated enum MainSearchPresentationBuilder {
+
+    static func makeDailyTrendingContent(
+        discovery: MainSearchDiscovery,
+        recentSearchEntries: [SearchHistoryEntry],
+        localization: AppInterfaceLocalization
+    ) -> MainSearchDailyTrendingContent {
+        let page = discovery.trending
+        let items = MainSearchContent.uniqueResults(
+            page.items.map {
+                MainSearchResultItem(result: $0, localization: localization)
+            }
+        ).shuffled()
+        let popularPeople = MainSearchContent.uniqueResults(
+            discovery.popularPeople.map {
+                MainSearchResultItem(person: $0, localization: localization)
+            }
+        )
+
+        return MainSearchDailyTrendingContent(
+            recentSearchEntries: recentSearchEntries,
+            popularPeople: popularPeople,
+            items: items,
+            pagination: MediaGridPaginationState(page: page)
+        )
+    }
+
+    static func makeSearchContent(
+        keyword: String,
+        page: Page<MainSearchResult>,
+        localization: AppInterfaceLocalization
+    ) -> MainSearchContent {
+        MainSearchContent(
+            keyword: keyword,
+            allResults: MainSearchContent.uniqueResults(page.items.map {
+                MainSearchResultItem(result: $0, localization: localization)
+            }),
+            selectedFilter: .all,
+            pagination: MediaGridPaginationState(page: page)
+        )
     }
 }
 

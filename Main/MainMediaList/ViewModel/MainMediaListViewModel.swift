@@ -83,9 +83,13 @@ final class MainMediaListViewModel {
             }
 
             genres = selection.genres
-            state = .loaded(
-                makeContent(selectedGenre: selection.selectedGenre, page: selection.page)
-            )
+            state = .loaded(MainMediaListPresentationBuilder.makeContent(
+                genres: genres,
+                selectedGenre: selection.selectedGenre,
+                page: selection.page,
+                selectedSortOption: selectedSortOption,
+                localization: localization
+            ))
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage(localization: localization))
@@ -96,7 +100,11 @@ final class MainMediaListViewModel {
         guard let selectedGenre = genres.first(where: { $0.id == id }) else { return }
 
         preferredGenreID = selectedGenre.id
-        state = .refreshing(previewContent(for: selectedGenre))
+        state = .refreshing(MainMediaListPresentationBuilder.makePreviewContent(
+            genres: genres,
+            selectedGenre: selectedGenre,
+            selectedSortOption: selectedSortOption
+        ))
 
         do {
             let page = try await repository.discover(
@@ -107,7 +115,13 @@ final class MainMediaListViewModel {
             )
             guard !Task.isCancelled else { return }
 
-            state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
+            state = .loaded(MainMediaListPresentationBuilder.makeContent(
+                genres: genres,
+                selectedGenre: selectedGenre,
+                page: page,
+                selectedSortOption: selectedSortOption,
+                localization: localization
+            ))
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage(localization: localization))
@@ -116,9 +130,7 @@ final class MainMediaListViewModel {
 
     func loadNextPageIfNeeded(currentItemID: Int) async {
         guard case .loaded(let content) = state,
-              content.canLoadNextPage,
-              !content.isLoadingNextPage,
-              shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
+              content.pagination.shouldLoadNextPage(currentItemID: currentItemID, items: content.items) else {
             return
         }
 
@@ -129,14 +141,14 @@ final class MainMediaListViewModel {
                 kind: mediaKind,
                 genreID: content.selectedGenre.id,
                 sortOrder: content.selectedSortOption ?? selectedSortOption,
-                page: content.currentPage + 1
+                page: content.pagination.nextPage
             )
 
             guard !Task.isCancelled else { return }
 
             guard case .loaded(let currentContent) = state,
                   currentContent.selectedGenre.id == content.selectedGenre.id,
-                  currentContent.currentPage == content.currentPage,
+                  currentContent.pagination.currentPage == content.pagination.currentPage,
                   currentContent.selectedSortOption == content.selectedSortOption else {
                 return
             }
@@ -150,7 +162,7 @@ final class MainMediaListViewModel {
 
             guard case .loaded(let currentContent) = state,
                   currentContent.selectedGenre.id == content.selectedGenre.id,
-                  currentContent.currentPage == content.currentPage,
+                  currentContent.pagination.currentPage == content.pagination.currentPage,
                   currentContent.selectedSortOption == content.selectedSortOption else {
                 return
             }
@@ -179,7 +191,13 @@ final class MainMediaListViewModel {
                 guard !Task.isCancelled, selectedSortOption == option else { return }
                 guard let selectedGenre = genres.first(where: { $0.id == content.selectedGenre.id }) else { return }
 
-                state = .loaded(makeContent(selectedGenre: selectedGenre, page: page))
+                state = .loaded(MainMediaListPresentationBuilder.makeContent(
+                    genres: genres,
+                    selectedGenre: selectedGenre,
+                    page: page,
+                    selectedSortOption: selectedSortOption,
+                    localization: localization
+                ))
             } catch {
                 guard !Task.isCancelled, selectedSortOption == option else { return }
                 state = .failed(error.errorMessage(localization: localization))
@@ -199,70 +217,5 @@ final class MainMediaListViewModel {
         }
 
         await selectGenre(id: genreID)
-    }
-
-    // MARK: - Private Methods
-
-    private func previewContent(for selectedGenre: MediaGenre) -> MainMediaListContent {
-        MainMediaListContent(
-            genres: genres.map { genre in
-                MainMediaGenreItem(
-                    genre: genre,
-                    isSelected: genre.id == selectedGenre.id
-                )
-            },
-            selectedGenre: MainMediaGenreItem(
-                genre: selectedGenre,
-                isSelected: true
-            ),
-            items: [],
-            currentPage: 0,
-            totalPages: 0,
-            totalResults: 0,
-            isLoadingNextPage: false,
-            selectedSortOption: selectedSortOption
-        )
-    }
-
-    private func makeContent(
-        selectedGenre: MediaGenre,
-        page: Page<MediaSummary>
-    ) -> MainMediaListContent {
-        let items = page.items.map {
-            MediaGridItem(summary: $0, localization: localization)
-        }
-
-        return MainMediaListContent(
-            genres: genres.map { genre in
-                MainMediaGenreItem(
-                    genre: genre,
-                    isSelected: genre.id == selectedGenre.id
-                )
-            },
-            selectedGenre: MainMediaGenreItem(
-                genre: selectedGenre,
-                isSelected: true
-            ),
-            items: items,
-            currentPage: page.number,
-            totalPages: page.totalPages,
-            totalResults: page.totalResults,
-            isLoadingNextPage: false,
-            selectedSortOption: selectedSortOption
-        )
-    }
-
-    private func shouldLoadNextPage(
-        currentItemID: Int,
-        items: [MediaGridItem]
-    ) -> Bool {
-        guard let currentIndex = items.firstIndex(where: { $0.id == currentItemID }) else {
-            return false
-        }
-
-        return MediaGridLayoutMetrics.shouldLoadNextPage(
-            currentIndex: currentIndex,
-            itemCount: items.count
-        )
     }
 }

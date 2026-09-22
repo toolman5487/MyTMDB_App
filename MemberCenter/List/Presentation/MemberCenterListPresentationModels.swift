@@ -22,34 +22,19 @@ nonisolated enum MemberCenterListViewState: Equatable {
 nonisolated struct MemberCenterListContent: Sendable, Equatable {
     let destination: MemberCenterDestination
     let items: [MemberCenterListItem]
-    let currentPage: Int
-    let totalPages: Int
-    let totalResults: Int
-    let isLoadingNextPage: Bool
-
-    var canLoadNextPage: Bool {
-        currentPage < totalPages
-    }
+    private(set) var pagination: MediaGridPaginationState
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> MemberCenterListContent {
-        MemberCenterListContent(
-            destination: destination,
-            items: items,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoading
-        )
+        var content = self
+        content.pagination = pagination.updatingLoadingNextPage(isLoading)
+        return content
     }
 
     func appending(_ nextContent: MemberCenterListContent) -> MemberCenterListContent {
         MemberCenterListContent(
             destination: nextContent.destination,
             items: items + nextContent.items,
-            currentPage: nextContent.currentPage,
-            totalPages: nextContent.totalPages,
-            totalResults: nextContent.totalResults,
-            isLoadingNextPage: false
+            pagination: nextContent.pagination.updatingLoadingNextPage(false)
         )
     }
 }

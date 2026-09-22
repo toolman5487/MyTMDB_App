@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - MainTabBarViewModel
 
-/// Synchronous query model; it intentionally has no asynchronous state binding.
 struct MainTabBarViewModel: Sendable {
 
     private let localization: AppInterfaceLocalization

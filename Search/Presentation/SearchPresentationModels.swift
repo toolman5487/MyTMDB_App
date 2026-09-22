@@ -12,25 +12,20 @@ import Foundation
 nonisolated struct SearchContent: Sendable, Equatable {
     let keyword: String
     let items: [MediaGridItem]
-    let currentPage: Int
-    let totalPages: Int
-    let totalResults: Int
-    let isLoadingNextPage: Bool
+    private(set) var pagination: MediaGridPaginationState
     let selectedSortOption: MediaSortOrder?
 
     var canLoadNextPage: Bool {
-        currentPage < totalPages
+        pagination.canLoadNextPage
+    }
+
+    var isLoadingNextPage: Bool {
+        pagination.isLoadingNextPage
     }
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> SearchContent {
-        SearchContent(
-            keyword: keyword,
-            items: items,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoading,
-            selectedSortOption: selectedSortOption
-        )
+        var content = self
+        content.pagination = pagination.updatingLoadingNextPage(isLoading)
+        return content
     }
 }

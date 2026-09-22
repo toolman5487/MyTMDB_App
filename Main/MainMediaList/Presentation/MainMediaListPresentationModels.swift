@@ -30,27 +30,13 @@ nonisolated struct MainMediaListContent: Sendable, Equatable {
     let genres: [MainMediaGenreItem]
     let selectedGenre: MainMediaGenreItem
     let items: [MediaGridItem]
-    let currentPage: Int
-    let totalPages: Int
-    let totalResults: Int
-    let isLoadingNextPage: Bool
+    private(set) var pagination: MediaGridPaginationState
     let selectedSortOption: MediaSortOrder?
 
-    var canLoadNextPage: Bool {
-        currentPage < totalPages
-    }
-
     func updatingLoadingNextPage(_ isLoading: Bool) -> MainMediaListContent {
-        MainMediaListContent(
-            genres: genres,
-            selectedGenre: selectedGenre,
-            items: items,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoading,
-            selectedSortOption: selectedSortOption
-        )
+        var content = self
+        content.pagination = pagination.updatingLoadingNextPage(isLoading)
+        return content
     }
 
     func appending(
@@ -63,10 +49,7 @@ nonisolated struct MainMediaListContent: Sendable, Equatable {
             items: items + page.items.map {
                 MediaGridItem(summary: $0, localization: localization)
             },
-            currentPage: page.number,
-            totalPages: page.totalPages,
-            totalResults: page.totalResults,
-            isLoadingNextPage: false,
+            pagination: MediaGridPaginationState(page: page),
             selectedSortOption: selectedSortOption
         )
     }
@@ -76,12 +59,70 @@ nonisolated struct MainMediaListContent: Sendable, Equatable {
             genres: genres,
             selectedGenre: selectedGenre,
             items: items,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalResults: totalResults,
-            isLoadingNextPage: isLoadingNextPage,
+            pagination: pagination,
             selectedSortOption: option
         )
+    }
+}
+
+// MARK: - MainMediaListPresentationBuilder
+
+nonisolated enum MainMediaListPresentationBuilder {
+
+    static func makeContent(
+        genres: [MediaGenre],
+        selectedGenre: MediaGenre,
+        page: Page<MediaSummary>,
+        selectedSortOption: MediaSortOrder,
+        localization: AppInterfaceLocalization
+    ) -> MainMediaListContent {
+        MainMediaListContent(
+            genres: makeGenreItems(genres: genres, selectedGenre: selectedGenre),
+            selectedGenre: MainMediaGenreItem(
+                genre: selectedGenre,
+                isSelected: true
+            ),
+            items: page.items.map {
+                MediaGridItem(summary: $0, localization: localization)
+            },
+            pagination: MediaGridPaginationState(page: page),
+            selectedSortOption: selectedSortOption
+        )
+    }
+
+    static func makePreviewContent(
+        genres: [MediaGenre],
+        selectedGenre: MediaGenre,
+        selectedSortOption: MediaSortOrder
+    ) -> MainMediaListContent {
+        MainMediaListContent(
+            genres: makeGenreItems(genres: genres, selectedGenre: selectedGenre),
+            selectedGenre: MainMediaGenreItem(
+                genre: selectedGenre,
+                isSelected: true
+            ),
+            items: [],
+            pagination: MediaGridPaginationState(
+                currentPage: 0,
+                totalPages: 0,
+                totalResults: 0
+            ),
+            selectedSortOption: selectedSortOption
+        )
+    }
+
+    // MARK: - Private Methods
+
+    private static func makeGenreItems(
+        genres: [MediaGenre],
+        selectedGenre: MediaGenre
+    ) -> [MainMediaGenreItem] {
+        genres.map { genre in
+            MainMediaGenreItem(
+                genre: genre,
+                isSelected: genre.id == selectedGenre.id
+            )
+        }
     }
 }
 
