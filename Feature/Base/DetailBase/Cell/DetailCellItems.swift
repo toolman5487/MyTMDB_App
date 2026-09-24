@@ -43,3 +43,10 @@ nonisolated struct DetailExternalLinkItem: Sendable, Equatable, Identifiable {
     let title: String
     let url: URL
 }
+
+// MARK: - DetailPillItem
+
+nonisolated struct DetailPillItem: Sendable, Equatable, Identifiable {
+    let id: String
+    let title: String
+}

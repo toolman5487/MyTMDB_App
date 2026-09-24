@@ -1,40 +1,52 @@
 //
-//  PersonDetailCells.swift
+//  CompanyDetailCells.swift
 //  MyTMDB_App
 //
-//  Created by Willy Hsu on 2026/7/2.
+//  Created by Claude on 2026/9/24.
 //
 
 import SDWebImage
 import SnapKit
 import UIKit
 
-// MARK: - PersonDetailHeroHeaderView
+// MARK: - CompanyDetailHeroHeaderView
 
 @MainActor
-final class PersonDetailHeroHeaderView: UICollectionReusableView {
+final class CompanyDetailHeroHeaderView: UICollectionReusableView {
 
-    static let reuseIdentifier = String(describing: PersonDetailHeroHeaderView.self)
+    static let reuseIdentifier = String(describing: CompanyDetailHeroHeaderView.self)
 
     private enum Layout {
         static let contentInset = DetailLayoutMetrics.horizontalContentInset
-        static let profileWidth: CGFloat = 132
-        static let profileHeight: CGFloat = 198
+        static let logoSize: CGFloat = 96
+        static let logoContentInset: CGFloat = 12
+        static let logoCornerRadius: CGFloat = 8
+        static let placeholderIconSize: CGFloat = 36
 
         static var height: CGFloat {
-            profileHeight + contentInset * 2
+            logoSize + contentInset * 2
         }
     }
 
-    private var profileURL: URL?
-    private var onProfileImageSelected: ((URL) -> Void)?
+    private let logoContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = Layout.logoCornerRadius
+        view.clipsToBounds = true
+        return view
+    }()
 
-    private let profileImageView: UIImageView = {
+    private let logoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = ThemeColor.fillSecondary
-        imageView.layer.cornerRadius = 8
-        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+
+    private let placeholderIconView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "building.2.fill"))
+        imageView.tintColor = ThemeColor.gray3
+        imageView.contentMode = .scaleAspectFit
+        imageView.isAccessibilityElement = false
         return imageView
     }()
 
@@ -73,24 +85,27 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
     }
 
     func configure(
-        with item: PersonDetailHeroItem,
-        localization: AppInterfaceLocalization,
-        onProfileImageSelected: ((URL) -> Void)? = nil
+        with item: CompanyDetailHeroItem,
+        localization: AppInterfaceLocalization
     ) {
-        profileURL = item.profileURL
-        self.onProfileImageSelected = onProfileImageSelected
-        profileImageView.isUserInteractionEnabled = item.profileURL != nil && onProfileImageSelected != nil
-        profileImageView.sd_setImage(with: item.profileURL)
+        placeholderIconView.isHidden = item.logoURL != nil
+        logoImageView.sd_setImage(with: item.logoURL) { [weak self] image, _, _, _ in
+            self?.placeholderIconView.isHidden = image != nil
+        }
         nameLabel.attributedText = BaseDisplayTextFormatter.titleAttributedText(
             item.name,
             font: nameLabel.font ?? UIFont.preferredFont(forTextStyle: .title1)
         )
         metadataLabel.text = item.metadataText
         metadataLabel.isHidden = item.metadataText?.isEmpty != false
-        applyProfileImageAccessibility(
-            name: item.name,
-            isSelectable: item.profileURL != nil && onProfileImageSelected != nil,
-            localization: localization
+        logoImageView.applyAccessibilityText(
+            AccessibilityText(
+                label: localization.formatted(
+                    "company_detail.logo.accessibility_label_format",
+                    defaultValue: "Logo of %@",
+                    item.name
+                )
+            )
         )
     }
 
@@ -100,87 +115,59 @@ final class PersonDetailHeroHeaderView: UICollectionReusableView {
 
     private func configureView() {
         backgroundColor = ThemeColor.background
-        profileImageView.accessibilityTraits.insert(.image)
+        logoImageView.accessibilityTraits.insert(.image)
     }
 
     private func setupHierarchy() {
-        addSubview(profileImageView)
+        addSubview(logoContainerView)
+        logoContainerView.addSubview(logoImageView)
+        logoContainerView.addSubview(placeholderIconView)
         addSubview(contentStackView)
         contentStackView.addArrangedSubview(nameLabel)
         contentStackView.addArrangedSubview(metadataLabel)
-        profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapProfileImage)))
     }
 
     private func setupConstraints() {
-        profileImageView.snp.makeConstraints { make in
+        logoContainerView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(Layout.contentInset)
             make.top.equalToSuperview().inset(Layout.contentInset)
-            make.width.equalTo(Layout.profileWidth)
-            make.height.equalTo(Layout.profileHeight)
+            make.width.height.equalTo(Layout.logoSize)
+        }
+
+        logoImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(Layout.logoContentInset)
+        }
+
+        placeholderIconView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(Layout.placeholderIconSize)
         }
 
         contentStackView.snp.makeConstraints { make in
-            make.leading.equalTo(profileImageView.snp.trailing).offset(16)
+            make.leading.equalTo(logoContainerView.snp.trailing).offset(16)
             make.trailing.equalToSuperview().inset(Layout.contentInset)
-            make.centerY.equalTo(profileImageView)
+            make.centerY.equalTo(logoContainerView)
         }
     }
 
     private func resetContent() {
-        profileURL = nil
-        onProfileImageSelected = nil
-        profileImageView.isUserInteractionEnabled = false
-        profileImageView.sd_cancelCurrentImageLoad()
-        profileImageView.image = nil
+        logoImageView.sd_cancelCurrentImageLoad()
+        logoImageView.image = nil
+        placeholderIconView.isHidden = false
         nameLabel.attributedText = nil
         metadataLabel.text = nil
         metadataLabel.isHidden = false
-        profileImageView.applyAccessibilityText(nil)
-        profileImageView.accessibilityTraits.insert(.image)
-    }
-
-    private func applyProfileImageAccessibility(
-        name: String,
-        isSelectable: Bool,
-        localization: AppInterfaceLocalization
-    ) {
-        profileImageView.applyAccessibilityText(
-            AccessibilityText(
-                label: localization.formatted(
-                    "person_detail.profile_image.accessibility_label_format",
-                    defaultValue: "Photo of %@",
-                    name
-                ),
-                hint: isSelectable
-                    ? localization.string(
-                        "common.accessibility.preview_image.hint",
-                        defaultValue: "Double-tap to preview the image"
-                    )
-                    : nil
-            )
-        )
-        profileImageView.accessibilityTraits.insert(.image)
-
-        if isSelectable {
-            profileImageView.accessibilityTraits.insert(.button)
-        } else {
-            profileImageView.accessibilityTraits.remove(.button)
-        }
-    }
-
-    @objc
-    private func didTapProfileImage() {
-        guard let profileURL else { return }
-        onProfileImageSelected?(profileURL)
+        logoImageView.applyAccessibilityText(nil)
+        logoImageView.accessibilityTraits.insert(.image)
     }
 }
 
-// MARK: - PersonDetailBiographyCollectionViewCell
+// MARK: - CompanyDetailDescriptionCollectionViewCell
 
 @MainActor
-final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
+final class CompanyDetailDescriptionCollectionViewCell: BaseCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailBiographyCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailDescriptionCollectionViewCell.self)
 
     override var containerViewInsets: UIEdgeInsets {
         DetailLayoutMetrics.horizontalContentInsets
@@ -192,53 +179,53 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         static let titleContentSpacing: CGFloat = 8
     }
 
-    private let biographyLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
+    private let descriptionLabel = AppFactory.Label.body(color: ThemeColor.textPrimary, lines: 0)
 
     override func configureView() {
         containerView.backgroundColor = ThemeColor.backgroundSecondary
         containerView.layer.cornerRadius = 8
         containerView.clipsToBounds = true
-        biographyLabel.isAccessibilityElement = false
+        descriptionLabel.isAccessibilityElement = false
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        containerView.addSubview(biographyLabel)
+        containerView.addSubview(descriptionLabel)
     }
 
     override func setupConstraints() {
         super.setupConstraints()
 
-        biographyLabel.snp.makeConstraints { make in
+        descriptionLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(Layout.verticalContentInset)
             make.leading.trailing.equalToSuperview().inset(DetailLayoutMetrics.horizontalContentInset)
         }
     }
 
     override func resetForReuse() {
-        biographyLabel.attributedText = nil
+        descriptionLabel.attributedText = nil
         resetAccessibility()
     }
 
     func configure(
-        biography: String,
+        description: String,
         localization: AppInterfaceLocalization
     ) {
         let sectionTitle = Self.sectionTitle(localization: localization)
-        biographyLabel.attributedText = Self.makeAttributedText(
-            biography: biography,
+        descriptionLabel.attributedText = Self.makeAttributedText(
+            description: description,
             sectionTitle: sectionTitle
         )
         applyAccessibility(
             AccessibilityText(
                 label: sectionTitle,
-                value: biography
+                value: description
             )
         )
     }
 
     static func fittingHeight(
-        for biography: String,
+        for description: String,
         width: CGFloat,
         localization: AppInterfaceLocalization
     ) -> CGFloat {
@@ -251,7 +238,7 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         }
 
         let attributedText = makeAttributedText(
-            biography: biography,
+            description: description,
             sectionTitle: sectionTitle(localization: localization)
         )
         let textHeight = attributedText.boundingRect(
@@ -268,13 +255,13 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
 
     private static func sectionTitle(localization: AppInterfaceLocalization) -> String {
         localization.string(
-            "person_detail.biography.title",
-            defaultValue: "Biography"
+            "company_detail.description.title",
+            defaultValue: "About"
         )
     }
 
     private static func makeAttributedText(
-        biography: String,
+        description: String,
         sectionTitle: String
     ) -> NSAttributedString {
         let titleParagraphStyle = NSMutableParagraphStyle()
@@ -293,7 +280,7 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
         )
         attributedText.append(
             NSAttributedString(
-                string: biography,
+                string: description,
                 attributes: [
                     .font: UIFont.preferredFont(forTextStyle: .body),
                     .foregroundColor: ThemeColor.textPrimary,
@@ -306,14 +293,14 @@ final class PersonDetailBiographyCollectionViewCell: BaseCollectionViewCell {
     }
 }
 
-// MARK: - PersonDetailFactsCollectionViewCell
+// MARK: - CompanyDetailFactsCollectionViewCell
 
 @MainActor
-final class PersonDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
+final class CompanyDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailFactsCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailFactsCollectionViewCell.self)
 
-    func configure(facts: [PersonDetailFactItem]) {
+    func configure(facts: [CompanyDetailFactItem]) {
         configure(
             facts: facts.map {
                 DetailFactItem(title: $0.title, value: $0.value)
@@ -322,12 +309,12 @@ final class PersonDetailFactsCollectionViewCell: DetailFactsCollectionViewCell {
     }
 }
 
-// MARK: - PersonDetailMovieCreditsCollectionViewCell
+// MARK: - CompanyDetailMoviesCollectionViewCell
 
 @MainActor
-final class PersonDetailMovieCreditsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+final class CompanyDetailMoviesCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailMovieCreditsCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailMoviesCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
@@ -335,9 +322,9 @@ final class PersonDetailMovieCreditsCollectionViewCell: DetailImageTitleStripCol
     }
 
     func configure(
-        items: [PersonDetailCreditItem],
+        items: [CompanyDetailMediaItem],
         localization: AppInterfaceLocalization,
-        onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
+        onItemSelected: @escaping (CompanyDetailMediaItem) -> Void
     ) {
         configure(
             items: items.map {
@@ -352,25 +339,25 @@ final class PersonDetailMovieCreditsCollectionViewCell: DetailImageTitleStripCol
             imageHeight: Layout.imageHeight,
             localization: localization
         ) { item in
-            guard let credit = items.first(where: { $0.id == item.id }) else { return }
-            onCreditSelected(credit)
+            guard let mediaItem = items.first(where: { $0.id == item.id }) else { return }
+            onItemSelected(mediaItem)
         }
     }
 
-    private static func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
+    private static func makeSubtitle(for item: CompanyDetailMediaItem) -> String? {
         BaseDisplayTextFormatter.metadata([
             item.dateText,
-            item.subtitle
+            item.scoreText
         ])
     }
 }
 
-// MARK: - PersonDetailTVCreditsCollectionViewCell
+// MARK: - CompanyDetailTVShowsCollectionViewCell
 
 @MainActor
-final class PersonDetailTVCreditsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+final class CompanyDetailTVShowsCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailTVCreditsCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailTVShowsCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
@@ -378,9 +365,9 @@ final class PersonDetailTVCreditsCollectionViewCell: DetailImageTitleStripCollec
     }
 
     func configure(
-        items: [PersonDetailCreditItem],
+        items: [CompanyDetailMediaItem],
         localization: AppInterfaceLocalization,
-        onCreditSelected: @escaping (PersonDetailCreditItem) -> Void
+        onItemSelected: @escaping (CompanyDetailMediaItem) -> Void
     ) {
         configure(
             items: items.map {
@@ -395,25 +382,25 @@ final class PersonDetailTVCreditsCollectionViewCell: DetailImageTitleStripCollec
             imageHeight: Layout.imageHeight,
             localization: localization
         ) { item in
-            guard let credit = items.first(where: { $0.id == item.id }) else { return }
-            onCreditSelected(credit)
+            guard let mediaItem = items.first(where: { $0.id == item.id }) else { return }
+            onItemSelected(mediaItem)
         }
     }
 
-    private static func makeSubtitle(for item: PersonDetailCreditItem) -> String? {
+    private static func makeSubtitle(for item: CompanyDetailMediaItem) -> String? {
         BaseDisplayTextFormatter.metadata([
             item.dateText,
-            item.subtitle
+            item.scoreText
         ])
     }
 }
 
-// MARK: - PersonDetailProfileImagesCollectionViewCell
+// MARK: - CompanyDetailLogosCollectionViewCell
 
 @MainActor
-final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCollectionViewCell {
+final class CompanyDetailLogosCollectionViewCell: DetailImageTitleStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailProfileImagesCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailLogosCollectionViewCell.self)
 
     private enum Layout {
         static let itemSize = CGSize(width: 124, height: 220)
@@ -421,13 +408,13 @@ final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCo
     }
 
     func configure(
-        items: [PersonDetailProfileImageItem],
+        items: [CompanyDetailLogoItem],
         localization: AppInterfaceLocalization,
         onImageSelected: @escaping (URL) -> Void
     ) {
         let fallbackTitle = localization.string(
-            "person_detail.image.profile_photo",
-            defaultValue: "Profile Photo"
+            "company_detail.image.logo",
+            defaultValue: "Logo"
         )
         configure(
             items: items.map {
@@ -442,47 +429,48 @@ final class PersonDetailProfileImagesCollectionViewCell: DetailImageTitleStripCo
             imageHeight: Layout.imageHeight,
             localization: localization
         ) { item in
-            guard let imageURL = item.imageURL else { return }
+            guard let logoItem = items.first(where: { $0.id == item.id }),
+                  let imageURL = logoItem.imageURL else { return }
             onImageSelected(imageURL)
         }
     }
 }
 
-// MARK: - PersonDetailAliasesCollectionViewCell
+// MARK: - CompanyDetailAlternativeNamesCollectionViewCell
 
 @MainActor
-final class PersonDetailAliasesCollectionViewCell: DetailPillListCollectionViewCell {
+final class CompanyDetailAlternativeNamesCollectionViewCell: DetailPillListCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailAliasesCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailAlternativeNamesCollectionViewCell.self)
 
     func configure(
-        items: [PersonDetailAliasItem],
+        items: [CompanyDetailAlternativeNameItem],
         localization: AppInterfaceLocalization
     ) {
         configure(
             items: items.map { DetailPillItem(id: $0.id, title: $0.name) },
             itemAccessibilityLabel: localization.string(
-                "person_detail.alias.accessibility_label",
-                defaultValue: "Alias"
+                "company_detail.alternative_name.accessibility_label",
+                defaultValue: "Alternative Name"
             ),
             localization: localization
         )
     }
 
-    static func fittingHeight(for items: [PersonDetailAliasItem]) -> CGFloat {
+    static func fittingHeight(for items: [CompanyDetailAlternativeNameItem]) -> CGFloat {
         fittingHeight(for: items.map { DetailPillItem(id: $0.id, title: $0.name) })
     }
 }
 
-// MARK: - PersonDetailExternalLinksCollectionViewCell
+// MARK: - CompanyDetailExternalLinksCollectionViewCell
 
 @MainActor
-final class PersonDetailExternalLinksCollectionViewCell: DetailExternalLinkStripCollectionViewCell {
+final class CompanyDetailExternalLinksCollectionViewCell: DetailExternalLinkStripCollectionViewCell {
 
-    static let reuseIdentifier = String(describing: PersonDetailExternalLinksCollectionViewCell.self)
+    static let reuseIdentifier = String(describing: CompanyDetailExternalLinksCollectionViewCell.self)
 
     func configure(
-        items: [PersonDetailExternalLinkItem],
+        items: [CompanyDetailExternalLinkItem],
         localization: AppInterfaceLocalization,
         onLinkSelected: @escaping (URL) -> Void
     ) {
@@ -495,7 +483,7 @@ final class PersonDetailExternalLinksCollectionViewCell: DetailExternalLinkStrip
         )
     }
 
-    static func fittingHeight(for items: [PersonDetailExternalLinkItem]) -> CGFloat {
+    static func fittingHeight(for items: [CompanyDetailExternalLinkItem]) -> CGFloat {
         DetailExternalLinkStripCollectionViewCell.fittingHeight(
             for: items.map {
                 DetailExternalLinkItem(id: $0.id, title: $0.title, url: $0.url)

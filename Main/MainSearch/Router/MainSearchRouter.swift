@@ -59,7 +59,7 @@ final class MainSearchRouter: BaseRouter, MainSearchRouting {
             detailRouter.showPersonDetail(personID: item.sourceID)
 
         case .company:
-            break
+            detailRouter.showCompanyDetail(companyID: item.sourceID)
         }
     }
 }

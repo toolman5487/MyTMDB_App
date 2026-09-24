@@ -117,6 +117,14 @@ nonisolated enum APIConfig {
         static func translations(id: Int) -> String { "/collection/\(id)/translations" }
     }
 
+    // MARK: - Company
+
+    enum Company {
+        static func detail(id: Int) -> String { "/company/\(id)" }
+        static func alternativeNames(id: Int) -> String { "/company/\(id)/alternative_names" }
+        static func images(id: Int) -> String { "/company/\(id)/images" }
+    }
+
     // MARK: - Configuration
 
     enum Configuration {

@@ -8,9 +8,9 @@
 | 平台 | iOS 26.0+ |
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
-| 功能範圍 | 新增 `CompanyDetail` 模組（製作公司詳細頁面），從 MainSearch 公司搜尋結果導入 |
-| 狀態 | Design Ready；Source Implementation NotRun |
-| 日期 | 2026-09-24 |
+| 功能範圍 | 新增 `CompanyDetail` 模組（製作公司詳細頁面），從 MainSearch 公司搜尋結果導入；第 11 節擴充 `DetailContentList` 共用元件的無限捲動分頁能力 |
+| 狀態 | `CompanyDetail` 基礎模組與第 11 節分頁擴充：Source Implementation Done、Static Verification Passed、Build Passed、Runtime Passed（2026-09-24 Simulator 驗證，含 Marvel Studios 無限捲動分頁與 Person 迴歸測試） |
+| 日期 | 2026-09-24（初版）；2026-09-24 更新第 11 節 |
 
 ---
 
@@ -32,21 +32,26 @@
 
 ## 2. 目標與非目標
 
+> **2026-09-24 更新**：實作完成後，使用者要求「該公司與角色（PersonDetail）的所有作品都要看得到」。原本 2.1／2.2 對電影／影集清單「只顯示第一頁、不做查看更多」的範圍界定已被取代，改為第 11 節「內容清單無限捲動分頁擴充」。以下 2.1／2.2 反映目前（含分頁擴充）的完整目標；歷史決策脈絡保留在 3.4 供對照。
+
 ### 2.1 目標
 
 - 新增 `CompanyDetail` 功能模組，結構比照 `PersonDetail`（Domain / Data / Presentation / ViewModel / Controller，無獨立 Router）。
 - 顯示公司基本資訊：Logo、名稱、總部、成立地區（origin country）、母公司、簡介、官方網站。
-- 顯示該公司出品的電影與影集（各自一個橫向清單區塊，比照 `MovieDetail` 的 Recommendations／Similar，只取第一頁、不做「查看更多」）。
+- 顯示該公司出品的電影與影集（各自一個橫向清單區塊，比照 `MovieDetail` 的 Recommendations／Similar）。
+- 電影／影集橫向清單的 Section Header 可點擊「查看更多」，導向完整清單頁面（`DetailContentListViewController`），且該清單支援**無限捲動分頁**，直到 TMDB `discover` API 回報沒有下一頁為止（見第 11 節）。
+- `PersonDetail` 既有「查看更多」（`movieCredits`／`tvCredits`）維持現狀：資料本來就一次拿齊、非分頁，使用者已經能看到該演員的全部作品，不需額外改動。
 - 顯示公司別名（`/company/{id}/alternative_names`）與多國 Logo（`/company/{id}/images`）。
 - 從 `MainSearch` 的公司搜尋結果可正確導頁至新頁面（取代目前的 no-op）。
 - `APIConfig` 新增 `Company` 端點群組。
-- 妥善處理 TMDB 公司 Logo 經常是 `.svg` 向量圖的情況（見 3.5、7.2、12）。
+- 妥善處理 TMDB 公司 Logo 經常是 `.svg` 向量圖的情況（見 3.5、7.2、13）。
 
 ### 2.2 非目標
 
 - 不處理母公司（`parent_company`）的巢狀導頁；母公司只顯示名稱文字，不可點擊。
 - 不將 `MovieDetail`／`TVDetail` 既有「出品公司」標籤（`MovieDetailAttributeItem(kind: .productionCompany)`）改為可點擊；那屬於另一個獨立變更，會牽動已穩定的 `MovieDetailSectionBuilder` 與 attribute pill cell，不在本次範圍內。
-- 不做「查看更多電影／更多影集」的完整分頁清單頁面；`discover` 是分頁 API，若要做完整清單需要新的分頁畫面或擴充 `MainMediaList`，超出本次範圍。
+- 不擴充 `MainMediaList`／`MediaListRepository`；分頁能力直接建立在 `DetailContentList` 模組上（見第 11 節），不與 genre-based 的媒體清單共用程式碼。
+- 不改動 `PersonDetail` 的資料層（`combined_credits` 已是完整清單）；只有共用的 `DetailContentListViewController` 會新增「可分頁」能力，且該能力對 `PersonDetail` 是 opt-in（預設關閉，行為零異動）。
 - 不下載或解析 SVG，不新增 SVG 圖片解碼套件；SVG 格式的 Logo 一律視為不可顯示，改用預留樣式。
 - 不新增 Company 專屬 Router（比照 `PersonDetail`／`EpisodeDetail`，直接使用既有 `DetailRouting`／`DetailRouter`）。
 - 不新增測試 target（專案既有慣例：使用者以手動 Build／Runtime 驗證，不建立單元測試）。
@@ -85,16 +90,15 @@ TMDB 的公司資料形狀與人物資料非常相似：一個「主要詳情」
 | `PersonDetailError.invalidIdentifier` | `CompanyDetailError.invalidIdentifier` |
 | `DefaultLoadPersonDetailUseCase` 的 `optional(...)` 容錯模式 | `DefaultLoadCompanyDetailUseCase` 沿用相同模式 |
 
-### 3.4 「查看更多」機制不適用於公司作品清單
+### 3.4 「查看更多」機制不適用於公司作品清單（歷史決策，已被第 11 節取代）
+
+> 本節是實作初版時的決策記錄。2026-09-24 使用者要求公司與演員頁面都要能看到「所有作品」後，結論已改變為：在 `DetailContentList` 共用元件上新增 opt-in 分頁能力（見第 11 節）。保留本節是為了讓後續維護者理解「為什麼一開始沒有直接做分頁」，避免重蹈覆轍或誤以為分頁是隨手加上去的。
 
 `PersonDetail` 的 `movieCredits`／`tvCredits` 有「查看更多」（點 Section Header 觸發 `router.showContentList(...)`），原因是 `combined_credits` 一次回傳全部作品、無分頁，本地即可篩選/排序後整包塞進 `DetailContentListConfiguration`。
 
-公司的電影／影集清單來自 `discover/movie?with_companies=` 與 `discover/tv?with_companies=`，是**伺服器分頁 API**，`DetailContentListConfiguration`／`showContentList` 的設計前提（items 已在本地備妥、不分頁）不成立。
+公司的電影／影集清單來自 `discover/movie?with_companies=` 與 `discover/tv?with_companies=`，是**伺服器分頁 API**，`DetailContentListConfiguration`／`showContentList` 原本的設計前提（items 已在本地備妥、不分頁）不成立。
 
-`MovieDetail` 的 Recommendations／Similar 面對同樣是分頁 API 的情況，做法是**只取第一頁、當作固定長度的橫向清單、不提供查看更多**（`LoadMovieDetailUseCase` 固定 `recommendationPage: Int = 1`）。本功能採用相同做法，理由：
-
-- 不需要新建分頁清單畫面或擴充 `MainMediaList`（`MediaListRepository` 目前綁定 genre + sort，不是為任意 discover 過濾條件設計的）。
-「查看更多完整片單」留給未來需要時，作為獨立 SDD 處理。
+`MovieDetail` 的 Recommendations／Similar 面對同樣是分頁 API 的情況，做法是**只取第一頁、當作固定長度的橫向清單、不提供查看更多**（`LoadMovieDetailUseCase` 固定 `recommendationPage: Int = 1`）。實作初版曾採用相同做法，理由是不想新建分頁清單畫面或擴充 `MainMediaList`；「查看更多完整片單」原本留給未來需要時再處理，但使用者提前提出了這個需求，因此第 11 節重新設計了「不擴充 `MainMediaList`、也能做到分頁」的做法（讓 `DetailContentList` 自己具備分頁能力，而不是共用 genre-based 的 `MediaListRepository`）。
 
 ### 3.5 SDWebImage 無法渲染 SVG
 
@@ -115,7 +119,7 @@ TMDB 公司資料的 `logo_path`（`/company/{id}` 主欄位）與 `/company/{id
 | `DetailExternalLinkCollectionViewCell`（`DetailExternalLinkStripCollectionViewCell`） | 外部連結清單（含 icon、開啟外部瀏覽器） | Person |
 | `DetailSectionPreviewLimit.itemCount`（= 10） | 詳情頁預覽區塊統一截斷數量 | Movie／Person 等所有 Section Builder |
 
-目前**沒有**通用的「文字 Pill 清單」元件；`PersonDetailAliasesCollectionViewCell` 是 Person 專屬實作（內部 `PersonDetailAliasPillCollectionViewCell` 是 `private`）。本功能的「別名」區塊需要相同的橫向 Pill 清單樣式，屬於第二個使用情境，因此本次**將其抽成共用元件**（見 6.2、9.1、12），符合本專案既有「同一種通用樣式被第二個 feature 需要時才抽到 `DetailBase`」的慣例（`DetailImageTitleStripCollectionViewCell`／`DetailFactsCollectionViewCell`／`DetailExternalLinkCollectionViewCell` 都是跨模組共用而非機能專屬）。
+目前**沒有**通用的「文字 Pill 清單」元件；`PersonDetailAliasesCollectionViewCell` 是 Person 專屬實作（內部 `PersonDetailAliasPillCollectionViewCell` 是 `private`）。本功能的「別名」區塊需要相同的橫向 Pill 清單樣式，屬於第二個使用情境，因此本次**將其抽成共用元件**（見 6.2、9.1、13），符合本專案既有「同一種通用樣式被第二個 feature 需要時才抽到 `DetailBase`」的慣例（`DetailImageTitleStripCollectionViewCell`／`DetailFactsCollectionViewCell`／`DetailExternalLinkCollectionViewCell` 都是跨模組共用而非機能專屬）。
 
 「文字＋內嵌標題」型的說明文字 Cell（`PersonDetailBiographyCollectionViewCell`）則**不抽共用**：Movie／TV／Season／Episode／Person 各自有一份幾乎相同但標題文案不同的 Overview／Biography Cell，這是本專案既有慣例（各 feature 自帶簡介 Cell），本功能比照建立 `CompanyDetailDescriptionCollectionViewCell`，不做額外重構。
 
@@ -897,6 +901,7 @@ final class CompanyDetailViewModel {
     private var onStateChange: (@MainActor (CompanyDetailViewState) -> Void)?
     private let loadCompanyDetailUseCase: LoadCompanyDetailUseCase
     private let localization: AppInterfaceLocalization
+    private var content: CompanyDetailContent?
 
     init(
         loadCompanyDetailUseCase: LoadCompanyDetailUseCase,
@@ -913,12 +918,14 @@ final class CompanyDetailViewModel {
 
     func loadInitialContent(companyID: Int) async {
         state = .loading
+        content = nil
 
         do {
-            let content = try await loadCompanyDetailUseCase(companyID: companyID)
+            let loadedContent = try await loadCompanyDetailUseCase(companyID: companyID)
             guard !Task.isCancelled else { return }
+            content = loadedContent
             state = .loaded(CompanyDetailSectionBuilder.makeSections(
-                content: content,
+                content: loadedContent,
                 localization: localization
             ))
         } catch let error as CompanyDetailError {
@@ -928,6 +935,15 @@ final class CompanyDetailViewModel {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage(localization: localization))
         }
+    }
+
+    func contentListConfiguration(for mediaKind: MediaKind) -> DetailContentListConfiguration? {
+        guard let content else { return nil }
+        return CompanyDetailContentListPresentationBuilder.makeContentListConfiguration(
+            content: content,
+            mediaKind: mediaKind,
+            localization: localization
+        )
     }
 
     private func detailErrorMessage(for error: CompanyDetailError) -> ErrorMessage {
@@ -946,7 +962,9 @@ final class CompanyDetailViewModel {
 }
 ```
 
-比 `PersonDetailViewModel` 更簡單：沒有 `loadCreditsList`／`PersonDetailCreditsListResult` 對應機制（見 3.4），只有單一 `loadInitialContent(companyID:)`，命名遵循 `SDD-Unified-Interface-Naming.md` 5.4「首次載入完整畫面 → `loadInitialContent()`」規則。
+比 `PersonDetailViewModel` 更簡單：沒有 `loadCreditsList`／`PersonDetailCreditsListResult` 對應機制（見 3.4 的歷史脈絡），只有 `loadInitialContent(companyID:)` 與同步的 `contentListConfiguration(for:)`，命名遵循 `SDD-Unified-Interface-Naming.md` 5.4「首次載入完整畫面 → `loadInitialContent()`」規則。
+
+> **已實作**：以上為目前 `CompanyDetailViewModel.swift` 的實際內容。`contentListConfiguration(for:)` 目前只回傳第一頁資料組成的 `DetailContentListConfiguration`；第 11 節會把它擴充成同時回傳一個可選的分頁提供者，讓「查看更多」畫面能繼續往下捲動載入。
 
 ---
 
@@ -957,7 +975,7 @@ final class CompanyDetailViewModel {
 結構比照 `PersonDetailHeroHeaderView`，差異：
 
 - Logo 顯示為**正方形、`.scaleAspectFit`**，而非人物頭像的 2:3 `.scaleAspectFill`縱向照片（公司 Logo 通常是方形／橫向，變形拉伸會很明顯）。
-- Logo 容器背景固定使用淺色底板（例如白色或極淺灰的固定色值，而非隨系統深色模式變化的 `ThemeColor.fillSecondary`）。原因：TMDB 公司 Logo 常見「透明背景＋深色線條」設計，深色模式下若容器背景也偏深，Logo 會幾乎不可見。此為 Runtime 驗收必須實機檢查的項目（見 11.3、12）。
+- Logo 容器背景固定使用淺色底板（例如白色或極淺灰的固定色值，而非隨系統深色模式變化的 `ThemeColor.fillSecondary`）。原因：TMDB 公司 Logo 常見「透明背景＋深色線條」設計，深色模式下若容器背景也偏深，Logo 會幾乎不可見。此為 Runtime 驗收必須實機檢查的項目（見 12.3、13）。
 - `logoURL == nil`（含 3.5 的 SVG 過濾情況）時，顯示中性預留樣式：系統圖示 `building.2.fill` 置中於固定底色容器，不留空白 imageView。
 - 點擊 Logo **不**開啟圖片預覽（`router.showImagePreview`）；Logo 屬於品牌識別圖像，不是「可瀏覽的圖庫」語意，這點與 Person 的頭像不同。`Logos` 區塊（9.4）才是可瀏覽、可預覽的圖片集合。
 
@@ -1159,9 +1177,325 @@ case .company:
 
 ---
 
-## 11. 靜態檢查與驗證邊界
+## 11. 內容清單無限捲動分頁擴充
 
-### 11.1 Source 檢查
+本節為 2026-09-24 追加：使用者要求公司（`CompanyDetail`）與演員（`PersonDetail`）頁面的作品清單都要能看到「所有作品」。`PersonDetail` 本來就沒有這個問題（`combined_credits` 一次回傳全部），需要新設計的只有 `CompanyDetail` 的電影／影集清單如何從「第一頁」擴充成「無限捲動直到 TMDB 回報沒有下一頁」。
+
+### 11.1 問題重述
+
+`DetailContentListViewController`（見 3.4／10 節）目前是**完全靜態**的清單：初始化時收到 `DetailContentListConfiguration.items` 之後就不再變動，沒有 `loadNextPageIfNeeded`、沒有分頁狀態。這個假設對 `PersonDetail`成立（資料本來就是全部），對 `CompanyDetail` 不成立（`discover` API 每頁最多 20 筆，公司作品可能有數百筆）。
+
+### 11.2 設計原則
+
+- **`PersonDetail` 零異動、零風險**：`DetailContentListConfiguration` 的既有欄位（`title`／`thumbnailStyle`／`items`）完全不變；分頁能力以「額外、可選」的方式注入，`PersonDetail` 的呼叫端不需要修改一行程式碼，行為與現在完全相同。
+- **`DetailContentList` 維持與功能無關**：分頁的「怎麼拿下一頁資料」由呼叫端（`CompanyDetail`）提供，`DetailContentList` 只依賴一個通用協定，不 import `CompanyDetailProviding` 或任何 Company 專屬型別，維持 `SDD-Clean-Architecture-Migration.md` 的依賴方向。
+- **不擴充 `MainMediaList`**：`MediaListRepository` 是為 genre-based 瀏覽設計的（見 3.4），這裡不與它共用，改直接讓 `CompanyDetailProviding` 現有的 `movies(companyID:page:)`／`tvShows(companyID:page:)` 被重複呼叫。
+- **重用既有分頁基礎設施**：`MediaGridPaginationState.shouldLoadNextPage(currentIndex:itemCount:)` 與 `MediaGridPaginationTaskController` 已經是與功能無關的共用元件（`MainSearch`、`MainMediaList` 都在用），直接搬進 `DetailContentListViewController`，不重新發明一套分頁判斷邏輯。
+- **Swift 6 並行安全**：分頁提供者需要在多次呼叫之間記住「目前拿到第幾頁」，用 `actor` 而非 `@unchecked Sendable class`，讓編譯器保證正確性，不使用專案裡少見的並行安全豁免。
+
+### 11.3 `DetailContentListPageProviding`（新協定，`DetailContentList/Domain/`）
+
+```swift
+// DetailContentList/Domain/DetailContentListPageProviding.swift
+protocol DetailContentListPageProviding: Sendable {
+    func loadNextPage() async throws -> DetailContentListPage
+}
+
+nonisolated struct DetailContentListPage: Sendable, Equatable {
+    let items: [DetailContentListItem]
+    let canLoadNextPage: Bool
+}
+```
+
+`DetailContentList` 模組因此第一次擁有 `Domain` 子資料夾；這個協定完全不知道呼叫端是 Company、還是未來其他 feature，只負責「再給我一批項目，以及還能不能再要」。
+
+> **實作時發現**：協定本身**不能**加 `nonisolated`（本專案其餘 `XxxProviding` 協定都是 `nonisolated protocol ... : Sendable`，這裡是唯一例外）。原因是 11.7 的 `CompanyDetailContentListPageProvider` 是 `actor`；`actor` 遵循一個宣告為 `nonisolated` 的 protocol 時，編譯器會出現 `'nonisolated' on an actor's synchronous initializer is invalid`——`actor` 的 initializer 本身已經有特殊的隔離規則，再疊加協定層級的 `nonisolated` 會產生衝突。這個協定只有 `Sendable` 精煉與一個 `async` 方法，拿掉 `nonisolated` 不影響任何並行安全性，純粹是為了讓 `actor` 能正常遵循它。已用 `xcodebuild build`（非只有 typecheck）驗證過這個修正；純 `swiftc -typecheck` 沒有重現這個錯誤，代表這類問題必須以完整 Build 驗收，不能只信賴 typecheck（見 12.2）。
+
+### 11.4 `DetailContentListConfiguration` 不變
+
+維持 6.1 節既有定義：
+
+```swift
+nonisolated struct DetailContentListConfiguration: Sendable, Equatable {
+    let title: String
+    let thumbnailStyle: DetailContentListThumbnailStyle
+    let items: [DetailContentListItem]
+}
+```
+
+分頁能力**不**塞進這個型別（避免它因為帶有 `any DetailContentListPageProviding` 而失去 `Equatable`，進而波及 `PersonDetailCreditsListResult: Equatable` 等既有型別），而是在 Router／Controller 層以獨立參數傳遞（見 11.6）。
+
+### 11.5 `DetailContentListViewController` 改動
+
+```swift
+final class DetailContentListViewController: BaseListViewController {
+
+    private let configuration: DetailContentListConfiguration
+    private let pageProvider: (any DetailContentListPageProviding)?
+
+    private var items: [DetailContentListItem]
+    private var canLoadNextPage: Bool
+    private var isLoadingNextPage = false
+    private let paginationTaskController = MediaGridPaginationTaskController()
+
+    init(
+        configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)? = nil,
+        sceneBuilder: DetailSceneBuilding,
+        interfaceLocalization: AppInterfaceLocalization
+    ) {
+        self.configuration = configuration
+        self.pageProvider = pageProvider
+        self.items = configuration.items
+        self.canLoadNextPage = pageProvider != nil
+        ...
+    }
+
+    // UICollectionViewDataSource 改讀 `items`，不再直接讀 `configuration.items`。
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt indexPath: IndexPath
+    ) {
+        loadNextPageIfNeeded(currentIndex: indexPath.item)
+    }
+
+    private func loadNextPageIfNeeded(currentIndex: Int) {
+        guard let pageProvider, canLoadNextPage, !isLoadingNextPage else { return }
+        guard !paginationTaskController.isRunning else { return }
+        guard MediaGridPaginationState.shouldLoadNextPage(
+            currentIndex: currentIndex,
+            itemCount: items.count
+        ) else { return }
+
+        isLoadingNextPage = true
+
+        paginationTaskController.run { [weak self] in
+            guard let self else { return }
+            defer { isLoadingNextPage = false }
+
+            do {
+                let page = try await pageProvider.loadNextPage()
+                let existingIDs = Set(items.map(\.id))
+                let newItems = page.items.filter { !existingIDs.contains($0.id) }
+                let insertedIndexPaths = (items.count..<(items.count + newItems.count))
+                    .map { IndexPath(item: $0, section: 0) }
+
+                items.append(contentsOf: newItems)
+                canLoadNextPage = page.canLoadNextPage
+
+                guard !insertedIndexPaths.isEmpty else { return }
+                collectionView.insertItems(at: insertedIndexPaths)
+            } catch {
+                // 下一頁載入失敗時保持現有清單可用，不打斷使用者；不新增錯誤提示 UI（見 13 的風險處理）。
+                canLoadNextPage = false
+            }
+        }
+    }
+}
+```
+
+`didSelectItemAt`／`showDestination` 邏輯不變，只是索引來源從 `configuration.items` 換成 `items`。`.image`／`.gallery` 目的地（見 10.1 的 `DetailContentListRouter.showDestination`）目前只有 Person 的圖庫清單在用，`Company` 只用 `.portrait` + `.movie`／`.tv`，不受影響（見 11.10 已知限制）。
+
+### 11.6 `DetailRouting`／`DetailSceneBuilding` 簽章擴充
+
+```swift
+protocol DetailRouting {
+    // 既有方法...
+    func showContentList(
+        _ configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)?
+    )
+}
+
+extension DetailRouting {
+    func showContentList(_ configuration: DetailContentListConfiguration) {
+        showContentList(configuration, pageProvider: nil)
+    }
+}
+```
+
+```swift
+protocol DetailSceneBuilding: LoginSceneBuilding {
+    // 既有方法...
+    func makeDetailContentListViewController(
+        configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)?
+    ) -> UIViewController
+}
+```
+
+`PersonDetailViewController` 現有呼叫 `router.showContentList(configuration)` 完全不用改：透過 protocol extension 的預設多載，等同呼叫 `showContentList(configuration, pageProvider: nil)`，`DetailContentListViewController` 收到 `pageProvider == nil` 時行為與現在一模一樣。
+
+`AppComposition.makeDetailContentListViewController` 實作：
+
+```swift
+func makeDetailContentListViewController(
+    configuration: DetailContentListConfiguration,
+    pageProvider: (any DetailContentListPageProviding)?
+) -> UIViewController {
+    DetailContentListViewController(
+        configuration: configuration,
+        pageProvider: pageProvider,
+        sceneBuilder: self,
+        interfaceLocalization: interfaceLocalization
+    )
+}
+```
+
+### 11.7 `CompanyDetailContentListPageProvider`（新檔案，`CompanyDetail/Presentation/`）
+
+```swift
+actor CompanyDetailContentListPageProvider: DetailContentListPageProviding {
+
+    private let repository: CompanyDetailProviding
+    private let companyID: Int
+    private let mediaKind: MediaKind
+    private let localization: AppInterfaceLocalization
+    private var nextPage: Int
+    private var totalPages: Int
+
+    init(
+        repository: CompanyDetailProviding,
+        companyID: Int,
+        mediaKind: MediaKind,
+        startingPage: Page<MediaSummary>,
+        localization: AppInterfaceLocalization
+    ) {
+        self.repository = repository
+        self.companyID = companyID
+        self.mediaKind = mediaKind
+        self.localization = localization
+        self.nextPage = startingPage.number + 1
+        self.totalPages = startingPage.totalPages
+    }
+
+    func loadNextPage() async throws -> DetailContentListPage {
+        guard nextPage <= totalPages else {
+            return DetailContentListPage(items: [], canLoadNextPage: false)
+        }
+
+        let page: Page<MediaSummary>
+        switch mediaKind {
+        case .movie:
+            page = try await repository.movies(companyID: companyID, page: nextPage)
+
+        case .tv:
+            page = try await repository.tvShows(companyID: companyID, page: nextPage)
+        }
+
+        totalPages = page.totalPages
+        nextPage = page.number + 1
+
+        return DetailContentListPage(
+            items: page.items.map {
+                CompanyDetailContentListPresentationBuilder.makeItem(
+                    summary: $0,
+                    mediaKind: mediaKind,
+                    localization: localization
+                )
+            },
+            canLoadNextPage: nextPage <= totalPages
+        )
+    }
+}
+```
+
+用 `actor` 而非一般 `class`：`nextPage`／`totalPages` 是跨 `await` 呼叫需要保留的可變狀態，`actor` 讓編譯器保證每次 `loadNextPage()` 呼叫序列化執行、不會有資料競爭，天生滿足 `Sendable`，不需要 `@unchecked Sendable`。
+
+`CompanyDetailContentListPresentationBuilder.makeItem(summary:mediaKind:localization:)` 需要從 `private` 改成 `internal`（見 6/7 節既有的 `private static func makeItem`），讓這個新的 `actor` 可以重用同一份映射邏輯，Person／Movie 那類「重複程式碼」的問題不會發生。
+
+### 11.8 `CompanyDetailViewModel` 改動
+
+```swift
+@MainActor
+final class CompanyDetailViewModel {
+
+    private let loadCompanyDetailUseCase: LoadCompanyDetailUseCase
+    private let repository: CompanyDetailProviding
+    private let localization: AppInterfaceLocalization
+    private var content: CompanyDetailContent?
+
+    init(
+        loadCompanyDetailUseCase: LoadCompanyDetailUseCase,
+        repository: CompanyDetailProviding,
+        localization: AppInterfaceLocalization
+    ) {
+        self.loadCompanyDetailUseCase = loadCompanyDetailUseCase
+        self.repository = repository
+        self.localization = localization
+    }
+
+    // loadInitialContent(companyID:) 不變（見 8 節）。
+
+    func contentList(
+        companyID: Int,
+        mediaKind: MediaKind
+    ) -> CompanyDetailContentListResult? {
+        guard let content else { return nil }
+
+        guard let configuration = CompanyDetailContentListPresentationBuilder.makeContentListConfiguration(
+            content: content,
+            mediaKind: mediaKind,
+            localization: localization
+        ) else { return nil }
+
+        let page: Page<MediaSummary> = mediaKind == .movie ? content.movies : content.tvShows
+        let pageProvider: (any DetailContentListPageProviding)? = page.hasNextPage
+            ? CompanyDetailContentListPageProvider(
+                repository: repository,
+                companyID: companyID,
+                mediaKind: mediaKind,
+                startingPage: page,
+                localization: localization
+            )
+            : nil
+
+        return CompanyDetailContentListResult(configuration: configuration, pageProvider: pageProvider)
+    }
+}
+
+// MARK: - CompanyDetailContentListResult
+
+struct CompanyDetailContentListResult: Sendable {
+    let configuration: DetailContentListConfiguration
+    let pageProvider: (any DetailContentListPageProviding)?
+}
+```
+
+`CompanyDetailContentListResult` 用具名 struct 取代匿名 tuple，放在 `CompanyDetail/Presentation/CompanyDetailPresentationModels.swift`；只宣告 `Sendable`，不宣告 `Equatable`（`pageProvider` 是 protocol existential，天生無法比較相等，這是刻意的取捨，不影響任何既有型別）。
+
+新增的 `repository: CompanyDetailProviding` 依賴直接注入 Domain repository protocol，不透過 UseCase：比照既有 `MainSearchViewModel` 同時持有 `LoadMainSearchDiscoveryUseCase` 與 `MainSearchProviding` 的做法（複雜的整頁編排走 UseCase；單一、直接的資料存取走 Repository protocol），不需要為了「叫用一支既有 Repository 方法」新增一個只做轉呼叫的 UseCase。
+
+`contentListConfiguration(for:)`（8 節、已實作）被 `contentList(companyID:mediaKind:)` 取代；改成需要 `companyID` 參數，比照 `PersonDetailViewModel.loadCreditsList(personID:mediaType:)` 每次呼叫都帶入 `personID` 的既有慣例（ViewModel 不重複保存 Controller 已經有的識別值）。
+
+### 11.9 `CompanyDetailViewController` 改動
+
+```swift
+private func showContentList(for mediaKind: MediaKind) {
+    guard let result = viewModel.contentList(companyID: companyID, mediaKind: mediaKind) else { return }
+    router.showContentList(result.configuration, pageProvider: result.pageProvider)
+}
+```
+
+Runtime 驗收新增（併入 12.3）：
+
+- 找一間作品數量明顯超過 20 筆的公司（例如 Marvel Studios、Warner Bros. Pictures），進入「電影」或「影集」查看更多頁面，持續往下捲動，確認清單會不斷載入下一頁，直到 TMDB 沒有更多資料為止（可比對 `total_pages` 或捲到底後不再增加）。
+- 確認 `PersonDetail` 任一演員的「查看更多」（`movieCredits`／`tvCredits`）行為與外觀完全沒有變化（分頁能力預設關閉）。
+- 模擬網路中斷：捲到需要載入下一頁時斷網，確認清單維持目前已載入的項目、不崩潰、`canLoadNextPage` 安靜地變成 `false`（見 13 風險處理，第一版不做重試 UI）。
+
+### 11.10 已知限制
+
+- `DetailContentListRouter.showDestination` 的 `.image` 分支會用「當下傳入 Router 的 `configuration.items`」組成圖庫預覽清單（見 10.1 程式碼）；如果一個分頁清單同時是 `.gallery` 縮圖樣式又用 `.image` 目的地，使用者捲動載入的新項目不會出現在圖庫預覽裡。`CompanyDetail` 目前只用 `.portrait` + `.movie`／`.tv`，不受影響；未來若有 feature 想要「可分頁的圖庫」，需要一併修正這個 Router 方法讀取即時 `items` 而非建立時的快照。
+- 分頁提供者失敗後不會自動重試，也不會顯示「載入失敗，點擊重試」的列。第一版選擇「安靜失敗、停止分頁」，避免在共用清單元件裡新增另一套錯誤 UI；如果之後量到失敗率不低，再回來加。
+- TMDB `discover` API 沒有速率限制文件明確保證，公司作品數量很大時使用者若瘋狂捲動可能短時間內觸發多次請求；`MediaGridPaginationTaskController`／`isLoadingNextPage` 已經避免同時發出兩個請求，但沒有額外的節流（debounce）。與 `MainSearch`／`MainMediaList` 目前的做法一致，不算本功能特有風險。
+
+---
+
+## 12. 靜態檢查與驗證邊界
+
+### 12.1 Source 檢查
 
 ```bash
 rg -n "APIConfig.Company\.|CompanyDetailProviding|LoadCompanyDetailUseCase" \
@@ -1175,6 +1509,12 @@ rg -n "DetailPillListCollectionViewCell" \
 
 rg -n "\.svg" CompanyDetail
 
+rg -n "DetailContentListPageProviding|DetailContentListPage\b" \
+  DetailContentList CompanyDetail
+
+rg -n "showContentList" \
+  Feature/Base/DetailBase MyTMDB_App/Composition PersonDetail CompanyDetail
+
 git diff --check
 ```
 
@@ -1183,13 +1523,15 @@ git diff --check
 - `CompanyDetail` 模組完全依循 Domain → Data → Presentation → ViewModel → Controller 方向，Presentation／ViewModel 不 import UIKit（Cell／Controller 除外）。
 - `DetailPillListCollectionViewCell` 抽出後，`PersonDetail` 與 `CompanyDetail` 都是薄封裝。
 - SVG 過濾邏輯只出現在 Data Mapper（略過空字串）與 Presentation Section Builder／`CompanyDetailItem`（過濾 `.svg`），不會意外出現在 Domain 層。
+- `PersonDetailViewController` 呼叫 `router.showContentList(...)` 的地方維持一個參數的舊寫法（走 11.6 的 protocol extension 預設多載），不需要因為分頁擴充而修改。
+- `DetailContentListPageProviding` 只出現在 `DetailContentList/Domain/` 與 `CompanyDetail/Presentation/`，不會被 `PersonDetail` 引用。
 - `git diff --check` 無 whitespace error。
 
-### 11.2 Whole-module Typecheck
+### 12.2 Whole-module Typecheck
 
 比照本次對話先前使用的 no-build typecheck 指令（見專案記憶「Simulator 驗證流程」），在新增檔案／改動 `APIConfig.swift`、`DetailRouter.swift`、`AppComposition.swift`、`MainSearchRouter.swift`、`PersonDetailCells.swift` 後執行一次，確認 0 errors／0 warnings。若 Xcode 版本已更新導致預編譯 `.swiftmodule` 失效，改用完整 `xcodebuild build`。
 
-### 11.3 Runtime
+### 12.3 Runtime
 
 Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證：
 
@@ -1198,24 +1540,29 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - 深色模式下檢查 Logo 容器背景是否讓透明背景的深色 Logo 保持可視（9.1 的固定淺色底板）。
 - 確認 `PersonDetail` 的「Also Known As」區塊在 `DetailPillListCollectionViewCell` 抽取後外觀與互動未變。
 - 確認離線或 API 錯誤時，`.failed` 狀態的重試流程可用（比照既有詳情頁）。
+- 分頁擴充項目見第 11.9 節。
 
 ---
 
-## 12. 風險與處理
+## 13. 風險與處理
 
 | 風險 | 影響 | 處理方式 |
 |------|------|----------|
 | 公司 Logo 多為 SVG，`SDWebImage` 無法渲染 | Header／Logos 區塊出現空白或破圖 | Data／Presentation 層一律過濾 `.svg`，Header 無點陣圖時顯示 `building.2.fill` 預留樣式（3.5、7.1、7.2、9.1） |
 | 透明背景深色 Logo 在深色模式底色下不可視 | 使用者看不到公司識別 | Header Logo 容器固定使用淺色底板，不隨系統主題切換（9.1），需 Runtime 實機驗收 |
-| `discover` 是分頁 API，套用 Person 的「查看更多」模式會誤導 | 若比照 Person 直接接上 `showContentList`，第 2 頁以後資料會消失或邏輯錯誤 | 本次明確定義電影／影集只顯示第一頁、無查看更多（3.4、2.2），比照 `MovieDetail` Recommendations／Similar 現有精確度 |
-| `DetailPillListCollectionViewCell` 抽取影響既有 `PersonDetail` 畫面 | Person 詳情頁「Also Known As」外觀或互動退化 | 抽取時保持介面與視覺參數不變，只搬動實作位置；Runtime 驗收含 Person 畫面比對（11.3） |
+| `DetailPillListCollectionViewCell` 抽取影響既有 `PersonDetail` 畫面 | Person 詳情頁「Also Known As」外觀或互動退化 | 抽取時保持介面與視覺參數不變，只搬動實作位置；Runtime 驗收含 Person 畫面比對（12.3） |
+| 幫 `DetailContentListConfiguration` 加分頁欄位會讓它失去 `Equatable`，波及 `PersonDetailCreditsListResult` 等既有型別 | `PersonDetail` 相關程式碼可能需要連鎖修改，風險外溢到與本次需求無關的檔案 | 分頁能力不放進 `DetailContentListConfiguration`，改成 Router／SceneBuilder／Controller 的獨立參數，`DetailContentListConfiguration` 本身完全不變（11.4） |
+| `DetailContentListViewController` 從純靜態改成可分頁，可能連帶影響 `PersonDetail` 既有行為 | Person「查看更多」畫面出現非預期的載入或崩潰 | `pageProvider` 預設為 `nil`，`PersonDetail` 呼叫端不需要修改；Runtime 驗收明確包含 Person 迴歸測試（11.9） |
+| 分頁狀態（目前第幾頁）在多次非同步呼叫之間需要保留 | 若用一般 class 處理可變狀態，Swift 6 strict concurrency 下容易被迫用 `@unchecked Sendable`，失去編譯器保護 | `CompanyDetailContentListPageProvider` 用 `actor` 實作，天生 `Sendable`、天生序列化，不使用並行安全豁免（11.7） |
+| 使用者快速捲動可能短時間內觸發多次下一頁請求 | 重複請求、資料重複插入、UI 閃爍 | 重用既有 `MediaGridPaginationTaskController`／`isLoadingNextPage` 機制防止重疊呼叫，插入前用 `Set` 對已存在的 `id` 去重（11.5、11.10） |
+| 下一頁請求失敗時使用者不知道還有沒有更多資料 | 使用者可能誤以為清單已經到底 | 第一版選擇「安靜失敗、`canLoadNextPage` 設為 `false`」，不新增重試 UI；已在 11.10 明確記錄為已知限制，非遺漏 |
 | `origin_country` 是 ISO 代碼，直接顯示不友善 | Facts／Header metadata 顯示 `"US"` 而非「美國」 | 已確認 `BaseFormatter` 無地區名稱對照，改用 Foundation `Locale.localizedString(forRegionCode:)`，不新增自訂對照表（7.1） |
-| 母公司／出品公司標籤未來也想連到同一頁面，範圍蔓延 | Phase 1 上線後被要求立即擴大範圍 | 明確列為非目標（2.2），需要時另立 SDD，不在本次 Router／Section Builder 改動中偷渡 |
+| 母公司／出品公司標籤未來也想連到同一頁面，範圍蔓延 | 被要求立即擴大範圍 | 明確列為非目標（2.2），需要時另立 SDD，不在本次 Router／Section Builder 改動中偷渡 |
 | 新增 `APIConfig.Company` 與既有字母序慣例不一致 | 之後盤點端點時難以維護 | 依現有 A-Z enum 排列慣例插入 `Collection` 與 `Configuration` 之間（6.1） |
 
 ---
 
-## 13. 完成定義
+## 14. 完成定義
 
 只有同時滿足下列條件，功能才能標為完成：
 
@@ -1225,28 +1572,40 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - `DetailPillListCollectionViewCell` 抽取後，`PersonDetail` 既有畫面行為與外觀不變。
 - `MainSearchRouter` 的 `case .company` 導向新頁面，不再是 no-op。
 - `DetailRouting`／`DetailSceneBuilding` 新增方法命名符合 `SDD-Unified-Interface-Naming.md`。
-- 11.1 Source 檢查、11.2 Typecheck／Build 通過並獨立記錄結果。
-- 11.3 Runtime 項目（含 SVG 公司、深色模式、Person 迴歸）以 Simulator 或實機驗證後才能標記 Passed。
+- 12.1 Source 檢查、12.2 Typecheck／Build 通過並獨立記錄結果。
+- 12.3 Runtime 項目（含 SVG 公司、深色模式、Person 迴歸、電影／影集清單無限捲動分頁）以 Simulator 或實機驗證後才能標記 Passed。
 - `project.pbxproj` 只新增本功能檔案的 target membership，其餘設定不變。
+- 第 11 節的分頁擴充完成後，`DetailContentListConfiguration` 對既有呼叫端（`PersonDetail`）維持零異動、零新增警告。
+- Company 的電影／影集查看更多清單可持續捲動載入下一頁，直到 TMDB `total_pages` 用盡為止；`PersonDetail` 的查看更多清單行為與外觀維持完全不變（`pageProvider` 為 `nil`）。
+- `CompanyDetailContentListPageProvider` 以 `actor` 實作，whole-module typecheck 在 `-strict-concurrency=complete` 下無資料競爭相關警告或錯誤。
 
 ---
 
-## 14. 實作狀態
+## 15. 實作狀態
 
 截至 2026-09-24：
 
-- Design：Ready（本文件）。
-- Source Implementation：NotRun。
-- Static Verification：NotRun。
-- Xcode Build：NotRun。
-- Runtime／UI：NotRun。
-- Simulator／Device：NotRun。
+**基礎 `CompanyDetail` 模組（第 1–10 節，含電影／影集清單只顯示第一頁的「查看更多」）**
+
+- Design：Ready。
+- Source Implementation：Done（`CompanyDetail/` 五層、`DetailPillListCollectionViewCell` 抽取、`APIConfig.Company`、Router／SceneBuilder／MainSearchRouter 收尾皆已落地）。
+- Static Verification：Passed（whole-module typecheck，Swift 6 strict concurrency，0 errors／0 warnings）。
+- Xcode Build：Passed（`xcodebuild build` BUILD SUCCEEDED；以 `git stash` 比對修改前後，確認建置訊息中僅有的 2 個 linker warning 為既有、與本次改動無關，未新增警告）。
+- Runtime／UI：Passed（2026-09-24，iPhone 17 / iOS 27.0 Simulator，經使用者授權存取）。實際操作：MainSearch 搜尋 "Marvel Studios" → 切到「製作公司」篩選 → 點擊結果，正確導頁到 `CompanyDetailViewController`，Header（白底 Logo、名稱、總部、所屬國家）、公司資訊 Facts、電影橫向清單、標誌（Logos，含尺寸文字）、別名 Pill 清單（韓／簡中／日三種別名同時正確顯示）、相關連結（官方網站）皆正確渲染；點擊電影橫向清單項目正確導頁到 `MovieDetailViewController`（復仇者聯盟：終局之戰）。`PersonDetail`（Agnez Mo）「電影作品」查看更多維持原本一次性靜態清單行為，無迴歸。
+
+**第 11 節：內容清單無限捲動分頁擴充**
+
+- Design：Ready。
+- Source Implementation：Done（`DetailContentListPageProviding`／`DetailContentListPage`、`DetailContentListViewController` 分頁改動、`DetailRouting`／`DetailSceneBuilding`／`AppComposition` 簽章擴充、`CompanyDetailContentListPageProvider`、`CompanyDetailViewModel.contentList(companyID:mediaKind:)` 皆已落地）。
+- Static Verification：Passed（whole-module typecheck，0 errors／0 warnings）。
+- Xcode Build：Passed（`xcodebuild build` BUILD SUCCEEDED，僅有前述 2 個既有 linker warning，無新增警告）。實作過程中發現 `DetailContentListPageProviding` 不能宣告為 `nonisolated`（`actor` 遵循 `nonisolated` protocol會導致 `actor` initializer 隔離規則衝突），此問題只有完整 Build 才會出現、`swiftc -typecheck` 不會（見 11.3 附註），已修正並重新驗證兩者皆通過。
+- Runtime／UI：Passed（2026-09-24，同一次 Simulator session）。點擊 Marvel Studios「電影」Section Header 進入 `DetailContentListViewController`，持續下拉捲動，清單從第一頁（首批約 20 筆：蜘蛛人、復仇者聯盟系列等）不間斷載入到後續頁面（含 Team Thor、Agent Carter 等 one-shot 短片），最終捲到 TMDB 資料庫盡頭（未上映的 Spider-Man 5、Untitled Deadpool/X-Men Teamup Film 等），清單自然停止成長、無重複項目、無崩潰、`canLoadNextPage` 正確落為 `false`；返回上一頁與整體 App 操作皆維持正常回應，未觀察到記憶體或效能異常。
 
 本文件建立不代表功能已實作。每個狀態只能在取得對應證據後更新。
 
 ---
 
-## 15. 參考資料
+## 16. 參考資料
 
 - [TMDB API — Company Details](https://developer.themoviedb.org/reference/company-details)
 - [TMDB API — Company Alternative Names](https://developer.themoviedb.org/reference/company-alternative-names)

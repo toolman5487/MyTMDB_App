@@ -19,8 +19,12 @@ protocol DetailRouting {
     func showSeasonDetail(seriesID: Int, seasonNumber: Int)
     func showEpisodeDetail(seriesID: Int, seasonNumber: Int, episodeNumber: Int)
     func showPersonDetail(personID: Int)
+    func showCompanyDetail(companyID: Int)
     func showMediaDetail(kind: MediaKind, id: Int)
-    func showContentList(_ configuration: DetailContentListConfiguration)
+    func showContentList(
+        _ configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)?
+    )
     func showWebVideo(url: URL, title: String?)
     func openExternalURL(_ url: URL)
     func showLogin()
@@ -40,6 +44,15 @@ protocol DetailRouting {
     // MARK: - Share
 
     func showShareSheet(for url: URL, sourceItem: UIBarButtonItem)
+}
+
+// MARK: - DetailRouting Default Overloads
+
+extension DetailRouting {
+
+    func showContentList(_ configuration: DetailContentListConfiguration) {
+        showContentList(configuration, pageProvider: nil)
+    }
 }
 
 // MARK: - DetailRouter
@@ -105,6 +118,11 @@ final class DetailRouter: BaseRouter, DetailRouting {
         show(sceneBuilder.makePersonDetailViewController(personID: personID), using: .push)
     }
 
+    func showCompanyDetail(companyID: Int) {
+        guard companyID > 0 else { return }
+        show(sceneBuilder.makeCompanyDetailViewController(companyID: companyID), using: .push)
+    }
+
     func showMediaDetail(kind: MediaKind, id: Int) {
         switch kind {
         case .movie:
@@ -115,10 +133,16 @@ final class DetailRouter: BaseRouter, DetailRouting {
         }
     }
 
-    func showContentList(_ configuration: DetailContentListConfiguration) {
+    func showContentList(
+        _ configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)?
+    ) {
         guard !configuration.items.isEmpty else { return }
         show(
-            sceneBuilder.makeDetailContentListViewController(configuration: configuration),
+            sceneBuilder.makeDetailContentListViewController(
+                configuration: configuration,
+                pageProvider: pageProvider
+            ),
             using: .push
         )
     }

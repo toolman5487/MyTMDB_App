@@ -15,12 +15,18 @@ final class DetailContentListViewController: BaseListViewController {
     // MARK: - Properties
 
     private let configuration: DetailContentListConfiguration
+    private let pageProvider: (any DetailContentListPageProviding)?
     private let sceneBuilder: DetailSceneBuilding
     private lazy var router: DetailContentListRouting = DetailContentListRouter(
         sourceViewController: self,
         sceneBuilder: sceneBuilder,
         interfaceLocalization: interfaceLocalization
     )
+
+    private var items: [DetailContentListItem]
+    private var canLoadNextPage: Bool
+    private var isLoadingNextPage = false
+    private let paginationTaskController = MediaGridPaginationTaskController()
 
     // MARK: - Override Points
 
@@ -42,10 +48,14 @@ final class DetailContentListViewController: BaseListViewController {
 
     init(
         configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)? = nil,
         sceneBuilder: DetailSceneBuilding,
         interfaceLocalization: AppInterfaceLocalization
     ) {
         self.configuration = configuration
+        self.pageProvider = pageProvider
+        self.items = configuration.items
+        self.canLoadNextPage = pageProvider != nil
         self.sceneBuilder = sceneBuilder
         super.init(nibName: nil, bundle: nil)
         setInterfaceLocalization(interfaceLocalization)
@@ -83,6 +93,43 @@ final class DetailContentListViewController: BaseListViewController {
             forCellWithReuseIdentifier: DetailContentListGalleryCollectionViewCell.reuseIdentifier
         )
     }
+
+    // MARK: - Pagination
+
+    private func loadNextPageIfNeeded(currentIndex: Int) {
+        guard let pageProvider, canLoadNextPage, !isLoadingNextPage else { return }
+        guard !paginationTaskController.isRunning else { return }
+        guard MediaGridPaginationState.shouldLoadNextPage(
+            currentIndex: currentIndex,
+            itemCount: items.count
+        ) else { return }
+
+        isLoadingNextPage = true
+
+        paginationTaskController.run { [weak self] in
+            guard let self else { return }
+            defer { isLoadingNextPage = false }
+
+            do {
+                let page = try await pageProvider.loadNextPage()
+                guard !Task.isCancelled else { return }
+
+                let existingIDs = Set(items.map(\.id))
+                let newItems = page.items.filter { !existingIDs.contains($0.id) }
+                let insertedIndexPaths = (items.count..<(items.count + newItems.count))
+                    .map { IndexPath(item: $0, section: 0) }
+
+                items.append(contentsOf: newItems)
+                canLoadNextPage = page.canLoadNextPage
+
+                guard !insertedIndexPaths.isEmpty else { return }
+                collectionView.insertItems(at: insertedIndexPaths)
+            } catch {
+                guard !Task.isCancelled else { return }
+                canLoadNextPage = false
+            }
+        }
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -90,18 +137,18 @@ final class DetailContentListViewController: BaseListViewController {
 extension DetailContentListViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        configuration.items.count
+        items.count
     }
 
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard configuration.items.indices.contains(indexPath.item) else {
+        guard items.indices.contains(indexPath.item) else {
             return UICollectionViewCell()
         }
 
-        let item = configuration.items[indexPath.item]
+        let item = items[indexPath.item]
 
         switch configuration.thumbnailStyle {
         case .portrait, .landscape:
@@ -135,11 +182,19 @@ extension DetailContentListViewController: UICollectionViewDataSource {
 extension DetailContentListViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard configuration.items.indices.contains(indexPath.item) else { return }
+        guard items.indices.contains(indexPath.item) else { return }
         collectionView.deselectItem(at: indexPath, animated: true)
         router.showDestination(
-            configuration.items[indexPath.item].destination,
+            items[indexPath.item].destination,
             configuration: configuration
         )
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt indexPath: IndexPath
+    ) {
+        loadNextPageIfNeeded(currentIndex: indexPath.item)
     }
 }

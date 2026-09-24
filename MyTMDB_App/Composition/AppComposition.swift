@@ -26,9 +26,11 @@ protocol DetailSceneBuilding: LoginSceneBuilding {
         episodeNumber: Int
     ) -> UIViewController
     func makePersonDetailViewController(personID: Int) -> UIViewController
+    func makeCompanyDetailViewController(companyID: Int) -> UIViewController
     func makeReviewListViewController(mediaKind: MediaKind, mediaID: Int) -> UIViewController
     func makeDetailContentListViewController(
-        configuration: DetailContentListConfiguration
+        configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)?
     ) -> UIViewController
 }
 
@@ -448,6 +450,26 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         )
     }
 
+    func makeCompanyDetailViewController(
+        companyID: Int
+    ) -> UIViewController {
+        let repository = CompanyDetailRepository(network: network, localization: localization)
+        let viewModel = CompanyDetailViewModel(
+            loadCompanyDetailUseCase: DefaultLoadCompanyDetailUseCase(
+                repository: repository,
+                failureReporter: AppLoggerAuxiliaryFailureReporter()
+            ),
+            repository: repository,
+            localization: interfaceLocalization
+        )
+        return CompanyDetailViewController(
+            companyID: companyID,
+            viewModel: viewModel,
+            sceneBuilder: self,
+            interfaceLocalization: interfaceLocalization
+        )
+    }
+
     func makeReviewListViewController(
         mediaKind: MediaKind,
         mediaID: Int
@@ -467,10 +489,12 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
     }
 
     func makeDetailContentListViewController(
-        configuration: DetailContentListConfiguration
+        configuration: DetailContentListConfiguration,
+        pageProvider: (any DetailContentListPageProviding)?
     ) -> UIViewController {
         DetailContentListViewController(
             configuration: configuration,
+            pageProvider: pageProvider,
             sceneBuilder: self,
             interfaceLocalization: interfaceLocalization
         )
