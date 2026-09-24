@@ -38,7 +38,7 @@
 
 - 新增 `CompanyDetail` 功能模組，結構比照 `PersonDetail`（Domain / Data / Presentation / ViewModel / Controller，無獨立 Router）。
 - 顯示公司基本資訊：Logo、名稱、總部、成立地區（origin country）、母公司、簡介、官方網站。
-- 顯示該公司出品的電影與影集（各自一個橫向清單區塊，比照 `MovieDetail` 的 Recommendations／Similar）。
+- 顯示該公司出品的電影與影集，包含 TMDB 標記為成人內容的作品（各自一個橫向清單區塊，比照 `MovieDetail` 的 Recommendations／Similar）。
 - 電影／影集橫向清單的 Section Header 可點擊「查看更多」，導向完整清單頁面（`DetailContentListViewController`），且該清單支援**無限捲動分頁**，直到 TMDB `discover` API 回報沒有下一頁為止（見第 11 節）。
 - `PersonDetail` 既有「查看更多」（`movieCredits`／`tvCredits`）維持現狀：資料本來就一次拿齊、非分頁，使用者已經能看到該演員的全部作品，不需額外改動。
 - 顯示公司別名（`/company/{id}/alternative_names`）與多國 Logo（`/company/{id}/images`）。
@@ -574,7 +574,7 @@ nonisolated final class CompanyDetailRepository: CompanyDetailProviding {
 
         queryItems.append(contentsOf: [
             URLQueryItem(name: "sort_by", value: "popularity.desc"),
-            URLQueryItem(name: "include_adult", value: "false"),
+            URLQueryItem(name: "include_adult", value: "true"),
             URLQueryItem(name: "with_companies", value: String(companyID)),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ])
@@ -586,7 +586,7 @@ nonisolated final class CompanyDetailRepository: CompanyDetailProviding {
 
 `/company/{id}`、`alternative_names`、`images` 三個端點在 TMDB 文件中不支援 `language` 參數（名稱、別名、Logo metadata 本身無語系差異），因此不加 `language` query item，比照 `PersonDetailRepository.images(personID:)`／`externalIDs(personID:)` 的做法（那兩個呼叫也是 `queryItems: []`）。
 
-`sort_by` 固定 `popularity.desc`，不提供排序切換（見 3.4，不做完整清單頁）。`discoverQueryItems` 不與 `MediaListRepository.discoverQueryItems` 共用：兩者查詢條件不同（`with_genres` + 可變 `sortOrder` vs 固定 `with_companies` + 固定排序），且專案中 `MovieDetailRepository.recommendations`／`similar` 與 `MediaListRepository.discover` 本來就是各自獨立的查詢建構，不強行共用。
+`include_adult` 固定為 `true`，讓公司電影與影集清單包含 TMDB 標記為成人內容的作品。`sort_by` 固定 `popularity.desc`，不提供排序切換（見第 11 節的完整分頁清單）。`discoverQueryItems` 不與 `MediaListRepository.discoverQueryItems` 共用：兩者查詢條件不同（`with_genres` + 可變 `sortOrder` vs 固定 `with_companies` + 固定排序），且專案中 `MovieDetailRepository.recommendations`／`similar` 與 `MediaListRepository.discover` 本來就是各自獨立的查詢建構，不強行共用。
 
 ---
 

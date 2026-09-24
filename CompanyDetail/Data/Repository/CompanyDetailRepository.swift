@@ -85,7 +85,7 @@ nonisolated final class CompanyDetailRepository: CompanyDetailProviding {
 
         queryItems.append(contentsOf: [
             URLQueryItem(name: "sort_by", value: "popularity.desc"),
-            URLQueryItem(name: "include_adult", value: "false"),
+            URLQueryItem(name: "include_adult", value: "true"),
             URLQueryItem(name: "with_companies", value: String(companyID)),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ])
