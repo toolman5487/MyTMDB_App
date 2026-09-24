@@ -13,6 +13,7 @@ nonisolated enum MainSearchMediaType: String, Sendable, Equatable {
     case movie
     case tv
     case person
+    case company
 }
 
 // MARK: - MainSearchResult
@@ -39,6 +40,15 @@ nonisolated struct MainSearchPopularPerson: Sendable, Equatable, Identifiable {
     let profilePath: String?
     let knownForDepartment: String?
     let popularity: Double
+}
+
+// MARK: - MainSearchCompanyResult
+
+nonisolated struct MainSearchCompanyResult: Sendable, Equatable, Identifiable {
+    let id: Int
+    let name: String
+    let logoPath: String?
+    let originCountry: String?
 }
 
 // MARK: - MainSearchDiscovery

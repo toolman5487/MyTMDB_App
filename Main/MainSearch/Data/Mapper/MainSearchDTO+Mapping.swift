@@ -32,6 +32,20 @@ extension MainSearchResultDTO {
     }
 }
 
+// MARK: - MainSearchCompanyResultDTO Mapping
+
+extension MainSearchCompanyResultDTO {
+
+    func mapped() -> MainSearchCompanyResult {
+        MainSearchCompanyResult(
+            id: id,
+            name: name ?? "",
+            logoPath: logoPath,
+            originCountry: originCountry
+        )
+    }
+}
+
 // MARK: - MainSearchPopularPersonDTO Mapping
 
 extension MainSearchPopularPersonDTO {
@@ -64,6 +78,18 @@ extension TMDBPageResponse where Result == MainSearchResultDTO {
 extension TMDBPageResponse where Result == MainSearchPopularPersonDTO {
 
     func mapped() -> Page<MainSearchPopularPerson> {
+        Page(
+            number: page,
+            totalPages: totalPages,
+            totalResults: totalResults,
+            items: results.map { $0.mapped() }
+        )
+    }
+}
+
+extension TMDBPageResponse where Result == MainSearchCompanyResultDTO {
+
+    func mapped() -> Page<MainSearchCompanyResult> {
         Page(
             number: page,
             totalPages: totalPages,

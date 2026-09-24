@@ -57,6 +57,9 @@ final class MainSearchRouter: BaseRouter, MainSearchRouting {
 
         case .person:
             detailRouter.showPersonDetail(personID: item.sourceID)
+
+        case .company:
+            break
         }
     }
 }

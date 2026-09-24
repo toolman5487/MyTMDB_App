@@ -21,6 +21,9 @@ extension MainSearchMediaType {
 
         case .person:
             return localization.string("common.media.person", defaultValue: "Person")
+
+        case .company:
+            return localization.string("common.media.company", defaultValue: "Company")
         }
     }
 }
@@ -32,6 +35,7 @@ nonisolated enum MainSearchFilter: String, CaseIterable, Sendable, Equatable, Id
     case movie
     case tv
     case person
+    case company
 
     var id: String {
         rawValue
@@ -50,6 +54,9 @@ nonisolated enum MainSearchFilter: String, CaseIterable, Sendable, Equatable, Id
 
         case .person:
             return MainSearchMediaType.person.title(localization: localization)
+
+        case .company:
+            return MainSearchMediaType.company.title(localization: localization)
         }
     }
 
@@ -66,6 +73,9 @@ nonisolated enum MainSearchFilter: String, CaseIterable, Sendable, Equatable, Id
 
         case .person:
             return localization.string("main_search.filtered_empty.person.title", defaultValue: "No People Results")
+
+        case .company:
+            return localization.string("main_search.filtered_empty.company.title", defaultValue: "No Company Results")
         }
     }
 
@@ -82,6 +92,9 @@ nonisolated enum MainSearchFilter: String, CaseIterable, Sendable, Equatable, Id
 
         case .person:
             return .person
+
+        case .company:
+            return .company
         }
     }
 }
@@ -142,10 +155,20 @@ nonisolated struct MainSearchDailyTrendingContent: Sendable, Equatable {
 nonisolated struct MainSearchContent: Sendable, Equatable {
     let keyword: String
     let allResults: [MainSearchResultItem]
+    let companyResults: [MainSearchResultItem]
     let selectedFilter: MainSearchFilter
     private(set) var pagination: MediaGridPaginationState
+    private(set) var companyPagination: MediaGridPaginationState
+
+    var isEmpty: Bool {
+        allResults.isEmpty && companyResults.isEmpty
+    }
 
     var results: [MainSearchResultItem] {
+        if selectedFilter == .company {
+            return companyResults
+        }
+
         guard let mediaType = selectedFilter.mediaType else {
             return allResults
         }
@@ -164,16 +187,30 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
     }
 
     var canLoadNextPage: Bool {
-        pagination.canLoadNextPage
+        currentPagination.canLoadNextPage
     }
 
     var isLoadingNextPage: Bool {
-        pagination.isLoadingNextPage
+        currentPagination.isLoadingNextPage
+    }
+
+    private var currentPagination: MediaGridPaginationState {
+        selectedFilter == .company ? companyPagination : pagination
+    }
+
+    func shouldLoadNextPage(currentItemID: String) -> Bool {
+        currentPagination.shouldLoadNextPage(currentItemID: currentItemID, items: results)
     }
 
     func updatingLoadingNextPage(_ isLoading: Bool) -> MainSearchContent {
         var content = self
-        content.pagination = pagination.updatingLoadingNextPage(isLoading)
+
+        if selectedFilter == .company {
+            content.companyPagination = companyPagination.updatingLoadingNextPage(isLoading)
+        } else {
+            content.pagination = pagination.updatingLoadingNextPage(isLoading)
+        }
+
         return content
     }
 
@@ -188,8 +225,28 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
                     MainSearchResultItem(result: $0, localization: localization)
                 }
             ),
+            companyResults: companyResults,
             selectedFilter: selectedFilter,
-            pagination: MediaGridPaginationState(page: page)
+            pagination: MediaGridPaginationState(page: page),
+            companyPagination: companyPagination
+        )
+    }
+
+    func appendingCompanies(
+        page: Page<MainSearchCompanyResult>,
+        localization: AppInterfaceLocalization
+    ) -> MainSearchContent {
+        MainSearchContent(
+            keyword: keyword,
+            allResults: allResults,
+            companyResults: Self.uniqueResults(
+                companyResults + page.items.map {
+                    MainSearchResultItem(company: $0, localization: localization)
+                }
+            ),
+            selectedFilter: selectedFilter,
+            pagination: pagination,
+            companyPagination: MediaGridPaginationState(page: page)
         )
     }
 
@@ -197,8 +254,10 @@ nonisolated struct MainSearchContent: Sendable, Equatable {
         MainSearchContent(
             keyword: keyword,
             allResults: allResults,
+            companyResults: companyResults,
             selectedFilter: filter,
-            pagination: pagination
+            pagination: pagination,
+            companyPagination: companyPagination
         )
     }
 
@@ -242,6 +301,7 @@ nonisolated enum MainSearchPresentationBuilder {
     static func makeSearchContent(
         keyword: String,
         page: Page<MainSearchResult>,
+        companyPage: Page<MainSearchCompanyResult>,
         localization: AppInterfaceLocalization
     ) -> MainSearchContent {
         MainSearchContent(
@@ -249,8 +309,12 @@ nonisolated enum MainSearchPresentationBuilder {
             allResults: MainSearchContent.uniqueResults(page.items.map {
                 MainSearchResultItem(result: $0, localization: localization)
             }),
+            companyResults: MainSearchContent.uniqueResults(companyPage.items.map {
+                MainSearchResultItem(company: $0, localization: localization)
+            }),
             selectedFilter: .all,
-            pagination: MediaGridPaginationState(page: page)
+            pagination: MediaGridPaginationState(page: page),
+            companyPagination: MediaGridPaginationState(page: companyPage)
         )
     }
 }
@@ -334,6 +398,29 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
         )
     }
 
+    init(
+        company: MainSearchCompanyResult,
+        localization: AppInterfaceLocalization
+    ) {
+        let title = Self.makeTitle(company.name, localization: localization)
+        self.id = "\(MainSearchMediaType.company.rawValue)-\(company.id)"
+        self.sourceID = company.id
+        self.mediaType = .company
+        self.title = title
+        self.subtitle = company.originCountry
+        self.imageURL = company.logoPath.flatMap {
+            TMDBResourceURL.image(path: $0, size: .w185)
+        }
+        self.popularity = 0
+        self.accessibilityText = AccessibilityText(
+            label: title,
+            value: BaseDisplayTextFormatter.metadata([
+                MainSearchMediaType.company.title(localization: localization),
+                company.originCountry
+            ])
+        )
+    }
+
     private static func makeTitle(
         _ title: String,
         localization: AppInterfaceLocalization
@@ -361,6 +448,9 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
 
         case .person:
             return BaseDisplayTextFormatter.nonEmptyText(result.knownForDepartment)
+
+        case .company:
+            return nil
         }
     }
 
@@ -375,6 +465,9 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
             return result.profilePath.flatMap {
                 TMDBResourceURL.image(path: $0, size: .w185)
             }
+
+        case .company:
+            return nil
         }
     }
 
@@ -419,6 +512,9 @@ nonisolated struct MainSearchResultItem: Sendable, Equatable, Identifiable {
                 "common.accessibility.open_person_detail.hint",
                 defaultValue: "Double-tap to open person details"
             )
+
+        case .company:
+            return ""
         }
     }
 }

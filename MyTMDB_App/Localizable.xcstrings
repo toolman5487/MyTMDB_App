@@ -1162,6 +1162,29 @@
         }
       }
     },
+    "common.media.company" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Company"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作会社"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "製作公司"
+          }
+        }
+      }
+    },
     "common.media.movie" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5416,6 +5439,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有全部結果"
+          }
+        }
+      }
+    },
+    "main_search.filtered_empty.company.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Company Results"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "制作会社の結果がありません"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有製作公司結果"
           }
         }
       }

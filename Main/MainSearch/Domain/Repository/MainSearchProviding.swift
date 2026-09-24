@@ -15,4 +15,6 @@ nonisolated protocol MainSearchProviding: Sendable {
     func popularPeople(page: Int) async throws -> Page<MainSearchPopularPerson>
 
     func searchResults(keyword: String, page: Int) async throws -> Page<MainSearchResult>
+
+    func searchCompanies(keyword: String, page: Int) async throws -> Page<MainSearchCompanyResult>
 }

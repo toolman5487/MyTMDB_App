@@ -55,6 +55,15 @@ nonisolated final class MainSearchRepository: MainSearchProviding {
         return dto.mapped()
     }
 
+    func searchCompanies(keyword: String, page: Int) async throws -> Page<MainSearchCompanyResult> {
+        let dto: TMDBPageResponse<MainSearchCompanyResultDTO> = try await network.get(
+            path: APIConfig.Search.company,
+            queryItems: companySearchQueryItems(keyword: keyword, page: page)
+        )
+
+        return dto.mapped()
+    }
+
     // MARK: - Helpers
 
     private func pagedQueryItems(page: Int) -> [URLQueryItem] {
@@ -70,6 +79,13 @@ nonisolated final class MainSearchRepository: MainSearchProviding {
             URLQueryItem(name: "region", value: localization.regionCode),
             URLQueryItem(name: "query", value: keyword.trimmingCharacters(in: .whitespacesAndNewlines)),
             URLQueryItem(name: "include_adult", value: "false"),
+            URLQueryItem(name: "page", value: String(max(page, 1)))
+        ]
+    }
+
+    private func companySearchQueryItems(keyword: String, page: Int) -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "query", value: keyword.trimmingCharacters(in: .whitespacesAndNewlines)),
             URLQueryItem(name: "page", value: String(max(page, 1)))
         ]
     }

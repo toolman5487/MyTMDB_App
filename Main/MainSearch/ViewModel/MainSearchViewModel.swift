@@ -177,15 +177,18 @@ final class MainSearchViewModel {
         state = .searching(trimmedKeyword)
 
         do {
-            let page = try await repository.searchResults(keyword: trimmedKeyword, page: 1)
-            guard !Task.isCancelled else { return }
+            async let page = repository.searchResults(keyword: trimmedKeyword, page: 1)
+            async let companyPage = fetchCompanyPage(keyword: trimmedKeyword, page: 1)
 
             let content = MainSearchPresentationBuilder.makeSearchContent(
                 keyword: trimmedKeyword,
-                page: page,
+                page: try await page,
+                companyPage: await companyPage,
                 localization: localization
             )
-            state = content.results.isEmpty ? .empty(trimmedKeyword) : .results(content)
+            guard !Task.isCancelled else { return }
+
+            state = content.isEmpty ? .empty(trimmedKeyword) : .results(content)
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(error.errorMessage(localization: localization))
@@ -194,15 +197,43 @@ final class MainSearchViewModel {
 
     func loadNextPageIfNeeded(currentItemID: String) async {
         guard case .results(let content) = state,
-              content.pagination.shouldLoadNextPage(
-                  currentItemID: currentItemID,
-                  items: content.results
-              ) else {
+              content.shouldLoadNextPage(currentItemID: currentItemID) else {
             return
         }
 
         state = .results(content.updatingLoadingNextPage(true))
 
+        if content.selectedFilter == .company {
+            await loadNextCompanyPage(after: content)
+        } else {
+            await loadNextSearchPage(after: content)
+        }
+    }
+
+    func selectFilter(_ filter: MainSearchFilter) {
+        guard case .results(let content) = state,
+              content.selectedFilter != filter else {
+            return
+        }
+
+        state = .results(content.selectingFilter(filter))
+    }
+
+    func reset() {
+        restoreDailyTrending()
+    }
+
+    // MARK: - Private Methods
+
+    private func fetchCompanyPage(keyword: String, page: Int) async -> Page<MainSearchCompanyResult> {
+        do {
+            return try await repository.searchCompanies(keyword: keyword, page: page)
+        } catch {
+            return .empty(number: page)
+        }
+    }
+
+    private func loadNextSearchPage(after content: MainSearchContent) async {
         do {
             let nextPage = try await repository.searchResults(
                 keyword: content.keyword,
@@ -234,20 +265,37 @@ final class MainSearchViewModel {
         }
     }
 
-    func selectFilter(_ filter: MainSearchFilter) {
-        guard case .results(let content) = state,
-              content.selectedFilter != filter else {
-            return
+    private func loadNextCompanyPage(after content: MainSearchContent) async {
+        do {
+            let nextPage = try await repository.searchCompanies(
+                keyword: content.keyword,
+                page: content.companyPagination.nextPage
+            )
+
+            guard !Task.isCancelled else { return }
+
+            guard case .results(let currentContent) = state,
+                  currentContent.keyword == content.keyword,
+                  currentContent.companyPagination.currentPage == content.companyPagination.currentPage else {
+                return
+            }
+
+            state = .results(currentContent.appendingCompanies(
+                page: nextPage,
+                localization: localization
+            ))
+        } catch {
+            guard !Task.isCancelled else { return }
+
+            guard case .results(let currentContent) = state,
+                  currentContent.keyword == content.keyword,
+                  currentContent.companyPagination.currentPage == content.companyPagination.currentPage else {
+                return
+            }
+
+            state = .results(currentContent.updatingLoadingNextPage(false))
         }
-
-        state = .results(content.selectingFilter(filter))
     }
-
-    func reset() {
-        restoreDailyTrending()
-    }
-
-    // MARK: - Private Methods
 
     private func restoreDailyTrending() {
         guard let cachedDailyTrendingContent else {
