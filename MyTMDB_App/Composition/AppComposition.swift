@@ -140,6 +140,15 @@ final class AppComposition: MainTabSceneBuilding, AppFlowRouting {
         )
     }
 
+    func makeLaunchSessionResolver() -> LaunchSessionResolver {
+        LaunchSessionResolver(
+            sessionValidator: makeSessionValidator(),
+            authentication: AuthenticationRepository(network: network),
+            sessionStore: sessionStore,
+            userProfileStore: userProfileStore
+        )
+    }
+
     func makeAuthFlowHandler() -> AuthFlowHandler {
         AuthFlowHandler(
             sessionStore: sessionStore,
@@ -646,8 +655,8 @@ private final class RootLoadingViewController: BaseViewController {
     private lazy var titleLabel: UILabel = {
         let label = AppFactory.Label.body(alignment: .center)
         label.text = localization.string(
-            "root_loading.session_validation.title",
-            defaultValue: "Checking Sign-in Status"
+            "root_loading.launch.title",
+            defaultValue: "Preparing CineBase"
         )
         return label
     }()

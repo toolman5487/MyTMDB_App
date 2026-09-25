@@ -3488,6 +3488,52 @@
         }
       }
     },
+    "guest_launch.failure.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection and try again, or sign in instead."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通信状況を確認して再試行するか、ログインしてください。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請檢查網路後重試，或改為登入會員。"
+          }
+        }
+      }
+    },
+    "guest_launch.failure.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to Start Guest Mode"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲストモードを開始できません"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法啟動訪客模式"
+          }
+        }
+      }
+    },
     "home.category.airing_today_tv" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9425,25 +9471,25 @@
         }
       }
     },
-    "root_loading.session_validation.title" : {
+    "root_loading.launch.title" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Checking Sign-in Status"
+            "value" : "Preparing CineBase"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ログイン状態を確認中"
+            "value" : "CineBase を準備しています"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在檢查登入狀態"
+            "value" : "正在準備 CineBase"
           }
         }
       }

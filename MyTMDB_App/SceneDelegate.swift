@@ -12,7 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     private var composition: AppComposition?
-    private var sessionValidationTask: Task<Void, Never>?
+    private var launchSessionTask: Task<Void, Never>?
     private var pendingIntentDestination: AppIntentDestination?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -38,25 +38,51 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .compactMap { AppIntentDestination(url: $0.url) }
             .first
 
-        validateStoredSession()
+        resolveLaunchSession()
     }
 
-    private func validateStoredSession() {
+    private func resolveLaunchSession() {
         guard let composition else { return }
-        let sessionValidator = composition.makeSessionValidator()
+        let sessionResolver = composition.makeLaunchSessionResolver()
 
-        sessionValidationTask?.cancel()
-        sessionValidationTask = Task(priority: .userInitiated) { [weak self] in
+        launchSessionTask?.cancel()
+        launchSessionTask = Task(priority: .userInitiated) { [weak self] in
             do {
-                let validatedSession = try await sessionValidator.validatedStoredSession()
+                let resolvedSession = try await sessionResolver.resolve()
                 guard !Task.isCancelled, let self else { return }
-                replaceRoot(for: validatedSession)
+                guard showInitialRoot(for: resolvedSession) else { return }
                 await routePendingIntentDestinationIfNeeded()
+            } catch is CancellationError {
+                return
+            } catch is AuthSessionError {
+                guard !Task.isCancelled, let self else { return }
+                AppLogger.security.error("Secure authentication session resolution failed")
+                showSessionValidationFailure()
             } catch {
                 guard !Task.isCancelled, let self else { return }
-                AppLogger.security.error("Secure authentication session validation failed")
-                showSessionValidationFailure()
+                AppLogger.authentication.error("Guest session creation failed")
+                showGuestLaunchFailure()
             }
+        }
+    }
+
+    @MainActor
+    private func showInitialRoot(for session: AuthSession) -> Bool {
+        guard let window, let composition else { return false }
+
+        switch session {
+        case .loggedOut:
+            AppLogger.authentication.error("Launch session resolved to logged-out state")
+            showGuestLaunchFailure()
+            return false
+
+        case .guest, .user:
+            window.rootViewController = composition.makeMainTabBarController(
+                session: session,
+                initialTab: .home
+            )
+            window.makeKeyAndVisible()
+            return true
         }
     }
 
@@ -84,10 +110,58 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         alert.addAction(UIAlertAction(
             title: localization.string("common.action.retry", defaultValue: "Retry"),
             style: .default
-        ) { [weak self] _ in
-            self?.validateStoredSession()
+        ) { [weak self, weak rootViewController] _ in
+            rootViewController?.dismiss(animated: true) {
+                self?.resolveLaunchSession()
+            }
         })
         rootViewController.present(alert, animated: true)
+    }
+
+    @MainActor
+    private func showGuestLaunchFailure() {
+        guard let composition,
+              let rootViewController = window?.rootViewController,
+              rootViewController.presentedViewController == nil else {
+            return
+        }
+
+        let localization = composition.currentInterfaceLocalization
+
+        let alert = UIAlertController(
+            title: localization.string(
+                "guest_launch.failure.title",
+                defaultValue: "Unable to Start Guest Mode"
+            ),
+            message: localization.string(
+                "guest_launch.failure.message",
+                defaultValue: "Check your connection and try again, or sign in instead."
+            ),
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(
+            title: localization.string("common.action.retry", defaultValue: "Retry"),
+            style: .default
+        ) { [weak self, weak rootViewController] _ in
+            rootViewController?.dismiss(animated: true) {
+                self?.resolveLaunchSession()
+            }
+        })
+        alert.addAction(UIAlertAction(
+            title: localization.string("common.action.sign_in", defaultValue: "Sign In"),
+            style: .cancel
+        ) { [weak self] _ in
+            self?.showLoginRoot()
+        })
+        rootViewController.present(alert, animated: true)
+    }
+
+    @MainActor
+    private func showLoginRoot() {
+        guard let window, let composition else { return }
+        pendingIntentDestination = nil
+        window.rootViewController = composition.makeLoginNavigationController(context: .root)
+        window.makeKeyAndVisible()
     }
 
     @MainActor
@@ -144,7 +218,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
-        sessionValidationTask?.cancel()
+        launchSessionTask?.cancel()
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {

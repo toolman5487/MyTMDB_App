@@ -10,8 +10,8 @@
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router + `AppComposition` factory |
 | 目標架構 | Clean Architecture + `AppComposition` + make factory + Router（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
 | 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 337 個 Swift 檔 / 46,714 行 |
-| 狀態 | Phase 1、Phase 2、Phase 3 已落地；統一命名 source applied、靜態檢查通過；本次 Build / Runtime NotRun（先前 baseline simulator Debug build 通過） |
-| 日期 | 2026-09-15 |
+| 狀態 | Phase 1、Phase 2、Phase 3 已落地；預設訪客冷啟動 source applied、靜態檢查通過；本次 Build / Runtime NotRun（先前 baseline simulator Debug build 通過） |
+| 日期 | 2026-09-25 |
 
 ---
 
@@ -82,7 +82,7 @@
 
 專案同時使用顯式檔案參照與 `MyTMDB_App/` 的 `PBXFileSystemSynchronizedRootGroup`。一般 feature 新增 Swift 檔仍需確認 target membership；`MyTMDB_App/` 同步根目錄下的 `Composition/AppComposition.swift` 會自動納入 target。既有 commit `711763f`（`fix: add member center list repository to target`）即為顯式參照漏加所致。此為需持續注意的操作風險，見 13 節 R5。
 
-`AppComposition` 已接管 runtime 組裝：集中建立 Repository、UseCase、ViewModel、ViewController 與 App Intent 依賴；`SceneDelegate` 持有單一 composition，直接處理 loading / login / main root；`MainTabBarController` 延續 tab 與 deep-link 導航責任；Router 只依賴窄化 Scene Builder。專案不建立 Coordinator，舊 `AppRootFactory` 已由不含 UIKit 的 `AuthFlowHandler` / `AuthSessionValidator` 取代。依賴型 `convenience init`、composition 外的 `NetworkService()` 預設值與 Controller 內 ViewModel 組裝已清除。
+`AppComposition` 已接管 runtime 組裝：集中建立 Repository、UseCase、ViewModel、ViewController 與 App Intent 依賴；`SceneDelegate` 持有單一 composition，直接處理 loading / login / main root；`LaunchSessionResolver` 在冷啟動時沿用已驗證 session，或在 `.loggedOut` 時建立並保存 guest；`MainTabBarController` 延續 tab 與 deep-link 導航責任；Router 只依賴窄化 Scene Builder。專案不建立 Coordinator，舊 `AppRootFactory` 已由不含 UIKit 的 `AuthFlowHandler` / `AuthSessionValidator` / `LaunchSessionResolver` 取代。依賴型 `convenience init`、composition 外的 `NetworkService()` 預設值與 Controller 內 ViewModel 組裝已清除。
 
 舊 `AccountService` / `AccountServiceProtocol` 與未使用的 `AccountViewModel` 已刪除。會員資料一律經 Domain 的 `AccountProfileProviding.profile(sessionID:)` 取得，由 `AccountContentRepository` 實作並同步寫入 `UserProfileStoring`；`AuthSessionValidator`、`AuthFlowHandler`、`AccountSessionRepository`、`AppIntentSessionResolver`、`MainTabBarAvatarService` 與 `MainMemberSettingViewModel` 皆只依賴此窄介面。
 
@@ -772,6 +772,7 @@ final class AppComposition {
 ```text
 SceneDelegate
   ├─ AppComposition
+  ├─ LaunchSessionResolver → existing session / new guest session
   ├─ loading / login / main root switch
   └─ MainTabBarController
        ├─ tab navigation stacks
@@ -781,7 +782,8 @@ SceneDelegate
 
 | 元件 | 責任 | 不負責 |
 |------|------|--------|
-| `SceneDelegate` | 建立 window / composition、驗證已存 session、loading / login / main root 切換、接收 URL context | 建立 Repository / UseCase / ViewModel、feature-local push 細節 |
+| `SceneDelegate` | 建立 window / composition、啟動 session resolution、loading / login / main root 切換、接收 URL context | 建立 Repository / UseCase / ViewModel、feature-local push 細節 |
+| `LaunchSessionResolver` | 驗證已存 session；冷啟動為 `.loggedOut` 時建立並保存 guest | 建立或切換畫面、處理非冷啟動登出導航 |
 | `AuthSessionValidator` | 經 `AccountProfileProviding` 驗證已存 session，清理失效的 session / profile | 建立或切換畫面 |
 | `AuthFlowHandler` | 保存登入或訪客 session、經 `AccountProfileProviding` 取得並快取會員資料、以 closure 回報 session 完成 | 持有 window / navigation controller、建立畫面 |
 | `MainTabBarController` | 建立 tab navigation stack、切換 tab、以 `initialTab` 還原選取中的 tab、把 App Intent / deep link 導向正確 feature | 建立 Repository / UseCase / ViewModel |
@@ -792,7 +794,8 @@ SceneDelegate
 
 | 情境 | 登入頁呈現 | `LoginEntryContext` | 登入後 |
 |------|------------|---------------------|--------|
-| 冷啟動未登入、登出、清除所有本機資料 | `SceneDelegate` 設為 root | `.root`：登入 / 訪客 / 註冊三頁 | 建立 `MainTabBarController`，停在首頁 |
+| 冷啟動無 session 或已存會員失效 | Loading root 執行 `LaunchSessionResolver`，自動建立並保存 guest | 不先顯示登入頁 | 建立 `MainTabBarController`，明確停在 `.home` |
+| App 內主動登出、清除所有本機資料或 guest 建立失敗後選擇登入 | `SceneDelegate` 設為 root | `.root`：登入 / 訪客 / 註冊三頁 | 建立 `MainTabBarController`，停在首頁 |
 | 訪客於設定頁、會員中心、詳情頁或 App Intent 觸發登入 | 由 Router / `MainTabBarController` 以 `.present`（page sheet）呈現 | `.inApp`：登入 / 註冊兩頁，顯示關閉按鈕；登入進行中停用關閉與下滑關閉 | `SceneDelegate` 替換 root 前讀取舊 `MainTabBarController.selectedTabKind`，傳給新 tab bar 的 `initialTab`；只還原 tab，不還原 tab 內的 navigation stack |
 
 `LoginSceneBuilding.makeLoginNavigationController(context:)` 為唯一登入頁 factory，呼叫端必須明確指定 context。
@@ -1236,7 +1239,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 | 已完成的詳情編排 UseCase | `MovieDetail/Domain/UseCase/LoadMovieDetailUseCase.swift`、`TVDetail/Domain/UseCase/LoadTVDetailUseCase.swift`、`SeasonDetail/Domain/UseCase/LoadSeasonDetailUseCase.swift`、`EpisodeDetail/Domain/UseCase/LoadEpisodeDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonDetailUseCase.swift`、`PersonDetail/Domain/UseCase/LoadPersonCreditsUseCase.swift` |
 | MemberCenter 已完成的分層 | `MemberCenter/Domain/`、`MemberCenter/Data/`、`MemberCenter/Presentation/`、`MemberCenter/List/Presentation/` |
 | 跨 feature Account UseCase | `Feature/Domain/UseCase/LoadAccountMediaStateUseCase.swift`、`Feature/Domain/UseCase/ToggleFavoriteUseCase.swift`、`Feature/Domain/UseCase/SubmitRatingUseCase.swift`、`Feature/Domain/UseCase/DeleteRatingUseCase.swift` |
-| Phase 3 App 入口 | `MyTMDB_App/Composition/AppComposition.swift`、`MyTMDB_App/SceneDelegate.swift`、`MainLogIn/Flow/AuthFlowHandler.swift`、`MainTabBar/Controller/MainTabBarController.swift` |
+| Phase 3 App 入口 | `MyTMDB_App/Composition/AppComposition.swift`、`MyTMDB_App/SceneDelegate.swift`、`MainLogIn/Flow/AuthFlowHandler.swift`、`MainLogIn/Flow/LaunchSessionResolver.swift`、`MainTabBar/Controller/MainTabBarController.swift` |
 | 已移除的舊流程組裝與 Service | `MainLogIn/Service/AppRootFactory.swift`、`MainLogIn/Service/AccountService.swift`、`MainLogIn/ViewModel/AccountViewModel.swift`、`MainLogIn/Service/TMDBAuthService.swift`、`Main/MainSearch/Service/MainSearchService.swift`、`Feature/AppIntents/Queries/AppIntentEntityLookupService.swift`、`MainTabBar/Service/MainTabBarAvatarService.swift` 與全部 Coordinator 型別 |
 | Scene Builder 導入起點 | `Feature/Base/DetailBase/Router/DetailRouter.swift` 與各 feature 的 `Router/` |
 | 已移除的依賴 convenience init | `MovieDetail/ViewModel/MovieDetailViewModel.swift`、`TVDetail/ViewModel/TVDetailViewModel.swift`、`SeasonDetail/ViewModel/SeasonDetailViewModel.swift`、`PersonDetail/ViewModel/PersonDetailViewModel.swift` |
@@ -1253,6 +1256,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.14 | 2026-09-25 | 冷啟動無 session 時改由 `LaunchSessionResolver` 透過既有 Authentication Repository 建立 guest、完成 Keychain 儲存後再由 `SceneDelegate` 明確建立首頁 Main Tab；既有 user／guest 沿用，App 內主動登出仍顯示 root 登入頁。`AppComposition` 新增具名 factory，不新增 Coordinator。Guest 建立端點修正為官方 GET；source 與靜態檢查通過，Build / Runtime NotRun |
 | 2.13 | 2026-09-15 | 依 `SDD-Unified-Interface-Naming.md` 同步 ViewModel output 與 Scene Builder 規則：14 個非同步 state ViewModel 統一 `bind(onStateChange:)`，2 個同步 query/action model 明確保留無 binding；Scene factory 回傳 `UIViewController`、callback 由參數注入，child input 使用窄化 `...Handling` protocol。同步套用 Swift 縮寫／ID、完整畫面 `loadInitialContent` 與 Router 動詞規則；Swift parser、Codable executable check 與五項 Clean Architecture 靜態邊界檢查通過，Xcode Build / Runtime NotRun |
 | 2.12 | 2026-09-14 | 依 4.3 共用判準全面檢查 Domain / Data / Presentation 型別歸屬。(A) 依賴方向：刪除 Data 層 `StoredUserProfile.headerContent`（建立 MemberCenter 的 presentation 型別，無使用端）；共用 `DetailRouter.showCreditDetail(_: PersonDetailCreditItem)` 改為 `showMediaDetail(kind:id:)`，8.3 補共用 Router 參數規則。(B) 跨 feature 使用而升格至 `Feature/`：`Genre`、`ProductionCompany`、`AggregateCredits` 系列、`Account`、`SessionStore`、`UserProfileStore`、`AccountProfile`、`AccountAvatarURLFactory`（合併重複頭像網址邏輯）、`HomeCategory`、`HomeContentProviding`、`HomeContentRepository`、`HomeContentItem`。(C) 只剩單一 feature 使用而移回：`AccountAvatarProviding` / `AccountAvatarRepository` → MainTabBar；`ImageCacheClearing` / `SDWebImageCacheStore` → MainMemberSetting。4.3 補判準細則與調整表，機械檢查改以 `find` 涵蓋巢狀資料夾並新增第五項「Data 不得引用 Presentation 型別」，同步 11 節 Phase 2 程序、12.3、13 節 R8、14 節維護規則與 15 節路徑。simulator Debug clean build 無警告、五項機械檢查無輸出；runtime 走查未執行 |
 | 2.11 | 2026-09-14 | (1) 刪除未使用的 `MyTMDB_App/ViewController.swift`（佔位畫面，直接依賴 `SessionStoring` 並自行處理登出）。(2) 新增 Domain `ImageCacheClearing` 與 Data `SDWebImageCacheStore`，`ClearLocalDataUseCase` 改為 `async` 並統一清除 session、會員快取、搜尋紀錄與圖片快取；`MainMemberSettingViewController` 不再直接呼叫 `SDImageCache`。4.2 補第三方套件位置規則。(3) `AccountSessionProviding`、`AccountProfileProviding` 由 `AccountMediaStateProviding.swift` 拆為獨立檔；`LocalAccountDataUseCases.swift` 拆為三個 UseCase 檔；`EisodeDetail/ViewModel/Presentation/` 移至 `EisodeDetail/Presentation/`。同步記錄先前未入文件的流程變更於 8.2：設定頁依帳號模式顯示訪客卡（登入 / 註冊）並隱藏帳號區塊與登出；`LoginEntryContext`（`.root` / `.inApp`）與 page sheet 登入頁；登入後以 `initialTab` 還原原 tab。更新 3.1、12.4 與 15 節路徑。simulator Debug clean build 無警告、4.3 機械檢查無輸出；runtime 走查未執行 |

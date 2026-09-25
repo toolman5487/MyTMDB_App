@@ -9,8 +9,8 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 目標 | 保護 TMDB Session、補齊遠端撤銷、降低憑證與個資落盤風險、補齊 Privacy Manifest |
-| 狀態 | P0 Source Implemented / Static Verified；Build、Archive、Runtime 均 NotRun；P1、P2 Deferred |
-| 日期 | 2026-09-18 |
+| 狀態 | P0 與預設訪客 bootstrap Source Implemented / Static Verified；Build、Archive、Runtime 均 NotRun；P1、P2 Deferred |
+| 日期 | 2026-09-25 |
 
 ---
 
@@ -270,15 +270,17 @@ Data 層可以保留 `OSStatus` 供診斷，但 log 僅可記錄 operation 與 s
 2. 讀取 Keychain。
 3. Keychain item 存在且 envelope 可解碼、installation ID 相符：直接回傳 user／guest Session。
 4. Keychain item 存在但內容損壞：fail closed，回報 `.invalidStoredSession`。
-5. Keychain item 不存在：直接回傳 `.loggedOut`；不得讀取 `AuthSession` 或三個開發期 legacy key。
-6. 寫入 `.guest` 或 `.user`：寫入 Keychain 後 read-back 驗證；失敗不得切換至 Main root。
-7. 寫入 `.loggedOut` 或登出：刪除 Keychain item。
+5. Keychain item 不存在：Store 回傳 `.loggedOut`；不得讀取 `AuthSession` 或三個開發期 legacy key。
+6. 冷啟動的 `LaunchSessionResolver` 收到 `.loggedOut` 時，以 TMDB Guest Session API 建立 `.guest`。
+7. 寫入 `.guest` 或 `.user`：寫入 Keychain 後 read-back 驗證；失敗不得切換至 Main root。
+8. 寫入 `.loggedOut` 或登出：刪除 Keychain item。
 
-產品尚未上線，因此不提供 `UserDefaults` Session migration。開發環境中既有的 `AuthSession`、`TMDBSessionID`、`TMDBGuestSessionID`、`TMDBIsGuest` 不再讀取，需重新登入。
+產品尚未上線，因此不提供 `UserDefaults` Session migration。開發環境中既有的 `AuthSession`、`TMDBSessionID`、`TMDBGuestSessionID`、`TMDBIsGuest` 不再讀取；冷啟動會建立新的 guest，會員需從 App 內登入入口重新登入。
 
 ### 7.5 呼叫端行為
 
 - `AuthSessionValidator`：正常無 item才是 `.loggedOut`；儲存不可用不得偽裝為正常登出。
+- `LaunchSessionResolver`：只在冷啟動 `.loggedOut` 分支建立 guest；Keychain 寫入與 read-back 成功後才回傳可進入 Main root 的 session。
 - 啟動讀取失敗：停留在 root loading/error 狀態並提供重試；不得進入受保護頁面。
 - 登入儲存失敗：不切換到 Main root，顯示「無法安全儲存登入狀態，請重試」。
 - Detail / MemberCenter：讀取失敗時採 fail closed，帳號操作不可用，顯示既有可重試錯誤。
@@ -360,7 +362,7 @@ Data 實作：
 - request token 只保留於記憶體，不寫入 `UserDefaults`、Keychain 或 log。
 - callback 必須驗證 scheme、host/path、request token 與授權結果。
 - 使用者取消映射為 cancellation，不顯示帳密錯誤。
-- Guest Login 保留現況，但 Guest Session 也只存 Keychain。
+- 冷啟動預設 Guest 與登入頁手動 Guest 均沿用同一 Authentication Repository；Guest Session 只存 Keychain。
 
 ### 9.3 舊登入移除
 
@@ -621,14 +623,14 @@ Data 實作：
 
 | 編號 | 情境 | 預期 |
 |------|------|------|
-| R1 | Fresh install | 無 Keychain Session，進入 Login |
+| R1 | Fresh install | 無 Keychain Session，自動建立 guest、寫入 Keychain 後進入首頁 |
 | R2 | User login | user Session 只寫入 Keychain，UserDefaults 無 Session |
 | R3 | Guest login | guest Session 只寫入 Keychain，UserDefaults 無 Session |
-| R4 | 開發期 UserDefaults Session 殘留 | 不讀取舊 key，進入 Login 並要求重新登入 |
+| R4 | 開發期 UserDefaults Session 殘留 | 不讀取舊 key，自動建立新的 Keychain guest session |
 | R5 | Keychain 寫入失敗 | 不進受保護頁面並可重試 |
 | R6 | Keychain payload 損壞 | fail closed，不回退到 stale defaults |
 | R7 | App 重新啟動 | Keychain Session 正常恢復 |
-| R8 | App 卸載再安裝 | installation ID 不符，舊 Keychain Session 不自動登入 |
+| R8 | App 卸載再安裝 | installation ID 不符，舊 Keychain Session 不自動登入；清除後建立新 guest |
 | R9 | User logout 成功 | 遠端撤銷後本機 Session/Profile 清除 |
 | R10 | User logout 離線 | 不顯示成功，Session 保留並可重試 |
 | R11 | local-only logout | 經第二次確認後清本機，UI 明示遠端可能仍有效 |
@@ -686,6 +688,7 @@ Simulator 驗證不等同實機 Keychain、Data Protection、卸載重裝與鎖�
 - [Apple Describing Use of Required Reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api)
 - [Apple TN3183: Adding Required Reason API Entries](https://developer.apple.com/documentation/technotes/tn3183-adding-required-reason-api-entries-to-your-privacy-manifest)
 - [TMDB Session ID Authentication](https://developer.themoviedb.org/reference/authentication-how-do-i-generate-a-session-id)
+- [TMDB Create Guest Session](https://developer.themoviedb.org/reference/authentication-create-guest-session)
 - [TMDB Delete Session](https://developer.themoviedb.org/reference/authentication-delete-session)
 - [TMDB Application Authentication](https://developer.themoviedb.org/docs/authentication-application)
 - [TMDB Create Session with Login](https://developer.themoviedb.org/reference/authentication-create-session-from-login)
@@ -696,6 +699,7 @@ Simulator 驗證不等同實機 Keychain、Data Protection、卸載重裝與鎖�
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 1.3 Default Guest Bootstrap | 2026-09-25 | 冷啟動無 Keychain session 時，由 `LaunchSessionResolver` 建立 TMDB guest 並在 read-back 驗證成功後進首頁；安全儲存錯誤仍 fail closed。Guest 建立端點修正為 GET；Source / Static Verified，Build / Runtime NotRun |
 | 1.2 Prelaunch Keychain Cutover | 2026-09-18 | 產品尚未上線，移除所有 UserDefaults Session migration；user／guest Session 統一只存 Keychain，installation ID 保留為非憑證 reinstall marker |
 | 1.1 P0 Source Implemented | 2026-09-18 | 完成 Phase 1–3 source、authenticated request no-store 與靜態檢查；Build、Archive、Runtime NotRun；P1、P2 Deferred |
 | 1.0 Draft | 2026-09-18 | 依現行 source audit 建立 Keychain、遠端登出、網頁授權、credential hygiene、protected file 與 Privacy Manifest 分階段規格；Implementation / Build / Runtime 均 NotRun |

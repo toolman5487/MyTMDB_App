@@ -39,11 +39,10 @@ nonisolated final class AuthenticationRepository: AuthenticationProviding {
     }
 
     func createGuestSession() async throws -> String {
-        let dto: GuestSessionDTO = try await network.post(
-            path: APIConfig.Authentication.guestSessionNew,
-            body: nil
+        let dto: GuestSessionDTO = try await network.get(
+            path: APIConfig.Authentication.guestSessionNew
         )
-        guard dto.success else {
+        guard dto.success, !dto.guestSessionID.isEmpty else {
             throw URLError(.userAuthenticationRequired)
         }
 

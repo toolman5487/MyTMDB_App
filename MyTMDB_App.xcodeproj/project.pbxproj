@@ -146,6 +146,7 @@
 		15D198112FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198012FF8100000FCBB0F /* MainHomePosterCollectionViewCell.swift */; };
 		15D198132FF2201000545A85 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198122FF2201000545A85 /* SessionStore.swift */; };
 		15D198152FF2202000545A85 /* AuthFlowHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198142FF2202000545A85 /* AuthFlowHandler.swift */; };
+		F482FFB981A84F7A93701737 /* LaunchSessionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51F982AB13C4946B7351FD6 /* LaunchSessionResolver.swift */; };
 		15D198212FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198022FF8100000FCBB0F /* MainHomeContentStripCollectionViewCell.swift */; };
 		15D198312FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198032FF8100000FCBB0F /* MainHomeSectionCollectionViewCells.swift */; };
 		15D198512FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D198412FF8200000FCBB0F /* MainHomeFeaturedHeaderView.swift */; };
@@ -733,6 +734,7 @@
 		E60ACEABAA3474A074E8E0F7 /* HomeSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeSection.swift; sourceTree = "<group>"; };
 		EF396913E951E07C13BF93E6 /* TVDetailDTO+Mapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "TVDetailDTO+Mapping.swift"; sourceTree = "<group>"; };
 		F1417E6FC462FB7D06F3DF79 /* ReviewListViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewListViewModel.swift; sourceTree = "<group>"; };
+		F51F982AB13C4946B7351FD6 /* LaunchSessionResolver.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LaunchSessionResolver.swift; sourceTree = "<group>"; };
 		F60EB2CEA96EB9D448274D79 /* RefreshAccountProfileUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RefreshAccountProfileUseCase.swift; sourceTree = "<group>"; };
 		F86A3039B02DED99BC09DC1D /* MediaKind.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediaKind.swift; sourceTree = "<group>"; };
 		F980BDABD83734B2B059792B /* HomeSectionListPresentationModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeSectionListPresentationModels.swift; sourceTree = "<group>"; };
@@ -2443,6 +2445,7 @@
 			isa = PBXGroup;
 			children = (
 				15D198142FF2202000545A85 /* AuthFlowHandler.swift */,
+				F51F982AB13C4946B7351FD6 /* LaunchSessionResolver.swift */,
 			);
 			path = Flow;
 			sourceTree = "<group>";
@@ -3945,6 +3948,7 @@
 				15A6A0B63005A00000AD5E46 /* MainMemberSettingSectionHeaderView.swift in Sources */,
 				15A6A0C23005B00000AD5E46 /* MainMemberSettingRouter.swift in Sources */,
 				15D198152FF2202000545A85 /* AuthFlowHandler.swift in Sources */,
+				F482FFB981A84F7A93701737 /* LaunchSessionResolver.swift in Sources */,
 				15D1972A2FF167FE00545A85 /* UIColorExtension.swift in Sources */,
 				15D196D72FF14D2300545A85 /* AppLogger.swift in Sources */,
 				15D196C12FF14A2100545A85 /* NetworkService.swift in Sources */,
