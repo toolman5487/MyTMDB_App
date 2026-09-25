@@ -173,6 +173,18 @@ class ScrollTrackingBaseViewController: BaseViewController, CollectionViewItemSi
         collectionView.reloadData()
     }
 
+    // MARK: - Scroll Position
+
+    func scrollContentToTop(animated: Bool = true) {
+        let topContentOffset = CGPoint(
+            x: collectionView.contentOffset.x,
+            y: -collectionView.adjustedContentInset.top
+        )
+        guard collectionView.contentOffset.y > topContentOffset.y else { return }
+
+        collectionView.setContentOffset(topContentOffset, animated: animated)
+    }
+
     // MARK: - Tab Bar Visibility
 
     func resetTabBarVisibilityTracking() {

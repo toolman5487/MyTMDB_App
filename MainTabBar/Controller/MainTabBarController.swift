@@ -368,19 +368,18 @@ final class MainTabBarController: UITabBarController {
         updateTabBarAccessibilityValues()
     }
 
-    private func popMainMemberSettingToRootIfNeeded(
+    private func scrollToTopIfNeeded(
         for viewController: UIViewController,
         isReselection: Bool
     ) {
-        guard isReselection else { return }
-        guard let navigationController = viewController as? UINavigationController,
-              navigationController.viewControllers.first is MainMemberSettingViewController else {
+        guard isReselection,
+              let navigationController = viewController as? UINavigationController,
+              let scrollViewController = navigationController.topViewController
+                as? ScrollTrackingBaseViewController else {
             return
         }
 
-        if navigationController.viewControllers.count > 1 {
-            navigationController.popToRootViewController(animated: true)
-        }
+        scrollViewController.scrollContentToTop()
     }
 
     private func rootViewController(for tabKind: MainTabKind) -> UIViewController? {
@@ -584,7 +583,7 @@ extension MainTabBarController: UITabBarControllerDelegate {
         let isReselection = isReselectingSelectedTab
         isReselectingSelectedTab = false
         updateTabBarAccessibilityValues()
-        popMainMemberSettingToRootIfNeeded(for: viewController, isReselection: isReselection)
+        scrollToTopIfNeeded(for: viewController, isReselection: isReselection)
     }
 
     func tabBarController(
