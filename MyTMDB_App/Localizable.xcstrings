@@ -2542,6 +2542,29 @@
         }
       }
     },
+    "detail.production_company.accessibility_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to view this production company"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップしてこの制作会社を表示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點兩下查看此製作公司"
+          }
+        }
+      }
+    },
     "detail.error.delete_rating.title" : {
       "extractionState" : "manual",
       "localizations" : {

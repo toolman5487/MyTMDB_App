@@ -18,6 +18,7 @@ protocol TVDetailRouting: AnyObject {
     func showSeasonDetail(seasonNumber: Int)
     func showTVDetail(seriesID: Int)
     func showGenreList(genreID: Int)
+    func showCompanyDetail(companyID: Int)
     func showWatchProvider(url: URL, title: String?)
     func showContentList(_ configuration: DetailContentListConfiguration)
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
@@ -105,6 +106,10 @@ final class TVDetailRouter: BaseRouter, TVDetailRouting {
         }
 
         mainTabBarController.showTVGenreList(genreID: genreID)
+    }
+
+    func showCompanyDetail(companyID: Int) {
+        detailRouter.showCompanyDetail(companyID: companyID)
     }
 
     func showWatchProvider(url: URL, title: String?) {

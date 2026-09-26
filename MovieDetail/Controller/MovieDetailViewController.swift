@@ -486,8 +486,13 @@ extension MovieDetailViewController: UICollectionViewDataSource {
                 with: item,
                 localization: interfaceLocalization
             ) { [weak self] attribute in
-                guard attribute.kind == .genre else { return }
-                self?.router.showGenreList(genreID: attribute.sourceID)
+                switch attribute.kind {
+                case .genre:
+                    self?.router.showGenreList(genreID: attribute.sourceID)
+
+                case .productionCompany:
+                    self?.router.showCompanyDetail(companyID: attribute.sourceID)
+                }
             }
             return cell
 

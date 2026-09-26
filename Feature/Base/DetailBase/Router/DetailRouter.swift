@@ -29,6 +29,7 @@ protocol DetailRouting {
     func openExternalURL(_ url: URL)
     func showLogin()
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
+    func showCompanyLogoImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?)
 
     // MARK: - Page Sheet
 
@@ -176,6 +177,22 @@ final class DetailRouter: BaseRouter, DetailRouting {
         let previewImageURLs = imageURLs.isEmpty ? [selectedImageURL] : imageURLs
         let selectedIndex = previewImageURLs.firstIndex(of: selectedImageURL) ?? 0
         let viewController = DetailImagePreviewViewController(
+            imageURLs: previewImageURLs,
+            selectedIndex: selectedIndex,
+            title: title,
+            interfaceLocalization: interfaceLocalization
+        )
+        show(viewController, using: .fullScreen)
+    }
+
+    func showCompanyLogoImagePreview(
+        imageURLs: [URL],
+        selectedImageURL: URL,
+        title: String?
+    ) {
+        let previewImageURLs = imageURLs.isEmpty ? [selectedImageURL] : imageURLs
+        let selectedIndex = previewImageURLs.firstIndex(of: selectedImageURL) ?? 0
+        let viewController = CompanyLogoImagePreviewViewController(
             imageURLs: previewImageURLs,
             selectedIndex: selectedIndex,
             title: title,

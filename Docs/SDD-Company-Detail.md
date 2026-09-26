@@ -8,15 +8,15 @@
 | 平台 | iOS 26.0+ |
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
-| 功能範圍 | 新增 `CompanyDetail` 模組（製作公司詳細頁面），從 MainSearch 公司搜尋結果導入；第 11 節擴充 `DetailContentList` 共用元件的無限捲動分頁能力 |
-| 狀態 | `CompanyDetail` 基礎模組與第 11 節分頁擴充：Source Implementation Done、Static Verification Passed、Build Passed、Runtime Passed（2026-09-24 Simulator 驗證，含 Marvel Studios 無限捲動分頁與 Person 迴歸測試） |
-| 日期 | 2026-09-24（初版）；2026-09-24 更新第 11 節 |
+| 功能範圍 | 新增 `CompanyDetail` 模組（製作公司詳細頁面），從 MainSearch、MovieDetail 與 TVDetail 導入；第 11 節擴充 `DetailContentList` 共用元件的無限捲動分頁能力 |
+| 狀態 | `CompanyDetail` 基礎模組與第 11 節分頁擴充：Build／Runtime Passed（2026-09-24）；MovieDetail／TVDetail 出品公司入口：Source Implementation Done、Static Verification Passed，Build／Runtime Pending（2026-09-25） |
+| 日期 | 2026-09-24（初版）；2026-09-24 更新第 11 節；2026-09-25 新增 MovieDetail／TVDetail 出品公司入口；2026-09-26 新增公司標誌專用預覽頁 |
 
 ---
 
 ## 1. 目的
 
-本文件定義 CineBase 的「製作公司詳細頁面」（Company Detail），對應 TMDB `/company/{id}` 家族端點。目前 `APIConfig.Search.company` 已在 MainSearch 提供公司搜尋與篩選（見對話紀錄新增的 Company 篩選分類），但點擊公司結果目前是 no-op（`MainSearchRouter.swift` 的 `case .company: break`）。本文件規劃補上對應的詳細頁面，讓公司搜尋結果、以及未來電影／影集詳情頁的出品公司標籤，都能導向一致的公司資訊畫面。
+本文件定義 CineBase 的「製作公司詳細頁面」（Company Detail），對應 TMDB `/company/{id}` 家族端點。`APIConfig.Search.company` 已在 MainSearch 提供公司搜尋與篩選；MainSearch 公司結果及 MovieDetail／TVDetail 出品公司標籤都透過既有 `DetailRouter` 導向一致的公司資訊畫面。
 
 本功能需符合下列原則：
 
@@ -43,13 +43,13 @@
 - `PersonDetail` 既有「查看更多」（`movieCredits`／`tvCredits`）維持現狀：資料本來就一次拿齊、非分頁，使用者已經能看到該演員的全部作品，不需額外改動。
 - 顯示公司別名（`/company/{id}/alternative_names`）與多國 Logo（`/company/{id}/images`）。
 - 從 `MainSearch` 的公司搜尋結果可正確導頁至新頁面（取代目前的 no-op）。
+- 從 `MovieDetail`／`TVDetail` 的出品公司標籤可導頁至相同的 `CompanyDetail`；類型與 Network 標籤維持既有行為。
 - `APIConfig` 新增 `Company` 端點群組。
 - 妥善處理 TMDB 公司 Logo 經常是 `.svg` 向量圖的情況（見 3.5、7.2、13）。
 
 ### 2.2 非目標
 
 - 不處理母公司（`parent_company`）的巢狀導頁；母公司只顯示名稱文字，不可點擊。
-- 不將 `MovieDetail`／`TVDetail` 既有「出品公司」標籤（`MovieDetailAttributeItem(kind: .productionCompany)`）改為可點擊；那屬於另一個獨立變更，會牽動已穩定的 `MovieDetailSectionBuilder` 與 attribute pill cell，不在本次範圍內。
 - 不擴充 `MainMediaList`／`MediaListRepository`；分頁能力直接建立在 `DetailContentList` 模組上（見第 11 節），不與 genre-based 的媒體清單共用程式碼。
 - 不改動 `PersonDetail` 的資料層（`combined_credits` 已是完整清單）；只有共用的 `DetailContentListViewController` 會新增「可分頁」能力，且該能力對 `PersonDetail` 是 opt-in（預設關閉，行為零異動）。
 - 不下載或解析 SVG，不新增 SVG 圖片解碼套件；SVG 格式的 Logo 一律視為不可顯示，改用預留樣式。
@@ -75,7 +75,7 @@
 
 ### 3.2 `ProductionCompany` 現況
 
-`Feature/Domain/Entity/ProductionCompany.swift` 只在 `MovieDetail`／`TVDetail` 的「出品公司」欄位顯示成不可點擊的文字標籤（`MovieDetailAttributeItem(kind: .productionCompany)`），純粹附屬資訊，不會呼叫 `/company/{id}`。本功能不修改這條路徑（見 2.2 非目標）。
+`Feature/Domain/Entity/ProductionCompany.swift` 提供穩定的 `id` 與名稱；MovieDetail／TVDetail section builder 會將它映射成 `kind: .productionCompany` 的 attribute item，保留 `sourceID`。Attribute pill cell 將公司項目標示為可操作按鈕，Controller 再把該 ID 交給 feature router，最終由共用 `DetailRouter.showCompanyDetail(companyID:)` 導頁。
 
 ### 3.3 `PersonDetail` 作為結構範本
 
@@ -1024,7 +1024,7 @@ final class CompanyDetailLogosCollectionViewCell: DetailImageTitleStripCollectio
 }
 ```
 
-`Movies`／`TVShows` 點擊透過 `router.showMediaDetail(kind:id:)` 導頁（重用既有方法，不新增）。`Logos` 點擊比照 `PersonDetailProfileImagesCollectionViewCell`，呼叫 `router.showImagePreview(imageURLs:selectedImageURL:title:)`。
+`Movies`／`TVShows` 點擊透過 `router.showMediaDetail(kind:id:)` 導頁（重用既有方法，不新增）。`Logos` 清單的圖片底色使用 `.label`；點擊後由 Router 顯示 `CompanyLogoImagePreviewViewController`。此專用 VC 繼承 `DetailImagePreviewViewController`，覆寫背景為 `.label`、控制元件前景色為 `.systemBackground`，在深淺模式下維持反差；共用預覽頁仍維持黑底白色控制元件，縮放、分頁、手勢與 accessibility 行為全部沿用基底實作。
 
 ### 9.5 別名：`CompanyDetailAlternativeNamesCollectionViewCell`（新增共用基礎元件）
 
@@ -1173,7 +1173,9 @@ case .company:
     detailRouter.showCompanyDetail(companyID: item.sourceID)
 ```
 
-這是本 SDD 唯一需要修改既有檔案（`MainSearchRouter.swift`）的地方；其餘既有模組（`MovieDetail`／`TVDetail` 的出品公司標籤）依 2.2 不予變更。
+### 10.4 MovieDetail／TVDetail 出品公司入口
+
+MovieDetail／TVDetail 保留既有 UIKit／MVVM／Router／DI 邊界：section builder 只產生帶有 `sourceID` 的 presentation item；attribute pill cell 只回傳使用者選取的 item；ViewController 依 `kind` 分流；Movie／TV 專屬 router 再轉發到共用 `DetailRouter`。`AppComposition` 沿用既有 `makeCompanyDetailViewController(companyID:)`，不建立第二套 CompanyDetail factory，也不改動其他 attribute UI。
 
 ---
 
@@ -1541,6 +1543,8 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - 確認 `PersonDetail` 的「Also Known As」區塊在 `DetailPillListCollectionViewCell` 抽取後外觀與互動未變。
 - 確認離線或 API 錯誤時，`.failed` 狀態的重試流程可用（比照既有詳情頁）。
 - 分頁擴充項目見第 11.9 節。
+- 從任一 MovieDetail 與 TVDetail 點擊出品公司 pill，確認 push 至 ID 對應的 `CompanyDetailViewController`；類型與 TV Network 標籤的既有互動維持不變。
+- 點擊 CompanyDetail 的任一標誌，確認開啟 `CompanyLogoImagePreviewViewController`，列表縮圖與全螢幕圖片背景皆為 `.label`，Page Control、頁碼與關閉按鈕以 `.systemBackground` 保持可見，並驗證分頁、縮放及關閉操作；其他功能的圖片預覽維持黑底白色控制元件。
 
 ---
 
@@ -1557,7 +1561,7 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 | 使用者快速捲動可能短時間內觸發多次下一頁請求 | 重複請求、資料重複插入、UI 閃爍 | 重用既有 `MediaGridPaginationTaskController`／`isLoadingNextPage` 機制防止重疊呼叫，插入前用 `Set` 對已存在的 `id` 去重（11.5、11.10） |
 | 下一頁請求失敗時使用者不知道還有沒有更多資料 | 使用者可能誤以為清單已經到底 | 第一版選擇「安靜失敗、`canLoadNextPage` 設為 `false`」，不新增重試 UI；已在 11.10 明確記錄為已知限制，非遺漏 |
 | `origin_country` 是 ISO 代碼，直接顯示不友善 | Facts／Header metadata 顯示 `"US"` 而非「美國」 | 已確認 `BaseFormatter` 無地區名稱對照，改用 Foundation `Locale.localizedString(forRegionCode:)`，不新增自訂對照表（7.1） |
-| 母公司／出品公司標籤未來也想連到同一頁面，範圍蔓延 | 被要求立即擴大範圍 | 明確列為非目標（2.2），需要時另立 SDD，不在本次 Router／Section Builder 改動中偷渡 |
+| 出品公司入口誤用名稱而非 TMDB ID 導頁 | 同名公司可能導向錯誤資料 | 沿用 `ProductionCompany.id` → attribute `sourceID` → Router `companyID` 的純 ID 資料流，不以顯示文字查詢 |
 | 新增 `APIConfig.Company` 與既有字母序慣例不一致 | 之後盤點端點時難以維護 | 依現有 A-Z enum 排列慣例插入 `Collection` 與 `Configuration` 之間（6.1） |
 
 ---
@@ -1571,6 +1575,7 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - SVG Logo 一律不嘗試顯示，Header 有預留樣式。
 - `DetailPillListCollectionViewCell` 抽取後，`PersonDetail` 既有畫面行為與外觀不變。
 - `MainSearchRouter` 的 `case .company` 導向新頁面，不再是 no-op。
+- MovieDetail／TVDetail 的 `.productionCompany` attribute 導向相同 CompanyDetail；genre 與 TV network 行為不變。
 - `DetailRouting`／`DetailSceneBuilding` 新增方法命名符合 `SDD-Unified-Interface-Naming.md`。
 - 12.1 Source 檢查、12.2 Typecheck／Build 通過並獨立記錄結果。
 - 12.3 Runtime 項目（含 SVG 公司、深色模式、Person 迴歸、電影／影集清單無限捲動分頁）以 Simulator 或實機驗證後才能標記 Passed。
@@ -1583,7 +1588,7 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 
 ## 15. 實作狀態
 
-截至 2026-09-24：
+截至 2026-09-26：
 
 **基礎 `CompanyDetail` 模組（第 1–10 節，含電影／影集清單只顯示第一頁的「查看更多」）**
 
@@ -1600,6 +1605,20 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - Static Verification：Passed（whole-module typecheck，0 errors／0 warnings）。
 - Xcode Build：Passed（`xcodebuild build` BUILD SUCCEEDED，僅有前述 2 個既有 linker warning，無新增警告）。實作過程中發現 `DetailContentListPageProviding` 不能宣告為 `nonisolated`（`actor` 遵循 `nonisolated` protocol會導致 `actor` initializer 隔離規則衝突），此問題只有完整 Build 才會出現、`swiftc -typecheck` 不會（見 11.3 附註），已修正並重新驗證兩者皆通過。
 - Runtime／UI：Passed（2026-09-24，同一次 Simulator session）。點擊 Marvel Studios「電影」Section Header 進入 `DetailContentListViewController`，持續下拉捲動，清單從第一頁（首批約 20 筆：蜘蛛人、復仇者聯盟系列等）不間斷載入到後續頁面（含 Team Thor、Agent Carter 等 one-shot 短片），最終捲到 TMDB 資料庫盡頭（未上映的 Spider-Man 5、Untitled Deadpool/X-Men Teamup Film 等），清單自然停止成長、無重複項目、無崩潰、`canLoadNextPage` 正確落為 `false`；返回上一頁與整體 App 操作皆維持正常回應，未觀察到記憶體或效能異常。
+
+**MovieDetail／TVDetail 出品公司入口（2026-09-25）**
+
+- Source Implementation：Done（沿用既有 production company ID、attribute selection callback、`DetailRouter.showCompanyDetail` 與 `AppComposition.makeCompanyDetailViewController`）。
+- Static Verification：Passed（Swift frontend parse、String Catalog JSON／compile、`project.pbxproj` lint、`git diff --check`）。
+- Xcode Build：Not Run（本次為小範圍既有路由串接，依專案規範先採快速靜態檢查）。
+- Runtime／UI：Not Run（尚未以 Simulator／實機點擊 MovieDetail 與 TVDetail 的出品公司 pill 驗證 push 與返回流程）。
+
+**CompanyDetail 標誌專用預覽（2026-09-26）**
+
+- Source Implementation：Done（`CompanyLogoImagePreviewViewController` 繼承共用圖片預覽，只覆寫 `.label` 背景；CompanyDetail Logos 由 Router 導向專用 VC）。
+- Static Verification：Passed（Swift frontend parse、`project.pbxproj` lint／target membership、`git diff --check`）。
+- Xcode Build：Not Run（依專案規範先執行快速靜態檢查）。
+- Runtime／UI：Not Run（尚未以 Simulator／實機驗證 `.label` 動態色彩、透明 Logo、分頁與縮放效果）。
 
 本文件建立不代表功能已實作。每個狀態只能在取得對應證據後更新。
 

@@ -321,7 +321,7 @@ extension CompanyDetailViewController: UICollectionViewDataSource {
     }
 
     private func showImagePreview(selectedImageURL: URL) {
-        router.showImagePreview(
+        router.showCompanyLogoImagePreview(
             imageURLs: companyLogoURLs(),
             selectedImageURL: selectedImageURL,
             title: companyName()

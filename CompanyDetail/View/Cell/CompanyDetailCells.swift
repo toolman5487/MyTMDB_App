@@ -427,6 +427,7 @@ final class CompanyDetailLogosCollectionViewCell: DetailImageTitleStripCollectio
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
+            imageBackgroundColor: .label,
             localization: localization
         ) { item in
             guard let logoItem = items.first(where: { $0.id == item.id }),

@@ -478,15 +478,41 @@ private final class TVDetailAttributePillCollectionViewCell: BaseCollectionViewC
         applyAccessibility(
             AccessibilityText(
                 label: item.title,
-                hint: item.kind == .genre
-                    ? localization.string(
-                        "tv_detail.genre.accessibility_hint",
-                        defaultValue: "Double-tap to view TV shows in this genre"
-                    )
-                    : nil
+                hint: accessibilityHint(
+                    for: item.kind,
+                    localization: localization
+                )
             )
         )
-        accessibilityTraits = item.kind == .genre ? .button : .staticText
+        switch item.kind {
+        case .genre, .productionCompany:
+            accessibilityTraits = .button
+
+        case .network:
+            accessibilityTraits = .staticText
+        }
+    }
+
+    private func accessibilityHint(
+        for kind: TVDetailAttributeItem.Kind,
+        localization: AppInterfaceLocalization
+    ) -> String? {
+        switch kind {
+        case .genre:
+            return localization.string(
+                "tv_detail.genre.accessibility_hint",
+                defaultValue: "Double-tap to view TV shows in this genre"
+            )
+
+        case .productionCompany:
+            return localization.string(
+                "detail.production_company.accessibility_hint",
+                defaultValue: "Double-tap to view this production company"
+            )
+
+        case .network:
+            return nil
+        }
     }
 
     static func fittingSize(for item: TVDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {

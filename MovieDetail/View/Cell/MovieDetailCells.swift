@@ -481,15 +481,32 @@ private final class MovieDetailAttributePillCollectionViewCell: BaseCollectionVi
         applyAccessibility(
             AccessibilityText(
                 label: item.title,
-                hint: item.kind == .genre
-                    ? localization.string(
-                        "movie_detail.genre.accessibility_hint",
-                        defaultValue: "Double-tap to view movies in this genre"
-                    )
-                    : nil
+                hint: accessibilityHint(
+                    for: item.kind,
+                    localization: localization
+                )
             )
         )
-        accessibilityTraits = item.kind == .genre ? .button : .staticText
+        accessibilityTraits = .button
+    }
+
+    private func accessibilityHint(
+        for kind: MovieDetailAttributeItem.Kind,
+        localization: AppInterfaceLocalization
+    ) -> String {
+        switch kind {
+        case .genre:
+            return localization.string(
+                "movie_detail.genre.accessibility_hint",
+                defaultValue: "Double-tap to view movies in this genre"
+            )
+
+        case .productionCompany:
+            return localization.string(
+                "detail.production_company.accessibility_hint",
+                defaultValue: "Double-tap to view this production company"
+            )
+        }
     }
 
     static func fittingSize(for item: MovieDetailAttributeItem, maximumWidth: CGFloat) -> CGSize {

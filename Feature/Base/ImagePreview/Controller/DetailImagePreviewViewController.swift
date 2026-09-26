@@ -12,7 +12,7 @@ import UIKit
 // MARK: - DetailImagePreviewViewController
 
 @MainActor
-final class DetailImagePreviewViewController: UIViewController {
+class DetailImagePreviewViewController: UIViewController {
 
     // MARK: - Layout
 
@@ -33,6 +33,14 @@ final class DetailImagePreviewViewController: UIViewController {
     private var currentIndex: Int
     private var isPaging = false
     private var lastPageTapDate: Date?
+
+    var previewBackgroundColor: UIColor {
+        .black
+    }
+
+    var previewForegroundColor: UIColor {
+        .white
+    }
 
     // MARK: - UI Components
 
@@ -110,7 +118,12 @@ final class DetailImagePreviewViewController: UIViewController {
     // MARK: - Setup
 
     private func configureView() {
-        view.backgroundColor = .black
+        view.backgroundColor = previewBackgroundColor
+        pageViewController.view.backgroundColor = previewBackgroundColor
+        pageControl.currentPageIndicatorTintColor = previewForegroundColor
+        pageControl.pageIndicatorTintColor = previewForegroundColor.withAlphaComponent(0.32)
+        pageTextLabel.textColor = previewForegroundColor
+        closeButton.tintColor = previewForegroundColor
         pageControl.accessibilityLabel = interfaceLocalization.string(
             "image_preview.page_control.accessibility_label",
             defaultValue: "Image Page"
@@ -202,6 +215,7 @@ final class DetailImagePreviewViewController: UIViewController {
             index: index,
             totalCount: imageURLs.count,
             previewTitle: previewTitle,
+            backgroundColor: previewBackgroundColor,
             interfaceLocalization: interfaceLocalization
         )
     }
@@ -349,6 +363,7 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     private let imageURL: URL
     private let totalCount: Int
     private let previewTitle: String?
+    private let backgroundColor: UIColor
     private let interfaceLocalization: AppInterfaceLocalization
 
     // MARK: - UI Components
@@ -377,12 +392,14 @@ private final class DetailImagePreviewPageViewController: UIViewController {
         index: Int,
         totalCount: Int,
         previewTitle: String?,
+        backgroundColor: UIColor,
         interfaceLocalization: AppInterfaceLocalization
     ) {
         self.imageURL = imageURL
         self.index = index
         self.totalCount = totalCount
         self.previewTitle = previewTitle
+        self.backgroundColor = backgroundColor
         self.interfaceLocalization = interfaceLocalization
         super.init(nibName: nil, bundle: nil)
     }
@@ -409,7 +426,7 @@ private final class DetailImagePreviewPageViewController: UIViewController {
     // MARK: - Setup
 
     private func configureView() {
-        view.backgroundColor = .black
+        view.backgroundColor = backgroundColor
         scrollView.delegate = self
         let titleText = BaseDisplayTextFormatter.nonEmptyText(previewTitle)
             ?? interfaceLocalization.string("image_preview.image.fallback_title", defaultValue: "Image")
