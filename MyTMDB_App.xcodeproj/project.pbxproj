@@ -159,6 +159,7 @@
 		15DAAF302FFDE90009FB88A /* EpisodeDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DAAF022FFDE90009FB88A /* EpisodeDetailViewModel.swift */; };
 		15DAAF502FFDEA0009FB88A /* EpisodeDetailCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DAAF402FFDEA0009FB88A /* EpisodeDetailCells.swift */; };
 		15DAAF602FFDEA0009FB88A /* EpisodeDetailHeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DAAF412FFDEA0009FB88A /* EpisodeDetailHeroHeaderView.swift */; };
+		B45E1A9E0A1B2C3D4E5F6072 /* BaseImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45E1A9E0A1B2C3D4E5F6071 /* BaseImagePreviewViewController.swift */; };
 		15DAB0223007D00009FB88A /* DetailImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DAB0203007D00009FB88A /* DetailImagePreviewViewController.swift */; };
 		15DACD023008F10000ACCD01 /* DetailAccountMediaStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */; };
 		15DCC003300D000000DCC003 /* DetailContentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15DCC001300D000000DCC001 /* DetailContentListViewController.swift */; };
@@ -522,6 +523,7 @@
 		15DAAF022FFDE90009FB88A /* EpisodeDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailViewModel.swift; sourceTree = "<group>"; };
 		15DAAF402FFDEA0009FB88A /* EpisodeDetailCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailCells.swift; sourceTree = "<group>"; };
 		15DAAF412FFDEA0009FB88A /* EpisodeDetailHeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeDetailHeroHeaderView.swift; sourceTree = "<group>"; };
+		B45E1A9E0A1B2C3D4E5F6071 /* BaseImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseImagePreviewViewController.swift; sourceTree = "<group>"; };
 		15DAB0203007D00009FB88A /* DetailImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailImagePreviewViewController.swift; sourceTree = "<group>"; };
 		15DACD013008F10000ACCD01 /* DetailAccountMediaStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAccountMediaStateController.swift; sourceTree = "<group>"; };
 		15DCC001300D000000DCC001 /* DetailContentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailContentListViewController.swift; sourceTree = "<group>"; };
@@ -2109,6 +2111,7 @@
 		15DAB0253008300009FB88A /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				B45E1A9E0A1B2C3D4E5F6071 /* BaseImagePreviewViewController.swift */,
 				15DAB0203007D00009FB88A /* DetailImagePreviewViewController.swift */,
 			);
 			path = Controller;
@@ -3981,6 +3984,7 @@
 				15E100162FF7000000E10001 /* DetailActionBarViewController.swift in Sources */,
 				15CF99D52FF371130041F4CC /* DetailBaseViewController.swift in Sources */,
 				15DCC003300D000000DCC003 /* DetailContentListViewController.swift in Sources */,
+				B45E1A9E0A1B2C3D4E5F6072 /* BaseImagePreviewViewController.swift in Sources */,
 				15DAB0223007D00009FB88A /* DetailImagePreviewViewController.swift in Sources */,
 				15E100032FF7000000E10001 /* DetailBottomActionBarView.swift in Sources */,
 				15F000032FF7500000F00001 /* RatingPageSheetViewController.swift in Sources */,

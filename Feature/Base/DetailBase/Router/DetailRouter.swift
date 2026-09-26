@@ -174,11 +174,9 @@ final class DetailRouter: BaseRouter, DetailRouting {
     }
 
     func showImagePreview(imageURLs: [URL], selectedImageURL: URL, title: String?) {
-        let previewImageURLs = imageURLs.isEmpty ? [selectedImageURL] : imageURLs
-        let selectedIndex = previewImageURLs.firstIndex(of: selectedImageURL) ?? 0
         let viewController = DetailImagePreviewViewController(
-            imageURLs: previewImageURLs,
-            selectedIndex: selectedIndex,
+            imageURLs: imageURLs,
+            selectedImageURL: selectedImageURL,
             title: title,
             interfaceLocalization: interfaceLocalization
         )
@@ -190,11 +188,9 @@ final class DetailRouter: BaseRouter, DetailRouting {
         selectedImageURL: URL,
         title: String?
     ) {
-        let previewImageURLs = imageURLs.isEmpty ? [selectedImageURL] : imageURLs
-        let selectedIndex = previewImageURLs.firstIndex(of: selectedImageURL) ?? 0
         let viewController = CompanyLogoImagePreviewViewController(
-            imageURLs: previewImageURLs,
-            selectedIndex: selectedIndex,
+            imageURLs: imageURLs,
+            selectedImageURL: selectedImageURL,
             title: title,
             interfaceLocalization: interfaceLocalization
         )

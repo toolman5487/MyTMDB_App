@@ -1024,7 +1024,7 @@ final class CompanyDetailLogosCollectionViewCell: DetailImageTitleStripCollectio
 }
 ```
 
-`Movies`／`TVShows` 點擊透過 `router.showMediaDetail(kind:id:)` 導頁（重用既有方法，不新增）。`Logos` 清單的圖片底色使用 `.label`；點擊後由 Router 顯示 `CompanyLogoImagePreviewViewController`。此專用 VC 繼承 `DetailImagePreviewViewController`，覆寫背景為 `.label`、控制元件前景色為 `.systemBackground`，在深淺模式下維持反差；共用預覽頁仍維持黑底白色控制元件，縮放、分頁、手勢與 accessibility 行為全部沿用基底實作。
+`Movies`／`TVShows` 點擊透過 `router.showMediaDetail(kind:id:)` 導頁（重用既有方法，不新增）。`Logos` 清單的圖片底色使用 `.label`；點擊後由 Router 顯示 `CompanyLogoImagePreviewViewController`。圖片預覽的分頁、縮放、手勢與 accessibility 行為集中在 `BaseImagePreviewViewController`；基底不持有任何顏色，只宣告 `previewBackgroundColor`、`previewForegroundColor`、`previewPageIndicatorColor`、`previewTitleColor`、`previewCloseButtonBackgroundColor`（未覆寫即 `fatalError`），由各子類別覆寫，狀態列樣式也由子類別覆寫 `preferredStatusBarStyle`。`DetailImagePreviewViewController` 使用 `ThemeColor.background` 背景、`ThemeColor.textPrimary` 控制元件與 `.lightContent` 狀態列（全域鎖定深色模式下即黑底白色控制元件）；`CompanyLogoImagePreviewViewController` 使用 `.label` 背景、`.systemBackground` 控制元件與 `.darkContent` 狀態列，維持與頁面的反差；兩者頁點為前景色 32%、關閉按鈕底色為背景色 48% 透明度，標題皆為 `ThemeColor.highlight`。
 
 ### 9.5 別名：`CompanyDetailAlternativeNamesCollectionViewCell`（新增共用基礎元件）
 
@@ -1544,7 +1544,7 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - 確認離線或 API 錯誤時，`.failed` 狀態的重試流程可用（比照既有詳情頁）。
 - 分頁擴充項目見第 11.9 節。
 - 從任一 MovieDetail 與 TVDetail 點擊出品公司 pill，確認 push 至 ID 對應的 `CompanyDetailViewController`；類型與 TV Network 標籤的既有互動維持不變。
-- 點擊 CompanyDetail 的任一標誌，確認開啟 `CompanyLogoImagePreviewViewController`，列表縮圖與全螢幕圖片背景皆為 `.label`，Page Control、頁碼與關閉按鈕以 `.systemBackground` 保持可見，並驗證分頁、縮放及關閉操作；其他功能的圖片預覽維持黑底白色控制元件。
+- 點擊 CompanyDetail 的任一標誌，確認開啟 `CompanyLogoImagePreviewViewController`，列表縮圖與全螢幕圖片背景皆為 `.label`，Page Control、頁碼與關閉按鈕以 `.systemBackground` 保持可見，狀態列文字在白底上可辨識，並驗證分頁、縮放及關閉操作；其他功能的圖片預覽維持黑底白色控制元件。
 
 ---
 
