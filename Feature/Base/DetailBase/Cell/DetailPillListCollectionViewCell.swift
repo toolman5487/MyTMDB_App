@@ -34,7 +34,7 @@ class DetailPillListCollectionViewCell: BaseNestedCollectionViewCell {
     private var interfaceLocalization = AppInterfaceLocalization.traditionalChinese
 
     override func configureView() {
-        containerView.backgroundColor = .clear
+        containerView.backgroundColor = ThemeColor.clear
         collectionViewFlowLayout.sectionInset = DetailLayoutMetrics.horizontalContentInsets
         collectionViewFlowLayout.minimumLineSpacing = 8
         collectionViewFlowLayout.minimumInteritemSpacing = 8

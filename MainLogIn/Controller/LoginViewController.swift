@@ -74,7 +74,7 @@ final class LoginViewController: BaseViewController {
 
     private let loadingOverlayView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.4)
+        view.backgroundColor = ThemeColor.background.withAlphaComponent(0.4)
         view.isHidden = true
         return view
     }()
@@ -82,8 +82,8 @@ final class LoginViewController: BaseViewController {
     private lazy var pageControl: UIPageControl = {
         let control = UIPageControl()
         control.currentPage = 0
-        control.currentPageIndicatorTintColor = .label
-        control.pageIndicatorTintColor = .tertiaryLabel
+        control.currentPageIndicatorTintColor = ThemeColor.textPrimary
+        control.pageIndicatorTintColor = ThemeColor.textTertiary
         control.accessibilityLabel = localization.string(
             "login.page_control.accessibility_label",
             defaultValue: "Sign-in Method"

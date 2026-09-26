@@ -52,7 +52,7 @@ class BaseFilterHeaderView: UICollectionReusableView {
             frame: .zero,
             collectionViewLayout: collectionViewFlowLayout
         )
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.delaysContentTouches = false

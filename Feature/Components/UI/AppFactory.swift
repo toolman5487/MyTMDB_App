@@ -275,7 +275,7 @@ enum AppFactory {
             var configuration = UIButton.Configuration.filled()
             configuration.attributedTitle = attributedTitle(title, textStyle: .headline)
             configuration.baseBackgroundColor = ThemeColor.primary
-            configuration.baseForegroundColor = .white
+            configuration.baseForegroundColor = ThemeColor.textPrimary
             configuration.cornerStyle = .medium
 
             return UIButton(configuration: configuration)
@@ -285,7 +285,7 @@ enum AppFactory {
             var configuration = UIButton.Configuration.filled()
             configuration.attributedTitle = attributedTitle(title, textStyle: .headline)
             configuration.baseBackgroundColor = ThemeColor.systemRed
-            configuration.baseForegroundColor = .white
+            configuration.baseForegroundColor = ThemeColor.textPrimary
             configuration.cornerStyle = .medium
 
             return UIButton(configuration: configuration)
@@ -331,7 +331,7 @@ enum AppFactory {
             textField.clearButtonMode = .whileEditing
             textField.borderStyle = .roundedRect
             textField.layer.borderWidth = 1
-            textField.layer.borderColor = UIColor.secondaryLabel.cgColor
+            textField.layer.borderColor = ThemeColor.textSecondary.cgColor
             textField.layer.cornerRadius = Metrics.cornerRadiusSmall
             textField.font = .preferredFont(forTextStyle: .body)
             textField.adjustsFontForContentSizeCategory = true
@@ -470,8 +470,8 @@ enum AppFactory {
 
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = .clear
-            appearance.shadowColor = .clear
+            appearance.backgroundColor = ThemeColor.clear
+            appearance.shadowColor = ThemeColor.clear
             appearance.titleTextAttributes = titleAttributes
             appearance.largeTitleTextAttributes = titleAttributes
             return appearance

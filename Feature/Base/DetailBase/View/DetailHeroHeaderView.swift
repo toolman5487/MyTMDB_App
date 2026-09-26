@@ -41,7 +41,7 @@ class DetailHeroHeaderView: UICollectionReusableView {
 
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         return view
     }()
 
@@ -143,8 +143,8 @@ class DetailHeroHeaderView: UICollectionReusableView {
     }
 
     private func configureView() {
-        backgroundColor = .clear
-        containerView.backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
+        containerView.backgroundColor = ThemeColor.clear
         containerView.clipsToBounds = false
         backdropImageView.isAccessibilityElement = false
         posterImageView.isAccessibilityElement = false

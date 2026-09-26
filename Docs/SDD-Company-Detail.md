@@ -975,7 +975,7 @@ final class CompanyDetailViewModel {
 結構比照 `PersonDetailHeroHeaderView`，差異：
 
 - Logo 顯示為**正方形、`.scaleAspectFit`**，而非人物頭像的 2:3 `.scaleAspectFill`縱向照片（公司 Logo 通常是方形／橫向，變形拉伸會很明顯）。
-- Logo 容器背景固定使用淺色底板（例如白色或極淺灰的固定色值，而非隨系統深色模式變化的 `ThemeColor.fillSecondary`）。原因：TMDB 公司 Logo 常見「透明背景＋深色線條」設計，深色模式下若容器背景也偏深，Logo 會幾乎不可見。此為 Runtime 驗收必須實機檢查的項目（見 12.3、13）。
+- Logo 容器背景使用淺色底板 `ThemeColor.backgroundInverted`（即 `.label`；App 全域鎖定深色模式，解析後為白色），而非偏深的 `ThemeColor.fillSecondary`。原因：TMDB 公司 Logo 常見「透明背景＋深色線條」設計，深色模式下若容器背景也偏深，Logo 會幾乎不可見。此為 Runtime 驗收必須實機檢查的項目（見 12.3、13）。
 - `logoURL == nil`（含 3.5 的 SVG 過濾情況）時，顯示中性預留樣式：系統圖示 `building.2.fill` 置中於固定底色容器，不留空白 imageView。
 - 點擊 Logo **不**開啟圖片預覽（`router.showImagePreview`）；Logo 屬於品牌識別圖像，不是「可瀏覽的圖庫」語意，這點與 Person 的頭像不同。`Logos` 區塊（9.4）才是可瀏覽、可預覽的圖片集合。
 

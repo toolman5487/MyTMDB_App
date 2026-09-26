@@ -73,7 +73,7 @@ class BaseSectionHeaderView: UICollectionReusableView {
     // MARK: - Template Methods
 
     func configureView() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
     }
 
     func setupHierarchy() {}

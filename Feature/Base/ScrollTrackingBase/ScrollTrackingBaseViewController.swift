@@ -131,7 +131,7 @@ class ScrollTrackingBaseViewController: BaseViewController, CollectionViewItemSi
             frame: .zero,
             collectionViewLayout: makeCollectionViewLayout()
         )
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.alwaysBounceVertical = true
         return collectionView
     }()

@@ -48,7 +48,7 @@ final class MainHomePosterCollectionViewCell: BaseCollectionViewCell {
     }()
 
     override func configureView() {
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
         posterImageView.isAccessibilityElement = false
         titleLabel.isAccessibilityElement = false
         scoreLabel.isAccessibilityElement = false

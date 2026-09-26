@@ -254,7 +254,7 @@ final class SeasonDetailWatchProvidersCollectionViewCell: DetailImageTitleStripC
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
-            imageBackgroundColor: .clear,
+            imageBackgroundColor: ThemeColor.clear,
             localization: localization
         ) { item in
             guard let provider = providers.first(where: { $0.id == item.id }) else { return }

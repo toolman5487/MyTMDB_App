@@ -365,7 +365,7 @@ private final class RatingStarSliderView: UIControl {
     }
 
     private func configureView() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         starContainerView.isUserInteractionEnabled = false
         filledContainerView.isUserInteractionEnabled = false
         isAccessibilityElement = true

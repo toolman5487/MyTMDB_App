@@ -73,9 +73,9 @@ final class MemberCenterGuestLoginCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         super.configureView()
-        backgroundColor = .clear
-        contentView.backgroundColor = .clear
-        containerView.backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
+        contentView.backgroundColor = ThemeColor.clear
+        containerView.backgroundColor = ThemeColor.clear
         iconImageView.isAccessibilityElement = false
         titleLabel.isAccessibilityElement = false
         messageLabel.isAccessibilityElement = false

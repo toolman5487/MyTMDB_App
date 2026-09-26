@@ -107,6 +107,7 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
 
     private func makeIconImage(systemName: String, backgroundColor: UIColor) -> UIImage? {
         let size = CGSize(width: Layout.iconSize, height: Layout.iconSize)
+        let symbolTintColor = ThemeColor.textPrimary.resolvedColor(with: traitCollection)
         let renderer = UIGraphicsImageRenderer(size: size)
 
         return renderer.image { context in
@@ -123,7 +124,7 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
                     pointSize: Layout.iconImageSize,
                     weight: .regular
                 )
-            )?.withTintColor(.white, renderingMode: .alwaysOriginal) else {
+            )?.withTintColor(symbolTintColor, renderingMode: .alwaysOriginal) else {
                 return
             }
 
@@ -174,7 +175,7 @@ class MainMemberSettingButtonCollectionViewCell: UICollectionViewListCell {
 
     private func makeBackgroundConfiguration() -> UIBackgroundConfiguration {
         var configuration = UIBackgroundConfiguration.listCell()
-        configuration.backgroundColor = .secondarySystemGroupedBackground
+        configuration.backgroundColor = ThemeColor.groupedBackgroundSecondary
         configuration.cornerRadius = Layout.rowCornerRadius
         return configuration
     }

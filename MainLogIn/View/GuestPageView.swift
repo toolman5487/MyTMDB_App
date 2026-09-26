@@ -69,7 +69,7 @@ final class GuestPageView: UIView, AuthPageView {
     // MARK: - Setup
 
     private func setup() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         layout()
         continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
     }

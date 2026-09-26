@@ -93,7 +93,7 @@ final class ReviewListViewController: ScrollTrackingBaseViewController {
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true
         collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing

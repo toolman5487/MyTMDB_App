@@ -15,7 +15,7 @@ enum AppAppearance {
     static func applyTransparentNavigationBarAppearance(to navigationBar: UINavigationBar) {
         let appearance = AppFactory.NavigationBar.transparentAppearance()
         navigationBar.isTranslucent = true
-        navigationBar.backgroundColor = .clear
+        navigationBar.backgroundColor = ThemeColor.clear
         navigationBar.tintColor = ThemeColor.primary
         navigationBar.standardAppearance = appearance
         navigationBar.compactAppearance = appearance

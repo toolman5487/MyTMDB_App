@@ -61,7 +61,7 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
 
     private let glassBackgroundView: UIVisualEffectView = {
         let view = UIVisualEffectView(effect: nil)
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         view.isUserInteractionEnabled = false
         return view
     }()
@@ -119,12 +119,12 @@ class BaseGenrePageSheetViewController<Item: GenrePageSheetItemRepresentable>: U
 
     private func configureView() {
         title = pageTitle
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         glassBackgroundView.effect = GlassBackgroundEffect.make()
     }
 
     private func configureCollectionView() {
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.backgroundView = glassBackgroundView
         collectionView.register(
             BaseGenrePageSheetCell.self,

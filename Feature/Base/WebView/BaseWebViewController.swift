@@ -59,7 +59,7 @@ final class BaseWebViewController: BaseViewController {
 
     private let bottomTabBarContentView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         return view
     }()
 

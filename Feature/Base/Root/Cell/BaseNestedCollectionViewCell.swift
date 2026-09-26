@@ -29,7 +29,7 @@ class BaseNestedCollectionViewCell: BaseCollectionViewCell {
             frame: .zero,
             collectionViewLayout: collectionViewFlowLayout
         )
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         return collectionView

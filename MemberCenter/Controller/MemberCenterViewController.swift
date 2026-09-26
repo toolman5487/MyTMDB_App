@@ -92,7 +92,7 @@ final class MemberCenterViewController: BaseListViewController {
     private func configureCollectionView() {
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.minimumInteritemSpacing = 0
         registerSectionCells()

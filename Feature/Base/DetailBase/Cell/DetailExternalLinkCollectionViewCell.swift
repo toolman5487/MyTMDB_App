@@ -37,7 +37,7 @@ class DetailExternalLinkStripCollectionViewCell: BaseNestedCollectionViewCell {
     private var interfaceLocalization = AppInterfaceLocalization.traditionalChinese
 
     override func configureView() {
-        containerView.backgroundColor = .clear
+        containerView.backgroundColor = ThemeColor.clear
         isAccessibilityElement = false
         collectionView.isAccessibilityElement = false
         collectionViewFlowLayout.itemSize = Layout.itemSize
@@ -163,7 +163,7 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
     }
 
     override func configureView() {
-        containerView.backgroundColor = .clear
+        containerView.backgroundColor = ThemeColor.clear
         iconContainerView.isAccessibilityElement = false
         iconImageView.isAccessibilityElement = false
         titleLabel.isAccessibilityElement = false
@@ -221,7 +221,7 @@ class DetailExternalLinkItemCollectionViewCell: BaseCollectionViewCell {
             iconImageView.tintColor = style.tintColor
         }
 
-        iconContainerView.backgroundColor = .clear
+        iconContainerView.backgroundColor = ThemeColor.clear
         titleLabel.text = item.title
         applyAccessibility(
             AccessibilityText(

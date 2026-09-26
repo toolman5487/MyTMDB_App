@@ -228,7 +228,7 @@ final class DetailBottomActionBarView: UIView {
             withConfiguration: imageConfiguration
         )
         configuration.cornerStyle = .medium
-        configuration.baseBackgroundColor = .clear
+        configuration.baseBackgroundColor = ThemeColor.clear
         configuration.baseForegroundColor = isFavorite
             ? ThemeColor.systemPink
             : ThemeColor.textPrimary

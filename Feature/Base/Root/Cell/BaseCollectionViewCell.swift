@@ -23,7 +23,7 @@ class BaseCollectionViewCell: UICollectionViewCell {
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         return view
     }()
 

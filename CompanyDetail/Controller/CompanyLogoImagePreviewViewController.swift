@@ -22,15 +22,15 @@ final class CompanyLogoImagePreviewViewController: BaseImagePreviewViewControlle
     // MARK: - Style
 
     override var previewBackgroundColor: UIColor {
-        .label
+        ThemeColor.backgroundInverted
     }
 
     override var previewForegroundColor: UIColor {
-        .systemBackground
+        ThemeColor.textInverted
     }
 
     override var previewPageIndicatorColor: UIColor {
-        UIColor.systemBackground.withAlphaComponent(Alpha.pageIndicator)
+        ThemeColor.textInverted.withAlphaComponent(Alpha.pageIndicator)
     }
 
     override var previewTitleColor: UIColor {
@@ -38,7 +38,7 @@ final class CompanyLogoImagePreviewViewController: BaseImagePreviewViewControlle
     }
 
     override var previewCloseButtonBackgroundColor: UIColor {
-        UIColor.label.withAlphaComponent(Alpha.closeButtonBackground)
+        ThemeColor.backgroundInverted.withAlphaComponent(Alpha.closeButtonBackground)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

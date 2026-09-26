@@ -178,8 +178,8 @@ final class MemberCenterPlaylistCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         super.configureView()
-        contentView.backgroundColor = .clear
-        containerView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
+        containerView.backgroundColor = ThemeColor.clear
         containerView.clipsToBounds = false
         thumbnailContainerView.isAccessibilityElement = false
         thumbnailImageView.isAccessibilityElement = false

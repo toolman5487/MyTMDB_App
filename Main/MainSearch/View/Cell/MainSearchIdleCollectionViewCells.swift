@@ -45,7 +45,7 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
             frame: .zero,
             collectionViewLayout: collectionViewFlowLayout
         )
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.delaysContentTouches = false
@@ -72,8 +72,8 @@ final class MainSearchRecentHistoryCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         super.configureView()
-        contentView.backgroundColor = .clear
-        containerView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
+        containerView.backgroundColor = ThemeColor.clear
         collectionView.addGestureRecognizer(
             UILongPressGestureRecognizer(target: self, action: #selector(handleReorderGesture(_:)))
         )
@@ -236,7 +236,7 @@ final class MainSearchHistoryPillCollectionViewCell: BaseCollectionViewCell {
 
     private let titleLabel: UILabel = {
         let label = AppFactory.Label.subheadline(alignment: .center)
-        label.textColor = .label
+        label.textColor = ThemeColor.textPrimary
         label.numberOfLines = 1
         return label
     }()
@@ -450,7 +450,7 @@ final class MainSearchPopularPersonCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         super.configureView()
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
         avatarImageView.isAccessibilityElement = false
         titleLabel.isAccessibilityElement = false
     }

@@ -77,7 +77,7 @@ final class MainMemberSettingProfileSummaryCollectionViewCell: UICollectionViewL
 
     private func makeBackgroundConfiguration() -> UIBackgroundConfiguration {
         var configuration = UIBackgroundConfiguration.listCell()
-        configuration.backgroundColor = .secondarySystemGroupedBackground
+        configuration.backgroundColor = ThemeColor.groupedBackgroundSecondary
         configuration.cornerRadius = Layout.rowCornerRadius
         return configuration
     }
@@ -249,7 +249,7 @@ final class MainMemberSettingGuestPromptCollectionViewCell: UICollectionViewCell
 
     private lazy var registerButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = .label
+        configuration.baseBackgroundColor = ThemeColor.backgroundInverted
         configuration.baseForegroundColor = ThemeColor.primary
         configuration.cornerStyle = .medium
         let button = UIButton(configuration: configuration)
@@ -318,7 +318,7 @@ final class MainMemberSettingGuestPromptCollectionViewCell: UICollectionViewCell
     // MARK: - Layout
 
     private func setupView() {
-        contentView.backgroundColor = .secondarySystemGroupedBackground
+        contentView.backgroundColor = ThemeColor.groupedBackgroundSecondary
         contentView.layer.cornerRadius = Layout.cornerRadius
         contentView.layer.cornerCurve = .continuous
         contentView.clipsToBounds = true

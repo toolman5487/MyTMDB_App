@@ -91,7 +91,7 @@ final class MainMemberSettingSectionHeaderView: UICollectionReusableView {
     }
 
     private func configureView() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         addSubview(titleLabel)
     }
 }

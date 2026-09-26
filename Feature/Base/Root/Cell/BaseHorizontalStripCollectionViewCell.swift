@@ -23,7 +23,7 @@ class BaseHorizontalStripCollectionViewCell<Item, ItemCell: UICollectionViewCell
 
     override func configureView() {
         super.configureView()
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
         contentView.clipsToBounds = false
         collectionView.dataSource = self
         collectionView.delegate = self

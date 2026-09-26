@@ -37,10 +37,10 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
                 cornerRadius: 18,
                 borderWidth: 1,
                 numberOfLines: 1,
-                selectedTitleColor: .label,
+                selectedTitleColor: ThemeColor.textPrimary,
                 unselectedTitleColor: ThemeColor.textSecondary,
-                resetBorderColor: .clear,
-                unselectedBorderColor: .clear
+                resetBorderColor: ThemeColor.clear,
+                unselectedBorderColor: ThemeColor.clear
             )
         }
 
@@ -50,10 +50,10 @@ class BaseFilterHeaderCollectionViewCell: BaseCollectionViewCell {
                 cornerRadius: 24,
                 borderWidth: 1,
                 numberOfLines: 1,
-                selectedTitleColor: .label,
+                selectedTitleColor: ThemeColor.textPrimary,
                 unselectedTitleColor: ThemeColor.textSecondary,
                 resetBorderColor: ThemeColor.highlight,
-                unselectedBorderColor: .clear
+                unselectedBorderColor: ThemeColor.clear
             )
         }
     }

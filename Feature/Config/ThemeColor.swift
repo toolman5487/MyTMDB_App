@@ -32,18 +32,24 @@ enum ThemeColor {
     static let textQuaternary: UIColor = .quaternaryLabel
     static let textPlaceholder: UIColor = .placeholderText
     static let textLink: UIColor = .link
+    static let textInverted: UIColor = .systemBackground
 
     // MARK: - Background
 
     static let background: UIColor = .systemBackground
     static let backgroundSecondary: UIColor = .secondarySystemBackground
     static let backgroundTertiary: UIColor = .tertiarySystemBackground
+    static let backgroundInverted: UIColor = .label
 
     // MARK: - Grouped Background
 
     static let groupedBackground: UIColor = background
     static let groupedBackgroundSecondary: UIColor = backgroundSecondary
     static let groupedBackgroundTertiary: UIColor = backgroundTertiary
+
+    // MARK: - Clear
+
+    static let clear: UIColor = .clear
 
     // MARK: - Fill
 

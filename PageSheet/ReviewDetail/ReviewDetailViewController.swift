@@ -29,7 +29,7 @@ final class ReviewDetailViewController: GlassBaseViewController {
 
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
-        tableView.backgroundColor = .clear
+        tableView.backgroundColor = ThemeColor.clear
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
         tableView.sectionHeaderTopPadding = 0
@@ -201,7 +201,7 @@ private final class ReviewDetailContainerTableViewCell: UITableViewCell {
 
     private let glassBackgroundView: UIVisualEffectView = {
         let view = UIVisualEffectView(effect: nil)
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         return view
     }()
 
@@ -223,8 +223,8 @@ private final class ReviewDetailContainerTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        backgroundColor = .clear
-        contentView.backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
+        contentView.backgroundColor = ThemeColor.clear
         backgroundConfiguration = .clear()
         glassBackgroundView.effect = GlassBackgroundEffect.make()
         setupHierarchy()
@@ -332,7 +332,7 @@ private final class ReviewDetailAuthorView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         setupHierarchy()
         setupConstraints()
     }
@@ -407,7 +407,7 @@ private final class ReviewDetailContentView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         setupHierarchy()
         setupConstraints()
     }

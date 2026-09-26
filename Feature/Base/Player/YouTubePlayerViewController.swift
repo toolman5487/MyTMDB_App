@@ -23,7 +23,7 @@ final class YouTubePlayerViewController: BaseViewController {
 
     private lazy var playerView: YTPlayerView = {
         let playerView = YTPlayerView()
-        playerView.backgroundColor = .black
+        playerView.backgroundColor = ThemeColor.background
         playerView.delegate = self
         return playerView
     }()

@@ -52,8 +52,8 @@ final class MemberCenterListItemCollectionViewCell: BaseCollectionViewCell {
 
     override func configureView() {
         super.configureView()
-        contentView.backgroundColor = .clear
-        containerView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
+        containerView.backgroundColor = ThemeColor.clear
         posterImageView.layer.cornerRadius = Layout.posterCornerRadius
         posterImageView.isAccessibilityElement = false
         titleLabel.isAccessibilityElement = false

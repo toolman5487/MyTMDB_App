@@ -40,7 +40,7 @@ enum AuthPageStyle {
     // MARK: - Card
 
     static func applyCardStyle(to view: UIView) {
-        view.backgroundColor = .secondarySystemBackground
+        view.backgroundColor = ThemeColor.backgroundSecondary
         view.layer.cornerRadius = 12
         view.layer.masksToBounds = true
     }
@@ -143,14 +143,14 @@ enum AuthPageStyle {
     }
 
     static func makeDescriptionLabel(_ text: String) -> UILabel {
-        AppFactory.Label.body(text, color: .secondaryLabel, alignment: .center, lines: 0)
+        AppFactory.Label.body(text, color: ThemeColor.textSecondary, alignment: .center, lines: 0)
     }
 
     static func makeFilledButton(title: String) -> UIButton {
         var configuration = UIButton.Configuration.filled()
         configuration.attributedTitle = attributedTitle(title, textStyle: .headline)
-        configuration.baseBackgroundColor = .label
-        configuration.baseForegroundColor = .systemBackground
+        configuration.baseBackgroundColor = ThemeColor.backgroundInverted
+        configuration.baseForegroundColor = ThemeColor.textInverted
         configuration.cornerStyle = .medium
 
         let button = UIButton(configuration: configuration)

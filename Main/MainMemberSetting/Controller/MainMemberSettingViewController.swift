@@ -75,7 +75,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
     override func configureView() {
         super.configureView()
         navigationItem.title = viewModel.navigationTitle
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = ThemeColor.groupedBackground
         configureCollectionView()
     }
 
@@ -85,7 +85,7 @@ final class MainMemberSettingViewController: MainBaseViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionViewFlowLayout.minimumLineSpacing = Layout.minimumLineSpacing
-        collectionView.backgroundColor = .systemGroupedBackground
+        collectionView.backgroundColor = ThemeColor.groupedBackground
         collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)
         registerCells()
         collectionView.register(

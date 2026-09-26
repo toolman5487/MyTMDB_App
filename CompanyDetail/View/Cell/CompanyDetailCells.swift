@@ -30,7 +30,7 @@ final class CompanyDetailHeroHeaderView: UICollectionReusableView {
 
     private let logoContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = ThemeColor.backgroundInverted
         view.layer.cornerRadius = Layout.logoCornerRadius
         view.clipsToBounds = true
         return view
@@ -427,7 +427,7 @@ final class CompanyDetailLogosCollectionViewCell: DetailImageTitleStripCollectio
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
-            imageBackgroundColor: .label,
+            imageBackgroundColor: ThemeColor.backgroundInverted,
             localization: localization
         ) { item in
             guard let logoItem = items.first(where: { $0.id == item.id }),

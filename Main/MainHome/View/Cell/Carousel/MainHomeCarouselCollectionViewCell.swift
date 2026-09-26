@@ -43,7 +43,7 @@ final class MainHomeCarouselCollectionViewCell: BaseCollectionViewCell {
     // MARK: - BaseCollectionViewCell
 
     override func configureView() {
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = ThemeColor.clear
         contentView.clipsToBounds = true
         backdropImageView.isAccessibilityElement = false
         gradientView.isAccessibilityElement = false
@@ -140,7 +140,7 @@ private final class MainHomeCarouselGradientView: UIView {
     private func configureGradient() {
         guard let gradientLayer = layer as? CAGradientLayer else { return }
         gradientLayer.colors = [
-            UIColor.clear.cgColor,
+            ThemeColor.clear.cgColor,
             ThemeColor.background.withAlphaComponent(0.88).cgColor
         ]
         gradientLayer.locations = [0.35, 1]

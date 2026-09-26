@@ -144,7 +144,7 @@ final class MainSearchViewController: MainBaseViewController {
     }
 
     private func configureCollectionView() {
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.minimumLineSpacing = 0
         collectionViewFlowLayout.sectionHeadersPinToVisibleBounds = true

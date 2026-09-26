@@ -38,7 +38,7 @@ class GlassScrollTrackingBaseViewController: GlassBaseViewController, Collection
             frame: .zero,
             collectionViewLayout: collectionViewFlowLayout
         )
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.alwaysBounceVertical = true
         return collectionView
     }()

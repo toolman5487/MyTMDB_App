@@ -212,7 +212,7 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
     )
 
     override func configureView() {
-        containerView.backgroundColor = .clear
+        containerView.backgroundColor = ThemeColor.clear
     }
 
     override func setupHierarchy() {
@@ -296,7 +296,7 @@ final class TVDetailAttributesCollectionViewCell: BaseCollectionViewCell {
 
     private func makeCollectionView(layout: UICollectionViewFlowLayout) -> UICollectionView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.dataSource = self
@@ -783,7 +783,7 @@ final class TVDetailWatchProvidersCollectionViewCell: DetailImageTitleStripColle
             },
             itemSize: Layout.itemSize,
             imageHeight: Layout.imageHeight,
-            imageBackgroundColor: .clear,
+            imageBackgroundColor: ThemeColor.clear,
             localization: localization
         ) { item in
             guard let provider = providers.first(where: { $0.id == item.id }) else { return }

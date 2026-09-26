@@ -34,7 +34,7 @@ class GlassBaseViewController: BaseViewController {
 
     private let glassBackgroundView: UIVisualEffectView = {
         let view = UIVisualEffectView(effect: nil)
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         return view
     }()
 
@@ -52,7 +52,7 @@ class GlassBaseViewController: BaseViewController {
 
     override func configureView() {
         super.configureView()
-        view.backgroundColor = .clear
+        view.backgroundColor = ThemeColor.clear
         glassBackgroundView.effect = makeGlassBackgroundEffect()
     }
 

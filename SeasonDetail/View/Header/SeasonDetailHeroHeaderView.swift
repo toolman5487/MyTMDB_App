@@ -110,7 +110,7 @@ final class SeasonDetailHeroHeaderView: UICollectionReusableView {
     }
 
     private func configureView() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         bannerView.isAccessibilityElement = false
         bannerImageView.isAccessibilityElement = false
         bannerBlurView.isAccessibilityElement = false

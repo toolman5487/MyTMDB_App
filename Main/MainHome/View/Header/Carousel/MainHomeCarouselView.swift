@@ -44,7 +44,7 @@ final class MainHomeCarouselView: UIView {
             frame: .zero,
             collectionViewLayout: collectionViewFlowLayout
         )
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
         collectionView.dataSource = self
@@ -103,7 +103,7 @@ final class MainHomeCarouselView: UIView {
     // MARK: - Setup
 
     private func configureView() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         isAccessibilityElement = false
         collectionView.isAccessibilityElement = false
     }

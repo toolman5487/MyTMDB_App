@@ -21,7 +21,7 @@ class DetailFactsCollectionViewCell: BaseNestedCollectionViewCell {
     private var previousCollectionWidth: CGFloat = 0
 
     override func configureView() {
-        containerView.backgroundColor = .clear
+        containerView.backgroundColor = ThemeColor.clear
         isAccessibilityElement = false
         collectionView.isAccessibilityElement = false
         collectionViewFlowLayout.sectionInset = DetailLayoutMetrics.horizontalContentInsets

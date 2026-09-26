@@ -43,7 +43,7 @@ final class LoginPageView: UIView, AuthPageView {
     private lazy var passwordToggleButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        button.tintColor = .secondaryLabel
+        button.tintColor = ThemeColor.textSecondary
         button.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         button.accessibilityLabel = localization.string(
             "login.password.show.accessibility_label",
@@ -99,7 +99,7 @@ final class LoginPageView: UIView, AuthPageView {
     // MARK: - Setup
 
     private func setup() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         layout()
         setupPasswordField()
         bindActions()

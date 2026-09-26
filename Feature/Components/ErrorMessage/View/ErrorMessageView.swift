@@ -35,7 +35,7 @@ final class ErrorMessageView: UIView {
     private lazy var actionButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
         configuration.baseBackgroundColor = ThemeColor.primary
-        configuration.baseForegroundColor = .white
+        configuration.baseForegroundColor = ThemeColor.textPrimary
         configuration.cornerStyle = .medium
 
         let button = UIButton(configuration: configuration)

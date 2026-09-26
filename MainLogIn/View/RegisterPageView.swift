@@ -69,7 +69,7 @@ final class RegisterPageView: UIView, AuthPageView {
     // MARK: - Setup
 
     private func setup() {
-        backgroundColor = .clear
+        backgroundColor = ThemeColor.clear
         layout()
         registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
     }

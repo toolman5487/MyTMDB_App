@@ -104,7 +104,7 @@ final class MemberCenterListViewController: BaseListViewController {
     private func configureCollectionView() {
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ThemeColor.clear
         collectionView.showsVerticalScrollIndicator = false
         collectionViewFlowLayout.minimumLineSpacing = Layout.itemSpacing
         collectionViewFlowLayout.minimumInteritemSpacing = Layout.itemSpacing
