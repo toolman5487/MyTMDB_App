@@ -10,8 +10,10 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 目標 | 保護 TMDB Session、補齊遠端撤銷、降低憑證與個資落盤風險、補齊 Privacy Manifest |
-| 狀態 | P0 與預設訪客 bootstrap Source Implemented / Static Verified；Build、Archive、Runtime 均 NotRun；P1、P2 Deferred |
-| 日期 | 2026-09-25 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Partial`（P0 Phase 1–3 與預設訪客 bootstrap Done；Phase 5 Partial；Phase 4、6 Deferred） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（訪客冷啟動、Keychain 無法存取時 fail closed 已確認，16.3 其餘情境 NotRun）；Archive `NotRun` |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -46,18 +48,18 @@
 
 P0 必須先完成；P1、P2 不得阻塞 P0 上線，但不得因此被標記為已完成。
 
-### 2.1 本次實作狀態（2026-09-18）
+### 2.1 實作狀態（2026-09-26 更新）
 
 | Phase | 狀態 | 證據／限制 |
 |------|------|------------|
 | Phase 1 — Keychain clean cutover | Source Implemented / Static Verified | user／guest Session 僅存 Keychain；versioned envelope、installation ID、throwing call chain已套用；未保留開發期 UserDefaults Session migration；Swift parser 通過 |
 | Phase 2 — Remote logout | Source Implemented / Static Verified | TMDB delete Session、remote-first、retry、local-only 二次確認與 loading 已套用；Swift parser 通過 |
-| Phase 3 — Privacy Manifest | Source Implemented / Static Verified | `MyTMDB_App/PrivacyInfo.xcprivacy` 已新增且 `plutil -lint` 通過；位於 file-system synchronized target root；最終 app bundle / archive 尚未驗證 |
+| Phase 3 — Privacy Manifest | Source Implemented / Static Verified | `MyTMDB_App/PrivacyInfo.xcprivacy` 已新增且 `plutil -lint` 通過；位於 file-system synchronized target root；2026-09-26 確認 Simulator Debug app bundle 內含此檔；archive 尚未驗證 |
 | Phase 4 — Web authentication | Deferred / NotImplemented | 涉及產品登入流程與 callback 設定，未在 P0 自動切換 |
 | Phase 5 — Credential hygiene | Partial / Deferred | authenticated request no-store 已套用；literal credential、Bearer header、build setting 與 credential rotation 未執行 |
 | Phase 6 — Protected files | Deferred / NotImplemented | Profile、頭像與 Search History 仍維持原儲存方式 |
 
-本狀態只代表 source 與靜態檢查，不代表 Build Passed、Runtime Passed、Archive Validated 或 App Store Ready。
+2026-09-26 更新：iOS Simulator Debug build 通過。Runtime 只確認兩件事：冷啟動以訪客身分直接進入首頁；以未簽章建置啟動（App 無 Keychain 存取權）時 fail closed，停在啟動畫面並顯示「無法讀取登入狀態」與「重試」。16.3 其餘情境、實機驗證與 Archive 均 NotRun，本狀態不代表 Archive Validated 或 App Store Ready。
 
 ---
 
@@ -700,6 +702,7 @@ Simulator 驗證不等同實機 Keychain、Data Protection、卸載重裝與鎖�
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 1.4 | 2026-09-26 | 對齊現況：Build 更新為 Passed，確認 Debug app bundle 內含 Privacy Manifest；Runtime 更新為 Partial；metadata 狀態改為規格／實作／驗證三欄 |
 | 1.3 Default Guest Bootstrap | 2026-09-25 | 冷啟動無 Keychain session 時，由 `LaunchSessionResolver` 建立 TMDB guest 並在 read-back 驗證成功後進首頁；安全儲存錯誤仍 fail closed。Guest 建立端點修正為 GET；Source / Static Verified，Build / Runtime NotRun |
 | 1.2 Prelaunch Keychain Cutover | 2026-09-18 | 產品尚未上線，移除所有 UserDefaults Session migration；user／guest Session 統一只存 Keychain，installation ID 保留為非憑證 reinstall marker |
 | 1.1 P0 Source Implemented | 2026-09-18 | 完成 Phase 1–3 source、authenticated request no-store 與靜態檢查；Build、Archive、Runtime NotRun；P1、P2 Deferred |

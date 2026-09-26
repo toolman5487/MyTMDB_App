@@ -10,8 +10,10 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 目標 | 統一 Domain、Data、Presentation、App 各層的介面角色、命名與呼叫形式 |
-| 狀態 | Source Applied / Static Verified；Build、Runtime NotRun |
-| 日期 | 2026-09-15 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Done`（統一命名與介面已套用） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（主要流程走查正常，見 11.2） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -830,8 +832,8 @@ xcodebuild \
 - [x] 未新增 Coordinator、BaseViewModel、Service Locator 或無業務價值的 UseCase。
 - [x] 未修改 SwiftPM、第三方套件、`Package.resolved` 或 `project.pbxproj`。
 - [x] `git diff --check` 與 staged diff check 通過。
-- [ ] Build：NotRun（未取得本次 build 授權）。
-- [ ] Runtime：NotRun（未操作 Simulator 或實機）。
+- [x] Build：Passed（2026-09-26，iOS Simulator Debug build）。
+- [ ] Runtime：Partial（2026-09-26 主要流程走查正常，見 11.2）。
 
 ### 11.1 本次驗證紀錄
 
@@ -845,6 +847,17 @@ xcodebuild \
 - `git diff --check`、`git diff --cached --check`：Passed。
 - Xcode Build：NotRun。
 - Runtime / UI：NotRun。
+
+### 11.2 現況複核（2026-09-26）
+
+以目前 HEAD 重跑第 9 節靜態驗收，確認後續新增的 `CompanyDetail`、圖片預覽重構與 `ThemeColor` 統一未破壞本文件規則：
+
+- 9.1 Clean Architecture 邊界四項：Passed，無輸出。
+- 9.2 命名：Passed；只命中三個 4.3 核准例外（`YTPlayerView` 的 `withVideoId:`、`StoredUserProfile` 的 `accountId` 相容 key、`AuthSession` 的 `sessionId` 相容 key）。
+- 9.3 ViewModel：Observation 檢查無輸出；17 個 ViewModel 中 15 個提供 `bind`，其餘為 5.4 名單內的 `MainMemberSettingViewModel`、`MainTabBarViewModel`；載入方法只命中 5.4 核准的 `ReviewListViewModel.loadNextPage()`。
+- 9.4 Composition 與 Router 三項：Passed，無輸出。
+- Xcode Build：Passed（iOS Simulator Debug build）。
+- Runtime / UI：Partial（iPhone 17 Simulator 訪客模式走查首頁、電影／影集詳情、公司詳情、圖片預覽與設定頁，皆正常；未逐一走查所有畫面）。
 
 ---
 
@@ -883,6 +896,7 @@ xcodebuild \
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 1.3 | 2026-09-26 | 對齊現況：新增 11.2 以目前 HEAD 重跑第 9 節靜態驗收（全部通過）；Build 更新為 Passed、Runtime 為 Partial；metadata 狀態改為規格／實作／驗證三欄 |
 | 1.2 | 2026-09-22 | 註解規則改為只使用 `// MARK: -`：5.4 刪除同步 query/action model 的型別註解要求，改由本文件列出名單；第 13 節新增註解維護規則。程式碼同步移除 `MainMemberSettingViewModel`、`MainTabBarViewModel` 的型別註解與 `AppDelegate`／`SceneDelegate` 的 Xcode 範本註解，並將 12 處 `// MARK:` 補上 `-`。11.1 為 1.1 當時的驗證紀錄，不回溯修改 |
 | 1.1 | 2026-09-15 | 套用統一命名與介面：縮寫／ID、Codable 相容層、ViewModel binding 與載入方法、搜尋 Scene Builder callback 注入及 Router 動詞；Swift parser、Codable executable check、Clean Architecture 與靜態命名檢查通過，Build / Runtime NotRun |
 | 1.0 | 2026-09-15 | 依目前 337 個 Swift 檔、16 個 ViewModel、23 個 UseCase、單一 target 與現行 Clean Architecture SDD 建立介面與命名統一規格；只建立文件，尚未修改 production code、執行 build 或 runtime 走查 |

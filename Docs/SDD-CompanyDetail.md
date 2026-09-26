@@ -10,8 +10,10 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 功能範圍 | 新增 `CompanyDetail` 模組（製作公司詳細頁面），從 MainSearch、MovieDetail 與 TVDetail 導入；第 11 節擴充 `DetailContentList` 共用元件的無限捲動分頁能力 |
-| 狀態 | `CompanyDetail` 基礎模組與第 11 節分頁擴充：Build／Runtime Passed（2026-09-24）；MovieDetail／TVDetail 出品公司入口：Source Implementation Done、Static Verification Passed，Build／Runtime Pending（2026-09-25） |
-| 日期 | 2026-09-24（初版）；2026-09-24 更新第 11 節；2026-09-25 新增 MovieDetail／TVDetail 出品公司入口；2026-09-26 新增公司標誌專用預覽頁 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Done`（基礎模組、第 11 節無限捲動分頁、MovieDetail／TVDetail 出品公司入口、公司標誌專用預覽） |
+| 驗證狀態 | Build `Passed`（2026-09-26）；Runtime `Passed`（基礎模組與分頁 2026-09-24；出品公司入口與標誌預覽 2026-09-26；標誌預覽的縮放與滑動換頁未走查） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -1611,15 +1613,15 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 
 - Source Implementation：Done（沿用既有 production company ID、attribute selection callback、`DetailRouter.showCompanyDetail` 與 `AppComposition.makeCompanyDetailViewController`）。
 - Static Verification：Passed（Swift frontend parse、String Catalog JSON／compile、`project.pbxproj` lint、`git diff --check`）。
-- Xcode Build：NotRun（本次為小範圍既有路由串接，依專案規範先採快速靜態檢查）。
-- Runtime／UI：NotRun（尚未以 Simulator／實機點擊 MovieDetail 與 TVDetail 的出品公司 pill 驗證 push 與返回流程）。
+- Xcode Build：Passed（2026-09-26，iOS Simulator Debug build）。
+- Runtime／UI：Passed（2026-09-26，iPhone 17 Simulator、訪客模式）。MovieDetail「金劫任務」點擊出品公司 pill「C2 Motion Picture Group」、TVDetail「美國恐怖故事」點擊「Ryan Murphy Television」，皆正確 push 到 `CompanyDetailViewController`，返回上一頁正常。
 
 **CompanyDetail 標誌專用預覽（2026-09-26）**
 
-- Source Implementation：Done（`CompanyLogoImagePreviewViewController` 繼承共用圖片預覽，只覆寫 `.label` 背景；CompanyDetail Logos 由 Router 導向專用 VC）。
-- Static Verification：Passed（Swift frontend parse、`project.pbxproj` lint／target membership、`git diff --check`）。
-- Xcode Build：NotRun（依專案規範先執行快速靜態檢查）。
-- Runtime／UI：NotRun（尚未以 Simulator／實機驗證 `.label` 動態色彩、透明 Logo、分頁與縮放效果）。
+- Source Implementation：Done（`CompanyLogoImagePreviewViewController` 與 `DetailImagePreviewViewController` 皆繼承 `BaseImagePreviewViewController`，各自覆寫背景、前景、頁點、標題、關閉按鈕底色與狀態列樣式；CompanyDetail Logos 由 `DetailRouter.showCompanyLogoImagePreview` 導向專用 VC；初始頁以 `selectedImageURL` 在去重後定位）。
+- Static Verification：Passed（`project.pbxproj` lint／target membership、`git diff --check`）。
+- Xcode Build：Passed（2026-09-26，iOS Simulator Debug build）。
+- Runtime／UI：Passed（2026-09-26，iPhone 17 Simulator）。C2 Motion Picture Group 標誌預覽為白底（`ThemeColor.backgroundInverted`），狀態列、頁碼與關閉按鈕為深色且清楚可見；Ryan Murphy Television 點第二個標誌時預覽正確停在「2 / 2」；關閉正常。一般劇照預覽維持黑底白色控制元件，初始頁定位正確（「2 / 168」）。捏合縮放與左右滑動換頁未在本次走查。
 
 本文件建立不代表功能已實作。每個狀態只能在取得對應證據後更新。
 
@@ -1636,3 +1638,15 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - `Docs/SDD-Architecture-Unified-Interface-Naming.md`
 - `Docs/SDD-DetailSharing.md`（Router／Scene Builder 擴充模式參考）
 - `PersonDetail/`（本文件的主要結構範本）
+
+---
+
+## 17. 修訂紀錄
+
+| 日期 | 說明 |
+|------|------|
+| 2026-09-26 | 對齊現況：標誌預覽改為繼承 `BaseImagePreviewViewController` 並覆寫樣式；出品公司入口與標誌預覽 Build、Runtime 更新為 Passed；metadata 狀態改為規格／實作／驗證三欄，原「日期」欄歷程移至本節 |
+| 2026-09-26 | 新增公司標誌專用預覽頁 |
+| 2026-09-25 | 新增 MovieDetail／TVDetail 出品公司入口 |
+| 2026-09-24 | 更新第 11 節內容清單無限捲動分頁擴充 |
+| 2026-09-24 | 初版 |

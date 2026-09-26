@@ -10,8 +10,10 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 功能範圍 | Movie、TV、Season、Episode 詳情頁分享 |
-| 狀態 | Implementation Done；Static Verification Passed；Build、Runtime NotRun |
-| 日期 | 2026-09-15 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Done`（Movie、TV、Season、Episode 詳情頁分享） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `NotRun`（分享面板尚未在 Simulator／實機走查） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -542,12 +544,12 @@ Build 成功不等於分享功能已完成。10.2、10.3、10.4 必須以 Simula
 
 ## 14. 實作狀態
 
-截至 2026-09-15：
+截至 2026-09-26：
 
 - Design：Ready。
 - Source Implementation：Done（依第 8 節檔案範圍，未新增檔案，未修改 `project.pbxproj`）。
 - Static Verification：Passed（11.1 source 檢查、`git diff --check`、`swiftc -parse`；`TMDBResourceURL` 以獨立腳本驗證 10.1 全部 URL 與無效輸入回傳 `nil`）。
-- Xcode Build：NotRun。
+- Xcode Build：Passed（2026-09-26，iOS Simulator Debug build）。
 - Runtime／UI：NotRun。
 - Simulator／Device：NotRun。
 
@@ -564,3 +566,11 @@ Build 成功不等於分享功能已完成。10.2、10.3、10.4 必須以 Simula
 - [TMDB TV URL example](https://www.themoviedb.org/tv/1399)
 - [TMDB Season URL example](https://www.themoviedb.org/tv/1399-game-of-thrones/season/1)
 - [TMDB Episode URL example](https://www.themoviedb.org/tv/1399-game-of-thrones/season/1/episode/1)
+
+---
+
+## 16. 修訂紀錄
+
+| 日期 | 說明 |
+|------|------|
+| 2026-09-26 | 對齊現況：Xcode Build 更新為 Passed；metadata 狀態改為規格／實作／驗證三欄；Runtime 仍為 NotRun |

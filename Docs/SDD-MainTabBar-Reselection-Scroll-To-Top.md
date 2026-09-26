@@ -10,8 +10,9 @@
 | UI 架構 | UIKit + `UITabBarController` + `UINavigationController` + `UICollectionView` |
 | 主要模組 | `MainTabBar`、`ScrollTrackingBaseViewController` |
 | 規格狀態 | `Accepted` |
-| 實作狀態 | `Partial`（Source implemented、Static Passed；Build／Runtime NotRun） |
-| 日期 | 2026-09-25 |
+| 實作狀態 | `Done`（Base inset-aware scroll API 與 Tab reselect 捲回頂部） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `NotRun`（第 9.3 節 matrix 尚未執行） |
+| 最後更新 | 2026-09-26 |
 
 > 本版取代先前「重點擊 Tab 後 pop 到 navigation root」的錯誤解讀。正確需求是保留目前頁面與 navigation stack，只把目前畫面的垂直內容捲回頂部。檔案路徑沿用既有 SDD 連結。
 
@@ -302,7 +303,7 @@ MainTabBarController
 | Architecture review | `Passed` | 五個 Main Tab root 都繼承 `ScrollTrackingBaseViewController`，共用主要 `collectionView` |
 | Source implementation | `Passed` | Base 新增 inset-aware scroll API；Tab reselect 改呼叫 top Controller 的共用 API |
 | Static verification | `Passed` | Swift parse、`git diff --check`、project `plutil -lint`、scope 搜尋均通過 |
-| App Target build | `NotRun` | 依專案規範，本次未主動執行 Build |
+| App Target build | `Passed` | 2026-09-26 iOS Simulator Debug build 通過 |
 | Runtime verification | `NotRun` | 待於 Simulator／實機執行第 9.3 節 matrix |
 
 ---
@@ -319,6 +320,7 @@ MainTabBarController
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 2.1 | 2026-09-26 | 對齊現況：App Target build 更新為 Passed；實作狀態由 Partial 改為 Done（source 已完成，僅 Runtime 未驗證）；metadata 狀態改為規格／實作／驗證三欄 |
 | 2.0 | 2026-09-25 | 依使用者澄清全面修正：需求改為保留 navigation stack 並將目前內容捲回頂部；新增共用 inset-aware scroll API，撤銷 Tab reselect 的 pop-to-root 設計 |
 | 1.1 | 2026-09-25 | 歷史錯誤版本：曾將需求實作為所有 Tab 共用 navigation pop-to-root；已由 2.0 取代 |
 | 1.0 | 2026-09-25 | 歷史錯誤規劃：將「回到頂部」解讀為 navigation root；已由 2.0 取代 |

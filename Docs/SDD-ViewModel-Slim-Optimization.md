@@ -11,8 +11,10 @@
 | 既有架構 | UIKit + MVVM + Clean Architecture + Presentation Builder + Router + `AppComposition` |
 | 目標 | 以責任、依賴方向與變更原因縮減 ViewModel，而非以檔案行數判定 |
 | 實作範圍 | Scope A Presentation Builder 抽離、Scope B 分頁狀態整併（已實作）；Scope D 文件整併（待實作）；Scope C 單元測試（取消） |
-| 狀態 | v2.6；Scope A、B Implemented（Source）並已提交，Static Passed，Build／Runtime NotRun；v2.5–v2.6 依賴方向修正尚未提交；Scope C Cancelled；Scope D NotStarted |
-| 日期 | 2026-09-22 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Partial`（Scope A、B 與 v2.5–v2.6 依賴方向修正 Done，已提交於 `392c3c9`；Scope C Cancelled；Scope D NotStarted） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（設定頁走查正常；10.2 其餘項目 NotRun） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -411,20 +413,20 @@ grep -rhowE "$UIKIT_TYPES" --include='*.swift' $PRES_DIRS | sort | uniq -c
 | Scope A Phase 3 MainMediaList | Implemented（Source） | ViewModel 268 → 239 行 |
 | Scope A Phase 4 Re-audit | Done（v2.0 重做） | 依 2.2 第 6、7 點重新盤點，結果見 4.2–4.4；分頁重複開 Scope B |
 | Scope A Static | Passed | ViewModel 邊界 grep 無輸出；`git diff --check` 無輸出；diff 未新增 `// MARK: -` 以外的註解；6 個檔案 `swiftc -parse -swift-version 6` 通過；v2.1 全模組 typecheck 一併通過 |
-| Scope A Build | NotRun | 待開發者執行 |
-| Scope A Runtime | NotRun | 待開發者走查 10.2 的 Scope A 項目 |
+| Scope A Build | Passed | 2026-09-26 iOS Simulator Debug build 通過 |
+| Scope A Runtime | Partial | 2026-09-26 設定頁（MainMemberSetting）走查正常；10.2 的 MainSearch、MainMediaList 項目未逐項走查 |
 | Scope A Builder 拆檔（v2.3） | Implemented（Source） | 逐行搬移、內容未改；`MainMemberSettingModels.swift` 682 → 217 行，新檔 473 行。`project.pbxproj` 新增 4 筆（PBXBuildFile、PBXFileReference、Presentation group、app target Sources）；`plutil -lint` 通過，解析後確認路徑對應實體檔且屬於 `MyTMDB_App` target；全模組 typecheck 0 error、0 warning |
 | Scope B-1 | Implemented（Source） | 新增 `MediaGridPaginationState`；MainSearch ×2、MainMediaList、MemberCenterList 改用 `pagination`；移除 3 份私有 `shouldLoadNextPage` 與 MemberCenterList ViewModel 寫死的 `4`；未修改 Controller |
 | Scope B-2 | Implemented（Source） | HomeSectionList、SearchResults 以 `pagination` 取代私有頁碼變數，移除 2 份私有 helper；HomeSectionList 觸發判斷改用 `content.items`（與重新篩選的 `displayedSummaries` 同內容同順序），不再每次呼叫 `FilterMediaByGenreUseCase`；未修改 Controller |
 | Scope B-3 | Implemented（Source） | ReviewList 改用共用狀態與 `canLoadNextPage` 命名（Presentation 與 Controller），`loadNextPage()` 補取消與過期檢查：過期或已取消的回應不再 append，也不再記錄 warning；門檻維持 Controller 的 3。MemberCenterList Controller 改用 `MediaGridPaginationTaskController` 與 `MediaGridLayoutMetrics`。`ReviewListViewModel.loadInitialContent(mediaID:)` 同樣未檢查取消，不在 B-3 範圍，未修改。已與其他變更合併提交，見「提交」列 |
 | Scope B Static | Passed | 全模組 `swiftc -typecheck`（Swift 6、`-strict-concurrency=complete`、iOS 26 simulator SDK、DerivedData 既有套件模組）0 error、0 warning；ViewModel 邊界 grep 無輸出；`git diff --check` 無輸出；diff 未新增 `// MARK: -` 以外的註解；SV-10、SV-11 source 檢查符合 |
-| Scope B Build | NotRun | 待開發者執行 |
+| Scope B Build | Passed | 2026-09-26 iOS Simulator Debug build 通過 |
 | Scope B Runtime | NotRun | 待開發者走查 10.2 的 Scope B 項目，特別是 ReviewList 分頁途中重新載入 |
 | Scope C 單元測試 | Cancelled | 2026-09-22 決議不建立 test target，見第 7 節 |
-| Scope D 文件整併 | NotStarted | 待 Scope B 完成 Build 與 Runtime 驗證 |
+| Scope D 文件整併 | NotStarted | Scope B Build 已通過，仍待 Runtime 驗證 |
 | 提交 | Done | Scope A、B（含 B-3）、Builder 拆檔、註解整理與本文件於 2026-09-22 合併為單一 commit「refactor: 依 SDD 精簡 ViewModel 並整併分頁狀態」；依開發者決定不拆分 B-3 |
-| 依賴方向修正（v2.5） | Implemented（Source） | `MediaGridPaginationState` 持有分頁門檻常數與公式；`MediaGridLayoutMetrics` 移除 `paginationThreshold` 與 `shouldLoadNextPage`；5 個 Controller 預檢改呼叫 `MediaGridPaginationState.shouldLoadNextPage(currentIndex:itemCount:)`，門檻值與行為不變。全模組 typecheck 0 error、0 warning；10.3 依賴掃描當時剩 4.5 的兩處，已於 v2.6 處理。尚未提交 |
-| 依賴方向修正（v2.6） | Implemented（Source） | `BaseDisplayTextFormatter` 的兩個 `titleAttributedText` 逐行移至新檔 `BaseDisplayTextFormatter+AttributedText.swift`（與 HEAD 比對一致），本體改為只 import Foundation；`AppSortMenuOption` 自 `AppFactory.swift` 移至 `MediaGridModels.swift` 並標 `nonisolated`。`project.pbxproj` 新增 4 筆（PBXBuildFile、PBXFileReference、Formatter group、app target Sources），解析後確認路徑與 target 正確。全模組 typecheck 0 error、0 warning；10.3 依賴掃描為空；Clean Architecture 五項檢查無輸出。尚未提交 |
+| 依賴方向修正（v2.5） | Implemented（Source） | `MediaGridPaginationState` 持有分頁門檻常數與公式；`MediaGridLayoutMetrics` 移除 `paginationThreshold` 與 `shouldLoadNextPage`；5 個 Controller 預檢改呼叫 `MediaGridPaginationState.shouldLoadNextPage(currentIndex:itemCount:)`，門檻值與行為不變。全模組 typecheck 0 error、0 warning；10.3 依賴掃描當時剩 4.5 的兩處，已於 v2.6 處理。已併入 `392c3c9` 提交 |
+| 依賴方向修正（v2.6） | Implemented（Source） | `BaseDisplayTextFormatter` 的兩個 `titleAttributedText` 逐行移至新檔 `BaseDisplayTextFormatter+AttributedText.swift`（與 HEAD 比對一致），本體改為只 import Foundation；`AppSortMenuOption` 自 `AppFactory.swift` 移至 `MediaGridModels.swift` 並標 `nonisolated`。`project.pbxproj` 新增 4 筆（PBXBuildFile、PBXFileReference、Formatter group、app target Sources），解析後確認路徑與 target 正確。全模組 typecheck 0 error、0 warning；10.3 依賴掃描為空；Clean Architecture 五項檢查無輸出。已併入 `392c3c9` 提交 |
 
 ## 14. 參考文件
 
@@ -448,3 +450,4 @@ grep -rhowE "$UIKIT_TYPES" --include='*.swift' $PRES_DIRS | sort | uniq -c
 | v2.4 | 2026-09-22 | 依實際提交修正：Scope A、B（含 B-3）與註解整理合併為單一 commit，更新 6.2、11 的 B-3 獨立 commit 描述與回退方式；第 5 節區分 v1.1 與 v2.3 的檔案變動；第 13 節新增提交紀錄。僅修改文件 |
 | v2.5 | 2026-09-22 | 修正依賴方向：分頁門檻常數與公式自 View 層 `MediaGridLayoutMetrics` 移入 `MediaGridPaginationState`，Controller 預檢改呼叫後者。3.1 新增「Presentation 不依賴 View 層或 UIKit 檔案型別」規則，10.3 新增對應掃描指令，4.5 記錄尚餘的 `BaseDisplayTextFormatter`、`AppSortMenuOption` 兩處。全模組 typecheck 通過；Build／Runtime NotRun |
 | v2.6 | 2026-09-22 | 處理 4.5 其餘兩處：`BaseDisplayTextFormatter` 的 attributed text 函式拆至 UIKit extension 新檔，本體只 import Foundation；`AppSortMenuOption` 移至 Presentation 側 `MediaGridModels.swift`。`project.pbxproj` 為新檔新增 4 筆，未新增 target。10.3 依賴掃描改為必須為空；全模組 typecheck 通過；Build／Runtime NotRun |
+| v2.7 | 2026-09-26 | 對齊現況：v2.5–v2.6 依賴方向修正標記為已併入 `392c3c9` 提交；Scope A、B Build 更新為 Passed；metadata 狀態改為規格／實作／驗證三欄 |

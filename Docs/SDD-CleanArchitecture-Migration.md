@@ -10,9 +10,11 @@
 | Swift | 6.0 language mode，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 現行 UI 架構 | UIKit + MVVM + Presentation Builder + Router + `AppComposition` factory |
 | 目標架構 | Clean Architecture + `AppComposition` + make factory + Router（Domain / Data / Presentation / App 四層，以資料夾表達，不建 SPM package） |
-| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；目前 337 個 Swift 檔 / 46,714 行 |
-| 狀態 | Phase 1、Phase 2、Phase 3 已落地；預設訪客冷啟動 source applied、靜態檢查通過；本次 Build / Runtime NotRun（先前 baseline simulator Debug build 通過） |
-| 日期 | 2026-09-25 |
+| 影響範圍 | 起點 243 個 Swift 檔 / 47,616 行；2026-09-26 為 364 個 Swift 檔 / 53,354 行 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Done`（Phase 1–3 完成；模組拆分已取消） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（12.1 主要流程走查正常；guest 收藏寫入與 App Intent 項目 NotRun） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -61,19 +63,19 @@
 
 ### 3.1 量化現況
 
-數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 Phase 1、11 個 Phase 2 feature、Phase 3 runtime cutover、G3 補齊與舊角色資料夾歸位後的工作樹。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
+數值為兩個時間點的對照：**起點**為 `39e9882`，**現在**為 2026-09-26 的 HEAD（Phase 1–3 完成，並含其後新增的 CompanyDetail、圖片預覽重構與 `ThemeColor` 統一）。檔案數與行數以工作樹中的 Swift 原始碼為準；ViewModel / Service 數沿用原盤點口徑，計算對應角色資料夾內的 Swift 檔。
 
 | 項目 | 起點 | 現在 |
 |------|------|------|
-| Swift 檔案數 | 243 | 337 |
-| 程式碼行數 | 47,616 | 46,537 |
+| Swift 檔案數 | 243 | 364 |
+| 程式碼行數 | 47,616 | 53,354 |
 | Xcode target 數 | 1（`MyTMDB_App`，application） | 1 |
 | 檔案組織方式 | 240 檔為顯式 `PBXFileReference`，`MyTMDB_App/` 資料夾使用 `PBXFileSystemSynchronizedRootGroup` | 不變 |
-| ViewModel 資料夾內 Swift 檔案數 | 24 | 17 |
+| ViewModel 資料夾內 Swift 檔案數 | 24 | 18 |
 | Service 資料夾內 Swift 檔案數 | 22 | 0（`Service/`、`Model/`、`Network/` 角色資料夾皆已歸位，見 4.3.1） |
-| Repository 實作數 | 2（皆位於 `MemberCenter`） | 17 |
-| UseCase 檔案數 | 0 | 23 |
-| Domain Entity 型別數 | 0 | 96（分布於 45 檔） |
+| Repository 實作數 | 2（皆位於 `MemberCenter`） | 18 |
+| UseCase 檔案數 | 0 | 24 |
+| Domain Entity 型別數 | 0 | 106（分布於 48 檔；2026-09-26 以 `Domain/Entity` 內頂層 struct／enum／class 計，同口徑下 2026-09-14 為 99） |
 | `import UIKit` 出現在 ViewModel / Service / Model / Presentation / Data | 2 檔 | 0 檔（tab avatar 繪製移至 `MainTabBar/View/MainTabBarAvatarImageProvider`） |
 | `AppComposition` 外的 `= NetworkService()` 預設參數 | 18 處 | 0 處 |
 | 待移除的 concrete dependency 預設參數（不含 `AppComposition`） | 49 行（原盤點） | 0 行 |
@@ -708,7 +710,7 @@ final class AppComposition {
     private let network: NetworkServicing
     private let sessionStore: SessionStoring
     private let userProfileStore: UserProfileStoring
-    private let searchHistoryStore: SearchHistoryStoring
+    private let searchHistoryStore: SearchHistoryProviding
 
     // MARK: - Initialization
 
@@ -716,7 +718,7 @@ final class AppComposition {
         network: NetworkServicing = NetworkService(),
         sessionStore: SessionStoring = SessionStore(),
         userProfileStore: UserProfileStoring = UserProfileStore(),
-        searchHistoryStore: SearchHistoryStoring = SearchHistoryStore()
+        searchHistoryStore: SearchHistoryProviding = SearchHistoryStore()
     ) {
         self.network = network
         self.sessionStore = sessionStore
@@ -1059,7 +1061,7 @@ init(viewModel: MovieDetailViewModel, movieID: Int) {
 
 **目的**：處理 G4、G5。
 
-目前進度：G5 的 4 個跨 feature UseCase 已完成；G4 已由 `AppComposition` 接管 runtime 組裝，Auth / MainTab / Router 已改走 factory 注入，全專案 concrete dependency 預設值已清理；帳號資料取得統一經 `AccountProfileProviding`；G3 剩餘 4 條 Service 直通已改寫，舊 `Service/`、`Model/`、`Network/` 資料夾已歸位。機械邊界檢查與 simulator Debug clean build（無警告）通過；runtime 走查尚未執行。
+目前進度：G5 的 4 個跨 feature UseCase 已完成；G4 已由 `AppComposition` 接管 runtime 組裝，Auth / MainTab / Router 已改走 factory 注入，全專案 concrete dependency 預設值已清理；帳號資料取得統一經 `AccountProfileProviding`；G3 剩餘 4 條 Service 直通已改寫，舊 `Service/`、`Model/`、`Network/` 資料夾已歸位。機械邊界檢查與 simulator Debug clean build（無警告）通過；runtime 走查部分完成（2026-09-26：首頁、電影／影集詳情、公司詳情、圖片預覽與設定頁正常）。
 
 交付：
 
@@ -1143,7 +1145,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 - [x] 全專案 `= NetworkService()` 結果為 1（僅 `AppComposition`）。
 - [x] 除 `Data/` 外無 `NetworkServicing` / `URLSession` 使用端（G3）。
 - [x] 專案不存在 `Service/`、`Model/` 角色資料夾，網路層位於 `Feature/Data/Network/`。
-- [x] ViewModel / Presentation 不引用 Data 型別（`SessionStoring`、`UserProfileStoring`、`SearchHistoryStoring`、`APIConfig`、Repository 實作）；`NetworkError` 依 5.5 例外。
+- [x] ViewModel / Presentation 不引用 Data 型別（`SessionStoring`、`UserProfileStoring`、`APIConfig`、Repository 實作）；搜尋紀錄改經 Domain 的 `SearchHistoryProviding`；`NetworkError` 依 5.5 例外。
 - [x] Data 層無中文顯示文案；DTO fallback 不含 `未命名` 類字串。
 - [x] `AppComposition` 不讀取 session 狀態；登入判斷與 season / episode credential 由 `AuthSessionProviding` 在使用時解析。
 - [x] Domain UseCase 不接收 `@escaping` closure；輔助資料失敗改注入 `AuxiliaryLoadFailureReporting`。
@@ -1257,6 +1259,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 
 | 版本 | 日期 | 說明 |
 |------|------|------|
+| 2.15 | 2026-09-26 | 對齊現況：3.1 量化現況與影響範圍改為 2026-09-26 HEAD 數值（原「現在」欄停留在 2026-09-14 的 `32a59d6`）；Phase 3 runtime 走查更新為部分完成；8.1 範例與 12.4 檢查項的 `SearchHistoryStoring` 改為現行的 `SearchHistoryProviding`；metadata 狀態改為規格／實作／驗證三欄 |
 | 2.14 | 2026-09-25 | 冷啟動無 session 時改由 `LaunchSessionResolver` 透過既有 Authentication Repository 建立 guest、完成 Keychain 儲存後再由 `SceneDelegate` 明確建立首頁 Main Tab；既有 user／guest 沿用，App 內主動登出仍顯示 root 登入頁。`AppComposition` 新增具名 factory，不新增 Coordinator。Guest 建立端點修正為官方 GET；source 與靜態檢查通過，Build / Runtime NotRun |
 | 2.13 | 2026-09-15 | 依 `SDD-Architecture-Unified-Interface-Naming.md` 同步 ViewModel output 與 Scene Builder 規則：14 個非同步 state ViewModel 統一 `bind(onStateChange:)`，2 個同步 query/action model 明確保留無 binding；Scene factory 回傳 `UIViewController`、callback 由參數注入，child input 使用窄化 `...Handling` protocol。同步套用 Swift 縮寫／ID、完整畫面 `loadInitialContent` 與 Router 動詞規則；Swift parser、Codable executable check 與五項 Clean Architecture 靜態邊界檢查通過，Xcode Build / Runtime NotRun |
 | 2.12 | 2026-09-14 | 依 4.3 共用判準全面檢查 Domain / Data / Presentation 型別歸屬。(A) 依賴方向：刪除 Data 層 `StoredUserProfile.headerContent`（建立 MemberCenter 的 presentation 型別，無使用端）；共用 `DetailRouter.showCreditDetail(_: PersonDetailCreditItem)` 改為 `showMediaDetail(kind:id:)`，8.3 補共用 Router 參數規則。(B) 跨 feature 使用而升格至 `Feature/`：`Genre`、`ProductionCompany`、`AggregateCredits` 系列、`Account`、`SessionStore`、`UserProfileStore`、`AccountProfile`、`AccountAvatarURLFactory`（合併重複頭像網址邏輯）、`HomeCategory`、`HomeContentProviding`、`HomeContentRepository`、`HomeContentItem`。(C) 只剩單一 feature 使用而移回：`AccountAvatarProviding` / `AccountAvatarRepository` → MainTabBar；`ImageCacheClearing` / `SDWebImageCacheStore` → MainMemberSetting。4.3 補判準細則與調整表，機械檢查改以 `find` 涵蓋巢狀資料夾並新增第五項「Data 不得引用 Presentation 型別」，同步 11 節 Phase 2 程序、12.3、13 節 R8、14 節維護規則與 15 節路徑。simulator Debug clean build 無警告、五項機械檢查無輸出；runtime 走查未執行 |

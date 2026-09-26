@@ -12,8 +12,10 @@
 | 功能入口 | 個人／設定頁 `MainMemberSetting` 的「偏好設定」區段 |
 | 功能範圍 | App 內本地寫死的使用者可見文案；繁體中文／英文／日文 |
 | 驗收責任 | 開發者自行執行 Build、Simulator／實機與英文／日文文案驗收 |
-| 狀態 | v1.4 三語 Source Done；v1.4 Static Verification Passed；Developer Build、Runtime、Copy Review 均 NotRun |
-| 日期 | 2026-09-20（v1.4 更新） |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Done`（v1.4 繁體中文／英文／日文） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（繁體中文非正式走查正常；英文、日文切換與 Copy Review NotRun，由開發者驗收） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -827,7 +829,7 @@ Runtime 與英文／日文 Copy Review 完全由開發者依第 11 節執行。
 
 ## 16. 實作狀態
 
-截至 2026-09-20（v1.4）：
+截至 2026-09-26（v1.4）：
 
 | 項目 | 狀態 | 證據／限制 |
 |------|------|------------|
@@ -841,9 +843,9 @@ Runtime 與英文／日文 Copy Review 完全由開發者依第 11 節執行。
 | Phase J0–J2 日文 source | Done | `.japanese`、Menu option、formatter boundary、`ja` region 與三語 catalog 已完成 |
 | String Catalog | Done | 449 個範圍 key 的 `en`／`zh-Hant`／`ja` 完整；4 個 English plural；27 個排除 key 維持原狀 |
 | Static Verification | Passed | v1.4 已通過第 12.1 節 JSON、catalog compile／symbols、placeholder、key、Swift parse、project 與 diff 檢查 |
-| 實作者編譯檢查 | v1.1 Passed／v1.2–v1.4 NotRun | v1.1 歷史紀錄見 12.2；v1.2–v1.4 依規格不代替開發者 Build |
-| Xcode Build（開發者） | NotRun | 由開發者自行執行並回填 11.1 |
-| Runtime — 繁體中文 | NotRun | 等待開發者驗收 |
+| 實作者編譯檢查 | Passed | v1.1 歷史紀錄見 12.2；v1.4 由 2026-09-26 全專案 Build 涵蓋 |
+| Xcode Build | Passed | 2026-09-26 iOS Simulator Debug build 通過（含 String Catalog 編譯） |
+| Runtime — 繁體中文 | Partial | 2026-09-26 走查時首頁、詳情頁、公司頁、設定頁以繁體中文正常顯示；正式逐頁驗收仍待開發者 |
 | Runtime — English | NotRun | 等待開發者驗收 |
 | English Copy Review | NotRun | 等待開發者驗收 |
 | Runtime — 日本語 | NotRun | 等待開發者驗收 |
@@ -877,3 +879,4 @@ v1.1 接手時，工作區已有 Phase 1 與部分 Phase 2–4、5 的未提交�
 | 1.2 | 2026-09-19 | 設定列文案簡化為「語言偏好」／`Language Preference`，移除副標題與自訂 Switch hint；String Catalog 調整為 448 個 key；Developer Build、Runtime、Copy Review 仍為 NotRun |
 | 1.3 | 2026-09-19 | 語言控制由二元 Switch 改為 `UIButton` + 單選 `UIMenu`；`AppInterfaceLanguage` 改採 `CaseIterable`，Menu option 使用 raw value；移除 Bool mapping，保留 448 個雙語 key；Developer Build、Runtime、Copy Review 仍為 NotRun |
 | 1.4 | 2026-09-20 | 新增日本語介面；449 個範圍 key 完成 `en`／`zh-Hant`／`ja`；新增 `.japanese`、Menu option、`ja` region，並讓日文維持 TMDB 後端職稱原值；Static Verification Passed；Developer Build、Runtime、Copy Review 仍為 NotRun |
+| 1.5 | 2026-09-26 | 對齊現況：Xcode Build 更新為 Passed；繁體中文 Runtime 更新為 Partial；metadata 狀態改為規格／實作／驗證三欄 |

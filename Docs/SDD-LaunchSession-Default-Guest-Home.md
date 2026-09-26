@@ -11,8 +11,9 @@
 | 既有架構 | UIKit + MVVM + Clean Architecture + `AppComposition` |
 | 主要模組 | `SceneDelegate`、`MainLogIn`、`MainTabBar`、`SessionStore` |
 | 規格狀態 | `Accepted` |
-| 實作狀態 | `Partial`（Source implemented、Static Passed；Build／Runtime NotRun） |
-| 日期 | 2026-09-25 |
+| 實作狀態 | `Done`（Phase 1–3 source 完成） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（訪客冷啟動進首頁、Keychain 無法存取時的失敗提示已確認，其餘 16.3 情境 NotRun） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -632,6 +633,21 @@ Runtime: NotRun
 - Keychain failure injection
 - 三語畫面人工 Copy Review
 
+### 16.5 驗證結果更新（2026-09-26）
+
+```text
+Source: Done
+Static: Passed
+Build: Passed
+Runtime: Partial
+```
+
+- Build：iOS Simulator Debug build 通過。
+- Runtime（iPhone 17 Simulator）：
+  - 已有 guest session 再次冷啟動，直接以訪客身分進入首頁，未經登入頁。
+  - 以未簽章建置啟動（App 無 Keychain 存取權）時，停在啟動畫面並顯示「無法讀取登入狀態」與「重試」，未進入不一致的 Main Tab 狀態。
+- 仍未執行：16.3 的全新安裝、有效 user session、401／403、斷網、Keychain 寫入失敗、App Intent URL、訪客登入與會員登出情境，以及三語 Copy Review。
+
 ---
 
 ## 17. 完成定義
@@ -647,3 +663,11 @@ Runtime: NotRun
 - 三語文案與 Target membership 完成。
 - 靜態檢查通過。
 - Build／Runtime 的實際執行狀態已如實記錄。
+
+---
+
+## 18. 修訂紀錄
+
+| 日期 | 說明 |
+|------|------|
+| 2026-09-26 | 對齊現況：新增 16.5 驗證結果（Build Passed、Runtime Partial）；實作狀態由 Partial 改為 Done；metadata 狀態改為規格／實作／驗證三欄 |

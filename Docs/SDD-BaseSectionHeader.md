@@ -10,8 +10,10 @@
 | Swift | Swift 6.0，`SWIFT_STRICT_CONCURRENCY = complete` |
 | 既有架構 | UIKit + MVVM + Clean Architecture + Router + `AppComposition` |
 | 功能範圍 | 首頁、會員中心，以及 Movie／TV／Season／Episode／Person 詳情頁的區段標題 header |
-| 狀態 | Implementation Done；Build Passed；Runtime：1.0／1.1 Passed（iPhone、訪客模式），1.2 間距統一 NotRun；會員中心、VoiceOver、iPad NotRun |
-| 日期 | 2026-09-18 |
+| 規格狀態 | `Accepted` |
+| 實作狀態 | `Done`（1.2，含間距統一） |
+| 驗證狀態 | Build `Passed`（2026-09-26，iOS Simulator Debug）；Runtime `Partial`（1.0／1.1 Passed 2026-09-18；1.2 間距統一、會員中心、VoiceOver、iPad NotRun） |
+| 最後更新 | 2026-09-26 |
 
 ---
 
@@ -436,12 +438,12 @@ xcodebuild \
 
 ## 12. 實作狀態
 
-截至 2026-09-18：
+截至 2026-09-26：
 
 - Design：Ready。
 - Source Implementation：Done（1.2，依第 7 節檔案範圍）。
 - Static Verification：Passed（9.1）。
-- Xcode Build：Passed（9.2）。
+- Xcode Build：Passed（9.2；2026-09-26 全專案 iOS Simulator Debug build 再次通過）。
 - Runtime／UI：1.0／1.1 Passed（9.3，iPhone 訪客模式；含按壓回饋與從標題列開始捲動）。
 - 1.2 間距統一 Runtime：NotRun（依使用者指示略過）。
 - 會員中心 Runtime：NotRun。
@@ -462,6 +464,7 @@ xcodebuild \
 
 | 版本 | 日期 | 內容 |
 |------|------|------|
+| 1.3 | 2026-09-26 | 對齊現況：Build 狀態補上 2026-09-26 全專案建置結果；metadata 狀態改為規格／實作／驗證三欄 |
 | 1.2 | 2026-09-18 | 新增 `SectionHeaderLayoutMetrics`，以首頁為基準統一 header 高度 32、左右 16、header 到內容 8、上一區段到 header 16：會員中心內容區段補上 8、區段間距 12 改 16；詳情頁 header 高度 28 改 32、區段底部 8 改 16；移除 `titleHorizontalInset`、`standardHeight` 與各畫面重複的常數；Build 通過，Runtime 依指示未執行 |
 | 1.1 | 2026-09-18 | 新增 `placeTitleRow()` 覆寫點，子類別一律呼叫 `super`；`configure` 先正規化標題，空白標題不顯示 disclosure 且不可點；標題列改為自行處理 touch 的 `SectionHeaderTitleRowView`，提供按壓回饋並移除 `@objc`；`UIControl` 版本實測會阻擋按住後拖曳的捲動，故不採用；Build 與 iPhone 訪客模式 Runtime 通過 |
 | 1.0 | 2026-09-18 | 建立 `BaseSectionHeaderView`，三個區段 header 改為繼承；disclosure 改為次要色 `chevron.right`；Build 與 iPhone 訪客模式 Runtime 通過，會員中心、VoiceOver、iPad NotRun |
