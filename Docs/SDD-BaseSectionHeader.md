@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-BASE-SECTION-HEADER` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -27,8 +28,8 @@
 
 本文件遵循：
 
-- `SDD-Clean-Architecture-Migration.md` 的分層原則；本次只涉及 Presentation 層的 View。
-- `SDD-Unified-Interface-Naming.md` 的 Swift API 與 callback 命名規則。
+- `SDD-CleanArchitecture-Migration.md` 的分層原則；本次只涉及 Presentation 層的 View。
+- `SDD-Architecture-Unified-Interface-Naming.md` 的 Swift API 與 callback 命名規則。
 
 ---
 

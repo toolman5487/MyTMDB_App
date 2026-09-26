@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-COMPANY-DETAIL` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -20,8 +21,8 @@
 
 本功能需符合下列原則：
 
-- 沿用 `SDD-Clean-Architecture-Migration.md` 的分層與依賴方向（Domain → Data → Presentation → ViewModel → Controller/Router）。
-- 沿用 `SDD-Unified-Interface-Naming.md` 的 Swift API、縮寫與 Router 命名規則。
+- 沿用 `SDD-CleanArchitecture-Migration.md` 的分層與依賴方向（Domain → Data → Presentation → ViewModel → Controller/Router）。
+- 沿用 `SDD-Architecture-Unified-Interface-Naming.md` 的 Swift API、縮寫與 Router 命名規則。
 - 架構、Section 結構、Cell 重用策略比照既有 `PersonDetail` 模組（TMDB 公司資料的形狀與人物資料高度相似：一則基本資料 + 多個輔助端點）。
 - 不引入新的第三方套件（例如 SVG 圖片解碼器）。
 - 不建立不必要的 UseCase、Repository 抽象；能重用既有共用元件（`DetailBase`、`MediaSummary`、`discover` 端點）就不重新發明。
@@ -962,7 +963,7 @@ final class CompanyDetailViewModel {
 }
 ```
 
-比 `PersonDetailViewModel` 更簡單：沒有 `loadCreditsList`／`PersonDetailCreditsListResult` 對應機制（見 3.4 的歷史脈絡），只有 `loadInitialContent(companyID:)` 與同步的 `contentListConfiguration(for:)`，命名遵循 `SDD-Unified-Interface-Naming.md` 5.4「首次載入完整畫面 → `loadInitialContent()`」規則。
+比 `PersonDetailViewModel` 更簡單：沒有 `loadCreditsList`／`PersonDetailCreditsListResult` 對應機制（見 3.4 的歷史脈絡），只有 `loadInitialContent(companyID:)` 與同步的 `contentListConfiguration(for:)`，命名遵循 `SDD-Architecture-Unified-Interface-Naming.md` 5.4「首次載入完整畫面 → `loadInitialContent()`」規則。
 
 > **已實作**：以上為目前 `CompanyDetailViewModel.swift` 的實際內容。`contentListConfiguration(for:)` 目前只回傳第一頁資料組成的 `DetailContentListConfiguration`；第 11 節會把它擴充成同時回傳一個可選的分頁提供者，讓「查看更多」畫面能繼續往下捲動載入。
 
@@ -1116,7 +1117,7 @@ extension DetailRouter {
 }
 ```
 
-命名與參數形狀比照 `showPersonDetail(personID:)`（純 scalar identifier、方法名稱已含實體、使用具名 `companyID`），符合 `SDD-Unified-Interface-Naming.md` 5.5。
+命名與參數形狀比照 `showPersonDetail(personID:)`（純 scalar identifier、方法名稱已含實體、使用具名 `companyID`），符合 `SDD-Architecture-Unified-Interface-Naming.md` 5.5。
 
 不新增 `CompanyDetailRouting`／`CompanyDetailRouter`：本頁沒有跨畫面轉發需求，比照 `PersonDetail`／`EpisodeDetail` 直接持有 `DetailRouting`。
 
@@ -1190,7 +1191,7 @@ MovieDetail／TVDetail 保留既有 UIKit／MVVM／Router／DI 邊界：section 
 ### 11.2 設計原則
 
 - **`PersonDetail` 零異動、零風險**：`DetailContentListConfiguration` 的既有欄位（`title`／`thumbnailStyle`／`items`）完全不變；分頁能力以「額外、可選」的方式注入，`PersonDetail` 的呼叫端不需要修改一行程式碼，行為與現在完全相同。
-- **`DetailContentList` 維持與功能無關**：分頁的「怎麼拿下一頁資料」由呼叫端（`CompanyDetail`）提供，`DetailContentList` 只依賴一個通用協定，不 import `CompanyDetailProviding` 或任何 Company 專屬型別，維持 `SDD-Clean-Architecture-Migration.md` 的依賴方向。
+- **`DetailContentList` 維持與功能無關**：分頁的「怎麼拿下一頁資料」由呼叫端（`CompanyDetail`）提供，`DetailContentList` 只依賴一個通用協定，不 import `CompanyDetailProviding` 或任何 Company 專屬型別，維持 `SDD-CleanArchitecture-Migration.md` 的依賴方向。
 - **不擴充 `MainMediaList`**：`MediaListRepository` 是為 genre-based 瀏覽設計的（見 3.4），這裡不與它共用，改直接讓 `CompanyDetailProviding` 現有的 `movies(companyID:page:)`／`tvShows(companyID:page:)` 被重複呼叫。
 - **重用既有分頁基礎設施**：`MediaGridPaginationState.shouldLoadNextPage(currentIndex:itemCount:)` 與 `MediaGridPaginationTaskController` 已經是與功能無關的共用元件（`MainSearch`、`MainMediaList` 都在用），直接搬進 `DetailContentListViewController`，不重新發明一套分頁判斷邏輯。
 - **Swift 6 並行安全**：分頁提供者需要在多次呼叫之間記住「目前拿到第幾頁」，用 `actor` 而非 `@unchecked Sendable class`，讓編譯器保證正確性，不使用專案裡少見的並行安全豁免。
@@ -1576,7 +1577,7 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - `DetailPillListCollectionViewCell` 抽取後，`PersonDetail` 既有畫面行為與外觀不變。
 - `MainSearchRouter` 的 `case .company` 導向新頁面，不再是 no-op。
 - MovieDetail／TVDetail 的 `.productionCompany` attribute 導向相同 CompanyDetail；genre 與 TV network 行為不變。
-- `DetailRouting`／`DetailSceneBuilding` 新增方法命名符合 `SDD-Unified-Interface-Naming.md`。
+- `DetailRouting`／`DetailSceneBuilding` 新增方法命名符合 `SDD-Architecture-Unified-Interface-Naming.md`。
 - 12.1 Source 檢查、12.2 Typecheck／Build 通過並獨立記錄結果。
 - 12.3 Runtime 項目（含 SVG 公司、深色模式、Person 迴歸、電影／影集清單無限捲動分頁）以 Simulator 或實機驗證後才能標記 Passed。
 - `project.pbxproj` 只新增本功能檔案的 target membership，其餘設定不變。
@@ -1610,15 +1611,15 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 
 - Source Implementation：Done（沿用既有 production company ID、attribute selection callback、`DetailRouter.showCompanyDetail` 與 `AppComposition.makeCompanyDetailViewController`）。
 - Static Verification：Passed（Swift frontend parse、String Catalog JSON／compile、`project.pbxproj` lint、`git diff --check`）。
-- Xcode Build：Not Run（本次為小範圍既有路由串接，依專案規範先採快速靜態檢查）。
-- Runtime／UI：Not Run（尚未以 Simulator／實機點擊 MovieDetail 與 TVDetail 的出品公司 pill 驗證 push 與返回流程）。
+- Xcode Build：NotRun（本次為小範圍既有路由串接，依專案規範先採快速靜態檢查）。
+- Runtime／UI：NotRun（尚未以 Simulator／實機點擊 MovieDetail 與 TVDetail 的出品公司 pill 驗證 push 與返回流程）。
 
 **CompanyDetail 標誌專用預覽（2026-09-26）**
 
 - Source Implementation：Done（`CompanyLogoImagePreviewViewController` 繼承共用圖片預覽，只覆寫 `.label` 背景；CompanyDetail Logos 由 Router 導向專用 VC）。
 - Static Verification：Passed（Swift frontend parse、`project.pbxproj` lint／target membership、`git diff --check`）。
-- Xcode Build：Not Run（依專案規範先執行快速靜態檢查）。
-- Runtime／UI：Not Run（尚未以 Simulator／實機驗證 `.label` 動態色彩、透明 Logo、分頁與縮放效果）。
+- Xcode Build：NotRun（依專案規範先執行快速靜態檢查）。
+- Runtime／UI：NotRun（尚未以 Simulator／實機驗證 `.label` 動態色彩、透明 Logo、分頁與縮放效果）。
 
 本文件建立不代表功能已實作。每個狀態只能在取得對應證據後更新。
 
@@ -1631,7 +1632,7 @@ Build 成功不代表功能完成。以下必須以 Simulator 實機操作驗證
 - [TMDB API — Company Images](https://developer.themoviedb.org/reference/company-images)
 - [TMDB API — Discover Movie](https://developer.themoviedb.org/reference/discover-movie)（`with_companies` 參數）
 - [TMDB API — Discover TV](https://developer.themoviedb.org/reference/discover-tv)（`with_companies` 參數）
-- `Docs/SDD-Clean-Architecture-Migration.md`
-- `Docs/SDD-Unified-Interface-Naming.md`
-- `Docs/SDD-Detail-Sharing.md`（Router／Scene Builder 擴充模式參考）
+- `Docs/SDD-CleanArchitecture-Migration.md`
+- `Docs/SDD-Architecture-Unified-Interface-Naming.md`
+- `Docs/SDD-DetailSharing.md`（Router／Scene Builder 擴充模式參考）
 - `PersonDetail/`（本文件的主要結構範本）

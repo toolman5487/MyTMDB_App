@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-CLEAN-ARCHITECTURE-MIGRATION` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -1248,7 +1249,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 | 顯示語意 fallback 集中處 | `Feature/Formatter/BaseDisplayTextFormatter.swift`、`Feature/Components/ErrorMessage/Presentation/NetworkError+ErrorMessage.swift` |
 | Tab avatar 繪製（View 層） | `MainTabBar/View/MainTabBarAvatarImageProvider.swift` |
 | App Intents 相依面 | `Feature/AppIntents/Support/AppIntentFavoriteActionHandler.swift`、`Feature/AppIntents/Support/AppIntentSessionResolver.swift` |
-| 相關文件 | `Docs/SDD-Apple-Intelligence-Siri-AppIntents.md` |
+| 相關文件 | `Docs/SDD-AppIntents-Siri-Apple-Intelligence.md` |
 
 ---
 
@@ -1257,7 +1258,7 @@ grep -rnwE "$PRES_TYPES" --include='*.swift' $DATA_DIRS
 | 版本 | 日期 | 說明 |
 |------|------|------|
 | 2.14 | 2026-09-25 | 冷啟動無 session 時改由 `LaunchSessionResolver` 透過既有 Authentication Repository 建立 guest、完成 Keychain 儲存後再由 `SceneDelegate` 明確建立首頁 Main Tab；既有 user／guest 沿用，App 內主動登出仍顯示 root 登入頁。`AppComposition` 新增具名 factory，不新增 Coordinator。Guest 建立端點修正為官方 GET；source 與靜態檢查通過，Build / Runtime NotRun |
-| 2.13 | 2026-09-15 | 依 `SDD-Unified-Interface-Naming.md` 同步 ViewModel output 與 Scene Builder 規則：14 個非同步 state ViewModel 統一 `bind(onStateChange:)`，2 個同步 query/action model 明確保留無 binding；Scene factory 回傳 `UIViewController`、callback 由參數注入，child input 使用窄化 `...Handling` protocol。同步套用 Swift 縮寫／ID、完整畫面 `loadInitialContent` 與 Router 動詞規則；Swift parser、Codable executable check 與五項 Clean Architecture 靜態邊界檢查通過，Xcode Build / Runtime NotRun |
+| 2.13 | 2026-09-15 | 依 `SDD-Architecture-Unified-Interface-Naming.md` 同步 ViewModel output 與 Scene Builder 規則：14 個非同步 state ViewModel 統一 `bind(onStateChange:)`，2 個同步 query/action model 明確保留無 binding；Scene factory 回傳 `UIViewController`、callback 由參數注入，child input 使用窄化 `...Handling` protocol。同步套用 Swift 縮寫／ID、完整畫面 `loadInitialContent` 與 Router 動詞規則；Swift parser、Codable executable check 與五項 Clean Architecture 靜態邊界檢查通過，Xcode Build / Runtime NotRun |
 | 2.12 | 2026-09-14 | 依 4.3 共用判準全面檢查 Domain / Data / Presentation 型別歸屬。(A) 依賴方向：刪除 Data 層 `StoredUserProfile.headerContent`（建立 MemberCenter 的 presentation 型別，無使用端）；共用 `DetailRouter.showCreditDetail(_: PersonDetailCreditItem)` 改為 `showMediaDetail(kind:id:)`，8.3 補共用 Router 參數規則。(B) 跨 feature 使用而升格至 `Feature/`：`Genre`、`ProductionCompany`、`AggregateCredits` 系列、`Account`、`SessionStore`、`UserProfileStore`、`AccountProfile`、`AccountAvatarURLFactory`（合併重複頭像網址邏輯）、`HomeCategory`、`HomeContentProviding`、`HomeContentRepository`、`HomeContentItem`。(C) 只剩單一 feature 使用而移回：`AccountAvatarProviding` / `AccountAvatarRepository` → MainTabBar；`ImageCacheClearing` / `SDWebImageCacheStore` → MainMemberSetting。4.3 補判準細則與調整表，機械檢查改以 `find` 涵蓋巢狀資料夾並新增第五項「Data 不得引用 Presentation 型別」，同步 11 節 Phase 2 程序、12.3、13 節 R8、14 節維護規則與 15 節路徑。simulator Debug clean build 無警告、五項機械檢查無輸出；runtime 走查未執行 |
 | 2.11 | 2026-09-14 | (1) 刪除未使用的 `MyTMDB_App/ViewController.swift`（佔位畫面，直接依賴 `SessionStoring` 並自行處理登出）。(2) 新增 Domain `ImageCacheClearing` 與 Data `SDWebImageCacheStore`，`ClearLocalDataUseCase` 改為 `async` 並統一清除 session、會員快取、搜尋紀錄與圖片快取；`MainMemberSettingViewController` 不再直接呼叫 `SDImageCache`。4.2 補第三方套件位置規則。(3) `AccountSessionProviding`、`AccountProfileProviding` 由 `AccountMediaStateProviding.swift` 拆為獨立檔；`LocalAccountDataUseCases.swift` 拆為三個 UseCase 檔；`EisodeDetail/ViewModel/Presentation/` 移至 `EisodeDetail/Presentation/`。同步記錄先前未入文件的流程變更於 8.2：設定頁依帳號模式顯示訪客卡（登入 / 註冊）並隱藏帳號區塊與登出；`LoginEntryContext`（`.root` / `.inApp`）與 page sheet 登入頁；登入後以 `initialTab` 還原原 tab。更新 3.1、12.4 與 15 節路徑。simulator Debug clean build 無警告、4.3 機械檢查無輸出；runtime 走查未執行 |
 | 2.10 | 2026-09-14 | 依 SDD 合規稽核修正：(1) `MainMemberSettingViewModel`、`MainSearchViewModel` 不再依賴 Data 儲存協定，新增 Domain `AuthSessionProviding`、`SearchHistoryProviding`，`AccountProfileProviding` 補 `cachedProfile()` / `clearCachedProfile()`，新增 `RefreshAccountProfileUseCase`、`LogoutUseCase`、`ClearLocalDataUseCase`；`SearchHistoryStore` 改用共用 `AppPreferencesStorage`（抽至 `Feature/Data/Storage/`）以符合 `Sendable`；`AuthSession` 升格至 `Feature/Domain/Entity/`。(2) 16 處 DTO 的 `未命名` 類 fallback 改為空字串，文案移至 Presentation 與 App Intent entity。(3) `APIConfig` 的外部資源網址抽為 `Feature/Config/TMDBResourceURL`，`AppLocalization` 移至 `Feature/Config/`，4.2 補跨層共用設定規則。(4) `NetworkError.errorDescription` 改為英文除錯描述，App Intent 收藏失敗訊息改用 `errorMessage`。小項：`AuthSession` 補 `nonisolated`；刪除只轉呼叫 Repository 的 `LoadAccountCollectionPageUseCase`；5 個詳情 UseCase 的 `@escaping` log closure 改為注入 `AuxiliaryLoadFailureReporting`；`AppComposition` 移除 session 讀取，season / episode credential 與登入判斷改於使用時由 `AuthSessionProviding` 解析（不再於建立畫面時快照）；移除 `HomeCategory` 未使用的 `Codable`。simulator Debug clean build 無警告、稽核檢查無輸出；runtime 走查未執行 |

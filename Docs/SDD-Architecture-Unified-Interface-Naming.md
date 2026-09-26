@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-ARCHITECTURE-UNIFIED-INTERFACE-NAMING` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -27,7 +28,7 @@
 
 本文件只定義介面與命名遷移，不在同一階段改變業務規則、畫面、API request、資料格式或導航行為。
 
-本文件是 `SDD-Clean-Architecture-Migration.md` 的補充規格：
+本文件是 `SDD-CleanArchitecture-Migration.md` 的補充規格：
 
 - 分層、依賴方向與 UseCase 建立判準，以 Clean Architecture SDD 為準。
 - Swift symbol、方法、參數與 protocol 角色命名，以本文件為準。
@@ -706,7 +707,7 @@ final class SearchResultsViewModel {
 
 ### Phase 5 — 文件與收尾
 
-- 更新 `SDD-Clean-Architecture-Migration.md` 中 ViewModel output、Scene Builder 與命名範例。
+- 更新 `SDD-CleanArchitecture-Migration.md` 中 ViewModel output、Scene Builder 與命名範例。
 - 更新不再正確的數量與路徑。
 - 執行驗收矩陣。
 - runtime 尚未走查時，狀態不得標記為 Implemented 或 Complete。
@@ -726,7 +727,7 @@ rg -n 'ViewModel|ViewController|UIKit' -g '**/Data/**/*.swift'
 rg -n '\b[A-Za-z][A-Za-z0-9]*DTO\b' -g '*.swift' -g '!**/Data/**'
 ```
 
-以上四項預期無輸出。Data 不得引用 Presentation type 的第五項檢查，需沿用 `SDD-Clean-Architecture-Migration.md` 的型別清單檢查，或整理成獨立 script 後執行。
+以上四項預期無輸出。Data 不得引用 Presentation type 的第五項檢查，需沿用 `SDD-CleanArchitecture-Migration.md` 的型別清單檢查，或整理成獨立 script 後執行。
 
 ### 9.2 命名
 

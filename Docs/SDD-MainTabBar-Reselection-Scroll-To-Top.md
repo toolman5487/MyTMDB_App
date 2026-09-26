@@ -3,8 +3,9 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
-| 文件 ID | `SDD-MAIN-TAB-SCROLL-TO-TOP-001` |
+| 文件 ID | `SDD-MAIN-TAB-BAR-RESELECTION-SCROLL-TO-TOP` |
 | App | CineBase (`MyTMDB_App`) |
+| Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
 | UI 架構 | UIKit + `UITabBarController` + `UINavigationController` + `UICollectionView` |
 | 主要模組 | `MainTabBar`、`ScrollTrackingBaseViewController` |
@@ -201,7 +202,7 @@ MainTabBarController
 |------|------|
 | `Feature/Base/ScrollTrackingBase/ScrollTrackingBaseViewController.swift` | 新增 `scrollContentToTop(animated:)`，以 `-adjustedContentInset.top` 計算頂部 |
 | `MainTabBar/Controller/MainTabBarController.swift` | 重點擊目前 Tab 時，對 navigation top Controller 呼叫共用捲回頂部 API |
-| `Docs/SDD-Tab-Bar-Reselection-Navigation-Reset.md` | 修正需求、設計與驗證紀錄；沿用原文件路徑 |
+| `Docs/SDD-MainTabBar-Reselection-Scroll-To-Top.md` | 修正需求、設計與驗證紀錄；沿用原文件路徑 |
 
 未修改：
 

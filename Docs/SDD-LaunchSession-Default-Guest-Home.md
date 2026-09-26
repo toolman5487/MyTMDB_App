@@ -3,8 +3,9 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
-| 文件 ID | `SDD-DEFAULT-GUEST-LAUNCH-001` |
+| 文件 ID | `SDD-LAUNCH-SESSION-DEFAULT-GUEST-HOME` |
 | App | CineBase (`MyTMDB_App`) |
+| Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
 | Swift | Swift 6.0，Strict Concurrency |
 | 既有架構 | UIKit + MVVM + Clean Architecture + `AppComposition` |
@@ -466,8 +467,8 @@ Log 規則：
 | `MainLogIn/Data/Repository/AuthenticationRepository.swift` | Guest 建立改用 GET；拒絕空 ID |
 | `MyTMDB_App/Localizable.xcstrings` | 新增／更新三語 Loading 與錯誤文案 |
 | `MyTMDB_App.xcodeproj/project.pbxproj` | 將新增 Swift 檔加入既有 App Target；不建立新 Target |
-| `Docs/SDD-Clean-Architecture-Migration.md` | 已更新 cold-launch current-state 描述 |
-| `Docs/SDD-Secure-Local-Storage-and-Authentication.md` | 已補充自動 guest bootstrap 流程 |
+| `Docs/SDD-CleanArchitecture-Migration.md` | 已更新 cold-launch current-state 描述 |
+| `Docs/SDD-SessionStore-Secure-Storage-Authentication.md` | 已補充自動 guest bootstrap 流程 |
 
 ---
 

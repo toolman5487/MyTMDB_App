@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-SESSION-STORE-SECURE-STORAGE-AUTHENTICATION` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -28,7 +29,7 @@
 - 會員 Profile、頭像二進位資料與搜尋紀錄存於 `UserDefaults`，不符合資料最小化與儲存角色。
 - 專案直接使用 `UserDefaults`，但目前沒有 App-owned `PrivacyInfo.xcprivacy`。
 
-本文件是安全與隱私邊界的增量規格，不取代 `SDD-Clean-Architecture-Migration.md` 與 `SDD-Unified-Interface-Naming.md`。
+本文件是安全與隱私邊界的增量規格，不取代 `SDD-CleanArchitecture-Migration.md` 與 `SDD-Architecture-Unified-Interface-Naming.md`。
 
 ---
 

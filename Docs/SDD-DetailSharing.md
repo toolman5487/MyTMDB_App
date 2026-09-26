@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-DETAIL-SHARING` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -29,8 +30,8 @@
 
 本文件遵循：
 
-- `SDD-Clean-Architecture-Migration.md` 的分層與依賴方向。
-- `SDD-Unified-Interface-Naming.md` 的 Swift API、縮寫與 Router 命名規則。
+- `SDD-CleanArchitecture-Migration.md` 的分層與依賴方向。
+- `SDD-Architecture-Unified-Interface-Naming.md` 的 Swift API、縮寫與 Router 命名規則。
 
 若文件與實際 SDK API 有差異，實作需以 iOS 26 SDK 的編譯結果為準，並回寫本文件，不得以未記錄的替代設計直接落地。
 
@@ -216,7 +217,7 @@ nonisolated enum TMDBResourceURL {
 }
 ```
 
-命名依 `SDD-Unified-Interface-Naming.md`：
+命名依 `SDD-Architecture-Unified-Interface-Naming.md`：
 
 - 方法名稱已指出實體時使用 `id`，例如 `movie(id:)`、`tvSeries(id:)`。
 - Season／Episode 同時需要多個識別值，因此使用具名 `seriesID`。

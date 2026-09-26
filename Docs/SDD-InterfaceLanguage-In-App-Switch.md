@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-INTERFACE-LANGUAGE-IN-APP-SWITCH` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -30,8 +31,8 @@
 
 本 SDD 遵循：
 
-- `SDD-Clean-Architecture-Migration.md` 的現行分層與依賴方向。
-- `SDD-Unified-Interface-Naming.md` 的 Storage、ViewModel、Router 與 Scene Builder 命名規則。
+- `SDD-CleanArchitecture-Migration.md` 的現行分層與依賴方向。
+- `SDD-Architecture-Unified-Interface-Naming.md` 的 Storage、ViewModel、Router 與 Scene Builder 命名規則。
 - `SceneDelegate` 管理 root，`AppComposition` 建立並注入場景，不新增 `AppCoordinator`。
 
 v1.4 將日文視為既有介面語言模型的第三個 case，一次完成日文字串與 Menu cutover，不新增暫時 feature flag。本文件更新只代表日文規格已鎖定；各項實作與驗證狀態仍以第 16 節為準。
@@ -484,7 +485,7 @@ v1.1 補充規則（皆經 `xcstringstool compile` 與執行期查表驗證）�
 - `Feature/Formatter/BaseFormatter.swift`：日文與英文相同，對 TMDB 職稱／部門顯示正規化後的後端原值。
 - `MyTMDB_App/Localizable.xcstrings`：既有 448 個範圍 key 補齊 `ja`，並新增三語完整的 `main_member_setting.language.option.japanese`。
 - `MyTMDB_App.xcodeproj/project.pbxproj`：在 `knownRegions` 新增 `ja`。
-- `Docs/SDD-In-App-Interface-Language.md`：升級為 v1.4 三語規格並記錄驗證邊界。
+- `Docs/SDD-InterfaceLanguage-In-App-Switch.md`：升級為 v1.4 三語規格並記錄驗證邊界。
 
 ### 9.2 沿用、不新增抽象
 

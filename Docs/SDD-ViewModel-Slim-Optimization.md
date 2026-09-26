@@ -3,6 +3,7 @@
 | 項目 | 內容 |
 |------|------|
 | 文件類型 | Software Design Document |
+| 文件 ID | `SDD-VIEW-MODEL-SLIM-OPTIMIZATION` |
 | App | CineBase (`MyTMDB_App`) |
 | Bundle ID | `co.willyhsu.CineBase` |
 | 平台 | iOS 26.0+ |
@@ -17,13 +18,13 @@
 
 ## 文件結構
 
-- **Part I 準則（第 1–3 節）**：長期有效的判準與責任邊界。Scope D 完成後併入 `SDD-Clean-Architecture-Migration.md`。
+- **Part I 準則（第 1–3 節）**：長期有效的判準與責任邊界。Scope D 完成後併入 `SDD-CleanArchitecture-Migration.md`。
 - **Part II 實作（第 4 節起）**：各 scope 的盤點、設計、驗收與狀態。全部完成後歸檔。
 
 本文件只補充既有規格，不重述其內容：
 
-- 分層、依賴方向與 UseCase 建立判準以 `SDD-Clean-Architecture-Migration.md` 為準。
-- ViewModel 輸出契約與命名以 `SDD-Unified-Interface-Naming.md` 為準。
+- 分層、依賴方向與 UseCase 建立判準以 `SDD-CleanArchitecture-Migration.md` 為準。
+- ViewModel 輸出契約與命名以 `SDD-Architecture-Unified-Interface-Naming.md` 為準。
 
 ---
 
@@ -296,13 +297,13 @@ ReviewList 的門檻維持 3，除非產品決定統一為 4。
 影響：
 
 - 驗證維持 Static、Build、Runtime 三個層級（10.3）；10.2 全部以 Runtime 走查為證據。
-- `SDD-Clean-Architecture-Migration.md` §2.3「不建立自動化測試，不新增測試 target」維持有效，不需修訂。
+- `SDD-CleanArchitecture-Migration.md` §2.3「不建立自動化測試，不新增測試 target」維持有效，不需修訂。
 - 原本為測試設計的隨機來源注入沒有使用者，不實作；`.shuffled()` 改列為 3.3 的明列例外。
 - Builder 與 `MediaGridPaginationState` 仍維持純函式與 `Sendable` 值型別，日後若改變決議，可直接補上測試。
 
 ## 8. Scope D：文件整併
 
-- Part I（第 1–3 節）併入 `SDD-Clean-Architecture-Migration.md` 新章節「ViewModel 責任邊界」；本文件只保留 Part II，並標記 Archived。
+- Part I（第 1–3 節）併入 `SDD-CleanArchitecture-Migration.md` 新章節「ViewModel 責任邊界」；本文件只保留 Part II，並標記 Archived。
 - 各 SDD 不重述其他 SDD 的規則，改以章節引用。例如「不引入 Combine」只保留在 Clean Architecture SDD §2.3。
 - 新 SDD 以一至兩頁為原則，採 ADR 形式記錄決策、理由與影響；盤點數字標註日期或附上產生指令，避免過時。
 - 執行時機：Scope B 完成後，避免 Part I 在實作期間兩處同步修改。
@@ -427,8 +428,8 @@ grep -rhowE "$UIKIT_TYPES" --include='*.swift' $PRES_DIRS | sort | uniq -c
 
 ## 14. 參考文件
 
-- `Docs/SDD-Clean-Architecture-Migration.md`
-- `Docs/SDD-Unified-Interface-Naming.md`
+- `Docs/SDD-CleanArchitecture-Migration.md`
+- `Docs/SDD-Architecture-Unified-Interface-Naming.md`
 - Swift API Design Guidelines: <https://swift.org/documentation/api-design-guidelines/>
 - Swift 6 Concurrency Migration Guide: <https://www.swift.org/migration/documentation/swift-6-concurrency-migration-guide/>
 
